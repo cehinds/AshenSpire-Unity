@@ -7,7 +7,7 @@ const assert=(value,message)=>{if(!value)throw Error(message);};
 const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirSync(output,{recursive:true});
 const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
-const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],errorContexts=[],checks=[],seedPixels=[],seedCampaigns=[];
+const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],errorContexts=[],checks=[],seedPixels=[],seedCampaigns=[],layoutRetries=[];
 const record=(name,value)=>{assert(value,name);checks.push(name);};
 async function until(predicate,name,timeout=20000){const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await sleep(50);}throw Error('Timed out: '+name);}
 const game=(method,params={})=>send(method,params,session);
@@ -61,7 +61,7 @@ function verifySeed(stage){
  seedCampaigns.push({stage,expected:240987,observed:state?.Seed,revision,state:JSON.parse(JSON.stringify(state))});
  record(stage+' campaign starts with the exact typed seed',state?.Seed===240987);
 }
-function evidence(success){return {success,checks,seedPixels,seedCampaigns,visibility,interruptions,feedback,sounds,screenshots,errors,errorContexts,lastInput,state,controls,revision,layout,physicalDevice:false};}
+function evidence(success){return {success,checks,seedPixels,seedCampaigns,layoutRetries,visibility,interruptions,feedback,sounds,screenshots,errors,errorContexts,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
  const profileRoot=path.resolve('Builds/BrowserProfiles');fs.mkdirSync(profileRoot,{recursive:true});
  const profile=fs.mkdtempSync(path.join(profileRoot,'Interruption-'));
@@ -79,7 +79,7 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,visib
   if(message.method==='Runtime.exceptionThrown')errors.push(message.params.exceptionDetails.text);
   if(message.method==='Runtime.consoleAPICalled'){
    const value=message.params.args.map(x=>x.value??x.description??'').join(' ');
-   if(value.startsWith('ASHENSPIRE_CONTROLS ')){try{controls=JSON.parse(value.slice(20));layout++;}catch(error){errors.push('Invalid control diagnostics: '+error.message);}}
+   if(value.startsWith('ASHENSPIRE_CONTROLS ')){try{controls=JSON.parse(value.slice(20));layout++;if(controls.LayoutAttempts>1)layoutRetries.push({layout,attempts:controls.LayoutAttempts,ids:controls.Controls.map(x=>x.Id)});}catch(error){errors.push('Invalid control diagnostics: '+error.message);}}
    if(value.startsWith('ASHENSPIRE_CAMPAIGN ')){state=JSON.parse(value.slice(20));revision++;}
    if(value.startsWith('ASHENSPIRE_INTERRUPTION '))interruptions.push(JSON.parse(value.slice(24)));
    if(value.startsWith('ASHENSPIRE_FEEDBACK '))feedback.push(JSON.parse(value.slice(20)));

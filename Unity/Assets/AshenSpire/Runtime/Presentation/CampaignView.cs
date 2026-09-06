@@ -15,6 +15,8 @@ namespace AshenSpire.Presentation
         private readonly VisualElement _root;
         private readonly bool _diagnostics;
         private bool _disposed;
+        private IVisualElementScheduledItem _controlReport;
+        private int _controlReportAttempts;
         private VisualElement _body;
         private ScrollView _scroll;
         private Image _player;
@@ -68,7 +70,7 @@ namespace AshenSpire.Presentation
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
         }
-        public void Dispose() { _disposed = true; _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
+        public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
         public void ShowInterruption(bool canReturn)
         {
             _feedback.Cancel();
@@ -457,19 +459,34 @@ namespace AshenSpire.Presentation
         private sealed class ControlList
         {
             public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
+            public int LayoutAttempts;
         }
         private void Report(bool refreshTouchTargets = true)
         {
             // Screen construction and geometry changes both refresh controls, even when
             // diagnostics are disabled in a release/native player. No per-frame queries.
             if (refreshTouchTargets) RefreshTouchTargets();
-            if (!_diagnostics)
+            if (!_diagnostics || _disposed)
                 return;
-            _root.schedule.Execute(ReportControls).StartingIn(180);
+            // Coalesce changes and keep a bounded measurement pending until child
+            // layout settles. A cover can lay out without changing root geometry.
+            _controlReport?.Pause();
+            _controlReportAttempts = 0;
+            _controlReport = _root.schedule.Execute(TryReportControls).Every(180).StartingIn(180);
         }
-        private void ReportControls()
+        private void TryReportControls()
         {
-            if (_disposed) return;
+            if (_disposed || ReportControls())
+            {
+                _controlReport?.Pause();
+                return;
+            }
+            if (++_controlReportAttempts < 20) return;
+            _controlReport?.Pause();
+            Debug.LogError("Control diagnostics did not obtain finite layout after 20 measurements.");
+        }
+        private bool ReportControls()
+        {
             var surface = _interruptionCover ?? _root;
             var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
                 .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList())
@@ -478,13 +495,15 @@ namespace AshenSpire.Presentation
                     Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray();
             var width = _root.resolvedStyle.width;
             var height = _root.resolvedStyle.height;
-            // Rotation and detached elements can expose unmeasured bounds. Export only
-            // finite layouts; the next geometry/control event reports the settled view.
+            // Rotation and detached elements can expose unmeasured bounds. Never
+            // export those bounds; the pending report will measure the next layout.
             if (!Finite(width) || !Finite(height) || controls.Any(x =>
-                !Finite(x.X) || !Finite(x.Y) || !Finite(x.Width) || !Finite(x.Height))) return;
+                !Finite(x.X) || !Finite(x.Y) || !Finite(x.Width) || !Finite(x.Height))) return false;
             Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
+                LayoutAttempts = _controlReportAttempts + 1,
                 Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() }));
+            return true;
         }
         private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
     }
