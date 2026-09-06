@@ -59,7 +59,7 @@ public static class CampaignChecks
         Check(!run.Reward("strike"),"unoffered rewards are rejected");
         var reward=run.State.Rewards[0];Check(run.Reward(reward)&&run.State.Deck.Contains(reward)&&!run.Reward(reward),"reward claimed once and added to deck");
         run.State.Cinders=100;var before=run.State.Cinders;
-        Check(run.Buy("emberBlade")&&!run.Buy("emberBlade")&&run.State.Cinders==before-30,"equipment costs once and cannot be duplicated");
+        Check(run.Buy("emberBlade")&&!run.Buy("emberBlade")&&run.State.Cinders==before-40,"equipment costs forty cinders once and cannot be duplicated");
         run.State.Strength=99;
         Check(run.Describe(run.Card("strike"))=="Deal 8 damage.","map card text includes equipment and excludes expired combat strength");
         run.Enter(0);run.State.Hand=new(){"strike"};run.State.Energy=3;var enemyHealth=run.State.EnemyHealth;run.Play(0);

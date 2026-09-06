@@ -72,3 +72,15 @@ This is a complete start-to-ending campaign, not full mechanical parity with the
 ## Combat clarity (0.3.0)
 
 Intent and status controls open read-only explanations. Draw/discard inspection groups cards without exposing draw order. Recent actions retain twelve results during the current session; they are not part of saved state. Unaffordable cards remain inspectable but cannot be played. Edit CampaignSession.cs for explanations and effect feedback, CampaignView.cs for inspection navigation, and Expedition.uss for appearance.
+
+## Class rewards and equipment (0.4.0)
+
+Cards carry affinity tags such as reaver, rogue, herald or starseer. Each Heroes record has RewardTags; CommonRewardTag at the campaign root selects shared cards. RewardCards is still the complete eligible ID catalog. New offers contain two distinct matching class cards and one shared card. Keep the pools disjoint and provide at least two eligible cards for every hero and at least one shared card. Existing pending offers remain claimable.
+
+To add a Reaver reward, duplicate bloodrush, choose a new Id, keep the reaver tag, edit its effects and add its Id to RewardCards. To make a shared reward, use the shared tag and no hero-affinity tag. Edit the root catalog/settings in campaign.json; the record editor and CSV tool edit individual tables. Export Heroes again to include the RewardTags CSV column.
+
+Equipment supports damage, block, health, poison and heal. RequiredTag selects cards carrying that tag; the card must also contain the matching effect. Venom Vial adds one to poison effects on poison-tagged cards. Sunward Seal adds two to faith-card healing, capped at maximum vitality; it does not affect flasks or resting. The forge shows how many current deck cards an item supports. New effects still require C# implementation; an arbitrary operation string is rejected.
+
+Existing expeditions keep their saved deck, resources and pending rewards. Updated card/equipment tuning applies to future commands, while only a new expedition receives the changed starter deck. History remains session-local. After editing, stop/restart Unity Play mode or rebuild/reload the player.
+
+Run fixed policy diagnostics with `dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json Builds/Balance.json`. This compares rest-reward and card-taking policies over 24 seeds per class, with alternating routes. Results are diagnostic; they do not certify fun or optimal strategy.

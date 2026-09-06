@@ -114,7 +114,7 @@ namespace AshenSpire.Editor
                 File.Copy(source, Path.Combine(backup, "campaign.json"));
                 File.WriteAllText(source, JsonUtility.ToJson(_content, true));
                 BuildTools.ImportContent();
-                _notice = "Saved, validated and imported. Start a new expedition to test content changes.";
+                _notice = "Saved, validated and imported. Stop/restart Play mode, or rebuild/reload the player, to load changed content.";
             }
             catch (Exception error) { _notice = "Not saved: " + error.Message; }
         }

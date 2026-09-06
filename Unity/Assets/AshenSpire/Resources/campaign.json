@@ -85,6 +85,11 @@
       "Id": "armor",
       "Domain": "gameplay",
       "Family": "equipment"
+    },
+    {
+      "Id": "shared",
+      "Domain": "gameplay",
+      "Family": "reward"
     }
   ],
   "Cards": [
@@ -123,7 +128,8 @@
       "Name": "Footwork",
       "Cost": 1,
       "Tags": [
-        "skill"
+        "skill",
+        "shared"
       ],
       "Description": "Gain 3 block. Draw 1.",
       "Effects": [
@@ -142,7 +148,8 @@
       "Name": "Cleave",
       "Cost": 2,
       "Tags": [
-        "attack"
+        "attack",
+        "reaver"
       ],
       "Description": "Deal 15 damage.",
       "Effects": [
@@ -157,7 +164,8 @@
       "Name": "Battle Cry",
       "Cost": 1,
       "Tags": [
-        "skill"
+        "skill",
+        "reaver"
       ],
       "Description": "Gain 2 strength. Draw 1.",
       "Effects": [
@@ -177,7 +185,8 @@
       "Cost": 1,
       "Tags": [
         "attack",
-        "poison"
+        "poison",
+        "rogue"
       ],
       "Description": "Deal 3 damage. Apply 3 poison.",
       "Effects": [
@@ -196,17 +205,14 @@
       "Name": "Quickstep",
       "Cost": 0,
       "Tags": [
-        "skill"
+        "skill",
+        "rogue"
       ],
-      "Description": "Gain 3 block. Draw 1.",
+      "Description": "Gain 4 block.",
       "Effects": [
         {
           "Operation": "block",
-          "Amount": 3
-        },
-        {
-          "Operation": "draw",
-          "Amount": 1
+          "Amount": 4
         }
       ]
     },
@@ -216,7 +222,8 @@
       "Cost": 1,
       "Tags": [
         "attack",
-        "faith"
+        "faith",
+        "herald"
       ],
       "Description": "Deal 5 damage. Recover 2 vitality.",
       "Effects": [
@@ -236,7 +243,8 @@
       "Cost": 1,
       "Tags": [
         "skill",
-        "faith"
+        "faith",
+        "herald"
       ],
       "Description": "Recover 5 vitality. Gain 3 block.",
       "Effects": [
@@ -256,7 +264,8 @@
       "Cost": 1,
       "Tags": [
         "attack",
-        "magic"
+        "magic",
+        "starseer"
       ],
       "Description": "Deal 8 damage.",
       "Effects": [
@@ -272,7 +281,8 @@
       "Cost": 1,
       "Tags": [
         "skill",
-        "magic"
+        "magic",
+        "starseer"
       ],
       "Description": "Draw 2. Gain 2 block.",
       "Effects": [
@@ -292,7 +302,8 @@
       "Cost": 2,
       "Tags": [
         "attack",
-        "magic"
+        "magic",
+        "starseer"
       ],
       "Description": "Deal 18 damage.",
       "Effects": [
@@ -307,7 +318,8 @@
       "Name": "Bulwark",
       "Cost": 2,
       "Tags": [
-        "skill"
+        "skill",
+        "shared"
       ],
       "Description": "Gain 14 block.",
       "Effects": [
@@ -323,7 +335,8 @@
       "Cost": 2,
       "Tags": [
         "attack",
-        "poison"
+        "poison",
+        "rogue"
       ],
       "Description": "Deal 8 damage. Apply 5 poison.",
       "Effects": [
@@ -342,7 +355,8 @@
       "Name": "Feint",
       "Cost": 1,
       "Tags": [
-        "attack"
+        "attack",
+        "rogue"
       ],
       "Description": "Deal 4 damage. Weaken for 2 turns.",
       "Effects": [
@@ -362,7 +376,8 @@
       "Cost": 1,
       "Tags": [
         "skill",
-        "faith"
+        "faith",
+        "herald"
       ],
       "Description": "Recover 8 vitality.",
       "Effects": [
@@ -377,7 +392,8 @@
       "Name": "Second Wind",
       "Cost": 0,
       "Tags": [
-        "skill"
+        "skill",
+        "shared"
       ],
       "Description": "Gain 1 energy.",
       "Effects": [
@@ -393,7 +409,8 @@
       "Cost": 1,
       "Tags": [
         "attack",
-        "skill"
+        "skill",
+        "shared"
       ],
       "Description": "Deal 5 damage. Gain 5 block.",
       "Effects": [
@@ -406,90 +423,246 @@
           "Amount": 5
         }
       ]
+    },
+    {
+      "Id": "bloodrush",
+      "Name": "Bloodrush",
+      "Cost": 1,
+      "Tags": [
+        "attack",
+        "reaver"
+      ],
+      "Description": "Deal 4 damage. Gain 1 strength.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 4
+        },
+        {
+          "Operation": "strength",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "sunder",
+      "Name": "Sundering Blow",
+      "Cost": 2,
+      "Tags": [
+        "attack",
+        "reaver"
+      ],
+      "Description": "Deal 12 damage. Weaken for 1 turns.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 12
+        },
+        {
+          "Operation": "weak",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "smokeveil",
+      "Name": "Smoke Veil",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "rogue"
+      ],
+      "Description": "Gain 7 block. Weaken for 1 turns.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 7
+        },
+        {
+          "Operation": "weak",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "sunward",
+      "Name": "Sunward Strike",
+      "Cost": 2,
+      "Tags": [
+        "attack",
+        "faith",
+        "herald"
+      ],
+      "Description": "Deal 8 damage. Gain 8 block.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 8
+        },
+        {
+          "Operation": "block",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "Id": "benediction",
+      "Name": "Benediction",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "faith",
+        "herald"
+      ],
+      "Description": "Recover 3 vitality. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "heal",
+          "Amount": 3
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "constellation",
+      "Name": "Constellation",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "magic",
+        "starseer"
+      ],
+      "Description": "Gain 6 block. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 6
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "prismLance",
+      "Name": "Prism Lance",
+      "Cost": 2,
+      "Tags": [
+        "attack",
+        "magic",
+        "starseer"
+      ],
+      "Description": "Deal 5 damage. Deal 5 damage.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 5
+        },
+        {
+          "Operation": "damage",
+          "Amount": 5
+        }
+      ]
     }
   ],
   "Heroes": [
     {
       "Id": "reaver",
       "Name": "Reaver",
-      "Description": "Build strength. Break their guard.",
+      "Description": "Build strength, then commit to heavy attacks. Class gear rewards replacing basic strikes.",
       "Art": "reaver",
       "Health": 70,
       "Deck": [
         "strike",
         "strike",
-        "strike",
-        "defend",
         "defend",
         "defend",
         "cleave",
+        "cleave",
+        "rage",
         "rage"
       ],
       "Tags": [
         "hero",
+        "reaver"
+      ],
+      "RewardTags": [
         "reaver"
       ]
     },
     {
       "Id": "rogue",
       "Name": "Rogue",
-      "Description": "Poison persists. Stay one step ahead.",
+      "Description": "Stack poison, weaken attacks and block while poison works. Quickstep costs no energy but does not draw.",
       "Art": "rogue",
       "Health": 60,
       "Deck": [
         "strike",
         "strike",
-        "strike",
-        "defend",
         "defend",
         "defend",
         "venom",
-        "quickstep"
+        "venom",
+        "quickstep",
+        "feint"
       ],
       "Tags": [
         "hero",
+        "rogue"
+      ],
+      "RewardTags": [
         "rogue"
       ]
     },
     {
       "Id": "herald",
       "Name": "Herald",
-      "Description": "Recover through faith. Outlast the dark.",
+      "Description": "Mix faith attacks, healing and protection. Healing gear improves faith cards, not flasks.",
       "Art": "herald",
       "Health": 64,
       "Deck": [
         "strike",
-        "strike",
-        "strike",
-        "defend",
         "defend",
         "defend",
         "smite",
-        "prayer"
+        "smite",
+        "prayer",
+        "prayer",
+        "warding"
       ],
       "Tags": [
         "hero",
+        "herald"
+      ],
+      "RewardTags": [
         "herald"
       ]
     },
     {
       "Id": "starseer",
       "Name": "Starseer",
-      "Description": "Draw your answers. Call down the stars.",
+      "Description": "Draw toward powerful magic. Repeated damage effects each benefit from matching equipment.",
       "Art": "starseer",
       "Health": 56,
       "Deck": [
         "strike",
-        "strike",
-        "strike",
-        "defend",
         "defend",
         "defend",
         "starbolt",
-        "insight"
+        "starbolt",
+        "insight",
+        "insight",
+        "meteor"
       ],
       "Tags": [
         "hero",
+        "starseer"
+      ],
+      "RewardTags": [
         "starseer"
       ]
     }
@@ -884,7 +1057,7 @@
       "Art": "reaver_idle",
       "Operation": "damage",
       "Amount": 2,
-      "Price": 30,
+      "Price": 40,
       "RequiredTag": "attack",
       "Tags": [
         "weapon"
@@ -897,7 +1070,7 @@
       "Art": "reaver_idle",
       "Operation": "block",
       "Amount": 2,
-      "Price": 30,
+      "Price": 35,
       "RequiredTag": "skill",
       "Tags": [
         "charm"
@@ -910,7 +1083,7 @@
       "Art": "reaver_idle",
       "Operation": "health",
       "Amount": 16,
-      "Price": 40,
+      "Price": 50,
       "RequiredTag": "hero",
       "Tags": [
         "charm"
@@ -923,7 +1096,7 @@
       "Art": "reaver_idle",
       "Operation": "damage",
       "Amount": 4,
-      "Price": 35,
+      "Price": 55,
       "RequiredTag": "magic",
       "Tags": [
         "charm"
@@ -936,7 +1109,7 @@
       "Art": "reaver_idle",
       "Operation": "health",
       "Amount": 12,
-      "Price": 30,
+      "Price": 35,
       "RequiredTag": "hero",
       "Tags": [
         "armor"
@@ -949,10 +1122,49 @@
       "Art": "reaver_idle",
       "Operation": "damage",
       "Amount": 3,
-      "Price": 60,
+      "Price": 75,
       "RequiredTag": "attack",
       "Tags": [
         "weapon"
+      ]
+    },
+    {
+      "Id": "rageBand",
+      "Name": "Rage Band",
+      "Description": "Reaver card damage effects deal 3 extra damage. Basic Strike is not a Reaver card.",
+      "Art": "reaver_idle",
+      "Operation": "damage",
+      "Amount": 3,
+      "Price": 45,
+      "RequiredTag": "reaver",
+      "Tags": [
+        "charm"
+      ]
+    },
+    {
+      "Id": "venomVial",
+      "Name": "Venom Vial",
+      "Description": "Poison cards apply 1 extra poison per poison effect.",
+      "Art": "rogue_idle",
+      "Operation": "poison",
+      "Amount": 1,
+      "Price": 45,
+      "RequiredTag": "poison",
+      "Tags": [
+        "charm"
+      ]
+    },
+    {
+      "Id": "sunwardSeal",
+      "Name": "Sunward Seal",
+      "Description": "Faith cards restore 2 extra vitality per healing effect. Flasks are unchanged.",
+      "Art": "herald_idle",
+      "Operation": "heal",
+      "Amount": 2,
+      "Price": 45,
+      "RequiredTag": "faith",
+      "Tags": [
+        "charm"
       ]
     }
   ],
@@ -972,7 +1184,14 @@
     "feint",
     "renewal",
     "tempo",
-    "warding"
+    "warding",
+    "bloodrush",
+    "sunder",
+    "smokeveil",
+    "sunward",
+    "benediction",
+    "constellation",
+    "prismLance"
   ],
   "Audio": {
     "Volume": 0.3,
@@ -981,5 +1200,6 @@
     "GuardFrequency": 360,
     "HitFrequency": 90,
     "RewardFrequency": 620
-  }
+  },
+  "CommonRewardTag": "shared"
 }

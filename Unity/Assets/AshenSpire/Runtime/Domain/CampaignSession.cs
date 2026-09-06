@@ -54,6 +54,8 @@ namespace AshenSpire.Domain
                     amount += (State.Phase == RunPhase.Combat ? State.Strength : 0) + Bonus("damage", card.Tags);
                 if (effect.Operation == "block")
                     amount += Bonus("block", card.Tags);
+                if (effect.Operation == "poison" || effect.Operation == "heal")
+                    amount += Bonus(effect.Operation, card.Tags);
                 switch (effect.Operation)
                 {
                     case "damage":
@@ -96,10 +98,10 @@ namespace AshenSpire.Domain
                 ["damage"] = amount => Damage(amount + State.Strength + Bonus("damage", _playing.Tags)),
                 ["block"] = amount => State.Block += amount + Bonus("block", _playing.Tags),
                 ["draw"] = DrawCards,
-                ["poison"] = amount => State.EnemyPoison += amount,
+                ["poison"] = amount => State.EnemyPoison += amount + Bonus("poison", _playing.Tags),
                 ["weak"] = amount => State.Weak += amount,
                 ["strength"] = amount => State.Strength += amount,
-                ["heal"] = amount => State.Health = Math.Min(State.MaxHealth, State.Health + amount),
+                ["heal"] = amount => State.Health = Math.Min(State.MaxHealth, State.Health + amount + Bonus("heal", _playing.Tags)),
                 ["energy"] = amount => State.Energy = Math.Min(20, State.Energy + amount)
             };
         }
@@ -152,6 +154,7 @@ namespace AshenSpire.Domain
                 var block = State.Block;
                 var hand = State.Hand.Count;
                 var energy = State.Energy;
+                var poison = State.EnemyPoison;
                 _effects[effect.Operation](effect.Amount);
                 switch (effect.Operation)
                 {
@@ -160,7 +163,7 @@ namespace AshenSpire.Domain
                     case "draw": results.Add((State.Hand.Count - hand) + " cards drawn"); break;
                     case "heal": results.Add((State.Health - health) + " vitality restored"); break;
                     case "energy": results.Add((State.Energy - energy) + " energy gained"); break;
-                    case "poison": results.Add(effect.Amount + " enemy poison added"); break;
+                    case "poison": results.Add((State.EnemyPoison - poison) + " enemy poison added"); break;
                     case "weak": results.Add(effect.Amount + " enemy weak turns added"); break;
                     case "strength": results.Add(effect.Amount + " strength gained"); break;
                 }
@@ -253,8 +256,19 @@ namespace AshenSpire.Domain
             State.Cinders += Enemy.Reward;
             State.FoesDefeated++;
             var choices = new List<string>(_content.RewardCards);
-            Shuffle(choices);
-            State.Rewards = choices.Take(3).ToList();
+            if (string.IsNullOrEmpty(_content.CommonRewardTag))
+            {
+                Shuffle(choices);
+                State.Rewards = choices.Take(3).ToList();
+            }
+            else
+            {
+                var affinity = choices.Where(id => Card(id).Tags.Intersect(Hero.RewardTags).Any()).ToList();
+                var shared = choices.Where(id => Card(id).HasTag(_content.CommonRewardTag)).ToList();
+                Shuffle(affinity);
+                Shuffle(shared);
+                State.Rewards = affinity.Take(2).Concat(shared.Take(1)).ToList();
+            }
             return true;
         }
         public bool Reward(string id)
@@ -293,6 +307,11 @@ namespace AshenSpire.Domain
             Notify("Equipped " + item.Name + ".");
             return true;
         }
+        public int MatchingCards(EquipmentDefinition item) => State.Deck.Count(id =>
+            Card(id).HasTag(item.RequiredTag) && Card(id).Effects.Any(effect => effect.Operation == item.Operation));
+        public string RewardCategory(CardDefinition card) =>
+            !string.IsNullOrEmpty(_content.CommonRewardTag) && card.HasTag(_content.CommonRewardTag) ? "Shared" :
+            Hero.RewardTags != null && card.Tags.Intersect(Hero.RewardTags).Any() ? Hero.Name : "Cross-class";
         public bool Rest()
         {
             if (State.Phase != RunPhase.Map || State.Rested || State.Cinders < 15 || State.Health == State.MaxHealth)
