@@ -39,13 +39,14 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-      - name: Exercise the packaged game with real pointer input
-        run: |
-          python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
-          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
-          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
+      - name: Start the packaged player server
+        run: python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
       - name: Exercise dense mobile layout with touch input
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout
+      - name: Exercise the packaged game with real pointer input
+        run: |
+          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
+          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
       - uses: actions/upload-artifact@v4
         if: always()
         with:

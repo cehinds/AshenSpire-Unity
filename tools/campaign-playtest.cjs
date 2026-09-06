@@ -19,6 +19,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  }
  async function scroll(distance){
+  const beforeScroll=layout;
   const box=await page.locator('#unity-canvas').boundingBox();
   if(!touch){await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
   const contentHeight=box.height-(controls?.Controls.some(c=>c.Id==='end-turn'||c.Id==='inspection-back')?110:0);
@@ -26,6 +27,9 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start}]});
   for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await page.waitForTimeout(20);}
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  // On slow software renderers, the browser can finish dispatching a swipe before
+  // Unity processes it. Start the settling window only after its first report.
+  await until(()=>layout>beforeScroll,'Unity received touch scroll');
   // ScrollView inertia can continue after release. Use stable observed geometry before
   // choosing the next tap, rather than accepting a scroll report as a button response.
   let signature=JSON.stringify(controls),stableSince=Date.now();
