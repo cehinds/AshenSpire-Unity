@@ -6,15 +6,15 @@
   "landscapeViewport": "844x390",
   "commandsChangedState": true,
   "resumeStateMatches": true,
-  "resumePixelsMatch": false,
+  "resumePixelsMatch": true,
   "savedState": {
     "SchemaVersion": 1,
-    "RandomState": 4268624653,
-    "Health": 58,
+    "RandomState": 1570940258,
+    "Health": 53,
     "MaxHealth": 60,
     "Energy": 3,
     "Block": 0,
-    "EnemyHealth": 24,
+    "EnemyHealth": 18,
     "Encounter": 0,
     "Cinders": 0,
     "Turn": 2,
@@ -31,15 +31,15 @@
     ],
     "Draw": [
       "defend",
-      "strike",
+      "defend",
       "strike"
     ],
     "Hand": [
+      "technique",
+      "strike",
       "defend",
       "strike",
-      "strike",
-      "technique",
-      "defend"
+      "strike"
     ],
     "Discard": []
   },

@@ -1,18 +1,18 @@
 {
   "version": "0.1.0",
   "stage": "Early Unity slice",
-  "unityVersion": "6000.4.10f1",
-  "sourceCommit": "f32556a54286221c557127067ac5afefdea4dbfa",
-  "sourceDigest": "dd58b32a4f51f947eef4921369ac06024b978e0e85ecc4b7b42280cde5787b55",
-  "builtAt": "2026-09-06T00:24:46.8598148Z",
+  "unityVersion": "6000.6.0f1",
+  "sourceCommit": "9c44546dccabe2b4c507cef5dc86e8deb1711ff1",
+  "sourceDigest": "9a225ff53bb1e0b095b8a6c121eb49e909f671531fe5b3a76aad9a7586be03f2",
+  "builtAt": "2026-09-06T01:21:18.5408972Z",
   "files": {
-    "Web/Build/Web.data": "677e76f1a7b4fd05c1508985d8b42b48f88d0a7cb12227f2266357ac12790d64",
-    "Web/Build/Web.framework.js": "d2dc83f0dbf5fe0c15b42e18c7156462627a09595461484a7f248498a7b5f02c",
-    "Web/Build/Web.loader.js": "96752f9ec85aeade097cf3d09b1153ab2e878a0e70b59017f3f28fba2cb07c75",
-    "Web/Build/Web.wasm": "4a2192fbaa2e909f5aa66d66c5c9536b6da6ff83db5056698712623e036d2359",
-    "Web/build-source.json": "923de6059ea6f98a9e9ddf38f7779e4efa14fd092a53823038ecaa8c5a968ac1",
+    "Web/Build/Web.data": "c7770deef5acf128114d182ffae5277e0a5a15321b0e439c2420bb70b08adb6a",
+    "Web/Build/Web.framework.js": "f01f1c0eab1aad78a600b76f8e43c390f4a188c82882a2e09efa2d475db12e54",
+    "Web/Build/Web.loader.js": "2b6f9607575f56821ba92fdd8ad6df85ef2a6eda13184b9704d47eb5de2d8733",
+    "Web/Build/Web.wasm": "bf46f4124b61620912287450f36cfeae9980138d8cdb10baf98ad41d3b1adcb2",
+    "Web/build-source.json": "e1eb97d0d0dd0857699d51935213c71eafc2ca9f49991a61b35515dda726bef2",
     "Web/index.html": "78637f1ae744db6fd5dde251ca5e40563888e39596279dec4e376ea85f142053",
-    "Web.zip": "fa13101c8316411a4fa10f6e09fa1ce69e2d2144c5c40deef63ecf10dcb35317",
-    "Windows.zip": "08e46731fc94e3e8d1d33f56f3d1b569fb955e3052e60e0a7e4c236a0b1bcee7"
+    "Web.zip": "4912833db738c97ac3f01a890163fb367268df7b1a9f078b1b7b94dd68d7268b",
+    "Windows.zip": "e36b694685bc6deef51f00eabaa891d8909ff3746ca0a26278c778f160d2f3e0"
   }
 }
