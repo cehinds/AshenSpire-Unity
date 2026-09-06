@@ -27,6 +27,8 @@ jobs:
         run: dotnet run --project UnityTests/Domain
       - name: Test authoring file transactions and asset validation
         run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
+      - name: Test displayed viewport sizing
+        run: dotnet run --project UnityTests/Viewport
       - name: Exercise fixed campaign policies
         run: |
           mkdir -p TestResults/Balance
@@ -42,6 +44,8 @@ jobs:
           python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
           node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
           node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
+      - name: Exercise dense mobile layout with touch input
+        run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -51,6 +55,7 @@ jobs:
             TestResults/Feedback
             TestResults/Authoring
             TestResults/Balance
+            TestResults/Mobile
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
