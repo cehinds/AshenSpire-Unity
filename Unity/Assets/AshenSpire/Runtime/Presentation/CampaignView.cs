@@ -370,7 +370,7 @@ namespace AshenSpire.Presentation
             _scroll = new ScrollView(ScrollViewMode.Vertical) { verticalScrollerVisibility = ScrollerVisibility.Hidden };
             _scroll.AddToClassList("scroll");
             _root.Add(_scroll);
-            _scroll.verticalScroller.valueChanged += _ => Report();
+            _scroll.verticalScroller.valueChanged += _ => Report(false);
             _body = new VisualElement();
             _body.AddToClassList("body");
             _scroll.Add(_body);
@@ -414,11 +414,11 @@ namespace AshenSpire.Presentation
         {
             public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
         }
-        private void Report()
+        private void Report(bool refreshTouchTargets = true)
         {
             // Screen construction and geometry changes both refresh controls, even when
             // diagnostics are disabled in a release/native player. No per-frame queries.
-            RefreshTouchTargets();
+            if (refreshTouchTargets) RefreshTouchTargets();
             if (!_diagnostics)
                 return;
             _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Concat(_root.Query<Toggle>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
