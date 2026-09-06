@@ -13,3 +13,15 @@ Enemy intent patterns cycle through attack, guard, charge and poison. Equipment 
 Campaign draw/discard/hand/RNG, hero, route, equipment, statuses and reward choices are saved in a checksummed per-channel record with a previous-record backup. Original JavaScript and Expedition.v1 saves are preserved; campaign saves use a separate key. Development browser output is a conventional static-hostable Unity export. Read-only diagnostics and the component gallery are limited to editor/local/dev; motion and sound preferences are available everywhere.
 
 Acceptance: all four classes can complete seeded campaigns; model tests cover illegal commands, rewards, equipment queries, poison order and save determinism; the packaged browser completes all nine encounters using pointer commands, purchases gear and resumes exactly; Web/Windows/Android artifacts report their actual validation; CSV import rejects invalid data before source replacement; screenshots show current output. Physical-device and iOS coverage must be reported separately. Broader architecture and delivery intentions remain in Unity-Build-Brief.md.
+
+## Class identity slice — 0.4
+
+New expeditions receive authored signature-heavy eight-card loadouts. Reaver builds strength into heavy attacks; Rogue combines poison and weakness with defensive tempo; Herald sustains through faith attacks and protection; Starseer uses draw and multi-effect magic. Existing saved decks are retained.
+
+A configured CommonRewardTag and each hero's RewardTags partition the existing RewardCards catalog. New rewards select two distinct affinity cards and one shared card, deterministically using saved RNG; affinity and shared pools must be disjoint and validated. Saved pending reward IDs are retained without rerolling or being rejected for belonging to an older pool. Definitions without affinity configuration retain the legacy three-card random selection.
+
+Poison and heal effects can receive equipment bonuses through the same RequiredTag query used for damage/block. Descriptions and feedback use those bonuses. Gear remains unique, purchased on the map, with no slot restriction. Existing items and resource values are preserved in saves; updated content tuning applies when future commands resolve. The forge reports how many current deck cards contain the relevant tagged effect.
+
+Quickstep remains free but provides block without draw, avoiding free replacement chains from repeated copies. Other added cards use the existing eight effect primitives. Shared gear becomes more expensive relative to narrow affinity gear; no currency or resource mechanic is added.
+
+Acceptance: no duplicate or off-affinity new rewards; deterministic offers survive save/resume; old pending offers remain claimable; poison/heal modifiers match tags and actual results; unrelated cards receive no bonus; starter identities and class-specific reward choices are visible in browser play; diagnostic policy runs report wins, turns and equipment choices without equating wins with fun. Authoring validation and available target builds pass before dev publication.

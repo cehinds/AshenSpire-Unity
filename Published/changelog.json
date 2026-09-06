@@ -1,26 +1,30 @@
 {
   "Added": [
-    "Tap-accessible enemy intent and combat status explanations using current values.",
-    "Grouped draw/discard inspection with hidden draw order and empty-pile messages.",
-    "A bounded recent-action history with actual damage, blocked damage, healing and poison feedback."
+    "Seven class-focused cards bring the catalog to 25, with strength, poison, faith and magic strategies.",
+    "Each new reward offers two class cards and one shared card; labels show the category and copies already owned.",
+    "Rage Band, Venom Vial and Sunward Seal bring equipment to nine items. Poison and healing gear apply through card tags."
   ],
   "Changed": [
-    "Cards without enough energy remain inspectable; Play explains the required energy and stays disabled.",
-    "Inspection screens have a persistent return control and leave campaign state unchanged."
+    "New starter decks contain four or five affinity cards instead of two signature cards.",
+    "Shared equipment costs more, and the forge shows how many cards in your current deck each item supports.",
+    "Quickstep grants four block without drawing; a free play now spends hand space.",
+    "Existing runs retain their saved decks and pending rewards. Updated card and equipment tuning applies to future actions."
   ],
   "Fixed": [
-    "Flask feedback now reports actual healing when near maximum vitality.",
-    "Weakness is explicitly labeled as an enemy status with its decay timing."
+    "Hero CSV imports retain consistent line endings and reject invalid affinity references without replacing content.",
+    "The content editor now explains that changed definitions require restarting Play mode or rebuilding/reloading the player."
   ],
   "KnownIssues": [
     "Physical Android/iOS devices and graphical Windows play remain unverified; Android APK is for testing.",
     "Adapted campaign does not include every mechanic or content item from the original browser game.",
     "Two inherited browser CI inventory failures remain documented and waived for this work.",
-    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds."
+    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds.",
+    "Fixed-policy tests show faster Starseer runs and slower Herald runs; class balance still needs player feedback."
   ],
   "WhatToTest": [
-    "Tap intent and statuses, open both piles repeatedly, and return to combat.",
-    "Select an unaffordable card, read its description, then tap it again to cancel.",
-    "Read Recent actions after a blocked attack, poison tick or healing; reload and confirm campaign progress resumes."
+    "Start each wanderer and try a class reward instead of always resting.",
+    "Compare class gear with general damage/block gear; check the supported-card count before buying.",
+    "Try poison gear on Venom Edge and healing gear on Golden Prayer; flasks should be unaffected.",
+    "Continue an existing expedition and confirm its deck and pending rewards remain intact."
   ]
 }

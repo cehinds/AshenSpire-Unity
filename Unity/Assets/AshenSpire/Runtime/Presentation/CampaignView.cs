@@ -80,6 +80,7 @@ namespace AshenSpire.Presentation
                 panel.Add(portrait);
                 panel.Add(Text(hero.Name + " · " + hero.Health + " vitality", "node-title"));
                 panel.Add(Text(hero.Description, "lead"));
+                panel.Add(Text("Starting deck · " + string.Join(", ", hero.Deck.GroupBy(id => id).Select(group => group.Count() + " × " + content.Cards.First(card => card.Id == group.Key).Name)), "caption"));
                 var selectedHero = hero;
                 panel.Add(Control("hero-" + hero.Id, "Begin as " + hero.Name, () =>
                 {
@@ -248,6 +249,7 @@ namespace AshenSpire.Presentation
             foreach (var id in session.State.Rewards)
             {
                 var card = session.Card(id);
+                _body.Add(Text(session.RewardCategory(card) + " card · " + session.State.Deck.Count(owned => owned == id) + " already in deck", "caption"));
                 AddButton("reward-" + id, card.Name + " · " + card.Cost + " energy\n" + session.Describe(card), () => RewardRequested?.Invoke(id));
             }
             AddButton("reward-rest", "Rest · recover " + session.Content.RestHealing + " vitality", () => RewardRequested?.Invoke(null), "primary");
@@ -268,7 +270,8 @@ namespace AshenSpire.Presentation
             foreach (var item in session.Content.Equipment)
             {
                 var owned = session.State.Items.Contains(item.Id);
-                var control = AddButton("buy-" + item.Id, item.Name + " · " + (owned ? "EQUIPPED" : item.Price + " cinders") + "\n" + item.Description, () => BuyRequested?.Invoke(item.Id));
+                var relevance = item.Operation == "health" ? (session.Hero.Tags.Contains(item.RequiredTag) ? "Applies to your wanderer." : "No benefit for this wanderer.") : "Supports " + session.MatchingCards(item) + " of " + session.State.Deck.Count + " cards in your deck.";
+                var control = AddButton("buy-" + item.Id, item.Name + " · " + (owned ? "EQUIPPED" : item.Price + " cinders") + "\n" + item.Description + "\n" + relevance, () => BuyRequested?.Invoke(item.Id));
                 control.SetEnabled(!owned && item.Price <= session.State.Cinders);
             }
             AddButton("back", "Return to the path", () => Render(session), "primary");
@@ -413,7 +416,7 @@ namespace AshenSpire.Presentation
         {
             if (!_diagnostics)
                 return;
-            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
+            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
         }
     }
 }

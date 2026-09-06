@@ -25,6 +25,10 @@ jobs:
           node-version: '22'
       - name: Test deterministic Unity rules
         run: dotnet run --project UnityTests/Domain
+      - name: Exercise fixed campaign policies
+        run: |
+          mkdir -p TestResults/Balance
+          dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
       - name: Install browser test tooling
@@ -39,7 +43,9 @@ jobs:
         if: always()
         with:
           name: browser-evidence
-          path: TestResults/Browser
+          path: |
+            TestResults/Browser
+            TestResults/Balance
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'

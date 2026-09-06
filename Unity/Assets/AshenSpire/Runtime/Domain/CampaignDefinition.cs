@@ -24,6 +24,7 @@ namespace AshenSpire.Domain
         public EncounterDefinition[] Encounters;
         public EquipmentDefinition[] Equipment;
         public string[] RewardCards;
+        public string CommonRewardTag;
 
         public void Validate()
         {
@@ -87,13 +88,31 @@ namespace AshenSpire.Domain
             Ids(Equipment.Select(x => x.Id), "Equipment");
             foreach (var item in Equipment)
             {
-                Require(item.Price >= 0 && item.Amount >= 0 && new[] { "damage", "block", "health" }.Contains(item.Operation), "Equipment/" + item.Id + ": invalid price or operation.");
+                Require(item.Price >= 0 && item.Amount >= 0 && new[] { "damage", "block", "health", "poison", "heal" }.Contains(item.Operation), "Equipment/" + item.Id + ": invalid price or operation.");
                 CheckTags(item.Tags, "Equipment/" + item.Id + "/Tags");
                 Require(tags.Contains(item.RequiredTag), "Equipment/" + item.Id + "/RequiredTag: unknown tag.");
             }
             Require(RewardCards.Length >= 3 && RewardCards.Distinct().Count() == RewardCards.Length, "RewardCards: at least three unique IDs required.");
             foreach (var id in RewardCards)
                 Require(cards.Contains(id), "RewardCards: missing card " + id);
+            if (!string.IsNullOrEmpty(CommonRewardTag))
+            {
+                Require(tags.Contains(CommonRewardTag), "CommonRewardTag: unknown tag.");
+                var rewards = Cards.Where(card => RewardCards.Contains(card.Id)).ToArray();
+                var shared = rewards.Where(card => card.HasTag(CommonRewardTag)).ToArray();
+                Require(shared.Length > 0, "RewardCards: shared pool needs at least one card.");
+                foreach (var hero in Heroes)
+                {
+                    CheckTags(hero.RewardTags, "Heroes/" + hero.Id + "/RewardTags");
+                    Require(hero.RewardTags.Length > 0, "Heroes/" + hero.Id + "/RewardTags: at least one tag required.");
+                    var affinity = rewards.Where(card => card.Tags.Intersect(hero.RewardTags).Any()).ToArray();
+                    Require(affinity.Length >= 2, "Heroes/" + hero.Id + "/RewardTags: at least two matching reward cards required.");
+                    Require(!affinity.Any(card => card.HasTag(CommonRewardTag)), "Heroes/" + hero.Id + "/RewardTags: affinity and shared pools must not overlap.");
+                }
+                Require(rewards.All(card => card.HasTag(CommonRewardTag) || Heroes.Any(hero => card.Tags.Intersect(hero.RewardTags).Any())), "RewardCards: every card must belong to a shared or hero affinity pool.");
+            }
+            else
+                Require(Heroes.All(hero => hero.RewardTags == null || hero.RewardTags.Length == 0), "CommonRewardTag: required when heroes configure RewardTags.");
         }
     }
     [Serializable]
@@ -110,6 +129,7 @@ namespace AshenSpire.Domain
     public sealed class HeroDefinition
     {
         public string Id; public string Name; public string Description; public string Art; public int Health; public string[] Deck; public string[] Tags;
+        public string[] RewardTags = Array.Empty<string>();
     }
     [Serializable]
     public sealed class FoeDefinition

@@ -23,7 +23,7 @@ for(const channel of channels){
   const commit=git(['rev-parse',ref]).trim();
   let changes={Added:[],Changed:[],Fixed:[],KnownIssues:[],WhatToTest:[]};
   try{changes=JSON.parse(git(['show',`${ref}:Published/changelog.json`]));}catch{}
-  const screenshots=paths.filter(p=>/^Published\/Screenshots\/.*\.png$/.test(p)||/^Published\/ClassEvidence\/[^/]+\/(04-phone-combat|15-campaign-defeat)\.png$/.test(p));
+  const screenshots=paths.filter(p=>/^Published\/Screenshots\/.*\.png$/.test(p)||/^Published\/ClassEvidence\/[^/]+\/(04-phone-combat|10-reward-0|11-next-map|15-campaign-defeat)\.png$/.test(p));
   const windowsDownload=paths.includes('Published/Windows.zip')?'<a class="button secondary" href="Windows.zip" download>Download Windows player</a>':'';
   body+=`<p><span class="badge">${escape(manifest.stage)} · ${escape(manifest.version)}</span></p><p class="muted">Mobile-first sprite deckbuilding: four wanderers, three acts, equipment and a complete expedition.</p><a class="button" href="Web/?build=${escape(manifest.sourceDigest)}">Play ${channel}</a><a class="button secondary" href="Web.zip" download>Download web build</a><p>Built ${escape(manifest.builtAt)} · Unity ${escape(manifest.unityVersion)}</p><p class="muted">Channel commit <a href="${repo}/commit/${commit}"><code>${commit.slice(0,12)}</code></a> · Source <code>${escape(manifest.sourceCommit.slice(0,12))}</code></p>`;
   body+=windowsDownload;
