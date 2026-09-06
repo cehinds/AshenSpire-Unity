@@ -100,7 +100,7 @@ function evidence(success){return {success,checks,visibility,interruptions,feedb
  if(seedOnly){
   await selectAll();await shot('seed-02-selected');
   await typeDigits('42949672950');
-  const oldRevision=revision;await click('hero-reaver');
+  const oldRevision=revision;await tap(await point('hero-reaver'));await sleep(500);
   record('out of range seed stays on hero screen',revision===oldRevision&&controls.Controls.some(x=>x.Id==='seed'));
   await shot('seed-03-invalid');
   await tap(await point('seed'));await selectAll();await typeDigits('240986');

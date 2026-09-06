@@ -44,9 +44,11 @@ Label { white-space: normal; }
 .campaign-stage > .fighter { height: 150px; }
 .portrait { height: 120px; width: 100%; }
 .seed-field { min-height: 48px; margin: 12px 0; font-size: 15px; }
+.seed-field > .unity-base-field__label { min-width: 0; max-width: 48%; flex-shrink: 1; white-space: normal; }
 /* Seed entry: keep the editable child readable in the runtime theme.
    Change this scoped palette for input, focus, caret and selection together. */
 .seed-field .unity-base-text-field__input {
+    min-width: 48%;
     background-color: rgb(25,30,35);
     color: rgb(231,224,210);
     border-width: 2px;
