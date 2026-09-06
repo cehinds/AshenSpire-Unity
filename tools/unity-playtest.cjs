@@ -13,8 +13,15 @@ let activeBrowser;
     const page = await browser.newPage({viewport: {width: 390, height: 844}, deviceScaleFactor: 1});
     const errors = [];
     let uiReady = false;
+    const states = [];
     page.on('pageerror', error => errors.push(error.message));
-    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); if (message.text().includes('ASHENSPIRE_UI_READY')) uiReady = true; });
+    page.on('console', message => {
+        const text = message.text();
+        if (message.type() === 'error') errors.push(text);
+        if (text.includes('ASHENSPIRE_UI_READY')) uiReady = true;
+        const marker = text.indexOf('ASHENSPIRE_STATE ');
+        if (marker >= 0) states.push(JSON.parse(text.slice(marker + 'ASHENSPIRE_STATE '.length)));
+    });
     const url = process.argv[2] || 'http://127.0.0.1:8787';
     async function ready() {
         await page.waitForFunction(() => !!window.unityInstance, null, {timeout: 60000});
@@ -22,27 +29,29 @@ let activeBrowser;
         if (!uiReady) throw new Error('Unity did not report an initialized player UI.');
         await page.waitForTimeout(700);
     }
-    async function shot(name) { await page.mouse.move(0, 0); await page.waitForTimeout(350); return page.screenshot({path: path.join(output, name + '.png')}); }
+    async function shot(name) { await page.waitForTimeout(200); await page.mouse.move(0, 0); await page.waitForTimeout(350); return page.screenshot({path: path.join(output, name + '.png')}); }
     await page.goto(url); await ready();
     await shot('01-phone-title');
-    await page.mouse.click(195, 490); await page.waitForTimeout(300);
+    await page.mouse.click(195, 490, {delay: 100}); await page.waitForTimeout(300);
     await shot('02-phone-map');
-    await page.mouse.click(195, 415); await page.waitForTimeout(300);
-    await shot('03-phone-combat');
-    await page.mouse.click(70, 580); await shot('04-phone-card-selected');
-    await page.mouse.click(95, 784); await shot('05-phone-card-played');
-    await page.mouse.click(290, 784); const before = await shot('06-phone-next-turn');
+    await page.mouse.click(195, 415, {delay: 100}); await page.waitForTimeout(300);
+    await shot('03-phone-combat'); const initialCombat = states.at(-1);
+    await page.mouse.click(70, 580, {delay: 100}); await shot('04-phone-card-selected');
+    await page.mouse.click(95, 784, {delay: 100}); await shot('05-phone-card-played'); const afterPlay = states.at(-1);
+    await page.mouse.click(290, 784, {delay: 100}); const before = await shot('06-phone-next-turn'); const savedState = states.at(-1);
     uiReady = false; await page.reload(); await ready(); await shot('07-phone-resume-menu');
-    await page.mouse.click(195, 550); const after = await shot('08-phone-resumed-combat');
+    await page.mouse.click(195, 550, {delay: 100}); const after = await shot('08-phone-resumed-combat');
     const resumePixelsMatch = before.equals(after);
+    const resumeStateMatches = JSON.stringify(savedState) === JSON.stringify(states.at(-1)) && !!savedState;
+    const commandsChangedState = initialCombat?.Phase === 1 && afterPlay?.Energy < initialCombat.Energy && savedState?.Turn === initialCombat.Turn + 1;
     await page.setViewportSize({width: 1280, height: 900}); await page.waitForTimeout(500);
     await shot('09-desktop-combat');
     await page.setViewportSize({width: 844, height: 390}); await page.waitForTimeout(500);
     await shot('10-landscape-combat');
-    const report = {url, scenarios: 10, phoneViewport: '390x844', desktopViewport: '1280x900', landscapeViewport: '844x390', resumePixelsMatch, errors,
+    const report = {url, scenarios: 10, phoneViewport: '390x844', desktopViewport: '1280x900', landscapeViewport: '844x390', commandsChangedState, resumeStateMatches, resumePixelsMatch, savedState, errors,
         limits: ['Desktop browser with phone-sized viewport; no physical phone validation.', 'Pointer input exercised; device touch gestures and native Android/iOS not tested.', 'Reward and full-run victory covered by domain simulation, not this browser pass.']};
     fs.writeFileSync(path.join(output, 'playtest.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
     await browser.close();
-    if (errors.length || !resumePixelsMatch) process.exitCode = 1;
+    if (errors.length || !resumeStateMatches || !commandsChangedState) process.exitCode = 1;
 })().catch(async error => { console.error(error); if (activeBrowser) await activeBrowser.close(); process.exitCode = 1; });

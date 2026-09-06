@@ -28,6 +28,7 @@ namespace AshenSpire.Application
         private ExpeditionView _view;
         private string _saveKey;
         private int _screenHeight;
+        private bool _diagnosticsEnabled;
 
         public void Configure(PanelSettings settings) => _panelSettings = settings;
 
@@ -51,6 +52,7 @@ namespace AshenSpire.Application
                         if (segment == "dev" || segment == "test" || segment == "release" || segment == "main") { path = segment; break; }
                 }
                 _saveKey = "AshenSpire.Unity.Expedition.v1." + path;
+                _diagnosticsEnabled = path == "dev" || path == "editor" || (uri != null && uri.IsLoopback);
                 _view = new ExpeditionView(document.rootVisualElement);
                 _view.StartRequested += StartRun; _view.ContinueRequested += Resume;
                 _view.EnterRequested += Enter; _view.CardRequested += Play;
@@ -81,7 +83,13 @@ namespace AshenSpire.Application
         private void EndTurn() => _session?.EndTurn();
         private void Reward(string id) => _session?.ClaimReward(id);
         private void Menu() { Save(); _view.ShowTitle(PlayerPrefs.HasKey(_saveKey)); }
-        private void Refresh() { Save(); _view.Render(_session); }
+        private void Refresh()
+        {
+            Save(); _view.Render(_session);
+            // Read-only local/dev diagnostics let tests verify real commands and resume,
+            // independently of harmless pixel rounding differences after a reload.
+            if (_diagnosticsEnabled) Debug.Log("ASHENSPIRE_STATE " + JsonUtility.ToJson(_session.State));
+        }
         private void Save()
         {
             if (_session == null || string.IsNullOrEmpty(_saveKey)) return;
