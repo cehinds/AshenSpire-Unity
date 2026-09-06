@@ -1,0 +1,27 @@
+{
+    "Passed": 21,
+    "SourceHash": "ee0dbbdbf43d2bb2b61b913b8fcfaf7c11692edba9c2b54485d313520d28e8c1",
+    "Checks": [
+        "Cards has a structured serialized table binding",
+        "Heroes has a structured serialized table binding",
+        "Foes has a structured serialized table binding",
+        "Encounters has a structured serialized table binding",
+        "Equipment has a structured serialized table binding",
+        "Tags has a structured serialized table binding",
+        "FeedbackCues has a structured serialized table binding",
+        "structured nested fields apply to the draft",
+        "effect and sound settings share the same draft",
+        "Undo restores nested fields and settings",
+        "Redo restores structured edits",
+        "duplicate has a readable unique ID",
+        "Undo removes duplicate",
+        "Redo restores duplicate",
+        "duplicates do not share nested effect objects",
+        "repeated duplicate selects the next unused ID",
+        "Undo restores a removed row",
+        "feedback cues support the same record operations",
+        "reward enrollment is unique and remains valid for copied class cards",
+        "Unity serialization preserves unsaved draft and disk baseline through recovery",
+        "Editor checks preserve authoritative source bytes"
+    ]
+}

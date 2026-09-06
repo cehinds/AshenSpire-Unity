@@ -1,0 +1,272 @@
+{
+  "url": "http://127.0.0.1:55375/",
+  "feedbackEvents": [
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.805435180664062
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.565329074859619
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.049064636230469
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.580320358276367
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "attack\n",
+    "hit\n",
+    "guard\n",
+    "attack\n",
+    "attack\n",
+    "reward\n"
+  ],
+  "viewportEvidence": [
+    {
+      "width": 320,
+      "height": 740,
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 6
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "panelWidth": 415.87677001953125,
+      "panelHeight": 899.9999389648438,
+      "layout": 23
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "panelWidth": 1280,
+      "panelHeight": 900,
+      "layout": 54
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 55
+    }
+  ],
+  "firstLoadMilliseconds": 1692,
+  "downloadedResourceBytes": 34291799,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "upgradedFrom": "LOCAL · UNITY 0.5.0",
+  "affinityRewardTaken": true,
+  "rewardOffersChecked": 1,
+  "inspectionPreservesState": true,
+  "pileGroupingChecked": true,
+  "narrowTouchTargetsChecked": true,
+  "unaffordableInspected": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 1221170944,
+    "RandomState": 2831170181,
+    "Health": 63,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 2,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 2,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage",
+      "sunder"
+    ],
+    "Draw": [
+      "cleave",
+      "rage"
+    ],
+    "Hand": [
+      "defend",
+      "cleave",
+      "defend"
+    ],
+    "Discard": [
+      "rage",
+      "strike",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "18-intent-details",
+    "19-status-details",
+    "20-empty-discard",
+    "21-draw-pile",
+    "05-card-selected",
+    "06-card-played",
+    "22-discard-pile",
+    "23-action-history",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "25-resumed-history",
+    "24-unaffordable-card",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}

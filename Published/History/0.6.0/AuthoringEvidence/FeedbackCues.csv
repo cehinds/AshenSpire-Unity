@@ -1,0 +1,9 @@
+Id,MatchTag,Poses,Milliseconds,Distance,Color,Frequency,EndFrequency,SoundDuration,Noise
+poison,poison,"[""guard"", ""attack1"", ""attack2"", ""idle""]",650,14.0,#ADDE83,540.0,120.0,0.28,0.65
+magic,magic,"[""guard"", ""attack1"", ""attack2"", ""idle""]",700,12.0,#A9C8FF,260.0,860.0,0.32,0.04
+faith,faith,"[""guard"", ""attack1"", ""guard"", ""idle""]",650,10.0,#FFE0A3,440.0,660.0,0.3,0.01
+attack,attack,"[""idle"", ""attack1"", ""attack2"", ""attack2"", ""idle""]",600,26.0,#FFAC79,180.0,65.0,0.2,0.4
+guard,skill,"[""idle"", ""guard"", ""guard"", ""idle""]",600,6.0,#A2DBE8,650.0,380.0,0.26,0.02
+hit,,"[""idle"", ""hit"", ""hit"", ""idle""]",600,22.0,#FF927D,105.0,45.0,0.24,0.5
+heal,,"[""idle"", ""guard"", ""guard"", ""idle""]",700,4.0,#BCEBA3,380.0,760.0,0.35,0.01
+reward,,"[""idle"", ""guard"", ""idle""]",850,0.0,#FFE0A3,520.0,1040.0,0.4,0.01

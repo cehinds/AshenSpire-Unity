@@ -1,0 +1,52 @@
+{
+  "baselineVersion": "0.6.0",
+  "baselineDpr": 3,
+  "baselineViewport": [
+    320,
+    740
+  ],
+  "baselineIntentCssHeight": 41.33332790798611,
+  "currentVersion": "0.7.0",
+  "floatingPointToleranceCssPixels": 0.005,
+  "rows": [
+    {
+      "hero": "Rogue",
+      "deviceScaleFactor": 1,
+      "input": "mouse",
+      "minimumCssHeight": 43.999979654947914,
+      "layoutSnapshots": 8,
+      "renderDensities": [
+        1
+      ],
+      "resumeStateMatches": true,
+      "errors": [],
+      "landscapeInspectionChecks": 0
+    },
+    {
+      "hero": "Herald",
+      "deviceScaleFactor": 2,
+      "input": "mouse",
+      "minimumCssHeight": 44,
+      "layoutSnapshots": 8,
+      "renderDensities": [
+        1.5
+      ],
+      "resumeStateMatches": true,
+      "errors": [],
+      "landscapeInspectionChecks": 0
+    },
+    {
+      "hero": "Starseer",
+      "deviceScaleFactor": 3,
+      "input": "emulated touch taps and swipes; keyboard seed entry",
+      "minimumCssHeight": 43.999979654947914,
+      "layoutSnapshots": 8,
+      "renderDensities": [
+        1.5
+      ],
+      "resumeStateMatches": true,
+      "errors": [],
+      "landscapeInspectionChecks": 2
+    }
+  ]
+}
