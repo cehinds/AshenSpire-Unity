@@ -29,6 +29,7 @@ for(const channel of channels){
   body+=windowsDownload;
   if(paths.includes('Published/Android.apk'))body+='<a class="button secondary" href="Android.apk" download>Download Android test APK</a>';
   if(paths.includes('Published/InterruptionEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Interruption-Return-0.8.0.md">Interruption, return and phone testing guide</a></p>`;
+  if(paths.includes('Published/SeedEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Seed-Entry-0.8.1.md">Seed entry colors and phone testing guide</a></p>`;
   if(paths.includes('Published/MobileEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Mobile-Viewport-0.7.0.md">Mobile viewport changes and testing guide</a></p>`;
   if(paths.includes('Published/AuthoringEvidence/Content-Authoring.md'))body+=`<section><h2>Make it yours</h2><p>Edit cards, effects, rewards and feedback in Unity, or use CSV tables.</p><nav><a href="${repo}/blob/${commit}/docs/Content-Authoring-0.6.0.md">Content editing guide</a><a href="AuthoringEvidence/Cards.csv" download>Cards CSV</a><a href="AuthoringEvidence/FeedbackCues.csv" download>Feedback cues CSV</a></nav></section>`;
   body+=`<section><h2>What changed</h2>${Object.entries(changes).map(([heading,items])=>`<h3>${escape(heading.replace(/([a-z])([A-Z])/g,'$1 $2'))}</h3><ul>${items.map(item=>`<li>${escape(item)}</li>`).join('')}</ul>`).join('')}</section>`;

@@ -1,10 +1,11 @@
 // Real browser target switches, pointer/keyboard input and read-only Unity diagnostics.
 // A raw CDP connection avoids Playwright's automatic focus/visibility emulation.
-// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline]
+// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline | --seed-only]
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const assert=(value,message)=>{if(!value)throw Error(message);};
 const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirSync(output,{recursive:true});
+const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
 const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[];
 const record=(name,value)=>{assert(value,name);checks.push(name);};
@@ -25,6 +26,9 @@ async function click(id,changesState=false){
 }
 async function shot(name){await sleep(250);const {data}=await game('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(data,'base64'));screenshots.push(name);}
 async function key(key,code,windowsVirtualKeyCode){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode});await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode});}
+async function typeDigits(value){for(const digit of value){await game('Input.dispatchKeyEvent',{type:'keyDown',key:digit,code:'Digit'+digit,text:digit,unmodifiedText:digit,windowsVirtualKeyCode:48+Number(digit)});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:digit,code:'Digit'+digit,windowsVirtualKeyCode:48+Number(digit)});}}
+async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});}
+async function seedTarget(name){const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');record(name+' seed touch height at least 44 CSS pixels',field.Height*box.height/controls.PanelHeight>=43.995);}
 function evidence(success){return {success,checks,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
  const profileRoot=path.resolve('Builds/BrowserProfiles');fs.mkdirSync(profileRoot,{recursive:true});
@@ -55,7 +59,7 @@ function evidence(success){return {success,checks,visibility,interruptions,feedb
  const target=(await send('Target.createTarget',{url:'about:blank'})).targetId;
  session=(await send('Target.attachToTarget',{targetId:target,flatten:true})).sessionId;
  await game('Runtime.enable');await game('Page.enable');
- await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});
+ await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
  await until(()=>controls?.Controls.some(x=>x.Id==='new'),'Unity ready',120000);
  const other=(await send('Target.createTarget',{url:'about:blank',background:true})).targetId;
@@ -89,9 +93,31 @@ function evidence(success){return {success,checks,visibility,interruptions,feedb
   await shot('02-legacy-return');fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));return;
  }
  await interrupt('02-title');await click('new');
+ if(seedOnly){await shot('seed-01-empty');await seedTarget('portrait');}
  await tap(await point('seed'));await sleep(200);
- for(const digit of '240987'){await game('Input.dispatchKeyEvent',{type:'keyDown',key:digit,code:'Digit'+digit,text:digit,unmodifiedText:digit,windowsVirtualKeyCode:48+Number(digit)});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:digit,code:'Digit'+digit,windowsVirtualKeyCode:48+Number(digit)});}
+ await typeDigits('240987');
  await shot('03-draft-before');
+ if(seedOnly){
+  await selectAll();await shot('seed-02-selected');
+  await typeDigits('42949672950');
+  const oldRevision=revision;await click('hero-reaver');
+  record('out of range seed stays on hero screen',revision===oldRevision&&controls.Controls.some(x=>x.Id==='seed'));
+  await shot('seed-03-invalid');
+  await tap(await point('seed'));await selectAll();await typeDigits('240986');
+  await key('Backspace','Backspace',8);await typeDigits('7');await shot('seed-04-edited');
+  await interrupt('03-draft');
+  await game('Emulation.setDeviceMetricsOverride',{width:740,height:320,deviceScaleFactor:3,mobile:false});
+  await until(()=>controls.PanelWidth>controls.PanelHeight,'seed landscape');await sleep(300);await seedTarget('landscape');
+  await shot('seed-05-landscape-unfocused');await tap(await point('seed'));await shot('seed-06-landscape-focused');
+  await selectAll();await shot('seed-07-landscape-selected');await interrupt('seed-08-landscape');
+  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:3,mobile:false});
+  await until(()=>controls.PanelHeight>controls.PanelWidth,'seed portrait return');await sleep(300);
+  await shot('seed-09-portrait-return');await click('hero-reaver',true);
+  record('keyboard selection replacement and backspace survive interruption and rotation',state.Seed===240987);
+  await shot('seed-10-created-campaign');record('no browser or Unity errors',errors.length===0);
+  fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));
+  console.log('Seed entry browser: '+checks.length+' checks passed; '+screenshots.length+' screenshots');return;
+ }
  await interrupt('03-draft');await click('hero-reaver',true);record('seed draft survived interruption',state.Seed===240987);
  await interrupt('04-map');await click('enter-0',true);
  await click('card-0');const selected=controls.Controls.find(x=>x.Id==='play').Enabled;const beforeSelection=JSON.stringify(controls);

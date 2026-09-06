@@ -49,6 +49,8 @@ jobs:
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
       - name: Exercise actual browser hiding and explicit return
         run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
+      - name: Exercise seed editing and rotation at phone pixel density
+        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
       - name: Exercise dense mobile layout with touch input
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
       - name: Exercise the packaged game with real pointer input
@@ -65,6 +67,7 @@ jobs:
             TestResults/Balance
             TestResults/Mobile
             TestResults/Interruption
+            TestResults/Seed
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
