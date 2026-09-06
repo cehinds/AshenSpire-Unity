@@ -2,7 +2,8 @@
 // ATTACH: one instance on ExpeditionRoot in Scenes/Expedition.unity.
 // INSPECTOR: assign PanelSettings; BuildTools creates the initial reference.
 // LIFECYCLE: OnEnable binds commands; OnDisable unsubscribes/disposes view/saves; pause saves.
-// Update adjusts viewport scaling only. CampaignSession owns all gameplay state.
+// Update adjusts viewport scaling only. Web uses CSS canvas height via DisplayViewport;
+// native safe-area padding stays in screen pixels. CampaignSession owns gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
 // SAVES: CampaignSaveStore owns checksummed primary/backup records per channel.
@@ -22,7 +23,7 @@ namespace AshenSpire.Application
         [SerializeField, Tooltip("Shared phone panel settings required by UIDocument.")] private PanelSettings _panelSettings;
         private CampaignDefinition _content; private CampaignSession _session; private CampaignView _view; private CampaignSaveStore _saves;
         private int _screenHeight; private bool _diagnosticsEnabled;
-        private int _screenWidth; private Rect _safeArea;
+        private int _screenWidth, _displayHeight; private Rect _safeArea;
         private GameAudio _audio;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
         private void OnEnable()
@@ -57,6 +58,7 @@ namespace AshenSpire.Application
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
+                _view.SetDisplayHeight(DisplayViewport.Height);
                 _view.StartRequested += StartRun;
                 _view.ContinueRequested += Resume;
                 _view.EnterRequested += Enter;
@@ -176,13 +178,16 @@ namespace AshenSpire.Application
         }
         private void Update()
         {
-            if (_panelSettings == null || (_screenHeight == Screen.height && _screenWidth == Screen.width && _safeArea == Screen.safeArea))
+            var displayHeight = DisplayViewport.Height;
+            if (_panelSettings == null || (_screenHeight == Screen.height && _screenWidth == Screen.width && _safeArea == Screen.safeArea && _displayHeight == displayHeight))
                 return;
             _screenHeight = Screen.height;
             _screenWidth = Screen.width;
             _safeArea = Screen.safeArea;
-            var referenceHeight = Screen.height < 600 ? Screen.height : 900;
+            _displayHeight = displayHeight;
+            var referenceHeight = ViewportLayout.ReferenceHeight(displayHeight);
             _panelSettings.referenceResolution = new Vector2Int(430, referenceHeight);
+            _view?.SetDisplayHeight(displayHeight);
             var scale = (float)referenceHeight / Math.Max(1, Screen.height);
             var root = GetComponent<UIDocument>().rootVisualElement;
             root.style.paddingTop = (Screen.height - _safeArea.yMax) * scale;

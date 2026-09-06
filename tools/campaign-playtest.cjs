@@ -2,14 +2,42 @@
 // Usage: node tools/campaign-playtest.cjs [url] [evidenceDirectory] [--full]
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
-let browser,activePage,evidenceDirectory,lastEvidence,server;
+let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
 (async()=>{
  const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});evidenceDirectory=output;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
- const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});activePage=page;
+ const dprIndex=process.argv.indexOf('--dpr'),deviceScaleFactor=dprIndex<0?1:Number(process.argv[dprIndex+1]);
+ if(!Number.isFinite(deviceScaleFactor)||deviceScaleFactor<1||deviceScaleFactor>4)throw Error('Use --dpr between 1 and 4');
+ const touch=process.argv.includes('--touch');
+ const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor,hasTouch:touch,isMobile:touch,...(touch?{userAgent:'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'+browser.version()+' Mobile Safari/537.36'}:{})});activePage=page;
+ const touchSession=touch?await page.context().newCDPSession(page):null;
+ async function tap(x,y){
+  if(!touch){await page.mouse.click(x,y,{delay:120});return;}
+  // Hold a real touch across player frames, just as mouse clicks use a 120 ms press.
+  await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+  await page.waitForTimeout(120);
+  await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ }
+ async function scroll(distance){
+  const beforeScroll=layout;
+  const box=await page.locator('#unity-canvas').boundingBox();
+  if(!touch){await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
+  const contentHeight=box.height-(controls?.Controls.some(c=>c.Id==='end-turn'||c.Id==='inspection-back')?110:0);
+  const x=box.x+box.width/2,start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
+  await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start}]});
+  for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await page.waitForTimeout(20);}
+  await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  // On slow software renderers, the browser can finish dispatching a swipe before
+  // Unity processes it. Start the settling window only after its first report.
+  await until(()=>layout>beforeScroll,'Unity received touch scroll');
+  // ScrollView inertia can continue after release. Use stable observed geometry before
+  // choosing the next tap, rather than accepting a scroll report as a button response.
+  let signature=JSON.stringify(controls),stableSince=Date.now();
+  await until(()=>{const next=JSON.stringify(controls);if(next!==signature){signature=next;stableSince=Date.now();}return Date.now()-stableSince>=500;},'settled touch scroll');
+ }
  let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors};});
+ page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput};});
  let url=process.argv[2]||'http://127.0.0.1:8787';
  const upgradeIndex=process.argv.indexOf('--upgrade-from');let servedDirectory;
  if(upgradeIndex>=0){
@@ -28,21 +56,23 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  // Unity applies browser resize and UI Toolkit geometry over separate frames.
  // Wait for the new aspect ratio and stable bounds, never for a passing size assertion.
  const viewportEvidence=[];
- async function resize(width,height){
-  const previous=layout;await page.setViewportSize({width,height});
-  await until(()=>layout>previous&&Math.abs(controls.PanelWidth/controls.PanelHeight-width/height)<.001,'Unity geometry for '+width+'x'+height);
+ async function resize(width,height,padding=null){
+  const previous=layout;if(padding!==null)await page.locator('#frame').evaluate((frame,value)=>frame.style.padding=value,padding);
+  await page.setViewportSize({width,height});const canvas=await page.locator('#unity-canvas').boundingBox();
+  await until(()=>layout>previous&&Math.abs(controls.PanelWidth/controls.PanelHeight-canvas.width/canvas.height)<.001,'Unity geometry for '+width+'x'+height);
   let signature=JSON.stringify(controls),stableSince=Date.now();
-  await until(()=>{const next=JSON.stringify(controls);if(next!==signature){signature=next;stableSince=Date.now();}return Date.now()-stableSince>=500&&Math.abs(controls.PanelWidth/controls.PanelHeight-width/height)<.001;},'stable viewport geometry');
-  viewportEvidence.push({width,height,panelWidth:controls.PanelWidth,panelHeight:controls.PanelHeight,layout});
+  await until(()=>{const next=JSON.stringify(controls);if(next!==signature){signature=next;stableSince=Date.now();}return Date.now()-stableSince>=500&&Math.abs(controls.PanelWidth/controls.PanelHeight-canvas.width/canvas.height)<.001;},'stable viewport geometry');
+  viewportEvidence.push({width,height,canvas,panelWidth:controls.PanelWidth,panelHeight:controls.PanelHeight,layout});
  }
  async function click(id,changesState=false,playEnabled=true){
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
-  for(let attempt=0;attempt<12;attempt++){
+  for(let attempt=0;attempt<24;attempt++){
+   const canvas=await page.locator('#unity-canvas').boundingBox();
    const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
-   const viewport=page.viewportSize();const x=(control.X+control.Width/2)*viewport.width/controls.PanelWidth;const y=(control.Y+control.Height/2)*viewport.height/controls.PanelHeight;
-   const bottom=viewport.height-(['play','end-turn','inspection-back'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn'||x.Id==='inspection-back')?105:20);
-   if(y<30||y>bottom){const previous=layout;await page.mouse.move(viewport.width/2,viewport.height/2);await page.mouse.wheel(0,y<30?-450:450);await until(()=>layout>previous,'scroll layout');continue;}
-   const previous=changesState?revision:layout;await page.mouse.click(x,y,{delay:120});await until(()=>(changesState?revision:layout)>previous,'result of '+id);
+   const x=canvas.x+(control.X+control.Width/2)*canvas.width/controls.PanelWidth;const y=canvas.y+(control.Y+control.Height/2)*canvas.height/controls.PanelHeight;
+   const bottom=canvas.y+canvas.height-(['play','end-turn','inspection-back'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn'||x.Id==='inspection-back')?105:20);
+   if(y<canvas.y+30||y>bottom){const previous=layout;await scroll(y<canvas.y+30?-450:450);await until(()=>layout>previous,'scroll layout');continue;}
+   const previous=changesState?revision:layout;lastInput={id,x,y,canvas,control,layout,revision};await tap(x,y);await until(()=>(changesState?revision:layout)>previous,'result of '+id);
    if(changesState)await until(()=>layout>layoutAtState&&controls.Controls.every(control=>control.Width>0&&control.Height>0),'rendered state after '+id);
    if(id.startsWith('card-'))await until(()=>controls.Controls.some(control=>control.Id==='play'&&control.Enabled===playEnabled),'selected card after '+id);
    await page.waitForTimeout(150);return;
@@ -52,7 +82,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  function assert(value,description){if(!value)throw new Error(description);}
  async function inspect(id,expected,name){
   const before=JSON.stringify(state),beforeRevision=revision;
-  await click(id);assert(controls.Labels.some(text=>text.includes(expected)),id+' explanation missing');
+  await click(id);await until(()=>controls.Labels.some(text=>text.includes(expected)),'inspection content '+id);assert(controls.Labels.some(text=>text.includes(expected)),id+' explanation missing');
   assert(!controls.Controls.some(x=>x.Id==='play'||x.Id==='end-turn'),'combat actions must not remain under inspection');
   if(name)await shot(name);await click('inspection-back');
   assert(JSON.stringify(state)===before&&revision===beforeRevision,id+' changed campaign state');
@@ -64,11 +94,36 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  const downloadedResourceBytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,item)=>sum+(item.encodedBodySize||0),0));
  const heroOption=process.argv.indexOf('--hero');const hero=heroOption>=0?process.argv[heroOption+1]:'reaver';
  await shot('01-phone-title');await click('new');await shot('02-class-selection');
- if(upgradeIndex<0){const seed=controls.Controls.find(control=>control.Id==='seed');assert(seed,'seed input missing');const viewport=page.viewportSize();await page.mouse.click((seed.X+seed.Width*.8)*viewport.width/controls.PanelWidth,(seed.Y+seed.Height/2)*viewport.height/controls.PanelHeight);await page.waitForTimeout(250);await page.keyboard.type('3',{delay:120});await page.waitForTimeout(250);}
+ if(upgradeIndex<0){const seed=controls.Controls.find(control=>control.Id==='seed');assert(seed,'seed input missing');const viewport=page.viewportSize();await tap((seed.X+seed.Width*.8)*viewport.width/controls.PanelWidth,(seed.Y+seed.Height/2)*viewport.height/controls.PanelHeight);await page.waitForTimeout(250);await page.keyboard.type('3',{delay:120});if(touch){await page.keyboard.press('Enter');await page.keyboard.press('Tab');}await page.waitForTimeout(250);}
  await click('hero-'+hero,true);if(upgradeIndex<0)assert(state.Seed===3,'seed entry did not take effect');await shot('03-campaign-map');
  const authoredContent=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/campaign.json'),'utf8'));
  if(upgradeIndex<0)assert(JSON.stringify(state.Deck)===JSON.stringify(authoredContent.Heroes.find(item=>item.Id===hero).Deck),'starter deck differs from class definition');
  await click('enter-0',true);await shot('04-phone-combat');
+ const mobileLayout=[];let landscapeInspectionChecks=0;
+ if(process.argv.includes('--mobile-layout')){
+  async function checkTargets(name){
+   const canvas=await page.locator('#unity-canvas').boundingBox();
+   const buffer=await page.locator('#unity-canvas').evaluate(c=>({width:c.width,height:c.height}));
+   const renderDensity=buffer.width/canvas.width;
+   assert(renderDensity<=1.51&&(deviceScaleFactor===1||renderDensity>1),'render density cap changed');
+   const heights=controls.Controls.filter(c=>c.Width>0&&c.Height>0).map(c=>({id:c.Id,height:c.Height*canvas.height/controls.PanelHeight,width:c.Width*canvas.width/controls.PanelWidth}));
+   assert(heights.length&&heights.every(c=>Math.round(c.height*100)/100>=44),name+' control below 44 CSS pixels');
+   mobileLayout.push({name,canvas,buffer,renderDensity,heights,stateUnchanged:true});await shot(name);
+  }
+  const before=JSON.stringify(state),beforeRevision=revision;
+  for(const [width,height] of [[320,740],[740,320],[844,390],[390,844],[320,740]]){
+   await resize(width,height);await checkTargets('32-viewport-'+mobileLayout.length);
+   if(touch&&width>height){await inspect('intent-details','will attack');landscapeInspectionChecks++;}
+   assert(JSON.stringify(state)===before&&revision===beforeRevision,'rotation changed campaign state');
+  }
+  await resize(390,844,'24px 18px 20px 12px');await checkTargets('33-inset-canvas');
+  await inspect('intent-details','will attack','34-inset-inspection');
+  assert(JSON.stringify(state)===before&&revision===beforeRevision,'inset inspection changed state');
+  await click('menu');await click('settings');await checkTargets('35-dense-settings');
+  await click('back');await click('new');await checkTargets('36-dense-seed');
+  await click('back');await click('continue',true);assert(JSON.stringify(state)===before,'layout navigation changed save');
+  await resize(390,844,'0px');
+ }
  if(process.argv.includes('--feedback-only')){
   async function probe(id,name,reduced,fast,muted){
    const before=feedbackEvents.length,sounds=soundEvents.length;captureNextImpact=name;
@@ -148,6 +203,6 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  }
  await resize(1280,900);await shot('16-desktop');
  await resize(844,390);await shot('17-landscape');
- const report={url,feedbackEvents,soundEvents,viewportEvidence,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+ const report={url,deviceScaleFactor,input:touch?'emulated touch taps and swipes; keyboard seed entry':'mouse',mobileLayout,landscapeInspectionChecks,feedbackEvents,soundEvents,viewportEvidence,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop browser automation; physical phones and native player interaction are not covered.','Insets are synthetic CSS padding, not a physical-notch test.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  if(!commandsChangedState||!resumeStateMatches||errors.length||(!process.argv.includes('--defeat')&&!affinityRewardTaken)||(process.argv.includes('--full')&&!completed)||(process.argv.includes('--defeat')&&state.Phase!==4))process.exitCode=1;
 })().catch(async error=>{console.error(error);if(activePage&&evidenceDirectory){await activePage.screenshot({path:path.join(evidenceDirectory,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(evidenceDirectory,'failure.json'),JSON.stringify({error:error.message,...lastEvidence},null,2));}process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server)server.close();});

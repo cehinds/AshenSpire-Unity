@@ -23,6 +23,7 @@ namespace AshenSpire.Presentation
         private bool _reducedMotion;
         private bool _fast;
         private bool _muted;
+        private int _displayHeight = 900;
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
         private VisualElement _stage;
@@ -45,9 +46,22 @@ namespace AshenSpire.Presentation
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
         {
-            foreach (var button in _root.Query<Button>().ToList())
-                button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, MinimumTouchHeight);
             Report();
+        }
+        public void SetDisplayHeight(int height)
+        {
+            _displayHeight = Math.Max(1, height);
+            RefreshTouchTargets();
+        }
+        private void RefreshTouchTargets()
+        {
+            var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight);
+            foreach (var button in _root.Query<Button>().ToList())
+                button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, minimum);
+            foreach (var toggle in _root.Query<Toggle>().ToList())
+                toggle.style.minHeight = Mathf.Max(52, minimum);
+            foreach (var field in _root.Query<TextField>().ToList())
+                field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
         }
         public void Dispose() { _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
@@ -356,7 +370,7 @@ namespace AshenSpire.Presentation
             _scroll = new ScrollView(ScrollViewMode.Vertical) { verticalScrollerVisibility = ScrollerVisibility.Hidden };
             _scroll.AddToClassList("scroll");
             _root.Add(_scroll);
-            _scroll.verticalScroller.valueChanged += _ => Report();
+            _scroll.verticalScroller.valueChanged += _ => Report(false);
             _body = new VisualElement();
             _body.AddToClassList("body");
             _scroll.Add(_body);
@@ -369,18 +383,15 @@ namespace AshenSpire.Presentation
             _body.Add(button);
             return button;
         }
-        private static Button Control(string id, string label, Action clicked, string style = null)
+        private Button Control(string id, string label, Action clicked, string style = null)
         {
             var result = new Button(clicked) { text = label, name = id };
             result.AddToClassList("button");
             if (style != null)
                 result.AddToClassList(style);
-            result.style.minHeight = Mathf.Max(50, MinimumTouchHeight);
+            result.style.minHeight = Mathf.Max(50, ViewportLayout.MinimumTouchHeight(_displayHeight));
             return result;
         }
-        // Match RunController's reference-height scaling so 44 UI points cannot shrink
-        // below 44 screen pixels on a narrow portrait viewport.
-        private static float MinimumTouchHeight => Mathf.Ceil(44f * (Screen.height < 600 ? Screen.height : 900) / Math.Max(1, Screen.height));
         private static Label Text(string value, string style)
         {
             var label = new Label(value);
@@ -403,8 +414,11 @@ namespace AshenSpire.Presentation
         {
             public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
         }
-        private void Report()
+        private void Report(bool refreshTouchTargets = true)
         {
+            // Screen construction and geometry changes both refresh controls, even when
+            // diagnostics are disabled in a release/native player. No per-frame queries.
+            if (refreshTouchTargets) RefreshTouchTargets();
             if (!_diagnostics)
                 return;
             _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Concat(_root.Query<Toggle>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);

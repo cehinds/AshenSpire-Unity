@@ -1,5 +1,9 @@
 {
-  "url": "http://127.0.0.1:55375/",
+  "url": "http://127.0.0.1:56441/",
+  "deviceScaleFactor": 1,
+  "input": "mouse",
+  "mobileLayout": [],
+  "landscapeInspectionChecks": 0,
   "feedbackEvents": [
     {
       "Cue": "attack",
@@ -17,7 +21,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.805435180664062
+      "PlayerX": 22.3096866607666
     },
     {
       "Cue": "attack",
@@ -44,7 +48,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.565329074859619
+      "PlayerX": -6.27648401260376
     },
     {
       "Cue": "hit",
@@ -71,7 +75,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.049064636230469
+      "PlayerX": 4.85410213470459
     },
     {
       "Cue": "guard",
@@ -98,7 +102,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.580320358276367
+      "PlayerX": 22.168643951416016
     },
     {
       "Cue": "attack",
@@ -149,6 +153,12 @@
     {
       "width": 320,
       "height": 740,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
       "layout": 6
@@ -156,6 +166,12 @@
     {
       "width": 390,
       "height": 844,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
       "panelWidth": 415.87677001953125,
       "panelHeight": 899.9999389648438,
       "layout": 23
@@ -163,23 +179,35 @@
     {
       "width": 1280,
       "height": 900,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
       "panelWidth": 1280,
       "panelHeight": 900,
-      "layout": 54
+      "layout": 53
     },
     {
       "width": 844,
       "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 55
+      "layout": 54
     }
   ],
-  "firstLoadMilliseconds": 1692,
-  "downloadedResourceBytes": 34291799,
+  "firstLoadMilliseconds": 1755,
+  "downloadedResourceBytes": 34291797,
   "commandsChangedState": true,
   "resumeStateMatches": true,
-  "upgradedFrom": "LOCAL · UNITY 0.5.0",
+  "upgradedFrom": "LOCAL · UNITY 0.6.0",
   "affinityRewardTaken": true,
   "rewardOffersChecked": 1,
   "inspectionPreservesState": true,
@@ -192,8 +220,8 @@
   "finalState": {
     "SchemaVersion": 1,
     "HeroId": "reaver",
-    "Seed": 1221170944,
-    "RandomState": 2831170181,
+    "Seed": 3543661552,
+    "RandomState": 241294072,
     "Health": 63,
     "MaxHealth": 70,
     "Energy": 0,
@@ -222,7 +250,7 @@
       "cleave",
       "rage",
       "rage",
-      "sunder"
+      "rage"
     ],
     "Draw": [
       "cleave",
@@ -266,7 +294,8 @@
   ],
   "errors": [],
   "limits": [
-    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Desktop browser automation; physical phones and native player interaction are not covered.",
+    "Insets are synthetic CSS padding, not a physical-notch test.",
     "Load timing is from this desktop test environment and is not a mobile performance budget."
   ]
 }

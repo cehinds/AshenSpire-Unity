@@ -1,31 +1,29 @@
 {
   "Added": [
-    "Structured Unity content fields for seven tables, nested effects, tag lists and campaign settings.",
-    "Search, readable duplicate IDs, explicit reward enrollment and Unity Undo/Redo.",
-    "Recoverable draft checkpoints, stale-source detection and atomic saves with exact-byte backups.",
-    "Read-only Android device preflight reports real connected hardware and keeps physical gameplay status separate."
+    "Mobile browser regression checks at densities 1, 2 and 3, repeated rotation and synthetic canvas insets.",
+    "Touchscreen taps and swipe scrolling now have a dedicated browser test, including combat, rewards and save/resume."
   ],
   "Changed": [
-    "Editor saves, CSV imports and build imports share referenced-sprite validation, including equipment art.",
-    "The owner guide explains editing, recovery, backups and adding new content. Gameplay, balance and campaign save schema are unchanged."
+    "Browser layout uses the displayed canvas height while retaining the 1.5 render-density cap.",
+    "Existing controls resize after orientation and viewport changes; settings toggles and seed entry share the touch minimum."
   ],
   "Fixed": [
-    "Missing equipment sprites and empty player-facing hero, encounter and equipment names fail before import.",
-    "Import failures after a successful save report that the source was already saved and backed up."
+    "Dense-phone compact controls measured 41.33 CSS pixels in 0.6.0; minimum touch height is now 44 CSS pixels.",
+    "High-density landscape no longer chooses its compact layout from render-buffer pixels.",
+    "Browser test input accounts for the actual canvas position and size, including synthetic safe-area padding."
   ],
   "KnownIssues": [
-    "Physical Android/iOS play and graphical Windows play remain unverified; no Android device is connected.",
-    "Unity Editor serialized fields and Undo/Redo have automated coverage; graphical authoring-window interaction remains unverified.",
-    "The adaptation does not include every original mechanic or content item.",
-    "Two inherited browser CI inventory failures remain documented and waived for this work.",
-    "Unity compilation uses the local licensed Editor; packaged-build validation and dev Pages publication are automated.",
-    "Draft checkpoints run explicitly and on window close/recompile; they are not continuous crash-proof autosave."
+    "No physical Android device is connected. Real phones, iOS, native graphical Windows play and audible listening remain unverified.",
+    "Browser density, touch and inset tests are emulation; no physical-device performance gain is claimed.",
+    "Native safe-area behavior is retained. Gameplay, campaign content and save schema are unchanged.",
+    "Unity builds run locally; GitHub validates and publishes prepared players.",
+    "Full original-game parity and store release remain unfinished.",
+    "Two inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
   ],
   "WhatToTest": [
-    "Open AshenSpire > Campaign Content Editor, duplicate a card and expand its Effects list. Change an amount, then use Undo and Redo.",
-    "Search another table and return to confirm draft edits remain. Use Add this card to reward catalog when it should become a reward.",
-    "Checkpoint an unsaved draft, close and reopen the window, and verify recovery.",
-    "Use Save & Import, restart Play mode and test the modified card.",
-    "Play or resume a campaign and compare movement, preferences and saved progress with the previous build."
+    "Open the dev game on a dense phone screen and rotate between portrait and landscape.",
+    "Tap compact combat controls and settings; they should remain easy to hit.",
+    "Inspect intent after rotation, continue combat, then reload and resume.",
+    "Compare the denser landscape screenshots and test real mobile browser toolbars/notches on your device."
   ]
 }
