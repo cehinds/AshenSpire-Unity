@@ -16,13 +16,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <div id="frame"><canvas id="unity-canvas" tabindex="0" aria-label="AshenSpire touch card game"></canvas></div>
 <div id="loading"><h1>ASHEN SPIRE</h1><p>Waking the ember…</p><progress id="progress" value="0" max="1"></progress></div>
 <div id="channel"></div>
-<script src="Build/Web.loader.js"></script>
+<script src="Build/Web.loader.js?build=a8eaab39d99d89f728af3ab7930c7b08a1212626162dbe1aaa103b1b74f5a9f5"></script>
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
 document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.2.1';
 createUnityInstance(canvas,{
- dataUrl:'Build/Web.data',frameworkUrl:'Build/Web.framework.js',codeUrl:'Build/Web.wasm',
+ dataUrl:'Build/Web.data?build=a8eaab39d99d89f728af3ab7930c7b08a1212626162dbe1aaa103b1b74f5a9f5',frameworkUrl:'Build/Web.framework.js?build=a8eaab39d99d89f728af3ab7930c7b08a1212626162dbe1aaa103b1b74f5a9f5',codeUrl:'Build/Web.wasm?build=a8eaab39d99d89f728af3ab7930c7b08a1212626162dbe1aaa103b1b74f5a9f5',
  streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.2.1',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{
