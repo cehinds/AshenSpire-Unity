@@ -9,6 +9,7 @@ A mobile-first Unity adaptation of [AshenSpire](https://github.com/cehinds/Ashen
 Open `Unity/` in Unity Hub with Unity 6.6. Use the **AshenSpire** editor menu to edit/import campaign content, prepare the scene, and build Web, Windows or Android players.
 
 - [Campaign editing and testing guide](docs/Campaign-Owner-Guide.md)
+- [Combat clarity slice (0.3.0)](docs/Campaign-0.3.0-Changes.md)
 - [Full build brief](docs/Unity-Build-Brief.md)
 - [Current Unity slice specification](docs/UNITY-SPEC.md)
 - [Changelog](Published/changelog.json)

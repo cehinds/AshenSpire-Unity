@@ -92,7 +92,7 @@ namespace AshenSpire.Editor
             Prepare();
             PlayerSettings.companyName = "AshenSpire";
             PlayerSettings.productName = "AshenSpire Unity";
-            PlayerSettings.bundleVersion = "0.2.1";
+            PlayerSettings.bundleVersion = "0.3.0";
             PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;
@@ -116,7 +116,7 @@ namespace AshenSpire.Editor
             {
                 var digest = SourceDigest();
                 var index = Path.Combine(report.summary.outputPath, "index.html");
-                File.WriteAllText(index, File.ReadAllText(index).Replace("__ASHENSPIRE_BUILD_TOKEN__", digest));
+                File.WriteAllText(index, File.ReadAllText(index).Replace("__ASHENSPIRE_BUILD_TOKEN__", digest).Replace("__ASHENSPIRE_VERSION__", PlayerSettings.bundleVersion));
                 File.WriteAllText(Path.Combine(report.summary.outputPath, "build-source.json"),
                     "{\"sourceDigest\":\"" + digest + "\",\"builtAt\":\"" + DateTime.UtcNow.ToString("O") + "\"}");
             }
