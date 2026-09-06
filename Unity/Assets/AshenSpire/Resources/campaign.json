@@ -379,14 +379,10 @@
       "Tags": [
         "skill"
       ],
-      "Description": "Gain 1 energy. Draw 1.",
+      "Description": "Gain 1 energy.",
       "Effects": [
         {
           "Operation": "energy",
-          "Amount": 1
-        },
-        {
-          "Operation": "draw",
           "Amount": 1
         }
       ]

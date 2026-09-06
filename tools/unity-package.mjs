@@ -19,11 +19,13 @@ const destination=join(root,'Published');
 if(process.argv.includes('--check')){
  const manifest=JSON.parse(readFileSync(join(destination,'build.json'),'utf8'));
  if(manifest.sourceDigest!==digest)throw new Error('Unity source differs from packaged build. Run tools/build-unity.ps1 before publishing.');
+ const index=readFileSync(join(destination,'Web/index.html'),'utf8');
+ if(index.includes('__ASHENSPIRE_BUILD_TOKEN__')||(index.match(new RegExp('\\?build='+manifest.sourceDigest,'g'))||[]).length!==4)throw new Error('Web loader/runtime URLs must all carry the current source digest. Rebuild Web.');
  for(const [path,expected] of Object.entries(manifest.files)){
   const actual=createHash('sha256').update(readFileSync(join(destination,path))).digest('hex');
   if(actual!==expected)throw new Error(`Packaged build changed: ${path}`);
  }
- console.log(`Unity package: ${Object.keys(manifest.files).length+1} checks passed`);
+ console.log(`Unity package: ${Object.keys(manifest.files).length+2} checks passed`);
 }else{
  const build=join(root,'Builds/Web');
  if(!existsSync(join(build,'index.html')))throw new Error('No exported Web player; run Unity BuildTools.BuildWeb first.');
@@ -35,7 +37,7 @@ if(process.argv.includes('--check')){
  }else{
   execFileSync('python3',['-c','import shutil; shutil.make_archive("Published/Web", "zip", "Published/Web")'],{cwd:root});
  }
- const manifest={version:'0.2.0',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
+ const manifest={version:'0.2.1',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
  for(const path of files(join(destination,'Web'))){manifest.files[relative(destination,path).replaceAll('\\','/')]=createHash('sha256').update(readFileSync(path)).digest('hex');}
  manifest.files['Web.zip']=createHash('sha256').update(readFileSync(join(destination,'Web.zip'))).digest('hex');
  if(existsSync(join(destination,'Windows.zip')))manifest.files['Windows.zip']=createHash('sha256').update(readFileSync(join(destination,'Windows.zip'))).digest('hex');

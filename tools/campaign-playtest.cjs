@@ -2,25 +2,28 @@
 // Usage: node tools/campaign-playtest.cjs [url] [evidenceDirectory] [--full]
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path');
-let browser;
+let browser,activePage,evidenceDirectory,lastEvidence;
 (async()=>{
- const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});
+ const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});evidenceDirectory=output;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
- const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
- let controls,state,revision=0,layout=0;const errors=[],shots=[];
+ const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});activePage=page;
+ let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[];
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}});
+ page.on('console',message=>{const value=message.text();if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors};});
  const url=process.argv[2]||'http://127.0.0.1:8787';
  async function until(predicate,description,timeout=15000){const end=Date.now()+timeout;while(Date.now()<end){if(predicate())return;await page.waitForTimeout(100);}throw new Error('Timed out: '+description);}
  async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');}
  async function click(id,changesState=false){
-  await until(()=>controls?.Controls.some(x=>x.Id===id),'control '+id);
+  await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
   for(let attempt=0;attempt<12;attempt++){
    const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
    const viewport=page.viewportSize();const x=(control.X+control.Width/2)*viewport.width/controls.PanelWidth;const y=(control.Y+control.Height/2)*viewport.height/controls.PanelHeight;
    const bottom=viewport.height-(['play','end-turn'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn')?105:20);
    if(y<30||y>bottom){const previous=layout;await page.mouse.move(viewport.width/2,viewport.height/2);await page.mouse.wheel(0,y<30?-450:450);await until(()=>layout>previous,'scroll layout');continue;}
-   const previous=changesState?revision:layout;await page.mouse.click(x,y,{delay:120});await until(()=>(changesState?revision:layout)>previous,'result of '+id);await page.waitForTimeout(220);return;
+   const previous=changesState?revision:layout;await page.mouse.click(x,y,{delay:120});await until(()=>(changesState?revision:layout)>previous,'result of '+id);
+   if(changesState)await until(()=>layout>layoutAtState&&controls.Controls.every(control=>control.Width>0&&control.Height>0),'rendered state after '+id);
+   if(id.startsWith('card-'))await until(()=>controls.Controls.some(control=>control.Id==='play'&&control.Enabled),'selected card after '+id);
+   await page.waitForTimeout(150);return;
   }throw new Error('Cannot scroll to '+id);
  }
  async function shot(name){await page.mouse.move(0,0);await page.waitForTimeout(300);await page.screenshot({path:path.join(output,name+'.png')});shots.push(name);}
@@ -57,4 +60,4 @@ let browser;
  await page.setViewportSize({width:844,height:390});await page.waitForTimeout(700);await shot('17-landscape');
  const report={url,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  if(!commandsChangedState||!resumeStateMatches||errors.length||(process.argv.includes('--full')&&!completed)||(process.argv.includes('--defeat')&&state.Phase!==4))process.exitCode=1;
-})().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();});
+})().catch(async error=>{console.error(error);if(activePage&&evidenceDirectory){await activePage.screenshot({path:path.join(evidenceDirectory,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(evidenceDirectory,'failure.json'),JSON.stringify({error:error.message,...lastEvidence},null,2));}process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();});

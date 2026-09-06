@@ -11,6 +11,10 @@ public static class CampaignChecks
         void Check(bool value,string name){if(!value)throw new Exception("FAIL: "+name);passed++;Console.WriteLine("PASS: "+name);}
         void Reject(Action action,string name){try{action();}catch(ArgumentException){Check(true,name);return;}throw new Exception("FAIL: expected rejection "+name);}
         var content=Content();content.Validate();
+        var energyRun=new CampaignSession(content,"reaver",7);energyRun.Enter(0);
+        energyRun.State.Hand=new(){"tempo"};energyRun.State.Draw=new(){"strike"};
+        var energyBefore=energyRun.State.Energy;energyRun.Play(0);
+        Check(energyRun.State.Energy==energyBefore+1&&energyRun.State.Hand.Count==0&&energyRun.State.Draw.Count==1,"energy reward trades a card in hand for energy without free replacement cycling");
         var run=new CampaignSession(content,"reaver",42);
         Check(!run.Play(0)&&!run.EndTurn()&&!run.Reward(null),"campaign commands require the correct phase");
         Check(!run.Enter(99)&&run.Enter(1)&&run.Enemy.Id=="blightHound","route chooses the authored foe");

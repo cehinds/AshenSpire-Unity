@@ -15,9 +15,14 @@ namespace AshenSpire.Application
     public sealed class GameAudio : MonoBehaviour
     {
         private AudioSource _source;
+        private AudioListener _ownedListener;
         private readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
         private void Awake()
         {
+            // The UI-only scene has a camera but no listener. Preserve an owner-provided
+            // listener when one exists; otherwise this feedback component owns exactly one.
+            if (FindFirstObjectByType<AudioListener>() == null)
+                _ownedListener = gameObject.AddComponent<AudioListener>();
             _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0;
@@ -63,6 +68,8 @@ namespace AshenSpire.Application
                 Destroy(clip);
             if (_source != null)
                 Destroy(_source);
+            if (_ownedListener != null)
+                Destroy(_ownedListener);
         }
     }
 }

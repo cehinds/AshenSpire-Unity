@@ -1,0 +1,81 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "firstLoadMilliseconds": 1797,
+  "downloadedResourceBytes": 33973954,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 571972784,
+    "RandomState": 3136670496,
+    "Health": 70,
+    "MaxHealth": 70,
+    "Energy": 1,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 4,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 3,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "cleave",
+      "rage"
+    ],
+    "Draw": [
+      "defend",
+      "cleave"
+    ],
+    "Hand": [
+      "strike",
+      "strike",
+      "defend",
+      "defend"
+    ],
+    "Discard": [
+      "rage",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "05-card-selected",
+    "06-card-played",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}
