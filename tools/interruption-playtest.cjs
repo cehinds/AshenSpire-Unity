@@ -1,6 +1,6 @@
 // Real browser target switches, pointer/keyboard input and read-only Unity diagnostics.
 // A raw CDP connection avoids Playwright's automatic focus/visibility emulation.
-// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline | --seed-only]
+// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline | --seed-only] [--slow-input]
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const assert=(value,message)=>{if(!value)throw Error(message);};
@@ -44,9 +44,12 @@ async function shot(name){
   seedPixels.push({name,...result});record(name+' rendered digits have at least 4.5 contrast',result.foreground.luminance>.45&&result.contrast>=4.5);
  }
 }
-async function key(key,code,windowsVirtualKeyCode){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode});await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode});}
-async function typeDigits(value){for(const digit of value){await game('Input.dispatchKeyEvent',{type:'keyDown',key:digit,code:'Digit'+digit,text:digit,unmodifiedText:digit,windowsVirtualKeyCode:48+Number(digit)});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:digit,code:'Digit'+digit,windowsVirtualKeyCode:48+Number(digit)});}}
-async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});}
+// Let the player consume each press/release before the next key or modifier.
+// Wall-clock holds alone can place release and the next press in one slow frame.
+async function inputFrames(){await game('Runtime.evaluate',{expression:'new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))',awaitPromise:true});}
+async function key(key,code,windowsVirtualKeyCode,extra={}){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode,...extra});await sleep(120);await inputFrames();await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode,modifiers:extra.modifiers||0});await inputFrames();}
+async function typeDigits(value){for(const digit of value)await key(digit,'Digit'+digit,48+Number(digit),{text:digit,unmodifiedText:digit});}
+async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:2});await inputFrames();await key('a','KeyA',65,{modifiers:2});await game('Input.dispatchKeyEvent',{type:'keyUp',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:0});await inputFrames();}
 async function seedTarget(name){const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');record(name+' seed touch height at least 44 CSS pixels',field.Height*box.height/controls.PanelHeight>=43.995);}
 function evidence(success){return {success,checks,seedPixels,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
@@ -78,6 +81,7 @@ function evidence(success){return {success,checks,seedPixels,visibility,interrup
  const target=(await send('Target.createTarget',{url:'about:blank'})).targetId;
  session=(await send('Target.attachToTarget',{targetId:target,flatten:true})).sessionId;
  await game('Runtime.enable');await game('Page.enable');
+ if(process.argv.includes('--slow-input'))await game('Emulation.setCPUThrottlingRate',{rate:6});
  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
  await until(()=>controls?.Controls.some(x=>x.Id==='new'),'Unity ready',120000);
