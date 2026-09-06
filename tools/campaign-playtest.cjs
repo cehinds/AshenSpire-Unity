@@ -11,12 +11,19 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
  const touch=process.argv.includes('--touch');
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor,hasTouch:touch,isMobile:touch,...(touch?{userAgent:'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'+browser.version()+' Mobile Safari/537.36'}:{})});activePage=page;
  const touchSession=touch?await page.context().newCDPSession(page):null;
+ async function renderedTouchFrame(){
+  // CDP acknowledges dispatch before Unity's frame loop consumes the event.
+  // Cross two animation frames so input phases remain distinct on slow renderers.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ }
  async function tap(x,y){
   if(!touch){await page.mouse.click(x,y,{delay:120});return;}
   // Hold a real touch across player frames, just as mouse clicks use a 120 ms press.
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+  await renderedTouchFrame();
   await page.waitForTimeout(120);
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await renderedTouchFrame();
  }
  async function scroll(distance){
   const beforeScroll=layout;
@@ -25,8 +32,10 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
   const contentHeight=box.height-(controls?.Controls.some(c=>c.Id==='end-turn'||c.Id==='inspection-back')?110:0);
   const x=box.x+box.width/2,start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start}]});
-  for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await page.waitForTimeout(20);}
+  await renderedTouchFrame();
+  for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await renderedTouchFrame();}
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await renderedTouchFrame();
   // On slow software renderers, the browser can finish dispatching a swipe before
   // Unity processes it. Start the settling window only after its first report.
   await until(()=>layout>beforeScroll,'Unity received touch scroll');
@@ -101,6 +110,8 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
  await click('enter-0',true);await shot('04-phone-combat');
  const mobileLayout=[];let landscapeInspectionChecks=0;
  if(process.argv.includes('--mobile-layout')){
+  const repeatIndex=process.argv.indexOf('--landscape-repeats'),landscapeRepeats=repeatIndex<0?1:Number(process.argv[repeatIndex+1]);
+  assert(Number.isInteger(landscapeRepeats)&&landscapeRepeats>=1&&landscapeRepeats<=5,'Use --landscape-repeats between 1 and 5');
   async function checkTargets(name){
    const canvas=await page.locator('#unity-canvas').boundingBox();
    const buffer=await page.locator('#unity-canvas').evaluate(c=>({width:c.width,height:c.height}));
@@ -115,6 +126,13 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
    await resize(width,height);await checkTargets('32-viewport-'+mobileLayout.length);
    if(touch&&width>height){await inspect('intent-details','will attack');landscapeInspectionChecks++;}
    assert(JSON.stringify(state)===before&&revision===beforeRevision,'rotation changed campaign state');
+  }
+  for(let repeat=1;touch&&repeat<landscapeRepeats;repeat++){
+   for(const [width,height] of [[740,320],[844,390]]){
+    await resize(width,height);await checkTargets('32-repeat-'+repeat+'-'+width);
+    await inspect('intent-details','will attack');landscapeInspectionChecks++;
+    assert(JSON.stringify(state)===before&&revision===beforeRevision,'repeated rotation changed campaign state');
+   }
   }
   await resize(390,844,'24px 18px 20px 12px');await checkTargets('33-inset-canvas');
   await inspect('intent-details','will attack','34-inset-inspection');
