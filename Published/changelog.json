@@ -18,7 +18,8 @@
     "Physical Android/iOS devices and graphical Windows play remain unverified; Android APK is for testing.",
     "Adapted campaign does not include every mechanic or content item from the original browser game.",
     "Two inherited browser CI inventory failures remain documented and waived for this work.",
-    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds."
+    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds.",
+    "Fixed-policy tests show faster Starseer runs and slower Herald runs; class balance still needs player feedback."
   ],
   "WhatToTest": [
     "Start each wanderer and try a class reward instead of always resting.",

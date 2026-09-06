@@ -2,7 +2,7 @@
 
 A mobile-first Unity adaptation of [AshenSpire](https://github.com/cehinds/AshenSpire), seeded from `dev` at `d5c982e777df06221e181c437652b705d2f6abbc`.
 
-**The Ember Endures — a complete three-act campaign.** Choose Reaver, Rogue, Herald or Starseer; follow nine encounter stops, read enemy intents, shape a deck, buy equipment and defeat the Wyrm Lord. Eighteen cards compose damage, block, poison, weakness, strength, healing, energy and draw effects. Saves, sprite pose animation, sound feedback and motion settings are included. This adaptation does not claim full mechanical parity with the original browser game.
+**The Ember Endures — a complete three-act campaign.** Choose Reaver, Rogue, Herald or Starseer; follow nine encounter stops, read enemy intents, shape a deck, buy equipment and defeat the Wyrm Lord. Twenty-five cards compose damage, block, poison, weakness, strength, healing, energy and draw effects. Saves, sprite pose animation, sound feedback and motion settings are included. This adaptation does not claim full mechanical parity with the original browser game.
 
 [Play and compare builds](https://cehinds.github.io/AshenSpire-Unity/) · [Dev](https://cehinds.github.io/AshenSpire-Unity/dev/) · [Test](https://cehinds.github.io/AshenSpire-Unity/test/) · [Release](https://cehinds.github.io/AshenSpire-Unity/release/) · [Main](https://cehinds.github.io/AshenSpire-Unity/main/)
 
@@ -10,6 +10,8 @@ Open `Unity/` in Unity Hub with Unity 6.6. Use the **AshenSpire** editor menu to
 
 - [Campaign editing and testing guide](docs/Campaign-Owner-Guide.md)
 - [Combat clarity slice (0.3.0)](docs/Campaign-0.3.0-Changes.md)
+- [Class identity slice (0.4.0)](docs/Class-Identity-0.4.0.md)
+- [Balance diagnostics](docs/Class-Identity-Balance.md)
 - [Full build brief](docs/Unity-Build-Brief.md)
 - [Current Unity slice specification](docs/UNITY-SPEC.md)
 - [Changelog](Published/changelog.json)
