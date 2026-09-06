@@ -658,7 +658,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 9.802288055419922
+      "PlayerX": 9.894596099853516
     },
     {
       "Cue": "magic",
@@ -685,7 +685,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.345771789550781
+      "PlayerX": -6.82376766204834
     },
     {
       "Cue": "hit",
@@ -712,7 +712,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 22.168643951416016
+      "PlayerX": 21.114171981811523
     },
     {
       "Cue": "attack",
@@ -739,7 +739,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 4.872501373291016
+      "PlayerX": 5.180373668670654
     },
     {
       "Cue": "guard",
@@ -766,7 +766,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 9.95513916015625
+      "PlayerX": 9.70820426940918
     },
     {
       "Cue": "magic",
@@ -793,7 +793,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -1.8019362688064575
+      "PlayerX": -1.7306650876998901
     },
     {
       "Cue": "guard",
@@ -820,7 +820,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 9.833255767822266
+      "PlayerX": 9.802288055419922
     },
     {
       "Cue": "magic",
@@ -882,7 +882,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 92
+      "layout": 79
     },
     {
       "width": 740,
@@ -895,7 +895,7 @@
       },
       "panelWidth": 740,
       "panelHeight": 320,
-      "layout": 93
+      "layout": 80
     },
     {
       "width": 844,
@@ -908,7 +908,7 @@
       },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 925
+      "layout": 177
     },
     {
       "width": 390,
@@ -921,7 +921,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 995
+      "layout": 218
     },
     {
       "width": 320,
@@ -934,7 +934,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 996
+      "layout": 219
     },
     {
       "width": 390,
@@ -947,7 +947,7 @@
       },
       "panelWidth": 405,
       "panelHeight": 900,
-      "layout": 997
+      "layout": 220
     },
     {
       "width": 390,
@@ -960,7 +960,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 1088
+      "layout": 311
     },
     {
       "width": 320,
@@ -973,7 +973,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 1089
+      "layout": 312
     },
     {
       "width": 390,
@@ -986,7 +986,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 1124
+      "layout": 347
     },
     {
       "width": 1280,
@@ -999,7 +999,7 @@
       },
       "panelWidth": 1280,
       "panelHeight": 900,
-      "layout": 1172
+      "layout": 395
     },
     {
       "width": 844,
@@ -1012,11 +1012,11 @@
       },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 1173
+      "layout": 396
     }
   ],
-  "firstLoadMilliseconds": 1713,
-  "downloadedResourceBytes": 34295162,
+  "firstLoadMilliseconds": 1688,
+  "downloadedResourceBytes": 34295241,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,

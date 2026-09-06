@@ -2,7 +2,7 @@
 // Usage: node tools/campaign-playtest.cjs [url] [evidenceDirectory] [--full]
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
-let browser,activePage,evidenceDirectory,lastEvidence,server;
+let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
 (async()=>{
  const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});evidenceDirectory=output;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
@@ -33,7 +33,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  }
  let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors};});
+ page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput};});
  let url=process.argv[2]||'http://127.0.0.1:8787';
  const upgradeIndex=process.argv.indexOf('--upgrade-from');let servedDirectory;
  if(upgradeIndex>=0){
@@ -63,11 +63,12 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  async function click(id,changesState=false,playEnabled=true){
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
   for(let attempt=0;attempt<24;attempt++){
+   const canvas=await page.locator('#unity-canvas').boundingBox();
    const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
-   const canvas=await page.locator('#unity-canvas').boundingBox();const x=canvas.x+(control.X+control.Width/2)*canvas.width/controls.PanelWidth;const y=canvas.y+(control.Y+control.Height/2)*canvas.height/controls.PanelHeight;
+   const x=canvas.x+(control.X+control.Width/2)*canvas.width/controls.PanelWidth;const y=canvas.y+(control.Y+control.Height/2)*canvas.height/controls.PanelHeight;
    const bottom=canvas.y+canvas.height-(['play','end-turn','inspection-back'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn'||x.Id==='inspection-back')?105:20);
    if(y<canvas.y+30||y>bottom){const previous=layout;await scroll(y<canvas.y+30?-450:450);await until(()=>layout>previous,'scroll layout');continue;}
-   const previous=changesState?revision:layout;await tap(x,y);await until(()=>(changesState?revision:layout)>previous,'result of '+id);
+   const previous=changesState?revision:layout;lastInput={id,x,y,canvas,control,layout,revision};await tap(x,y);await until(()=>(changesState?revision:layout)>previous,'result of '+id);
    if(changesState)await until(()=>layout>layoutAtState&&controls.Controls.every(control=>control.Width>0&&control.Height>0),'rendered state after '+id);
    if(id.startsWith('card-'))await until(()=>controls.Controls.some(control=>control.Id==='play'&&control.Enabled===playEnabled),'selected card after '+id);
    await page.waitForTimeout(150);return;
@@ -77,7 +78,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  function assert(value,description){if(!value)throw new Error(description);}
  async function inspect(id,expected,name){
   const before=JSON.stringify(state),beforeRevision=revision;
-  await click(id);assert(controls.Labels.some(text=>text.includes(expected)),id+' explanation missing');
+  await click(id);await until(()=>controls.Labels.some(text=>text.includes(expected)),'inspection content '+id);assert(controls.Labels.some(text=>text.includes(expected)),id+' explanation missing');
   assert(!controls.Controls.some(x=>x.Id==='play'||x.Id==='end-turn'),'combat actions must not remain under inspection');
   if(name)await shot(name);await click('inspection-back');
   assert(JSON.stringify(state)===before&&revision===beforeRevision,id+' changed campaign state');

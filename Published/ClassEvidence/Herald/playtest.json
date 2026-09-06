@@ -640,6 +640,7 @@
       "stateUnchanged": true
     }
   ],
+  "landscapeInspectionChecks": 0,
   "feedbackEvents": [
     {
       "Cue": "faith",
@@ -657,7 +658,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.3113374710083
+      "PlayerX": 8.202286720275879
     },
     {
       "Cue": "faith",
@@ -684,7 +685,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.368520736694336
+      "PlayerX": -6.728046417236328
     },
     {
       "Cue": "hit",
@@ -711,7 +712,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.65595245361328
+      "PlayerX": 22.239471435546875
     },
     {
       "Cue": "attack",
@@ -738,7 +739,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.0320234298706055
+      "PlayerX": 4.8907670974731445
     },
     {
       "Cue": "guard",
@@ -765,7 +766,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.520082473754883
+      "PlayerX": 8.668298721313477
     },
     {
       "Cue": "faith",
@@ -792,7 +793,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -1.8295488357543945
+      "PlayerX": -1.940146803855896
     },
     {
       "Cue": "guard",
@@ -819,7 +820,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 22.51666259765625
+      "PlayerX": 22.448286056518555
     },
     {
       "Cue": "attack",
@@ -846,7 +847,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.494680404663086
+      "PlayerX": 8.14660930633545
     },
     {
       "Cue": "faith",
@@ -873,11 +874,11 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.417283058166504
+      "PlayerX": 8.118484497070312
     },
     {
       "Cue": "faith",
-      "Status": "cancelled",
+      "Status": "completed",
       "Text": "FOE -5",
       "Reduced": false,
       "Fast": false,
@@ -900,7 +901,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.413493633270264
+      "PlayerX": -6.39109468460083
     },
     {
       "Cue": "hit",
@@ -1098,8 +1099,8 @@
       "layout": 94
     }
   ],
-  "firstLoadMilliseconds": 1483,
-  "downloadedResourceBytes": 34295162,
+  "firstLoadMilliseconds": 1521,
+  "downloadedResourceBytes": 34295241,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,

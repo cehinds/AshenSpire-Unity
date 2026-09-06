@@ -2,18 +2,18 @@
   "version": "0.7.0",
   "stage": "Three-act campaign",
   "unityVersion": "6000.6.0f1",
-  "sourceCommit": "55c64ec68ae7766acee787160e66f8bf72c95da2",
-  "sourceDigest": "592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca",
-  "builtAt": "2026-09-06T14:09:24.4344930Z",
+  "sourceCommit": "2c558b71fc15a45fb1715d3b716a7a964bd36565",
+  "sourceDigest": "2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6",
+  "builtAt": "2026-09-06T14:29:08.5325642Z",
   "files": {
-    "Web/Build/Web.data": "ee4e294108e6745dc049a48923aa23739d590dc865b5c9d0bfda764732c9a6cf",
+    "Web/Build/Web.data": "d646508bc98e02226205e14d3733055246827652b93278c5de90c37dea6ae880",
     "Web/Build/Web.framework.js": "3ca7418acd5d6bef157858e6af124cfcc20cbd9dd4f6144b9beb14825c9eebeb",
-    "Web/Build/Web.loader.js": "84c1b3d3620c17cfb5261d032751dfdd6e30cf18d82ea33357476e2385152d8c",
-    "Web/Build/Web.wasm": "3d6ea3c4d0ab2f65845ac7202ccc3fd792b37ff8f9c6b8adfc326b0bf85b44de",
-    "Web/build-source.json": "f0ebbfec6185640626aa0fe92be29e8ec3ba56096812adc9f7a1a9876de19a30",
-    "Web/index.html": "be7959c35b5c2360e1f1e75d6134dfc1b8b4a7ce9569f876b471fd3fbc07f55c",
-    "Web.zip": "d9125a4e0d275351662c6d4f274d7d155ba5e2828ad9ccb0c6ededca88994c86",
-    "Windows.zip": "f9df7318fd10aad72679befd5ca06feaa31331e7de9a9f1efb96d495854af2b5",
-    "Android.apk": "c33b692ead14ad78741625aa94740f0d07cf02ae384d5edf2402e2512853fc50"
+    "Web/Build/Web.loader.js": "eddd8c93215d5ceb2ef936fde77c26092d0ed25b00e9031c1f44a139b5707501",
+    "Web/Build/Web.wasm": "aa755cf019cb8d8f5a123d12fcb01e37097d1de8578335c636c94697ba4a29a7",
+    "Web/build-source.json": "fd0a20b552383fd96f0577950d3ca138304abe7e461e91df8f34d0a374a7c1a2",
+    "Web/index.html": "d9543c20b9dce44a9ee48daf5f3dfa78ef14fc3c27457fe76a312eee412c74e7",
+    "Web.zip": "090decc4930c7dcd627a1becbe51dc3595a0d860365b5262c575534bae2349a7",
+    "Windows.zip": "a1e248e7f4087a43de213c6a5432dc8c83d72dd669987a86714d9386cef43925",
+    "Android.apk": "939fedeb322fee2a30a8120adc23cd793123d111b77e298f41e12950baff91fc"
   }
 }

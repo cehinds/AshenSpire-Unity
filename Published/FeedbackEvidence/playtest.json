@@ -17,7 +17,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.87928009033203
+      "PlayerX": 21.034442901611328
     },
     {
       "Cue": "attack",
@@ -44,7 +44,7 @@
       "Reduced": false,
       "Fast": true,
       "Duration": 0.3,
-      "PlayerX": -6.5013251304626465
+      "PlayerX": -6.82376766204834
     },
     {
       "Cue": "hit",
@@ -125,7 +125,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.43571662902832
+      "PlayerX": -6.5013251304626465
     },
     {
       "Cue": "hit",

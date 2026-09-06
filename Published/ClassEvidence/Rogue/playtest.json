@@ -640,6 +640,7 @@
       "stateUnchanged": true
     }
   ],
+  "landscapeInspectionChecks": 0,
   "feedbackEvents": [
     {
       "Cue": "guard",
@@ -657,7 +658,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.164452075958252
+      "PlayerX": 5.180373668670654
     },
     {
       "Cue": "guard",
@@ -684,7 +685,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.413493633270264
+      "PlayerX": -6.299752712249756
     },
     {
       "Cue": "hit",
@@ -711,7 +712,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.271892547607422
+      "PlayerX": 23.28850555419922
     },
     {
       "Cue": "attack",
@@ -738,7 +739,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.114171981811523
+      "PlayerX": 22.3096866607666
     },
     {
       "Cue": "attack",
@@ -765,7 +766,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 11.747527122497559
+      "PlayerX": 12.067575454711914
     },
     {
       "Cue": "poison",
@@ -792,7 +793,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 4.8907670974731445
+      "PlayerX": 4.9624834060668945
     },
     {
       "Cue": "guard",
@@ -819,7 +820,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -1.7117685079574585
+      "PlayerX": -1.796264886856079
     },
     {
       "Cue": "guard",
@@ -846,7 +847,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 22.58441925048828
+      "PlayerX": 21.114171981811523
     },
     {
       "Cue": "attack",
@@ -873,7 +874,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 11.784196853637695
+      "PlayerX": 11.67336368560791
     },
     {
       "Cue": "poison",
@@ -927,7 +928,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.0148444175720215
+      "PlayerX": 5.0320234298706055
     },
     {
       "Cue": "guard",
@@ -1058,7 +1059,7 @@
       },
       "panelWidth": 405,
       "panelHeight": 900,
-      "layout": 13
+      "layout": 12
     },
     {
       "width": 390,
@@ -1071,7 +1072,7 @@
       },
       "panelWidth": 415.87677001953125,
       "panelHeight": 899.9999389648438,
-      "layout": 31
+      "layout": 30
     },
     {
       "width": 320,
@@ -1084,7 +1085,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 32
+      "layout": 31
     },
     {
       "width": 390,
@@ -1097,7 +1098,7 @@
       },
       "panelWidth": 415.87677001953125,
       "panelHeight": 899.9999389648438,
-      "layout": 52
+      "layout": 51
     },
     {
       "width": 1280,
@@ -1110,7 +1111,7 @@
       },
       "panelWidth": 1280,
       "panelHeight": 900,
-      "layout": 94
+      "layout": 93
     },
     {
       "width": 844,
@@ -1123,11 +1124,11 @@
       },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 95
+      "layout": 94
     }
   ],
-  "firstLoadMilliseconds": 1684,
-  "downloadedResourceBytes": 34295162,
+  "firstLoadMilliseconds": 1770,
+  "downloadedResourceBytes": 34295241,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,

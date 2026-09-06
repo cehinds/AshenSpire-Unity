@@ -16,13 +16,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <div id="frame"><canvas id="unity-canvas" tabindex="0" aria-label="AshenSpire touch card game"></canvas></div>
 <div id="loading"><h1>ASHEN SPIRE</h1><p>Waking the ember…</p><progress id="progress" value="0" max="1"></progress></div>
 <div id="channel"></div>
-<script src="Build/Web.loader.js?build=592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca"></script>
+<script src="Build/Web.loader.js?build=2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6"></script>
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
 document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.7.0';
 createUnityInstance(canvas,{
- dataUrl:'Build/Web.data?build=592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca',frameworkUrl:'Build/Web.framework.js?build=592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca',codeUrl:'Build/Web.wasm?build=592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca',
+ dataUrl:'Build/Web.data?build=2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6',frameworkUrl:'Build/Web.framework.js?build=2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6',codeUrl:'Build/Web.wasm?build=2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6',
  streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.7.0',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{

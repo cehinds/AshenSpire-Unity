@@ -48,5 +48,7 @@
       "errors": [],
       "landscapeInspectionChecks": 2
     }
-  ]
+  ],
+  "sourceCommit": "2c558b71fc15a45fb1715d3b716a7a964bd36565",
+  "sourceDigest": "2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6"
 }

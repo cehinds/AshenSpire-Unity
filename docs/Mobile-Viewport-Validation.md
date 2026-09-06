@@ -1,7 +1,7 @@
 # Mobile viewport validation — 0.7.0
 
-Compiled source: `55c64ec68ae7766acee787160e66f8bf72c95da2`.
-Source digest: `592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca`.
+Compiled source: `2c558b71fc15a45fb1715d3b716a7a964bd36565`.
+Source digest: `2eaeedaace2522361d29b99e7af812e84fc7fc77726a7fc2b9de59c7912075b6`.
 
 ## Observed
 
@@ -17,10 +17,10 @@ Source digest: `592bfd7008a64bcdf04b956db557f0494bf0dfc7d6dcc0db27a72a75437db9ca
 
 ## Test-driver corrections
 
-Initial touch attempts remained in seed-entry focus or released a tap between player frames. The driver now submits/leaves the field and holds taps across frames. A landscape probe exposed swipe inertia moving a target during a tap; the driver waits for stable observed geometry and swipes inside the scroll area above fixed actions. Those failed attempts remain in ignored Builds evidence. No gameplay workaround was added for them.
+Initial touch attempts remained in seed-entry focus or released a tap between player frames. The driver now submits/leaves the field and holds taps across frames. A landscape probe exposed swipe inertia moving a target during a tap; the driver waits for stable observed geometry and swipes inside the scroll area above fixed actions. Those failed attempts remain in ignored Builds evidence. No gameplay workaround was added for them. The first CI candidate failed a landscape inspection. The final driver records its chosen input bounds and waits for actual inspection content, instead of treating any layout update as proof of navigation.
 
 ## Boundaries
 
-The new bridge uses the displayed Web canvas height. Native screen/safe-area behavior, all domain rules, campaign JSON, save schema, scenes and prefabs are unchanged. Only PlayerSettings bundleVersion changed; Unity generated new C# and plugin metadata. No new Inspector wiring or package is required.
+The new bridge uses the displayed Web canvas height. Native screen/safe-area behavior, all domain rules, campaign JSON, save schema, scenes and prefabs are unchanged. Scroll-only updates no longer rescan touch-control sizes. Only PlayerSettings bundleVersion changed; Unity generated new C# and plugin metadata. No new Inspector wiring or package is required.
 
 Physical Android/iOS play, graphical native Windows play, native editor interaction and audible listening remain unverified. ADB found no connected devices. Android is an ARM64 test APK, version 0.7.0, minimum API 26. Insets are synthetic CSS padding, not a physical notch or browser-toolbar test. No physical-mobile performance, frame-rate or battery-life improvement is claimed. Deployment and hosted verification are recorded separately in the delivery report.
