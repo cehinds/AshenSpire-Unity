@@ -4,7 +4,7 @@ Open `Unity/` in Unity 6.6 (6000.6.0f1). Open `Assets/AshenSpire/Scenes/Expediti
 
 ## Content has one home
 
-`GameContent/Unity/campaign.json` is authoritative. `Unity/Assets/AshenSpire/Resources/campaign.json` is generated. Use **AshenSpire → Campaign Content Editor** to browse Cards, Heroes, Foes, Encounters, Equipment and Tags. Apply a record in memory, then **Save & Import**. Validation rejects bad references; a timestamped source backup goes to `Builds/ContentBackups`. Stop and restart Unity Play mode, or rebuild and reload the exported player after content changes. A new run inside an already-running player uses the previously loaded definitions.
+`GameContent/Unity/campaign.json` is authoritative. `Unity/Assets/AshenSpire/Resources/campaign.json` is generated. Use **AshenSpire → Campaign Content Editor** to edit structured Cards, Heroes, Foes, Encounters, Equipment, Tags, Feedback Cues and campaign settings. Field edits stay in the draft, support Unity Undo/Redo, and survive switching records. Use **Save & Import** after validation. Missing sprites and bad references are rejected, stale saves cannot replace externally changed source, and an exact source backup goes to `Builds/ContentBackups`. See [the 0.6 authoring guide](Content-Authoring-0.6.0.md) for draft recovery and editing recipes. Stop and restart Unity Play mode, or rebuild and reload the exported player after content changes. A new run inside an already-running player uses the previously loaded definitions.
 
 For a spreadsheet workflow:
 
@@ -14,7 +14,7 @@ python tools/campaign-table.py export Cards Builds/Cards.csv
 python tools/campaign-table.py import Cards Builds/Cards.csv
 ```
 
-Campaign card descriptions are generated from effect amounts, current strength and equipment bonuses. The Description field remains an authoring note. Effects and tag lists are JSON inside CSV cells. Preserve the header. You can substitute Foes, Heroes, Equipment, Encounters or Tags. Imports run the strict C# schema validator before replacing the JSON. Bad data leaves the source unchanged. Treat CSV as an editing interchange, not a second authoritative source.
+Campaign card descriptions are generated from effect amounts, current strength and equipment bonuses. The Description field remains an authoring note. Effects and tag lists are JSON inside CSV cells. Preserve the header. You can substitute Foes, Heroes, Equipment, Encounters, Tags or FeedbackCues. Imports run the strict C# schema, reference and sprite validator before replacing the JSON. Bad data leaves the source unchanged. Treat CSV as an editing interchange, not a second authoritative source.
 
 ## Concrete editing recipes
 
@@ -29,10 +29,10 @@ Campaign card descriptions are generated from effect amounts, current strength a
 | Replace an enemy sprite | Put a PNG under Resources/Art, select it in the editor's sprite picker, copy its stem into Foes/Art | Import validates existence; inspect full silhouette on a phone viewport |
 | Change animation | Replace a hero's `_idle`, `_attack1`, `_attack2`, `_guard`, `_hit` PNGs with matching canvases | Test attacks, guarding, taking a hit and Reduced motion |
 
-The editor's record view uses JSON for nested components. It offers duplication and a sprite picker, not arbitrary new code behaviors. The strict command-line validator also rejects unknown fields:
+The editor uses expandable structured fields for nested effects and lists, with a read-only JSON preview. Duplicate creates a readable unique ID; Add this card to reward catalog enrolls a card explicitly. New code behaviors still require implementation. The strict command-line validator also rejects unknown fields:
 
 ```powershell
-dotnet run --project UnityTests/Domain -- --validate-campaign GameContent/Unity/campaign.json
+dotnet run --project UnityTests/Authoring -- --validate-campaign GameContent/Unity/campaign.json
 ```
 
 ## Components and tags

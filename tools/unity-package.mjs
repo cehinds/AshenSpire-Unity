@@ -38,7 +38,7 @@ if(process.argv.includes('--check')){
  }else{
   execFileSync('python3',['-c','import shutil; shutil.make_archive("Published/Web", "zip", "Published/Web")'],{cwd:root});
  }
- const manifest={version:'0.5.0',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
+ const manifest={version:'0.6.0',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
  for(const path of files(join(destination,'Web'))){manifest.files[relative(destination,path).replaceAll('\\','/')]=createHash('sha256').update(readFileSync(path)).digest('hex');}
  manifest.files['Web.zip']=createHash('sha256').update(readFileSync(join(destination,'Web.zip'))).digest('hex');
  if(existsSync(join(destination,'Windows.zip')))manifest.files['Windows.zip']=createHash('sha256').update(readFileSync(join(destination,'Windows.zip'))).digest('hex');

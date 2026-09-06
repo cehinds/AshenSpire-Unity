@@ -25,6 +25,8 @@ jobs:
           node-version: '22'
       - name: Test deterministic Unity rules
         run: dotnet run --project UnityTests/Domain
+      - name: Test authoring file transactions and asset validation
+        run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
       - name: Exercise fixed campaign policies
         run: |
           mkdir -p TestResults/Balance
@@ -47,6 +49,7 @@ jobs:
           path: |
             TestResults/Browser
             TestResults/Feedback
+            TestResults/Authoring
             TestResults/Balance
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'

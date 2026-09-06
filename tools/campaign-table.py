@@ -43,7 +43,7 @@ else:
     scratch=root/'Builds/ContentValidation'; scratch.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(dir=scratch) as temporary:
         candidate=pathlib.Path(temporary)/'campaign.json';candidate.write_text(json.dumps(content,indent=2)+'\n',encoding='utf-8',newline='\n')
-        subprocess.run(['dotnet','run','--project',str(root/'UnityTests/Domain'),'--','--validate-campaign',str(candidate)],check=True,cwd=root)
+        subprocess.run(['dotnet','run','--project',str(root/'UnityTests/Authoring'),'--','--validate-campaign',str(candidate)],check=True,cwd=root)
         backup=root/'Builds/ContentBackups'/datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
         backup.mkdir(parents=True);shutil.copy2(source,backup/source.name)
         shutil.copyfile(candidate,source)
