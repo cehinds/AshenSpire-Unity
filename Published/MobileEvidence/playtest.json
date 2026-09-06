@@ -16,8 +16,74 @@
       "controlsUnchanged": true
     },
     {
-      "x": 31.333332061767578,
-      "y": 140,
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
       "stateUnchanged": true,
       "controlsUnchanged": true
     },
@@ -52,14 +118,74 @@
       "controlsUnchanged": true
     },
     {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
       "x": 31.333332061767578,
       "y": 140,
       "stateUnchanged": true,
       "controlsUnchanged": true
     },
     {
-      "x": 20.88888888888889,
-      "y": 424,
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 31.333332061767578,
+      "y": 140,
       "stateUnchanged": true,
       "controlsUnchanged": true
     },
@@ -1130,7 +1256,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.099356174468994
+      "PlayerX": 5.196152687072754
     },
     {
       "Cue": "guard",
@@ -1184,6 +1310,222 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
+      "PlayerX": 4.85410213470459
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.9624834060668945
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.50409507751465
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -1.7053754329681396
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.065967559814453
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.980073928833008
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.19332504272461
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.860750198364258
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
       "PlayerX": 4.9268951416015625
     },
     {
@@ -1211,223 +1553,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 4.980073928833008
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "started",
-      "Text": "FOE -10",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "impact",
-      "Text": "FOE -10",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 21.19332504272461
-    },
-    {
-      "Cue": "attack",
-      "Status": "completed",
-      "Text": "FOE -10",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "ENEMY GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "ENEMY GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": -1.736869215965271
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "ENEMY GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 5.0148444175720215
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 5.132185459136963
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "started",
-      "Text": "FOE -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "impact",
-      "Text": "FOE -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 22.097209930419922
-    },
-    {
-      "Cue": "attack",
-      "Status": "completed",
-      "Text": "FOE -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "hit",
-      "Status": "started",
-      "Text": "ENEMY ATTACK  ·  VITALITY -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "hit",
-      "Status": "impact",
-      "Text": "ENEMY ATTACK  ·  VITALITY -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": -6.43571662902832
-    },
-    {
-      "Cue": "hit",
-      "Status": "completed",
-      "Text": "ENEMY ATTACK  ·  VITALITY -9",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 4.944757461547852
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "GUARD",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 4.980073928833008
+      "PlayerX": 4.9624834060668945
     },
     {
       "Cue": "guard",
@@ -1494,7 +1620,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 6
+      "layout": 5
     },
     {
       "width": 740,
@@ -1507,7 +1633,7 @@
       },
       "panelWidth": 740,
       "panelHeight": 320,
-      "layout": 7
+      "layout": 6
     },
     {
       "width": 844,
@@ -1520,7 +1646,7 @@
       },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 35
+      "layout": 25
     },
     {
       "width": 390,
@@ -1533,7 +1659,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 51
+      "layout": 29
     },
     {
       "width": 320,
@@ -1546,7 +1672,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 52
+      "layout": 30
     },
     {
       "width": 740,
@@ -1559,46 +1685,46 @@
       },
       "panelWidth": 740,
       "panelHeight": 320,
+      "layout": 31
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 40
+    },
+    {
+      "width": 740,
+      "height": 320,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "panelWidth": 740,
+      "panelHeight": 320,
+      "layout": 44
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
       "layout": 53
-    },
-    {
-      "width": 844,
-      "height": 390,
-      "canvas": {
-        "x": 0,
-        "y": 0,
-        "width": 844,
-        "height": 390
-      },
-      "panelWidth": 844,
-      "panelHeight": 390,
-      "layout": 80
-    },
-    {
-      "width": 740,
-      "height": 320,
-      "canvas": {
-        "x": 0,
-        "y": 0,
-        "width": 740,
-        "height": 320
-      },
-      "panelWidth": 740,
-      "panelHeight": 320,
-      "layout": 95
-    },
-    {
-      "width": 844,
-      "height": 390,
-      "canvas": {
-        "x": 0,
-        "y": 0,
-        "width": 844,
-        "height": 390
-      },
-      "panelWidth": 844,
-      "panelHeight": 390,
-      "layout": 123
     },
     {
       "width": 390,
@@ -1611,7 +1737,7 @@
       },
       "panelWidth": 405,
       "panelHeight": 900,
-      "layout": 139
+      "layout": 57
     },
     {
       "width": 390,
@@ -1624,7 +1750,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 168
+      "layout": 67
     },
     {
       "width": 320,
@@ -1637,7 +1763,7 @@
       },
       "panelWidth": 389.1891784667969,
       "panelHeight": 900,
-      "layout": 169
+      "layout": 68
     },
     {
       "width": 390,
@@ -1650,7 +1776,7 @@
       },
       "panelWidth": 415.8768005371094,
       "panelHeight": 900,
-      "layout": 204
+      "layout": 82
     },
     {
       "width": 1280,
@@ -1663,7 +1789,7 @@
       },
       "panelWidth": 1280,
       "panelHeight": 900,
-      "layout": 261
+      "layout": 120
     },
     {
       "width": 844,
@@ -1676,11 +1802,11 @@
       },
       "panelWidth": 844,
       "panelHeight": 390,
-      "layout": 262
+      "layout": 121
     }
   ],
-  "firstLoadMilliseconds": 1717,
-  "downloadedResourceBytes": 34306160,
+  "firstLoadMilliseconds": 1673,
+  "downloadedResourceBytes": 34307217,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,

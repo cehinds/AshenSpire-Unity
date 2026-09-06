@@ -1,4 +1,4 @@
-# Web rotation rendering — 0.8.2
+# Web rotation rendering â€” 0.8.2
 
 Issue #29 reproduces missing label geometry and `GfxDevice::CopyBufferRanges` errors when a player starts an expedition, returns to choose another, edits its seed, switches tabs and rotates the screen. Both typed campaign seeds remain correct. The renderer's staging allocation is too small for the expanded copy ranges.
 

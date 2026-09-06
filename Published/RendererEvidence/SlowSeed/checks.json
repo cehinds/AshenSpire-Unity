@@ -250,6 +250,7 @@
       }
     }
   ],
+  "layoutRetries": [],
   "visibility": [
     "hidden",
     "visible",
@@ -460,6 +461,6 @@
     ]
   },
   "revision": 2,
-  "layout": 18,
+  "layout": 14,
   "physicalDevice": false
 }

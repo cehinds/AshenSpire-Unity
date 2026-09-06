@@ -1,0 +1,294 @@
+{
+  "success": false,
+  "checks": [
+    "02-title stops audio",
+    "02-title preserves campaign while covered",
+    "02-title exposes only the return control",
+    "02-title returns without a command",
+    "portrait seed touch height at least 44 CSS pixels",
+    "03-draft-before rendered digits have at least 4.5 contrast",
+    "first draft campaign starts with the exact typed seed",
+    "seed-02-selected rendered digits have at least 4.5 contrast",
+    "out of range seed stays on hero screen",
+    "seed-04-edited rendered digits have at least 4.5 contrast",
+    "03-draft stops audio"
+  ],
+  "seedPixels": [
+    {
+      "name": "03-draft-before",
+      "foreground": {
+        "rgb": "216,210,197",
+        "count": 21,
+        "luminance": 0.6472333421007022
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 34381,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.144021007189565
+    },
+    {
+      "name": "seed-02-selected",
+      "foreground": {
+        "rgb": "203,181,151",
+        "count": 11,
+        "luminance": 0.47978622658639214
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 30540,
+          "luminance": 0.012565688062763173
+        },
+        {
+          "rgb": "77,63,44",
+          "count": 2988,
+          "luminance": 0.05314643189456311
+        }
+      ],
+      "contrast": 5.136253546103687
+    },
+    {
+      "name": "seed-04-edited",
+      "foreground": {
+        "rgb": "217,211,198",
+        "count": 11,
+        "luminance": 0.6541746190452311
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 34211,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.25496483533968
+    }
+  ],
+  "seedCampaigns": [
+    {
+      "stage": "first draft",
+      "expected": 240987,
+      "observed": 240987,
+      "revision": 1,
+      "state": {
+        "SchemaVersion": 1,
+        "HeroId": "reaver",
+        "Seed": 240987,
+        "RandomState": 240987,
+        "Health": 70,
+        "MaxHealth": 70,
+        "Energy": 0,
+        "Block": 0,
+        "EnemyHealth": 0,
+        "EnemyBlock": 0,
+        "EnemyPoison": 0,
+        "Poison": 0,
+        "Weak": 0,
+        "Strength": 0,
+        "EnemyStrength": 0,
+        "Encounter": 0,
+        "Route": 0,
+        "Turn": 0,
+        "Cinders": 0,
+        "Potions": 3,
+        "FoesDefeated": 0,
+        "Rested": false,
+        "Phase": 0,
+        "Deck": [
+          "strike",
+          "strike",
+          "defend",
+          "defend",
+          "cleave",
+          "cleave",
+          "rage",
+          "rage"
+        ],
+        "Draw": [],
+        "Hand": [],
+        "Discard": [],
+        "Items": [],
+        "Rewards": []
+      }
+    }
+  ],
+  "visibility": [
+    "hidden",
+    "visible",
+    "hidden",
+    "visible"
+  ],
+  "interruptions": [
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    }
+  ],
+  "feedback": [],
+  "sounds": [],
+  "screenshots": [
+    "01-title",
+    "02-title-paused",
+    "02-title-returned",
+    "seed-01-empty",
+    "03-draft-before",
+    "seed-01-first-campaign",
+    "seed-02-selected",
+    "seed-03-invalid",
+    "seed-04-edited",
+    "failure"
+  ],
+  "errors": [
+    "Error: Timed out: return cover\n    at until (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:12:154)\n    at async interrupt (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:106:22)\n    at async /home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:145:3"
+  ],
+  "errorContexts": [],
+  "lastInput": {
+    "id": "new",
+    "x": 194.9999910566547,
+    "y": 516.0000020345052
+  },
+  "state": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 240987,
+    "RandomState": 240987,
+    "Health": 70,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 0,
+    "Route": 0,
+    "Turn": 0,
+    "Cinders": 0,
+    "Potions": 3,
+    "FoesDefeated": 0,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage"
+    ],
+    "Draw": [],
+    "Hand": [],
+    "Discard": [],
+    "Items": [],
+    "Rewards": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "hero-reaver",
+        "X": 33.412322998046875,
+        "Y": 458.53082275390625,
+        "Width": 349.0521545410156,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "hero-rogue",
+        "X": 33.412322998046875,
+        "Y": 860.1895751953125,
+        "Width": 349.0521545410156,
+        "Height": 49.7630615234375,
+        "Enabled": true
+      },
+      {
+        "Id": "hero-herald",
+        "X": 33.412322998046875,
+        "Y": 1244.0758056640625,
+        "Width": 349.0521545410156,
+        "Height": 50.4739990234375,
+        "Enabled": true
+      },
+      {
+        "Id": "hero-starseer",
+        "X": 33.412322998046875,
+        "Y": 1627.962158203125,
+        "Width": 349.0521545410156,
+        "Height": 50.473876953125,
+        "Enabled": true
+      },
+      {
+        "Id": "back",
+        "X": 17.772512435913086,
+        "Y": 1716.11376953125,
+        "Width": 380.3317565917969,
+        "Height": 49.7630615234375,
+        "Enabled": true
+      },
+      {
+        "Id": "seed",
+        "X": 17.772512435913086,
+        "Y": 105.9241714477539,
+        "Width": 380.3317565917969,
+        "Height": 51.89574432373047,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 415.8768005371094,
+    "PanelHeight": 900,
+    "Labels": [
+      "CHOOSE YOUR WANDERER",
+      "Each loadout changes how you survive.",
+      "Expedition seed (optional)",
+      "Reaver · 70 vitality",
+      "Build strength, then commit to heavy attacks. Class gear rewards replacing basic strikes.",
+      "Starting deck · 2 × Strike, 2 × Defend, 2 × Cleave, 2 × Battle Cry",
+      "Rogue · 60 vitality",
+      "Stack poison, weaken attacks and block while poison works. Quickstep costs no energy but does not draw.",
+      "Starting deck · 2 × Strike, 2 × Defend, 2 × Venom Edge, 1 × Quickstep, 1 × Feint",
+      "Herald · 64 vitality",
+      "Mix faith attacks, healing and protection. Healing gear improves faith cards, not flasks.",
+      "Starting deck · 1 × Strike, 2 × Defend, 2 × Smite, 2 × Golden Prayer, 1 × Warding Blow",
+      "Starseer · 56 vitality",
+      "Draw toward powerful magic. Repeated damage effects each benefit from matching equipment.",
+      "Starting deck · 1 × Strike, 2 × Defend, 2 × Star Bolt, 2 × Insight, 1 × Falling Star"
+    ]
+  },
+  "revision": 1,
+  "layout": 8,
+  "physicalDevice": false
+}
