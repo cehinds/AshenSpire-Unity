@@ -4,7 +4,7 @@ Open `Unity/` in Unity 6.6 (6000.6.0f1). Open `Assets/AshenSpire/Scenes/Expediti
 
 ## Content has one home
 
-`GameContent/Unity/campaign.json` is authoritative. `Unity/Assets/AshenSpire/Resources/campaign.json` is generated. Use **AshenSpire → Campaign Content Editor** to browse Cards, Heroes, Foes, Encounters, Equipment and Tags. Apply a record in memory, then **Save & Import**. Validation rejects bad references; a timestamped source backup goes to `Builds/ContentBackups`. Restart the expedition after content changes.
+`GameContent/Unity/campaign.json` is authoritative. `Unity/Assets/AshenSpire/Resources/campaign.json` is generated. Use **AshenSpire → Campaign Content Editor** to browse Cards, Heroes, Foes, Encounters, Equipment and Tags. Apply a record in memory, then **Save & Import**. Validation rejects bad references; a timestamped source backup goes to `Builds/ContentBackups`. Stop and restart Unity Play mode, or rebuild and reload the exported player after content changes. A new run inside an already-running player uses the previously loaded definitions.
 
 For a spreadsheet workflow:
 
@@ -68,3 +68,7 @@ Settings include Reduced motion, Quick animations and Mute sound. The Audio reco
 ## What remains beyond this campaign
 
 This is a complete start-to-ending campaign, not full mechanical parity with the original browser game. Original stamina/mana/Poise systems, full status DSL, weapon-driven card recomposition and the complete content roster are not ported. Physical-device performance, iOS builds, touch-device coverage, a composed soundtrack and richer frame animation remain separate work. Automatic Unity compilation requires a dedicated runner/licensing decision; Pages validates and publishes already-exported builds.
+
+## Combat clarity (0.3.0)
+
+Intent and status controls open read-only explanations. Draw/discard inspection groups cards without exposing draw order. Recent actions retain twelve results during the current session; they are not part of saved state. Unaffordable cards remain inspectable but cannot be played. Edit CampaignSession.cs for explanations and effect feedback, CampaignView.cs for inspection navigation, and Expedition.uss for appearance.

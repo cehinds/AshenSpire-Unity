@@ -27,6 +27,9 @@ namespace AshenSpire.Domain
         private readonly Dictionary<string, CardDefinition> _cards;
         private readonly Dictionary<string, Action<int>> _effects;
         private CardDefinition _playing;
+        // Feedback is session-local, bounded, and never part of deterministic saved state.
+        private readonly List<string> _recentActions = new List<string>();
+        public IReadOnlyList<string> RecentActions => _recentActions.AsReadOnly();
         public CampaignState State
         {
             get;
@@ -140,24 +143,66 @@ namespace AshenSpire.Domain
             _playing = card;
             State.Energy -= card.Cost;
             State.Hand.RemoveAt(index);
+            var results = new List<string>();
             foreach (var effect in card.Effects)
+            {
+                var health = State.Health;
+                var enemyHealth = State.EnemyHealth;
+                var enemyBlock = State.EnemyBlock;
+                var block = State.Block;
+                var hand = State.Hand.Count;
+                var energy = State.Energy;
                 _effects[effect.Operation](effect.Amount);
+                switch (effect.Operation)
+                {
+                    case "damage": results.Add((enemyHealth - State.EnemyHealth) + " damage dealt; " + (enemyBlock - State.EnemyBlock) + " blocked"); break;
+                    case "block": results.Add((State.Block - block) + " block gained"); break;
+                    case "draw": results.Add((State.Hand.Count - hand) + " cards drawn"); break;
+                    case "heal": results.Add((State.Health - health) + " vitality restored"); break;
+                    case "energy": results.Add((State.Energy - energy) + " energy gained"); break;
+                    case "poison": results.Add(effect.Amount + " enemy poison added"); break;
+                    case "weak": results.Add(effect.Amount + " enemy weak turns added"); break;
+                    case "strength": results.Add(effect.Amount + " strength gained"); break;
+                }
+            }
             State.Discard.Add(card.Id);
             CheckVictory();
-            Notify(card.Name + " played.");
+            Notify(card.Name + " · " + card.Cost + " energy spent. " + string.Join(". ", results) + ".");
             return true;
         }
         public int AttackIntent => Math.Max(0, Intent.Amount + State.EnemyStrength - (State.Weak > 0 ? 3 : 0));
+        public string DescribeIntent()
+        {
+            var intent = Intent;
+            switch (intent.Operation)
+            {
+                case "attack": return Enemy.Name + " will attack for " + AttackIntent + ". Your " + State.Block + " block absorbs up to that amount; currently " + Math.Max(0, AttackIntent - State.Block) + " damage gets through. Enemy poison resolves first and can prevent this action.";
+                case "guard": return Enemy.Name + " will gain " + intent.Amount + " block, lasting through your next turn. Direct damage consumes block; poison bypasses it.";
+                case "charge": return Enemy.Name + " will gain " + intent.Amount + " strength. Strength increases each later attack in this fight; charging itself deals no direct damage.";
+                case "poison": return Enemy.Name + " will add " + intent.Amount + " poison to you. Your poison then deals damage immediately, bypassing block, and decreases by one.";
+                default: throw new ArgumentException("Unsupported intent.");
+            }
+        }
+        public string DescribeStatuses() =>
+            "YOUR BLOCK · " + State.Block + "\nAbsorbs direct enemy attack damage. Resets when your next turn begins.\n\n" +
+            "ENEMY BLOCK · " + State.EnemyBlock + "\nAbsorbs direct card damage. Expires before the enemy's next action.\n\n" +
+            "YOUR POISON · " + State.Poison + "\nDeals damage after the enemy acts, bypassing block; then decreases by one. New poison from the enemy also ticks immediately.\n\n" +
+            "ENEMY POISON · " + State.EnemyPoison + "\nDeals damage before the enemy acts, bypassing block; then decreases by one. A lethal tick prevents retaliation.\n\n" +
+            "YOUR STRENGTH · " + State.Strength + "\nAdds to each damage effect on your cards for this battle. Card descriptions include this and applicable equipment bonuses.\n\n" +
+            "ENEMY STRENGTH · " + State.EnemyStrength + "\nAdds to enemy attacks for this battle. The displayed intent includes it.\n\n" +
+            "ENEMY WEAK · " + State.Weak + " turns\nReduces enemy attack damage by 3, to a minimum of zero. Decreases after every enemy action, including non-attacks.";
         public bool EndTurn()
         {
             if (State.Phase != RunPhase.Combat)
                 return false;
+            var turn = State.Turn;
+            var enemyPoisonDamage = Math.Min(State.EnemyHealth, State.EnemyPoison);
             State.EnemyHealth = Math.Max(0, State.EnemyHealth - State.EnemyPoison);
             if (State.EnemyPoison > 0)
                 State.EnemyPoison--;
             if (CheckVictory())
             {
-                Notify("Poison defeats " + Enemy.Name + ".");
+                Notify("Turn " + turn + " · Enemy poison deals " + enemyPoisonDamage + ", defeating " + Enemy.Name + " before it acts.");
                 return true;
             }
             State.EnemyBlock = 0;
@@ -168,7 +213,7 @@ namespace AshenSpire.Domain
                 case "attack":
                     var damage = Math.Max(0, AttackIntent - State.Block);
                     State.Health = Math.Max(0, State.Health - damage);
-                    action = Enemy.Name + " deals " + damage + " damage.";
+                    action = Enemy.Name + " attacks for " + AttackIntent + ": " + Math.Min(State.Block, AttackIntent) + " blocked, " + damage + " damage gets through.";
                     break;
                 case "guard":
                     State.EnemyBlock = intent.Amount;
@@ -176,15 +221,16 @@ namespace AshenSpire.Domain
                     break;
                 case "charge":
                     State.EnemyStrength += intent.Amount;
-                    action = Enemy.Name + " prepares a stronger attack.";
+                    action = Enemy.Name + " gains " + intent.Amount + " strength (now " + State.EnemyStrength + ").";
                     break;
                 case "poison":
                     State.Poison += intent.Amount;
-                    action = Enemy.Name + " inflicts poison.";
+                    action = Enemy.Name + " adds " + intent.Amount + " poison to you.";
                     break;
             }
             if (State.Weak > 0)
                 State.Weak--;
+            var playerPoisonDamage = Math.Min(State.Health, State.Poison);
             State.Health = Math.Max(0, State.Health - State.Poison);
             if (State.Poison > 0)
                 State.Poison--;
@@ -196,7 +242,7 @@ namespace AshenSpire.Domain
                 State.Hand.Clear();
                 BeginTurn();
             }
-            Notify(action);
+            Notify("Turn " + turn + " · " + (enemyPoisonDamage > 0 ? "Enemy poison deals " + enemyPoisonDamage + ". " : "") + action + (playerPoisonDamage > 0 ? " Your poison deals " + playerPoisonDamage + " vitality damage, bypassing block." : ""));
             return true;
         }
         private bool CheckVictory()
@@ -272,8 +318,9 @@ namespace AshenSpire.Domain
             if (State.Phase != RunPhase.Combat || State.Potions < 1 || State.Health == State.MaxHealth)
                 return false;
             State.Potions--;
+            var restored = Math.Min(State.MaxHealth - State.Health, _content.PotionHealing);
             State.Health = Math.Min(State.MaxHealth, State.Health + _content.PotionHealing);
-            Notify("Crimson flask restores vitality.");
+            Notify("Crimson flask restores " + restored + " vitality.");
             return true;
         }
         private int Bonus(string operation, string[] tags) => _content.Equipment.Where(x => State.Items.Contains(x.Id) && x.Operation == operation && tags.Contains(x.RequiredTag)).Sum(x => x.Amount);
@@ -325,6 +372,9 @@ namespace AshenSpire.Domain
         private void Notify(string message)
         {
             LastAction = message;
+            _recentActions.Add(message);
+            if (_recentActions.Count > 12)
+                _recentActions.RemoveAt(0);
             Changed?.Invoke();
         }
     }

@@ -1,7 +1,7 @@
 // RunController.cs — connects campaign rules, view and local save storage.
 // ATTACH: one instance on ExpeditionRoot in Scenes/Expedition.unity.
 // INSPECTOR: assign PanelSettings; BuildTools creates the initial reference.
-// LIFECYCLE: OnEnable binds commands; OnDisable unsubscribes/saves; pause saves.
+// LIFECYCLE: OnEnable binds commands; OnDisable unsubscribes/disposes view/saves; pause saves.
 // Update adjusts viewport scaling only. CampaignSession owns all gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
@@ -182,6 +182,7 @@ namespace AshenSpire.Application
                 _session.Changed -= Refresh;
             if (_view == null)
                 return;
+            _view.Dispose();
             _view.MuteRequested -= Mute;
             _view.StartRequested -= StartRun;
             _view.ContinueRequested -= Resume;

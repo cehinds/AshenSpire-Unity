@@ -46,3 +46,10 @@ Label { white-space: normal; }
 .seed-field { min-height: 48px; margin: 12px 0; font-size: 15px; }
 .setting { min-height: 52px; font-size: 17px; margin: 12px 0; }
 .report-field { min-height: 240px; margin: 12px 0; }
+.intent-control { color: rgb(239,188,145); min-height: 48px; font-size: 13px; }
+.detail-copy { font-size: 16px; color: rgb(225,220,208); margin: 12px 0; }
+.inspection-row { flex-direction: row; }
+.inspection-row > .button { flex-grow: 1; margin-left: 0; margin-right: 5px; }
+.card.unaffordable { background-color: rgb(24,28,33); border-color: rgb(92,77,67); }
+.card.unaffordable > .cost { color: rgb(227,160,140); }
+.actions > .button:disabled { opacity: 1; background-color: rgb(38,42,47); color: rgb(192,190,182); border-color: rgb(78,78,73); }

@@ -11,6 +11,37 @@ public static class CampaignChecks
         void Check(bool value,string name){if(!value)throw new Exception("FAIL: "+name);passed++;Console.WriteLine("PASS: "+name);}
         void Reject(Action action,string name){try{action();}catch(ArgumentException){Check(true,name);return;}throw new Exception("FAIL: expected rejection "+name);}
         var content=Content();content.Validate();
+        var feedback=new CampaignSession(content,"reaver",5);feedback.Enter(0);
+        feedback.State.Hand=new(){"strike"};feedback.State.EnemyBlock=4;
+        feedback.Play(0);
+        Check(feedback.LastAction.Contains("2 damage dealt; 4 blocked"),"card feedback reports absorbed and actual damage separately");
+        feedback.State.Health=feedback.State.MaxHealth-2;feedback.DrinkPotion();
+        Check(feedback.LastAction.Contains("2 vitality"),"flask feedback reports capped healing");
+        feedback.State.EnemyStrength=4;feedback.State.Weak=1;feedback.State.Block=2;
+        var expectedAttack=feedback.AttackIntent;
+        var feedbackSnapshot=JsonSerializer.Serialize(feedback.State,options);var changes=0;feedback.Changed+=()=>changes++;
+        Check(feedback.DescribeIntent().Contains("attack for "+expectedAttack)&&feedback.DescribeIntent().Contains("currently "+Math.Max(0,expectedAttack-2)+" damage"),"intent explanation includes strength weakness and current block");
+        Check(feedback.DescribeStatuses().Contains("ENEMY WEAK · 1 turns")&&feedback.DescribeStatuses().Contains("including non-attacks"),"status explanation identifies the weak target and decay timing");
+        Check(JsonSerializer.Serialize(feedback.State,options)==feedbackSnapshot&&changes==0,"inspection leaves all saved fields RNG and command events unchanged");
+        feedback.State.EnemyPoison=2;feedback.State.Poison=3;feedback.EndTurn();
+        Check(feedback.LastAction.Contains("Enemy poison deals 2")&&feedback.LastAction.Contains("Your poison deals 3"),"end-turn feedback distinguishes both poison ticks from enemy action");
+        for(var i=0;i<20;i++){feedback.State.Phase=RunPhase.Combat;feedback.State.Health=feedback.State.MaxHealth-1;feedback.State.Potions=1;feedback.DrinkPotion();}
+        Check(feedback.RecentActions.Count==12&&feedback.RecentActions.Last()==feedback.LastAction,"history is bounded and keeps the latest outcome");
+        var historyCount=feedback.RecentActions.Count;Check(!feedback.Play(99)&&feedback.RecentActions.Count==historyCount,"rejected commands do not add feedback");
+        var feedbackResume=new CampaignSession(content,JsonSerializer.Deserialize<CampaignState>(JsonSerializer.Serialize(feedback.State,options),options)!);
+        Check(feedbackResume.RecentActions.Count==0,"feedback history remains transient without a save schema change");
+        foreach(var operation in new[]{"guard","charge","poison"})
+        {
+            var intentContent=Content();
+            var foe=intentContent.Foes.First(x=>x.Id==intentContent.Encounters[0].Options[0]);
+            foe.Intents=new[]{new EffectDefinition{Operation=operation,Amount=4}};
+            var intentRun=new CampaignSession(intentContent,"reaver",8);intentRun.Enter(0);intentRun.State.Weak=2;
+            var explanation=intentRun.DescribeIntent();var beforeHealth=intentRun.State.Health;
+            intentRun.EndTurn();
+            Check(explanation.Contains("4")&&intentRun.State.Weak==1&&
+                (operation=="guard"?intentRun.State.EnemyBlock==4:operation=="charge"?intentRun.State.EnemyStrength==4:intentRun.State.Poison==3&&intentRun.State.Health==beforeHealth-4),
+                operation+" explanation agrees with amount, immediate effect and non-attack weak decay");
+        }
         var energyRun=new CampaignSession(content,"reaver",7);energyRun.Enter(0);
         energyRun.State.Hand=new(){"tempo"};energyRun.State.Draw=new(){"strike"};
         var energyBefore=energyRun.State.Energy;energyRun.Play(0);

@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace AshenSpire.Presentation
 {
-    public sealed class CampaignView
+    public sealed class CampaignView : IDisposable
     {
         private readonly VisualElement _root;
         private readonly bool _diagnostics;
@@ -39,7 +39,15 @@ namespace AshenSpire.Presentation
             _muted = muted;
             root.AddToClassList("app");
             root.styleSheets.Add(Resources.Load<StyleSheet>("Expedition"));
+            root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
+        private void OnGeometryChanged(GeometryChangedEvent change)
+        {
+            foreach (var button in _root.Query<Button>().ToList())
+                button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, MinimumTouchHeight);
+            Report();
+        }
+        public void Dispose() => _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
             Shell("ASHEN SPIRE", "THREE ACTS · ONE EMBER · YOUR PATH");
@@ -152,11 +160,11 @@ namespace AshenSpire.Presentation
             stage.Add(_player);
             stage.Add(_enemy);
             _body.Add(stage);
-            _body.Add(Text(session.Enemy.Name + " · " + s.EnemyHealth + " / " + session.Enemy.Health, "node-title"));
+            _body.Add(Text(session.Enemy.Name + " · " + s.EnemyHealth + " / " + session.Enemy.Health + "\nEnemy block · " + s.EnemyBlock, "node-title"));
             var intent = session.Intent;
-            _body.Add(Text("INTENT: " + intent.Operation.ToUpperInvariant() + " " + (intent.Operation == "attack" ? session.AttackIntent : intent.Amount) + "    |    ENEMY BLOCK " + s.EnemyBlock, "intent"));
+            AddButton("intent-details", "INTENT: " + intent.Operation.ToUpperInvariant() + " " + (intent.Operation == "attack" ? session.AttackIntent : intent.Amount) + " · Tap to explain", () => Details(session, "ENEMY INTENT", session.DescribeIntent()), "intent-control");
             _body.Add(Text("TURN " + s.Turn + "   ·   " + s.Energy + " ENERGY   ·   " + s.Block + " BLOCK", "energy"));
-            _body.Add(Text("Poison: you " + s.Poison + " / foe " + s.EnemyPoison + "   ·   Strength " + s.Strength + "   ·   Weak turns " + s.Weak, "caption"));
+            AddButton("status-details", "Statuses · poison " + s.Poison + " / " + s.EnemyPoison + " · strength " + s.Strength + " · enemy weak " + s.Weak, () => Details(session, "COMBAT STATUSES", session.DescribeStatuses()), "small");
             var hand = new VisualElement();
             hand.AddToClassList("hand");
             _body.Add(hand);
@@ -173,20 +181,27 @@ namespace AshenSpire.Presentation
                 control.Add(Text(card.Name, "card-name"));
                 control.Add(Text(session.Describe(card), "card-description"));
                 control.Add(Text(string.Join(" · ", card.Tags), "card-tags"));
-                control.SetEnabled(card.Cost <= s.Energy);
+                if (card.Cost > s.Energy) control.AddToClassList("unaffordable");
                 control.clicked += () =>
                 {
                     var cancel = _selected == index;
                     foreach (var child in hand.Children()) child.RemoveFromClassList("selected");
                     _selected = cancel ? -1 : index;
                     if (!cancel) control.AddToClassList("selected");
-                    play.text = cancel ? "Select a card" : "Play " + card.Name;
-                    play.SetEnabled(!cancel); help.text = cancel ? session.LastAction : session.Describe(card); Report();
+                    play.text = cancel ? "Select a card" : card.Cost > s.Energy ? "Need " + card.Cost + " energy" : "Play " + card.Name;
+                    play.SetEnabled(!cancel && card.Cost <= s.Energy);
+                    help.text = cancel ? session.LastAction : card.Name + " · " + card.Cost + " energy\n" + session.Describe(card) + (card.Cost > s.Energy ? "\nNot enough energy. Tap again to cancel." : "\nTap again to cancel, or Play to confirm.");
+                    Report();
                 };
                 hand.Add(control);
             }
             _body.Add(help);
-            _body.Add(Text("Draw " + s.Draw.Count + " · Discard " + s.Discard.Count, "caption"));
+            var piles = new VisualElement();
+            piles.AddToClassList("inspection-row");
+            piles.Add(Control("draw-pile", "Draw · " + s.Draw.Count, () => Pile(session, true), "small"));
+            piles.Add(Control("discard-pile", "Discard · " + s.Discard.Count, () => Pile(session, false), "small"));
+            _body.Add(piles);
+            AddButton("action-history", "Recent actions", () => Details(session, "RECENT ACTIONS", session.RecentActions.Count == 0 ? "No actions recorded in this session. History starts again after reloading; your expedition state is preserved." : "Newest first · this session only\n\n" + string.Join("\n\n", session.RecentActions.Reverse())), "small");
             var flask = AddButton("potion", "Crimson flask · " + s.Potions + " left · heal " + session.Content.PotionHealing, () => PotionRequested?.Invoke());
             flask.SetEnabled(s.Potions > 0 && s.Health < s.MaxHealth);
             var actions = new VisualElement();
@@ -194,6 +209,37 @@ namespace AshenSpire.Presentation
             actions.Add(play);
             actions.Add(Control("end-turn", "End turn", () => EndTurnRequested?.Invoke()));
             _root.Add(actions);
+        }
+        private void Details(CampaignSession session, string title, string description)
+        {
+            Shell(title, "Read-only · your turn waits for you");
+            _body.Add(Text(description, "detail-copy"));
+            InspectionReturn(session);
+        }
+        private void Pile(CampaignSession session, bool draw)
+        {
+            var cards = draw ? session.State.Draw : session.State.Discard;
+            Shell(draw ? "DRAW PILE" : "DISCARD PILE", cards.Count + " cards · grouped by name, not draw order");
+            _body.Add(Text(draw ? "Draw order stays hidden. When this pile empties, discards shuffle into it as more cards are drawn." : "Played cards and unplayed end-of-turn cards go here. They shuffle into the draw pile when it empties.", "detail-copy"));
+            if (cards.Count == 0) _body.Add(Text("This pile is empty.", "node-title"));
+            foreach (var group in cards.GroupBy(id => id).OrderBy(group => session.Card(group.Key).Name, StringComparer.Ordinal).ThenBy(group => group.Key, StringComparer.Ordinal))
+            {
+                var card = session.Card(group.Key);
+                var panel = new VisualElement();
+                panel.AddToClassList("panel");
+                panel.Add(Text(group.Count() + " × " + card.Name + " · " + card.Cost + " energy", "node-title"));
+                panel.Add(Text(session.Describe(card), "detail-copy"));
+                _body.Add(panel);
+            }
+            InspectionReturn(session);
+        }
+        private void InspectionReturn(CampaignSession session)
+        {
+            var actions = new VisualElement();
+            actions.AddToClassList("actions");
+            actions.Add(Control("inspection-back", "Return to combat", () => Render(session), "primary"));
+            _root.Add(actions);
+            Report();
         }
         private void Reward(CampaignSession session)
         {
@@ -335,8 +381,12 @@ namespace AshenSpire.Presentation
             result.AddToClassList("button");
             if (style != null)
                 result.AddToClassList(style);
+            result.style.minHeight = Mathf.Max(50, MinimumTouchHeight);
             return result;
         }
+        // Match RunController's reference-height scaling so 44 UI points cannot shrink
+        // below 44 screen pixels on a narrow portrait viewport.
+        private static float MinimumTouchHeight => Mathf.Ceil(44f * (Screen.height < 600 ? Screen.height : 900) / Math.Max(1, Screen.height));
         private static Label Text(string value, string style)
         {
             var label = new Label(value);
@@ -357,13 +407,13 @@ namespace AshenSpire.Presentation
         [Serializable]
         private sealed class ControlList
         {
-            public ControlBounds[] Controls; public float PanelWidth, PanelHeight;
+            public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
         }
         private void Report()
         {
             if (!_diagnostics)
                 return;
-            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height })); }).StartingIn(180);
+            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
         }
     }
 }

@@ -1,23 +1,16 @@
 {
   "Added": [
-    "Complete three-act expedition with Reaver, Rogue, Herald and Starseer; nine encounter stops, route choices and three bosses.",
-    "Eighteen cards, poison/weakness/strength, cyclic enemy intents, six equipment items, flasks, rest and deck removal.",
-    "Campaign JSON record editor, validated CSV interchange, development component gallery and bug-report preview.",
-    "Android test APK, per-channel campaign saves with backup, sound feedback, mute and motion settings."
+    "Tap-accessible enemy intent and combat status explanations using current values.",
+    "Grouped draw/discard inspection with hidden draw order and empty-pile messages.",
+    "A bounded recent-action history with actual damage, blocked damage, healing and poison feedback."
   ],
   "Changed": [
-    "Replaced prototype enemies with twelve coherent painterly sprites while preserving original assets.",
-    "Reused attack, guard and hit poses for all four classes; added impact motion and feedback.",
-    "Card descriptions now reflect active strength and equipment bonuses.",
-    "Browser automation uses read-only control bounds and observed state changes; PR checks play a full expedition."
+    "Cards without enough energy remain inspectable; Play explains the required energy and stays disabled.",
+    "Inspection screens have a persistent return control and leave campaign state unchanged."
   ],
   "Fixed": [
-    "Second Wind trades a card in hand for energy; it no longer enables free energy/draw cycling.",
-    "Browser checks wait for rendered card selection and record failure screenshots/state.",
-    "Added an audio listener when the UI scene has none, preserving an owner-provided listener.",
-    "Protected rewards and purchases from duplicate commands; lethal poison prevents retaliation.",
-    "Campaign save/reload preserves piles, route, equipment, statuses, RNG and reward choices.",
-    "Added native safe-area padding and removed default white scrollbar/progress styling."
+    "Flask feedback now reports actual healing when near maximum vitality.",
+    "Weakness is explicitly labeled as an enemy status with its decay timing."
   ],
   "KnownIssues": [
     "Physical Android/iOS devices and graphical Windows play remain unverified; Android APK is for testing.",
@@ -26,9 +19,8 @@
     "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds."
   ],
   "WhatToTest": [
-    "Choose each wanderer; play cards, read changing intents and try both routes.",
-    "Buy an Ember Blade and check card damage increases; use a flask and choose rewards.",
-    "Reload during combat, continue, and verify the deck, health, equipment and enemy state.",
-    "Try the Android APK or hosted dev page on your phone; report device, browser, version and seed."
+    "Tap intent and statuses, open both piles repeatedly, and return to combat.",
+    "Select an unaffordable card, read its description, then tap it again to cancel.",
+    "Read Recent actions after a blocked attack, poison tick or healing; reload and confirm campaign progress resumes."
   ]
 }
