@@ -12,6 +12,9 @@
     "Browser automation uses read-only control bounds and observed state changes; PR checks play a full expedition."
   ],
   "Fixed": [
+    "Second Wind trades a card in hand for energy; it no longer enables free energy/draw cycling.",
+    "Browser checks wait for rendered card selection and record failure screenshots/state.",
+    "Added an audio listener when the UI scene has none, preserving an owner-provided listener.",
     "Protected rewards and purchases from duplicate commands; lethal poison prevents retaliation.",
     "Campaign save/reload preserves piles, route, equipment, statuses, RNG and reward choices.",
     "Added native safe-area padding and removed default white scrollbar/progress styling."

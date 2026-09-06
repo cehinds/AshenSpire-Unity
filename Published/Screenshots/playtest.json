@@ -1,7 +1,7 @@
 {
   "url": "http://127.0.0.1:8787",
-  "firstLoadMilliseconds": 1819,
-  "downloadedResourceBytes": 33967257,
+  "firstLoadMilliseconds": 1051,
+  "downloadedResourceBytes": 33973922,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "fullRunRequested": true,
@@ -10,11 +10,11 @@
   "finalState": {
     "SchemaVersion": 1,
     "HeroId": "reaver",
-    "Seed": 2910976560,
-    "RandomState": 2827124060,
+    "Seed": 3079427376,
+    "RandomState": 1281708010,
     "Health": 98,
     "MaxHealth": 98,
-    "Energy": 0,
+    "Energy": 1,
     "Block": 0,
     "EnemyHealth": 0,
     "EnemyBlock": 0,
@@ -42,17 +42,17 @@
       "rage"
     ],
     "Draw": [
-      "defend",
+      "strike",
       "strike"
     ],
     "Hand": [
+      "defend",
       "defend",
       "defend",
       "cleave"
     ],
     "Discard": [
       "rage",
-      "strike",
       "strike"
     ],
     "Items": [
