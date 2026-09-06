@@ -6,6 +6,8 @@ This is an early playable slice. The original browser source is preserved beside
 
 Open `Unity/` in Unity Hub with the version in `Unity/ProjectSettings/ProjectVersion.txt`. Use **AshenSpire → Prepare Playable Scene**, open `Assets/AshenSpire/Scenes/Expedition.unity`, and press Play. The root prefab holds a `RunController` and `UIDocument`; the PanelSettings reference is required.
 
+The project now targets **Unity 6.6 (6000.6.0f1)**. Install its Web Build Support and Windows Build Support modules. The upgrade keeps the expedition save schema and channel-specific save keys unchanged.
+
 ## Find the right file
 
 | Goal | File or folder |
@@ -40,13 +42,17 @@ python -m http.server 8787 --directory Published/Web
 
 Open `http://localhost:8787`. A Web build is a folder, not a double-click HTML file. The script validates the rules, invokes the pinned editor, and stamps hashes. It does not commit or push.
 
-For Windows, use `-Target Windows`. Android/iOS export support is not implemented or installed as part of the first checkpoint. Browser phone testing is distinct from a native mobile player.
+For Windows, use `-Target Windows`. Android/iOS export commands are not implemented yet. Those editor modules are installed on the current development PC; native builds and physical devices still need validation. Browser phone testing is distinct from a native mobile player.
 
 ## Publishing and channels
 
 GitHub Actions automatically validates and publishes existing exported checkpoints when `dev`, `test`, `release`, or `main` changes. It assembles all channel directories together. Changing Unity source without rebuilding makes the package check fail, preserving the previously deployed site.
 
 Unity compilation currently happens locally with the build tool. A dedicated runner or cloud CI license is still needed for unattended compilation. Channel promotion remains separate from deployment; empty channels are shown as awaiting a build.
+
+Draft pull requests targeting `dev` run the domain, packaged-source and browser checks without deploying Pages. After owner review and merge, the existing channel publication workflow runs automatically.
+
+For editor upgrades, `tools/unity-upgrade-playtest.cjs` accepts the previous Web build folder, the new Web build folder and an evidence directory. It creates a combat save through pointer input in the previous player, switches players at the same local web origin, and verifies that Continue restores every saved field and accepts another turn. It records the engine versions, three screenshots and a JSON report.
 
 ## Debug one change at a time
 
