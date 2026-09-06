@@ -1,6 +1,6 @@
 # Editing your Unity game
 
-For the current 0.2 campaign, use [Campaign Owner Guide](Campaign-Owner-Guide.md). The material below records the original 0.1 checkpoint.
+For the current campaign, use [Campaign Owner Guide](Campaign-Owner-Guide.md), [content editing](Content-Authoring-0.6.0.md), and [interruption and return](Interruption-Return-0.8.0.md). The material below records the original 0.1 checkpoint.
 
 This is an early playable slice. The original browser source is preserved beside it as a migration reference; it is not a completed Unity port.
 

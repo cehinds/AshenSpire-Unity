@@ -1,0 +1,29 @@
+{
+  "Added": [
+    "Mobile browser regression checks at densities 1, 2 and 3, repeated rotation and synthetic canvas insets.",
+    "Touchscreen taps and swipe scrolling now have a dedicated browser test, including combat, rewards and save/resume."
+  ],
+  "Changed": [
+    "Browser layout uses the displayed canvas height while retaining the 1.5 render-density cap.",
+    "Existing controls resize after orientation and viewport changes; settings toggles and seed entry share the touch minimum."
+  ],
+  "Fixed": [
+    "Dense-phone compact controls measured 41.33 CSS pixels in 0.6.0; minimum touch height is now 44 CSS pixels.",
+    "High-density landscape no longer chooses its compact layout from render-buffer pixels.",
+    "Browser test input accounts for the actual canvas position and size, including synthetic safe-area padding."
+  ],
+  "KnownIssues": [
+    "No physical Android device is connected. Real phones, iOS, native graphical Windows play and audible listening remain unverified.",
+    "Browser density, touch and inset tests are emulation; no physical-device performance gain is claimed.",
+    "Native safe-area behavior is retained. Gameplay, campaign content and save schema are unchanged.",
+    "Unity builds run locally; GitHub validates and publishes prepared players.",
+    "Full original-game parity and store release remain unfinished.",
+    "Two inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+  ],
+  "WhatToTest": [
+    "Open the dev game on a dense phone screen and rotate between portrait and landscape.",
+    "Tap compact combat controls and settings; they should remain easy to hit.",
+    "Inspect intent after rotation, continue combat, then reload and resume.",
+    "Compare the denser landscape screenshots and test real mobile browser toolbars/notches on your device."
+  ]
+}
