@@ -1,0 +1,76 @@
+{
+  "success": false,
+  "checks": [
+    "02-title stops audio"
+  ],
+  "seedPixels": [],
+  "seedCampaigns": [],
+  "visibility": [
+    "hidden",
+    "visible"
+  ],
+  "interruptions": [
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    }
+  ],
+  "feedback": [],
+  "sounds": [],
+  "screenshots": [
+    "01-title",
+    "failure"
+  ],
+  "errors": [
+    "Error: Timed out: return cover\n    at until (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:12:154)\n    at async interrupt (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:106:22)\n    at async /home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:128:2"
+  ],
+  "errorContexts": [],
+  "controls": {
+    "Controls": [
+      {
+        "Id": "new",
+        "X": 17.772512435913086,
+        "Y": 464.9289245605469,
+        "Width": 380.3317565917969,
+        "Height": 50.473907470703125,
+        "Enabled": true
+      },
+      {
+        "Id": "settings",
+        "X": 17.772512435913086,
+        "Y": 525.35546875,
+        "Width": 380.3317565917969,
+        "Height": 49.76300048828125,
+        "Enabled": true
+      },
+      {
+        "Id": "gallery",
+        "X": 17.772512435913086,
+        "Y": 585.0711059570312,
+        "Width": 380.3317565917969,
+        "Height": 49.76300048828125,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 415.8768005371094,
+    "PanelHeight": 900,
+    "Labels": [
+      "ASHEN SPIRE",
+      "THREE ACTS · ONE EMBER · YOUR PATH",
+      "THE EMBER ENDURES",
+      "Read their intent. Shape your deck.\nReach the heart of the Spire.",
+      "Nine encounters · four classes · seeded expeditions\nProgress saves after every command."
+    ]
+  },
+  "revision": 0,
+  "layout": 2,
+  "physicalDevice": false
+}

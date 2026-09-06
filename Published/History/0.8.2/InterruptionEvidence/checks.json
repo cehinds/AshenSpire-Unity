@@ -1,0 +1,495 @@
+{
+  "success": true,
+  "checks": [
+    "02-title stops audio",
+    "02-title preserves campaign while covered",
+    "02-title exposes only the return control",
+    "02-title returns without a command",
+    "03-draft stops audio",
+    "03-draft preserves campaign while covered",
+    "03-draft exposes only the return control",
+    "03-draft returns without a command",
+    "seed draft survived interruption",
+    "04-map stops audio",
+    "04-map preserves campaign while covered",
+    "04-map exposes only the return control",
+    "landscape return retains 44 pixel target",
+    "landscape return fits the viewport",
+    "04-map returns without a command",
+    "05-selection stops audio",
+    "05-selection preserves campaign while covered",
+    "05-selection exposes only the return control",
+    "05-selection returns without a command",
+    "selected card and scroll geometry preserved",
+    "06-inspection stops audio",
+    "06-inspection preserves campaign while covered",
+    "06-inspection exposes only the return control",
+    "06-inspection returns without a command",
+    "inspection content and scroll preserved",
+    "active feedback cancelled without later completion",
+    "blocked input probe avoids return button",
+    "covered underlying input cannot advance a turn",
+    "08-repeat stops audio",
+    "08-repeat preserves campaign while covered",
+    "08-repeat exposes only the return control",
+    "08-repeat returns without a command",
+    "09-repeat stops audio",
+    "browser freeze leaves return blocked until visible",
+    "09-repeat preserves campaign while covered",
+    "09-repeat exposes only the return control",
+    "09-repeat returns without a command",
+    "10-muted stops audio",
+    "10-muted preserves campaign while covered",
+    "10-muted exposes only the return control",
+    "10-muted returns without a command",
+    "temporary suspension preserves mute",
+    "reload resumes identical saved campaign",
+    "no browser or Unity errors"
+  ],
+  "seedPixels": [],
+  "seedCampaigns": [],
+  "visibility": [
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible"
+  ],
+  "interruptions": [
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": true
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": true
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": true
+    }
+  ],
+  "feedback": [
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "cancelled",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "sounds": [
+    "hit\n"
+  ],
+  "screenshots": [
+    "01-title",
+    "02-title-paused",
+    "02-title-returned",
+    "03-draft-before",
+    "03-draft-paused",
+    "03-draft-returned",
+    "04-map-paused",
+    "04-map-landscape-paused",
+    "04-map-returned",
+    "05-selection-paused",
+    "05-selection-returned",
+    "06-inspection-paused",
+    "06-inspection-returned",
+    "07-feedback-return",
+    "08-repeat-paused",
+    "08-repeat-returned",
+    "09-repeat-paused",
+    "09-repeat-returned",
+    "10-muted-paused",
+    "10-muted-returned",
+    "11-reloaded"
+  ],
+  "errors": [],
+  "errorContexts": [],
+  "lastInput": {
+    "id": "continue",
+    "x": 195.00000178866918,
+    "y": 461.4999994235568
+  },
+  "state": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 240987,
+    "RandomState": 1064633158,
+    "Health": 63,
+    "MaxHealth": 70,
+    "Energy": 3,
+    "Block": 0,
+    "EnemyHealth": 24,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 0,
+    "Route": 0,
+    "Turn": 2,
+    "Cinders": 0,
+    "Potions": 3,
+    "FoesDefeated": 0,
+    "Rested": false,
+    "Phase": 1,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage"
+    ],
+    "Draw": [
+      "cleave",
+      "rage",
+      "rage"
+    ],
+    "Hand": [
+      "strike",
+      "defend",
+      "cleave",
+      "defend",
+      "strike"
+    ],
+    "Discard": [],
+    "Items": [],
+    "Rewards": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "deck",
+        "X": 195.1421661376953,
+        "Y": 100.2369613647461,
+        "Width": 70.37913513183594,
+        "Height": 50.11847686767578,
+        "Enabled": true
+      },
+      {
+        "Id": "menu",
+        "X": 341.2322082519531,
+        "Y": 100.2369613647461,
+        "Width": 56.5166015625,
+        "Height": 50.11847686767578,
+        "Enabled": true
+      },
+      {
+        "Id": "intent-details",
+        "X": 18.127962112426758,
+        "Y": 402.0141906738281,
+        "Width": 379.620849609375,
+        "Height": 50.118499755859375,
+        "Enabled": true
+      },
+      {
+        "Id": "status-details",
+        "X": 23.459714889526367,
+        "Y": 495.8530578613281,
+        "Width": 374.2890930175781,
+        "Height": 50.118499755859375,
+        "Enabled": true
+      },
+      {
+        "Id": "card-0",
+        "X": 18.127962112426758,
+        "Y": 556.6350708007812,
+        "Width": 117.29856872558594,
+        "Height": 146.09002685546875,
+        "Enabled": true
+      },
+      {
+        "Id": "card-1",
+        "X": 149.28909301757812,
+        "Y": 556.6350708007812,
+        "Width": 117.298583984375,
+        "Height": 146.09002685546875,
+        "Enabled": true
+      },
+      {
+        "Id": "card-2",
+        "X": 280.4502258300781,
+        "Y": 556.6350708007812,
+        "Width": 117.298583984375,
+        "Height": 146.09002685546875,
+        "Enabled": true
+      },
+      {
+        "Id": "card-3",
+        "X": 18.127962112426758,
+        "Y": 713.3886108398438,
+        "Width": 117.29856872558594,
+        "Height": 146.09002685546875,
+        "Enabled": true
+      },
+      {
+        "Id": "card-4",
+        "X": 280.4502258300781,
+        "Y": 713.3886108398438,
+        "Width": 117.298583984375,
+        "Height": 146.09002685546875,
+        "Enabled": true
+      },
+      {
+        "Id": "draw-pile",
+        "X": 18.127962112426758,
+        "Y": 917.0615844726562,
+        "Width": 178.08056640625,
+        "Height": 50.11846923828125,
+        "Enabled": true
+      },
+      {
+        "Id": "discard-pile",
+        "X": 201.540283203125,
+        "Y": 917.0615844726562,
+        "Width": 190.87677001953125,
+        "Height": 50.11846923828125,
+        "Enabled": true
+      },
+      {
+        "Id": "action-history",
+        "X": 23.459714889526367,
+        "Y": 977.8435668945312,
+        "Width": 374.2890930175781,
+        "Height": 49.05218505859375,
+        "Enabled": true
+      },
+      {
+        "Id": "potion",
+        "X": 18.127962112426758,
+        "Y": 1037.5592041015625,
+        "Width": 379.620849609375,
+        "Height": 50.1185302734375,
+        "Enabled": true
+      },
+      {
+        "Id": "play",
+        "X": 22.39336395263672,
+        "Y": 818.9573364257812,
+        "Width": 201.540283203125,
+        "Height": 50.11846923828125,
+        "Enabled": false
+      },
+      {
+        "Id": "end-turn",
+        "X": 229.26539611816406,
+        "Y": 818.9573364257812,
+        "Width": 158.88624572753906,
+        "Height": 50.11846923828125,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 415.87677001953125,
+    "PanelHeight": 899.9999389648438,
+    "Labels": [
+      "ASHEN SPIRE",
+      "REAVER · ACT 1 · 0 CINDERS",
+      "63 / 70 VITALITY",
+      "Wandering Soldier · 24 / 24\nEnemy block · 0",
+      "TURN 2   ·   3 ENERGY   ·   0 BLOCK",
+      "1 ◇",
+      "Strike",
+      "Deal 6 damage.",
+      "attack",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "2 ◇",
+      "Cleave",
+      "Deal 15 damage.",
+      "attack · reaver",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "1 ◇",
+      "Strike",
+      "Deal 6 damage.",
+      "attack",
+      "Your expedition begins."
+    ]
+  },
+  "revision": 4,
+  "layout": 43,
+  "physicalDevice": false
+}

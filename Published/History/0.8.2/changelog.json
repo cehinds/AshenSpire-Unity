@@ -1,0 +1,27 @@
+{
+  "Added": [
+    "Verification of both the first typed seed and the corrected draft through actual campaign starts.",
+    "A Web renderer maintenance guide and reproducible build receipt."
+  ],
+  "Changed": [
+    "Web builds reserve enough rendering buffer space after geometry ranges expand."
+  ],
+  "Fixed": [
+    "Rotating a second expedition draft no longer drops the beginning of the seed validation label in the reproduced scenario.",
+    "The same scenario completes without the previous rendering buffer errors."
+  ],
+  "KnownIssues": [
+    "Web uses a workaround pinned to Unity 6000.6.0f1; review it before upgrading the Editor.",
+    "Physical Android/iOS and graphical Windows interaction remain unverified; no phone is connected.",
+    "Phone performance and audible sound quality still need device testing.",
+    "Unity compiles locally; GitHub validates and publishes prepared players.",
+    "Full original-game parity, additional art/music and store release remain unfinished.",
+    "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+  ],
+  "WhatToTest": [
+    "Start an expedition, return to Menu, then choose another wanderer.",
+    "Enter an invalid seed, correct it using selection and Backspace, then switch tabs and explicitly return.",
+    "Rotate to landscape and back; check that the full validation label stays visible.",
+    "Start the second expedition, continue playing, then reload and resume."
+  ]
+}

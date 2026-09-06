@@ -1,7 +1,7 @@
 {
-  "version": "0.8.2",
-  "sourceCommit": "d2a5d8667f746147a7cfafb7a71ae6549b4d37d9",
-  "sourceDigest": "7c768d9db30dd433d1349bb0dcef04c79b64b9eee15cb13ea157e9d29c71169f",
+  "version": "0.8.3",
+  "sourceCommit": "7d523664b7b65ff193df9e349747e4afb11a0f3c",
+  "sourceDigest": "2ba6d610a6b8415392bee4d54a1460931e023fa66a5c757c77f45cc5dfa34fbe",
   "unityVersion": "6000.6.0f1",
   "rendererPatchChecks": 1011,
   "domainChecks": 224,
@@ -31,5 +31,6 @@
   "nativeWindowsInteractionTested": false,
   "iosBuilt": false,
   "audibleListeningTested": false,
+  "controlReporting": "Bounded measurement retries; recovery telemetry captured separately from view-state assertions.",
   "note": "Web player uses a version-pinned temporary-assembly workaround. Editor installation unchanged. Browser emulation does not establish physical phone performance or audible playback."
 }

@@ -48,6 +48,7 @@
   ],
   "seedPixels": [],
   "seedCampaigns": [],
+  "layoutRetries": [],
   "visibility": [
     "hidden",
     "visible",
@@ -490,6 +491,6 @@
     ]
   },
   "revision": 4,
-  "layout": 43,
+  "layout": 32,
   "physicalDevice": false
 }

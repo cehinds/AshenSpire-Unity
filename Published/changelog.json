@@ -4,9 +4,11 @@
     "A Web renderer maintenance guide and reproducible build receipt."
   ],
   "Changed": [
-    "Web builds reserve enough rendering buffer space after geometry ranges expand."
+    "Web builds reserve enough rendering buffer space after geometry ranges expand.",
+    "Control diagnostics now retry unsettled child geometry with a finite limit and stop after a valid report."
   ],
   "Fixed": [
+    "Development browser checks no longer discard an unsettled tab-return measurement without retrying.",
     "Rotating a second expedition draft no longer drops the beginning of the seed validation label in the reproduced scenario.",
     "The same scenario completes without the previous rendering buffer errors."
   ],
