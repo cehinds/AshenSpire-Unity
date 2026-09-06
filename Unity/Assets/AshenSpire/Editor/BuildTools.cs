@@ -113,8 +113,13 @@ namespace AshenSpire.Editor
             // The exporter, rather than a later copy command, records the source it built.
             AssetDatabase.SaveAssets();
             if (target == BuildTarget.WebGL)
+            {
+                var digest = SourceDigest();
+                var index = Path.Combine(report.summary.outputPath, "index.html");
+                File.WriteAllText(index, File.ReadAllText(index).Replace("__ASHENSPIRE_BUILD_TOKEN__", digest));
                 File.WriteAllText(Path.Combine(report.summary.outputPath, "build-source.json"),
-                    "{\"sourceDigest\":\"" + SourceDigest() + "\",\"builtAt\":\"" + DateTime.UtcNow.ToString("O") + "\"}");
+                    "{\"sourceDigest\":\"" + digest + "\",\"builtAt\":\"" + DateTime.UtcNow.ToString("O") + "\"}");
+            }
             Debug.Log($"ASHENSPIRE BUILD PASSED: {target}; {report.summary.totalSize} bytes; {report.summary.outputPath}");
         }
 

@@ -19,11 +19,13 @@ const destination=join(root,'Published');
 if(process.argv.includes('--check')){
  const manifest=JSON.parse(readFileSync(join(destination,'build.json'),'utf8'));
  if(manifest.sourceDigest!==digest)throw new Error('Unity source differs from packaged build. Run tools/build-unity.ps1 before publishing.');
+ const index=readFileSync(join(destination,'Web/index.html'),'utf8');
+ if(index.includes('__ASHENSPIRE_BUILD_TOKEN__')||(index.match(new RegExp('\\?build='+manifest.sourceDigest,'g'))||[]).length!==4)throw new Error('Web loader/runtime URLs must all carry the current source digest. Rebuild Web.');
  for(const [path,expected] of Object.entries(manifest.files)){
   const actual=createHash('sha256').update(readFileSync(join(destination,path))).digest('hex');
   if(actual!==expected)throw new Error(`Packaged build changed: ${path}`);
  }
- console.log(`Unity package: ${Object.keys(manifest.files).length+1} checks passed`);
+ console.log(`Unity package: ${Object.keys(manifest.files).length+2} checks passed`);
 }else{
  const build=join(root,'Builds/Web');
  if(!existsSync(join(build,'index.html')))throw new Error('No exported Web player; run Unity BuildTools.BuildWeb first.');

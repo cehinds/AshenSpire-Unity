@@ -16,13 +16,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <div id="frame"><canvas id="unity-canvas" tabindex="0" aria-label="AshenSpire touch card game"></canvas></div>
 <div id="loading"><h1>ASHEN SPIRE</h1><p>Waking the ember…</p><progress id="progress" value="0" max="1"></progress></div>
 <div id="channel"></div>
-<script src="Build/{{{ LOADER_FILENAME }}}"></script>
+<script src="Build/{{{ LOADER_FILENAME }}}?build=__ASHENSPIRE_BUILD_TOKEN__"></script>
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
 document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.2.1';
 createUnityInstance(canvas,{
- dataUrl:'Build/{{{ DATA_FILENAME }}}',frameworkUrl:'Build/{{{ FRAMEWORK_FILENAME }}}',codeUrl:'Build/{{{ CODE_FILENAME }}}',
+ dataUrl:'Build/{{{ DATA_FILENAME }}}?build=__ASHENSPIRE_BUILD_TOKEN__',frameworkUrl:'Build/{{{ FRAMEWORK_FILENAME }}}?build=__ASHENSPIRE_BUILD_TOKEN__',codeUrl:'Build/{{{ CODE_FILENAME }}}?build=__ASHENSPIRE_BUILD_TOKEN__',
  streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.2.1',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{
