@@ -29,6 +29,8 @@ jobs:
         run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
       - name: Test displayed viewport sizing
         run: dotnet run --project UnityTests/Viewport
+      - name: Test Web renderer staging bounds and patch guards
+        run: dotnet run --project UnityTests/RendererPatch
       - name: Test interruption state and browser listener lifecycle
         run: |
           dotnet run --project UnityTests/Interruption

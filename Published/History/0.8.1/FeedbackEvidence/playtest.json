@@ -1,0 +1,170 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "feedbackEvents": [
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 22.3096866607666
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -15",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": true,
+      "Duration": 0.3,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": true,
+      "Duration": 0.3,
+      "PlayerX": -7.188569068908691
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": true,
+      "Duration": 0.3,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": true,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.413493633270264
+    },
+    {
+      "Cue": "hit",
+      "Status": "cancelled",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "attack\n",
+    "hit\n",
+    "hit\n"
+  ],
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "26-normal-impact",
+    "26-normal-impact-settled",
+    "30-feedback-settings",
+    "27-fast-impact",
+    "27-fast-impact-settled",
+    "30-feedback-settings",
+    "28-reduced-impact",
+    "28-reduced-impact-settled",
+    "29-persisted-impact",
+    "29-persisted-impact-settled",
+    "30-feedback-settings",
+    "31-interrupted-menu"
+  ],
+  "errors": [],
+  "normalFastReduced": true,
+  "preferencesPersisted": true,
+  "navigationCancelled": true,
+  "limits": [
+    "Sound dispatch and synthesized samples are checked; audible listening and physical mobile playback remain unverified."
+  ]
+}

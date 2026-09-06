@@ -1,0 +1,8 @@
+{
+  "name": "AshenSpire.Editor.Rendering",
+  "rootNamespace": "AshenSpire.Editor.Rendering",
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Mono.Cecil.dll"],
+  "autoReferenced": true
+}

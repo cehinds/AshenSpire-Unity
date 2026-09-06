@@ -1,0 +1,211 @@
+{
+  "error": "intent-details touch target below 44 pixels",
+  "state": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 3,
+    "RandomState": 3448221763,
+    "Health": 70,
+    "MaxHealth": 70,
+    "Energy": 3,
+    "Block": 0,
+    "EnemyHealth": 24,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 0,
+    "Route": 0,
+    "Turn": 1,
+    "Cinders": 0,
+    "Potions": 3,
+    "FoesDefeated": 0,
+    "Rested": false,
+    "Phase": 1,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage"
+    ],
+    "Draw": [
+      "strike",
+      "rage",
+      "strike"
+    ],
+    "Hand": [
+      "defend",
+      "defend",
+      "rage",
+      "cleave",
+      "cleave"
+    ],
+    "Discard": [],
+    "Items": [],
+    "Rewards": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "deck",
+        "X": 180.810791015625,
+        "Y": 98.10810852050781,
+        "Width": 71.35134887695312,
+        "Height": 50.270263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "menu",
+        "X": 314.5946044921875,
+        "Y": 98.10810852050781,
+        "Width": 56.756744384765625,
+        "Height": 50.270263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "intent-details",
+        "X": 17.83783721923828,
+        "Y": 398.9189147949219,
+        "Width": 353.5135192871094,
+        "Height": 50.270263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "status-details",
+        "X": 22.702701568603516,
+        "Y": 491.3513488769531,
+        "Width": 348.6486511230469,
+        "Height": 49.459442138671875,
+        "Enabled": true
+      },
+      {
+        "Id": "card-0",
+        "X": 17.83783721923828,
+        "Y": 550.54052734375,
+        "Width": 109.45945739746094,
+        "Height": 152.43243408203125,
+        "Enabled": true
+      },
+      {
+        "Id": "card-1",
+        "X": 139.45945739746094,
+        "Y": 550.54052734375,
+        "Width": 110.270263671875,
+        "Height": 152.43243408203125,
+        "Enabled": true
+      },
+      {
+        "Id": "card-2",
+        "X": 261.8918762207031,
+        "Y": 550.54052734375,
+        "Width": 109.45947265625,
+        "Height": 152.43243408203125,
+        "Enabled": true
+      },
+      {
+        "Id": "card-3",
+        "X": 17.83783721923828,
+        "Y": 712.7026977539062,
+        "Width": 109.45945739746094,
+        "Height": 152.43243408203125,
+        "Enabled": true
+      },
+      {
+        "Id": "card-4",
+        "X": 261.8918762207031,
+        "Y": 712.7026977539062,
+        "Width": 109.45947265625,
+        "Height": 152.43243408203125,
+        "Enabled": true
+      },
+      {
+        "Id": "draw-pile",
+        "X": 17.83783721923828,
+        "Y": 921.8919067382812,
+        "Width": 165.4053955078125,
+        "Height": 50.270263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "discard-pile",
+        "X": 188.10809326171875,
+        "Y": 921.8919067382812,
+        "Width": 178.37835693359375,
+        "Height": 50.270263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "action-history",
+        "X": 22.702701568603516,
+        "Y": 981.8919067382812,
+        "Width": 348.6486511230469,
+        "Height": 50.27020263671875,
+        "Enabled": true
+      },
+      {
+        "Id": "potion",
+        "X": 17.83783721923828,
+        "Y": 1041.891845703125,
+        "Width": 353.5135192871094,
+        "Height": 49.45947265625,
+        "Enabled": false
+      },
+      {
+        "Id": "play",
+        "X": 20.2702693939209,
+        "Y": 820.54052734375,
+        "Width": 191.35134887695312,
+        "Height": 49.45947265625,
+        "Enabled": false
+      },
+      {
+        "Id": "end-turn",
+        "X": 216.48648071289062,
+        "Y": 820.54052734375,
+        "Width": 147.56756591796875,
+        "Height": 49.45947265625,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 389.1891784667969,
+    "PanelHeight": 900,
+    "Labels": [
+      "ASHEN SPIRE",
+      "REAVER · ACT 1 · 0 CINDERS",
+      "70 / 70 VITALITY",
+      "Wandering Soldier · 24 / 24\nEnemy block · 0",
+      "TURN 1   ·   3 ENERGY   ·   0 BLOCK",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "1 ◇",
+      "Battle Cry",
+      "Gain 2 strength. Draw 1.",
+      "skill · reaver",
+      "2 ◇",
+      "Cleave",
+      "Deal 15 damage.",
+      "attack · reaver",
+      "2 ◇",
+      "Cleave",
+      "Deal 15 damage.",
+      "attack · reaver",
+      "Facing Wandering Soldier."
+    ]
+  },
+  "revision": 2,
+  "layout": 6,
+  "layoutAtState": 4,
+  "errors": []
+}

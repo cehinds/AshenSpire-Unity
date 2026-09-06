@@ -22,11 +22,13 @@ if(process.argv.includes('--check')){
  const index=readFileSync(join(destination,'Web/index.html'),'utf8');
  if(index.includes('__ASHENSPIRE_VERSION__')||!index.includes('UNITY '+manifest.version)||!index.includes("productVersion:'"+manifest.version+"'"))throw new Error('Web version differs from package metadata; rebuild Web.');
  if(index.includes('__ASHENSPIRE_BUILD_TOKEN__')||(index.match(new RegExp('\\?build='+manifest.sourceDigest,'g'))||[]).length!==4)throw new Error('Web loader/runtime URLs must all carry the current source digest. Rebuild Web.');
+ const renderer=JSON.parse(readFileSync(join(destination,'Web/renderer-workaround.json'),'utf8'));
+ if(renderer.UnityVersion!==manifest.unityVersion||renderer.Algorithm!=='consolidate-then-count-plus-two-per-range-v1'||renderer.InputSha256!=='bfe25a4e12ab85d84fd4f905c17c472599a76e42bceeb5ed02349c3dbe50bcac'||!/^[a-f0-9]{64}$/.test(renderer.OutputSha256)||renderer.OutputSha256===renderer.InputSha256)throw new Error('Missing or incompatible Web renderer build receipt.');
  for(const [path,expected] of Object.entries(manifest.files)){
   const actual=createHash('sha256').update(readFileSync(join(destination,path))).digest('hex');
   if(actual!==expected)throw new Error(`Packaged build changed: ${path}`);
  }
- console.log(`Unity package: ${Object.keys(manifest.files).length+3} checks passed`);
+ console.log(`Unity package: ${Object.keys(manifest.files).length+4} checks passed`);
 }else{
  const build=join(root,'Builds/Web');
  if(!existsSync(join(build,'index.html')))throw new Error('No exported Web player; run Unity BuildTools.BuildWeb first.');
@@ -38,7 +40,7 @@ if(process.argv.includes('--check')){
  }else{
   execFileSync('python3',['-c','import shutil; shutil.make_archive("Published/Web", "zip", "Published/Web")'],{cwd:root});
  }
- const manifest={version:'0.8.1',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
+ const manifest={version:'0.8.2',stage:'Three-act campaign',unityVersion:readFileSync(join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1].trim(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDigest:digest,builtAt:buildStamp.builtAt,files:{}};
  for(const path of files(join(destination,'Web'))){manifest.files[relative(destination,path).replaceAll('\\','/')]=createHash('sha256').update(readFileSync(path)).digest('hex');}
  manifest.files['Web.zip']=createHash('sha256').update(readFileSync(join(destination,'Web.zip'))).digest('hex');
  if(existsSync(join(destination,'Windows.zip')))manifest.files['Windows.zip']=createHash('sha256').update(readFileSync(join(destination,'Windows.zip'))).digest('hex');
