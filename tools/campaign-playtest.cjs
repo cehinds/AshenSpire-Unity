@@ -25,6 +25,16 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  }
  async function until(predicate,description,timeout=15000){const end=Date.now()+timeout;while(Date.now()<end){if(predicate())return;await page.waitForTimeout(100);}throw new Error('Timed out: '+description);}
  async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');}
+ // Unity applies browser resize and UI Toolkit geometry over separate frames.
+ // Wait for the new aspect ratio and stable bounds, never for a passing size assertion.
+ const viewportEvidence=[];
+ async function resize(width,height){
+  const previous=layout;await page.setViewportSize({width,height});
+  await until(()=>layout>previous&&Math.abs(controls.PanelWidth/controls.PanelHeight-width/height)<.001,'Unity geometry for '+width+'x'+height);
+  let signature=JSON.stringify(controls),stableSince=Date.now();
+  await until(()=>{const next=JSON.stringify(controls);if(next!==signature){signature=next;stableSince=Date.now();}return Date.now()-stableSince>=500&&Math.abs(controls.PanelWidth/controls.PanelHeight-width/height)<.001;},'stable viewport geometry');
+  viewportEvidence.push({width,height,panelWidth:controls.PanelWidth,panelHeight:controls.PanelHeight,layout});
+ }
  async function click(id,changesState=false,playEnabled=true){
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
   for(let attempt=0;attempt<12;attempt++){
@@ -59,7 +69,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  const authoredContent=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/campaign.json'),'utf8'));
  if(upgradeIndex<0)assert(JSON.stringify(state.Deck)===JSON.stringify(authoredContent.Heroes.find(item=>item.Id===hero).Deck),'starter deck differs from class definition');
  await click('enter-0',true);await shot('04-phone-combat');
- await page.setViewportSize({width:320,height:740});await page.waitForTimeout(700);
+ await resize(320,740);
  // Unity's transformed float bounds can report 43.99998 for a 44-pixel edge.
  for(const id of ['intent-details','status-details','draw-pile','discard-pile','action-history']){const c=controls.Controls.find(x=>x.Id===id);assert(c&&Math.round(c.Height*740/controls.PanelHeight*100)/100>=44,id+' touch target below 44 pixels');}
  await inspect('intent-details','will attack','18-intent-details');
@@ -72,7 +82,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  assert(shown.length===grouped.length&&shown.every((text,i)=>text.startsWith(grouped[i].count+' × '+grouped[i].name+' · ')),'draw pile must group counts by name without revealing order');
  await shot('21-draw-pile');await click('inspection-back');assert(JSON.stringify(state)===beforePile&&revision===beforePileRevision,'draw grouping changed state');
  await inspect('draw-pile','Draw order stays hidden.');
- await page.setViewportSize({width:390,height:844});await page.waitForTimeout(700);
+ await resize(390,844);
  const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');await click('play',true);
  const commandsChangedState=beforePlay!==JSON.stringify(state);await shot('06-card-played');
  await inspect('discard-pile','cards · grouped by name','22-discard-pile');
@@ -110,8 +120,8 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
   if(index<0)index=state.Hand.findIndex(id=>cards.get(id).Cost<=state.Energy);
   if(index>=0){await click('card-'+index);await click('play',true);}else await click('end-turn',true);
  }
- await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(700);await shot('16-desktop');
- await page.setViewportSize({width:844,height:390});await page.waitForTimeout(700);await shot('17-landscape');
- const report={url,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+ await resize(1280,900);await shot('16-desktop');
+ await resize(844,390);await shot('17-landscape');
+ const report={url,viewportEvidence,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  if(!commandsChangedState||!resumeStateMatches||errors.length||(!process.argv.includes('--defeat')&&!affinityRewardTaken)||(process.argv.includes('--full')&&!completed)||(process.argv.includes('--defeat')&&state.Phase!==4))process.exitCode=1;
 })().catch(async error=>{console.error(error);if(activePage&&evidenceDirectory){await activePage.screenshot({path:path.join(evidenceDirectory,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(evidenceDirectory,'failure.json'),JSON.stringify({error:error.message,...lastEvidence},null,2));}process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server)server.close();});
