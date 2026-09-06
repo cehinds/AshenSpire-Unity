@@ -7,14 +7,20 @@ const assert=(value,message)=>{if(!value)throw Error(message);};
 const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirSync(output,{recursive:true});
 const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
-const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[],seedPixels=[];
+const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],errorContexts=[],checks=[],seedPixels=[],seedCampaigns=[];
 const record=(name,value)=>{assert(value,name);checks.push(name);};
 async function until(predicate,name,timeout=20000){const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await sleep(50);}throw Error('Timed out: '+name);}
 const game=(method,params={})=>send(method,params,session);
 const read=async expression=>(await game('Runtime.evaluate',{expression,returnByValue:true})).result.value;
 const canvas=()=>read('(()=>{const r=document.querySelector("#unity-canvas").getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()');
 async function point(id){const box=await canvas(),c=controls.Controls.find(x=>x.Id===id);assert(c,'Missing '+id);return{x:box.x+(c.X+c.Width*(id==='seed'?.8:.5))*box.width/controls.PanelWidth,y:box.y+(c.Y+c.Height/2)*box.height/controls.PanelHeight};}
-async function tap(p){await game('Input.dispatchMouseEvent',{type:'mouseMoved',...p});await sleep(80);await game('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...p});await sleep(120);await game('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});}
+// Give UI Toolkit separate rendered frames for hover, press and release/focus.
+// A wall-clock hold can expire inside one slow player frame at phone pixel density.
+async function tap(p){
+ await game('Input.dispatchMouseEvent',{type:'mouseMoved',...p});await sleep(80);await inputFrames();
+ await game('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...p});await sleep(120);await inputFrames();
+ await game('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});await inputFrames();
+}
 async function click(id,changesState=false){
  await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled),'enabled '+id);
  for(let i=0;i<24;i++){
@@ -51,7 +57,11 @@ async function key(key,code,windowsVirtualKeyCode,extra={}){await game('Input.di
 async function typeDigits(value){for(const digit of value)await key(digit,'Digit'+digit,48+Number(digit),{text:digit,unmodifiedText:digit});}
 async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:2});await inputFrames();await key('a','KeyA',65,{modifiers:2});await game('Input.dispatchKeyEvent',{type:'keyUp',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:0});await inputFrames();}
 async function seedTarget(name){const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');record(name+' seed touch height at least 44 CSS pixels',field.Height*box.height/controls.PanelHeight>=43.995);}
-function evidence(success){return {success,checks,seedPixels,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
+function verifySeed(stage){
+ seedCampaigns.push({stage,expected:240987,observed:state?.Seed,revision,state:JSON.parse(JSON.stringify(state))});
+ record(stage+' campaign starts with the exact typed seed',state?.Seed===240987);
+}
+function evidence(success){return {success,checks,seedPixels,seedCampaigns,visibility,interruptions,feedback,sounds,screenshots,errors,errorContexts,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
  const profileRoot=path.resolve('Builds/BrowserProfiles');fs.mkdirSync(profileRoot,{recursive:true});
  const profile=fs.mkdtempSync(path.join(profileRoot,'Interruption-'));
@@ -74,7 +84,7 @@ function evidence(success){return {success,checks,seedPixels,visibility,interrup
    if(value.startsWith('ASHENSPIRE_INTERRUPTION '))interruptions.push(JSON.parse(value.slice(24)));
    if(value.startsWith('ASHENSPIRE_FEEDBACK '))feedback.push(JSON.parse(value.slice(20)));
    if(value.startsWith('ASHENSPIRE_SOUND '))sounds.push(value.slice(17));
-   if(message.params.type==='error')errors.push(value);
+   if(message.params.type==='error'){errors.push(value);errorContexts.push({message:value,lastScreenshot:screenshots.at(-1),lastInput,revision,layout});}
   }
  };
  send=(method,params={},sessionId)=>new Promise((resolve,reject)=>{const n=++id,timer=setTimeout(()=>{pending.delete(n);reject(Error('CDP timeout '+method));},30000);pending.set(n,{resolve,reject,timer});ws.send(JSON.stringify({id:n,method,params,sessionId}));});
@@ -121,6 +131,10 @@ function evidence(success){return {success,checks,seedPixels,visibility,interrup
  await typeDigits('240987');
  await shot('03-draft-before');
  if(seedOnly){
+  // Commit the first draft before a later replacement can conceal missing digits.
+  // Re-enter through the menu using real input; the disposable profile owns this save.
+  await click('hero-reaver',true);verifySeed('first draft');await shot('seed-01-first-campaign');
+  await click('menu');await click('new');await tap(await point('seed'));await typeDigits('240987');
   await selectAll();await shot('seed-02-selected');
   await typeDigits('42949672950');
   const oldRevision=revision;await tap(await point('hero-reaver'));await sleep(500);
@@ -136,7 +150,7 @@ function evidence(success){return {success,checks,seedPixels,visibility,interrup
   await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:3,mobile:false});
   await until(()=>controls.PanelHeight>controls.PanelWidth,'seed portrait return');await sleep(300);
   await shot('seed-09-portrait-return');await click('hero-reaver',true);
-  record('keyboard selection replacement and backspace survive interruption and rotation',state.Seed===240987);
+  verifySeed('keyboard selection replacement and backspace after interruption and rotation');
   await shot('seed-10-created-campaign');record('no browser or Unity errors',errors.length===0);
   fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));
   console.log('Seed entry browser: '+checks.length+' checks passed; '+screenshots.length+' screenshots');return;
