@@ -23,3 +23,5 @@ node tools/interruption-playtest.cjs http://127.0.0.1:8787 Builds/SeedCheck --se
 ```
 
 The browser check uses real pointer and keyboard events, real tab visibility changes, a 390 × 844 portrait viewport and 740 × 320 landscape viewport at device pixel ratio 3. It reads the resulting campaign seed rather than injecting campaign state. Screenshots cover blank, focused, selected, invalid, edited and returned fields. Browser emulation does not establish physical-phone keyboard behavior, native rendering or accessibility conformance.
+
+The keyboard drivers separate presses, releases and modifier changes across rendered frames. For the browser's mobile keyboard bar and Enter/Tab dismissal, run `node tools/campaign-playtest.cjs http://127.0.0.1:8787 Builds/MobileCheck --dpr 3 --touch --mobile-layout --landscape-repeats 3`. Its seed captures show the entered value before and after keyboard dismissal, and the campaign must start with seed `3`.
