@@ -10,4 +10,5 @@ Published/** -text
 Unity/** text=auto eol=lf
 Unity/**/*.png -text
 GameContent/** text eol=lf
+GameContent/**/*.png -text
 UnityTests/** text eol=lf

@@ -60,6 +60,7 @@ Unity/[Oo]bj/
 Unity/[Ll]ogs/
 Unity/UserSettings/
 Unity/.vs/
+Unity/.utmp/
 Unity/*.csproj
 Unity/*.sln
 Builds/
