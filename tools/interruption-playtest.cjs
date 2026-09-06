@@ -7,7 +7,7 @@ const assert=(value,message)=>{if(!value)throw Error(message);};
 const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirSync(output,{recursive:true});
 const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
-const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[];
+const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[],seedPixels=[];
 const record=(name,value)=>{assert(value,name);checks.push(name);};
 async function until(predicate,name,timeout=20000){const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await sleep(50);}throw Error('Timed out: '+name);}
 const game=(method,params={})=>send(method,params,session);
@@ -24,12 +24,31 @@ async function click(id,changesState=false){
   const old=changesState?revision:layout;lastInput={id,...p};await tap(p);await until(()=>(changesState?revision:layout)>old,'response '+id);await sleep(250);return;
  }throw Error('Cannot reach '+id);
 }
-async function shot(name){await sleep(250);const {data}=await game('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(data,'base64'));screenshots.push(name);}
+async function shot(name){
+ await sleep(250);const {data}=await game('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(data,'base64'));screenshots.push(name);
+ if(seedOnly&&['03-draft-before','seed-02-selected','seed-04-edited','seed-05-landscape-unfocused','seed-06-landscape-focused','seed-07-landscape-selected','seed-09-portrait-return'].includes(name)){
+  const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');
+  const region={x:box.x+(field.X+field.Width*.54)*box.width/controls.PanelWidth,y:box.y+(field.Y+field.Height*.2)*box.height/controls.PanelHeight,width:field.Width*.4*box.width/controls.PanelWidth,height:field.Height*.6*box.height/controls.PanelHeight};
+  // Read pixels from the captured frame in a detached canvas. No game state or DOM changes.
+  const sample=async(data,region)=>{
+   const image=new Image();image.src='data:image/png;base64,'+data;await image.decode();
+   const surface=document.createElement('canvas');surface.width=image.width;surface.height=image.height;const context=surface.getContext('2d');context.drawImage(image,0,0);
+   const scale=image.width/innerWidth,pixels=context.getImageData(Math.round(region.x*scale),Math.round(region.y*scale),Math.round(region.width*scale),Math.round(region.height*scale)).data,counts=new Map();
+   for(let i=0;i<pixels.length;i+=4){const rgb=[pixels[i],pixels[i+1],pixels[i+2]].join(',');counts.set(rgb,(counts.get(rgb)||0)+1);}
+   const luminance=rgb=>rgb.split(',').map(Number).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[.2126,.7152,.0722][i],0);
+   const colors=[...counts].filter(([,count])=>count>=10).map(([rgb,count])=>({rgb,count,luminance:luminance(rgb)})).sort((a,b)=>b.count-a.count);
+   const foreground=colors.reduce((a,b)=>a.luminance>b.luminance?a:b),backgrounds=colors.slice(0,2).filter(c=>c.count>pixels.length/4*.02);
+   return{foreground,backgrounds,contrast:Math.min(...backgrounds.map(c=>(foreground.luminance+.05)/(c.luminance+.05)))};
+  };
+  const result=(await game('Runtime.evaluate',{expression:'('+sample.toString()+')('+JSON.stringify(data)+','+JSON.stringify(region)+')',awaitPromise:true,returnByValue:true})).result.value;
+  seedPixels.push({name,...result});record(name+' rendered digits have at least 4.5 contrast',result.foreground.luminance>.45&&result.contrast>=4.5);
+ }
+}
 async function key(key,code,windowsVirtualKeyCode){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode});await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode});}
 async function typeDigits(value){for(const digit of value){await game('Input.dispatchKeyEvent',{type:'keyDown',key:digit,code:'Digit'+digit,text:digit,unmodifiedText:digit,windowsVirtualKeyCode:48+Number(digit)});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:digit,code:'Digit'+digit,windowsVirtualKeyCode:48+Number(digit)});}}
 async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers:2});}
 async function seedTarget(name){const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');record(name+' seed touch height at least 44 CSS pixels',field.Height*box.height/controls.PanelHeight>=43.995);}
-function evidence(success){return {success,checks,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
+function evidence(success){return {success,checks,seedPixels,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
  const profileRoot=path.resolve('Builds/BrowserProfiles');fs.mkdirSync(profileRoot,{recursive:true});
  const profile=fs.mkdtempSync(path.join(profileRoot,'Interruption-'));
