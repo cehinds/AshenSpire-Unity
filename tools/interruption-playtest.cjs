@@ -79,7 +79,14 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
   if(message.method==='Runtime.exceptionThrown')errors.push(message.params.exceptionDetails.text);
   if(message.method==='Runtime.consoleAPICalled'){
    const value=message.params.args.map(x=>x.value??x.description??'').join(' ');
-   if(value.startsWith('ASHENSPIRE_CONTROLS ')){try{controls=JSON.parse(value.slice(20));layout++;if(controls.LayoutAttempts>1)layoutRetries.push({layout,attempts:controls.LayoutAttempts,ids:controls.Controls.map(x=>x.Id)});}catch(error){errors.push('Invalid control diagnostics: '+error.message);}}
+   if(value.startsWith('ASHENSPIRE_CONTROLS ')){
+    try{
+     const {LayoutAttempts,...measuredControls}=JSON.parse(value.slice(20));
+     // Retry telemetry is separate from the geometry/content equality assertions.
+     controls=measuredControls;layout++;
+     if(LayoutAttempts>1)layoutRetries.push({layout,attempts:LayoutAttempts,ids:controls.Controls.map(x=>x.Id)});
+    }catch(error){errors.push('Invalid control diagnostics: '+error.message);}
+   }
    if(value.startsWith('ASHENSPIRE_CAMPAIGN ')){state=JSON.parse(value.slice(20));revision++;}
    if(value.startsWith('ASHENSPIRE_INTERRUPTION '))interruptions.push(JSON.parse(value.slice(24)));
    if(value.startsWith('ASHENSPIRE_FEEDBACK '))feedback.push(JSON.parse(value.slice(20)));
