@@ -1,7 +1,350 @@
 {
   "url": "http://127.0.0.1:8787",
-  "firstLoadMilliseconds": 1481,
-  "downloadedResourceBytes": 34268070,
+  "feedbackEvents": [
+    {
+      "Cue": "faith",
+      "Status": "started",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "impact",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 8.763067245483398
+    },
+    {
+      "Cue": "faith",
+      "Status": "completed",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.8969807624816895
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -6",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -6",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.34988021850586
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -6",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.049064636230469
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "started",
+      "Text": "VITALITY +5  ·  BLOCK +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "impact",
+      "Text": "VITALITY +5  ·  BLOCK +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 8.202286720275879
+    },
+    {
+      "Cue": "faith",
+      "Status": "completed",
+      "Text": "VITALITY +5  ·  BLOCK +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -1.761208176612854
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.65595245361328
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "started",
+      "Text": "FOE -5  ·  VITALITY +2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "impact",
+      "Text": "FOE -5  ·  VITALITY +2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 8.14660930633545
+    },
+    {
+      "Cue": "faith",
+      "Status": "completed",
+      "Text": "FOE -5  ·  VITALITY +2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "started",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "faith",
+      "Status": "impact",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 8.520082473754883
+    },
+    {
+      "Cue": "faith",
+      "Status": "completed",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.27648401260376
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "faith\n",
+    "hit\n",
+    "attack\n",
+    "guard\n",
+    "faith\n",
+    "guard\n",
+    "attack\n",
+    "faith\n",
+    "faith\n",
+    "hit\n",
+    "attack\n",
+    "reward\n"
+  ],
+  "viewportEvidence": [
+    {
+      "width": 320,
+      "height": 740,
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 10
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "panelWidth": 415.87677001953125,
+      "panelHeight": 899.9999389648438,
+      "layout": 30
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "panelWidth": 1280,
+      "panelHeight": 900,
+      "layout": 70
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 71
+    }
+  ],
+  "firstLoadMilliseconds": 3878,
+  "downloadedResourceBytes": 34291799,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,
@@ -76,6 +419,7 @@
     "20-empty-discard",
     "21-draw-pile",
     "05-card-selected",
+    "26-action-impact",
     "06-card-played",
     "22-discard-pile",
     "23-action-history",

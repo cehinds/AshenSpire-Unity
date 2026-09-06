@@ -25,6 +25,8 @@ Rows are ordered. The first nonempty `MatchTag` found on a card wins: poison, ma
 
 `Audio.Volume` remains the master effect volume. The original frequency fields remain for legacy content without a cue library. Audio clips are synthesized and cached when configured. New sounds replace prior sound playback, bounding overlap. Browser playback requires a user gesture.
 
+From the repository root, `dotnet run --project UnityTests/AudioPreview` exports eight PCM WAV previews to `Published/AudioEvidence` using the same generator. These reference clips omit master volume; the dev page provides audio controls to audition them.
+
 Import through **AshenSpire → Validate and Import Content**, then restart Play mode or rebuild and reload a player. CSV lists remain JSON within a cell. Import validation runs before source replacement and keeps a timestamped backup. Invalid cue IDs, tags, poses, colors or ranges are rejected.
 
 ## Components and ownership
