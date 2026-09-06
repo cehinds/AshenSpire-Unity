@@ -63,7 +63,7 @@ The build script reports failures and writes logs under Builds. The browser harn
 
 Campaign saves use a new per-channel key and retain a checksummed previous record. The original Expedition.v1 and JavaScript saves are not imported or overwritten. Browser storage can be cleared by the browser/user; no cloud synchronization is claimed. Menu and pause preserve progress.
 
-Settings include Reduced motion, Quick animations and Mute sound. The Audio record controls synthesized sound frequencies, duration and volume. How-to-play text explains combat rules. Development builds expose a component gallery and an expedition inspector; the inspector previews a bug report and offers Copy report. Include version, seed, device/browser, reproduction steps, expected result and actual result. Debug state output and inspection are disabled on test/release/main hosted channels.
+Settings include Reduced motion, Quick animations and Mute sound. Audio.Volume controls the master sound level; Feedback.Cues controls sprite timelines, colors and sound sweeps. How-to-play text explains combat rules. Development builds expose a component gallery and an expedition inspector; the inspector previews a bug report and offers Copy report. Include version, seed, device/browser, reproduction steps, expected result and actual result. Debug state output and inspection are disabled on test/release/main hosted channels.
 
 ## What remains beyond this campaign
 
@@ -84,3 +84,7 @@ Equipment supports damage, block, health, poison and heal. RequiredTag selects c
 Existing expeditions keep their saved deck, resources and pending rewards. Updated card/equipment tuning applies to future commands, while only a new expedition receives the changed starter deck. History remains session-local. After editing, stop/restart Unity Play mode or rebuild/reload the player.
 
 Run fixed policy diagnostics with `dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json Builds/Balance.json`. This compares rest-reward and card-taking policies over 24 seeds per class, with alternating routes. Results are diagnostic; they do not certify fun or optimal strategy.
+
+## Combat presentation (0.5.0)
+
+See [Combat-Presentation-0.5.0.md](Combat-Presentation-0.5.0.md) for cue fields, CSV commands and component ownership. Edit Feedback.Cues to change presentation independently of combat. The first matching card tag selects the cue. Existing poses are reused; quick mode halves the timeline, reduced mode preserves static result text, and navigating away cancels active motion. Damage labels show actual net health loss after block; healing labels respect the health cap. Settings and campaign save keys remain unchanged.

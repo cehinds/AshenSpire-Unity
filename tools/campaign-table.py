@@ -9,12 +9,12 @@ import argparse, csv, datetime, json, pathlib, shutil, subprocess, tempfile
 root = pathlib.Path(__file__).resolve().parent.parent
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('action', choices=['export','import'])
-parser.add_argument('table', choices=['Cards','Heroes','Foes','Encounters','Equipment','Tags'])
+parser.add_argument('table', choices=['Cards','Heroes','Foes','Encounters','Equipment','Tags','FeedbackCues'])
 parser.add_argument('csv_path', type=pathlib.Path)
 args = parser.parse_args()
 source = root / 'GameContent/Unity/campaign.json'
 content = json.loads(source.read_text(encoding='utf-8'))
-rows = content[args.table]
+rows = content['Feedback']['Cues'] if args.table == 'FeedbackCues' else content[args.table]
 template = rows[0]
 columns = list(template)
 if args.action == 'export':
@@ -34,10 +34,12 @@ else:
                 try:
                     value=row[key]
                     if value is None: raise ValueError('missing cell')
-                    record[key]=json.loads(value) if isinstance(sample,(list,dict)) else int(value) if isinstance(sample,int) else value
+                    floating = args.table == 'FeedbackCues' and key in ('Distance','Frequency','EndFrequency','SoundDuration','Noise')
+                    record[key]=json.loads(value) if isinstance(sample,(list,dict)) else float(value) if floating or isinstance(sample,float) else int(value) if isinstance(sample,int) else value
                 except (ValueError,TypeError) as error: raise ValueError(f'{args.csv_path}/row {number}/{key}: {error}') from error
             result.append(record)
-    content[args.table]=result
+    if args.table == 'FeedbackCues': content['Feedback']['Cues']=result
+    else: content[args.table]=result
     scratch=root/'Builds/ContentValidation'; scratch.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(dir=scratch) as temporary:
         candidate=pathlib.Path(temporary)/'campaign.json';candidate.write_text(json.dumps(content,indent=2)+'\n',encoding='utf-8',newline='\n')

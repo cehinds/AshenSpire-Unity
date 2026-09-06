@@ -25,3 +25,11 @@ Poison and heal effects can receive equipment bonuses through the same RequiredT
 Quickstep remains free but provides block without draw, avoiding free replacement chains from repeated copies. Other added cards use the existing eight effect primitives. Shared gear becomes more expensive relative to narrow affinity gear; no currency or resource mechanic is added.
 
 Acceptance: no duplicate or off-affinity new rewards; deterministic offers survive save/resume; old pending offers remain claimable; poison/heal modifiers match tags and actual results; unrelated cards receive no bonus; starter identities and class-specific reward choices are visible in browser play; diagnostic policy runs report wins, turns and equipment choices without equating wins with fun. Authoring validation and available target builds pass before dev publication.
+
+## Combat presentation slice — 0.5
+
+Successful commands resolve and save immediately. Presentation observes their results; animation and audio never apply damage, consume resources or block input. Ordered card-tag rules choose authored feedback cues. Each cue defines a sprite-pose timeline, duration, motion distance, impact color and synthesized sound shape. Existing hero sprites are reused. Enemy reactions and temporary outcome labels accompany actual health, block, poison and healing changes.
+
+One view-owned feedback component runs a bounded timeline and cancels it when the view changes or a newer command arrives. Cached textures avoid repeated resource loads during animation. Reduced motion retains static outcome text with no movement or flashing; fast motion shortens the timeline. Mute stops active sounds and remains persisted. Feedback preferences and cues do not change the campaign save schema or simulation.
+
+Acceptance: invalid cue IDs, tags, poses and numeric ranges fail content validation; successful, rejected, repeated and interrupted commands preserve their existing model outcomes; normal and fast timelines return to idle; reduced motion and mute work through real controls and survive reload; actual damage labels reflect blocked/capped results; browser evidence captures an active pose and settled frame. Web, Windows and Android builds and the full campaign regression pass, with physical-device and audible listening limits stated separately.

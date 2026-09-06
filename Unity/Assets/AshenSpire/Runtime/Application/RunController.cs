@@ -41,8 +41,6 @@ namespace AshenSpire.Application
                 _audio = GetComponent<GameAudio>();
                 if (_audio == null)
                     _audio = gameObject.AddComponent<GameAudio>();
-                _audio.Configure(_content.Audio);
-                _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 var channel = "desktop";
                 if (Uri.TryCreate(UnityEngine.Application.absoluteURL, UriKind.Absolute, out var uri))
                 {
@@ -55,6 +53,8 @@ namespace AshenSpire.Application
                     }
                 }
                 _diagnosticsEnabled = UnityEngine.Application.isEditor || channel == "dev" || (uri != null && uri.IsLoopback);
+                _audio.Configure(_content.Audio, _content.Feedback, _diagnosticsEnabled);
+                _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.StartRequested += StartRun;
@@ -101,30 +101,45 @@ namespace AshenSpire.Application
         {
             if (_session == null || index < 0 || index >= _session.State.Hand.Count)
                 return;
-            var attack = _session.Card(_session.State.Hand[index]).HasTag("attack");
+            var card = _session.Card(_session.State.Hand[index]);
+            var before = new FeedbackSnapshot(_session.State);
             if (_session.Play(index))
             {
-                _view.Animate(attack ? "attack1" : "guard", attack);
-                _audio.Play(attack ? "attack" : "guard");
+                var cue = _content.Feedback?.ForCard(card);
+                Present(cue, before.Compare(_session.State));
             }
         }
         private void EndTurn()
         {
             if (_session == null)
                 return;
-            var health = _session.State.Health;
-            if (_session.EndTurn() && _session.State.Health < health)
+            var intent = _session.Intent.Operation;
+            var before = new FeedbackSnapshot(_session.State);
+            if (_session.EndTurn())
             {
-                _view.Animate("hit");
-                _audio.Play("hit");
+                var outcome = before.Compare(_session.State);
+                outcome.Action = _session.State.EnemyHealth <= 0 ? "POISON" : "ENEMY " + intent.ToUpperInvariant();
+                Present(_content.Feedback?.Cue(outcome.Hurt > 0 ? "hit" : "guard"), outcome, true);
             }
+        }
+        private void Present(FeedbackCue cue, FeedbackOutcome outcome, bool enemyTurn = false)
+        {
+            if (cue == null) return;
+            _view.Feedback(cue, outcome, enemyTurn);
+            _audio.Play(cue.Id);
         }
         private void Reward(string id)
         {
             if (_session != null && _session.Reward(id))
                 _audio.Play("reward");
         }
-        private void Buy(string id) => _session?.Buy(id); private void Rest() => _session?.Rest(); private void Potion() => _session?.DrinkPotion(); private void Remove(int index) => _session?.RemoveCard(index);
+        private void Buy(string id) => _session?.Buy(id); private void Rest() => _session?.Rest(); private void Remove(int index) => _session?.RemoveCard(index);
+        private void Potion()
+        {
+            if (_session == null) return;
+            var before = new FeedbackSnapshot(_session.State);
+            if (_session.DrinkPotion()) Present(_content.Feedback?.Cue("heal"), before.Compare(_session.State));
+        }
         private void Mute(bool muted)
         {
             PlayerPrefs.SetInt("AshenSpire.Muted", muted ? 1 : 0);
@@ -178,6 +193,7 @@ namespace AshenSpire.Application
         private void OnDisable()
         {
             Save();
+            if (_audio != null) _audio.SetMuted(true);
             if (_session != null)
                 _session.Changed -= Refresh;
             if (_view == null)

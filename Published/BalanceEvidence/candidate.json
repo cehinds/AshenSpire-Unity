@@ -1,6 +1,6 @@
 {
   "Content": "campaign.json",
-  "ContentSha256": "41d9308971093b83d24fecb9646ed00675408ea18827c29fbf2e6fa41cc28888",
+  "ContentSha256": "ee0dbbdbf43d2bb2b61b913b8fcfaf7c11692edba9c2b54485d313520d28e8c1",
   "Seeds": "1..24",
   "Routes": "seed modulo available routes",
   "Note": "Fixed diagnostic policies; no claim of optimal play or fun. Final health includes defeats as zero.",
