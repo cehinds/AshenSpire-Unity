@@ -1,0 +1,52 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "scenarios": 10,
+  "phoneViewport": "390x844",
+  "desktopViewport": "1280x900",
+  "landscapeViewport": "844x390",
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "resumePixelsMatch": false,
+  "savedState": {
+    "SchemaVersion": 1,
+    "RandomState": 4268624653,
+    "Health": 58,
+    "MaxHealth": 60,
+    "Energy": 3,
+    "Block": 0,
+    "EnemyHealth": 24,
+    "Encounter": 0,
+    "Cinders": 0,
+    "Turn": 2,
+    "Phase": 1,
+    "Deck": [
+      "strike",
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "technique"
+    ],
+    "Draw": [
+      "defend",
+      "strike",
+      "strike"
+    ],
+    "Hand": [
+      "defend",
+      "strike",
+      "strike",
+      "technique",
+      "defend"
+    ],
+    "Discard": []
+  },
+  "errors": [],
+  "limits": [
+    "Desktop browser with phone-sized viewport; no physical phone validation.",
+    "Pointer input exercised; device touch gestures and native Android/iOS not tested.",
+    "Reward and full-run victory covered by domain simulation, not this browser pass."
+  ]
+}

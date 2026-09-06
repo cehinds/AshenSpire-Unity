@@ -1,0 +1,7 @@
+{
+  "Added": ["First Unity expedition: one Reaver, three encounters, card rewards, final victory and defeat.", "Touch card selection with explicit Play and enemy targeting.", "Deterministic saved draw piles and channel-specific expedition saves.", "Unity content import and owner-facing Web/Windows build commands."],
+  "Changed": ["Adapted existing Strike, Defend and Footwork definitions into reusable C# effect records.", "Reused painted Reaver poses and original enemy/background art as pixel-identical PNG conversions."],
+  "Fixed": ["Replaced the default fixed-size Unity web canvas after phone testing exposed clipping.", "Guarded repeated encounter starts and duplicate reward claims."],
+  "KnownIssues": ["Early vertical slice: full classes, equipment systems, branching maps and most original mechanics are not ported yet.", "Native Android/iOS and physical phone performance have not been validated.", "Animation currently uses a short pose swap; anchor-aware frame sequences and reduced-motion controls remain to implement.", "Web builds currently compile locally. GitHub Actions validates packaged builds and publishes Pages; automatic Unity compilation requires runner/licensing setup."],
+  "WhatToTest": ["Start an expedition, enter combat, select and play cards, then end the turn.", "Defeat an enemy, choose a card or healing reward, and continue to the boss.", "Reload during combat and use Continue; check health, hand and encounter are restored.", "Try the same flow in your phone browser and report your device, browser and build version."]
+}

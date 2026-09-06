@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "f32556a54286221c557127067ac5afefdea4dbfa",
+  "unityVersion": "6000.4.10f1",
+  "domainChecksPassed": 47,
+  "simulatedRuns": 30,
+  "simulatedWins": 30,
+  "webCompiled": true,
+  "windowsCompiled": true,
+  "nativeWindowsRuntimeTested": false,
+  "browserCommandsChangedState": true,
+  "browserResumeStateMatched": true,
+  "screenshots": 10,
+  "physicalPhoneTested": false,
+  "nativeAndroidIosBuilt": false,
+  "note": "Minor screenshot text rounding differs after reload; complete serialized combat state matches."
+}
