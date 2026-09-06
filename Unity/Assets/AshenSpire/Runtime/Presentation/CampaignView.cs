@@ -14,6 +14,7 @@ namespace AshenSpire.Presentation
     {
         private readonly VisualElement _root;
         private readonly bool _diagnostics;
+        private bool _disposed;
         private VisualElement _body;
         private ScrollView _scroll;
         private Image _player;
@@ -27,6 +28,10 @@ namespace AshenSpire.Presentation
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
         private VisualElement _stage;
+        private VisualElement _interruptionCover;
+        private Button _returnButton;
+        private readonly List<VisualElement> _interruptionDisabled = new List<VisualElement>();
+        public event Action ReturnRequested;
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -63,7 +68,46 @@ namespace AshenSpire.Presentation
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
         }
-        public void Dispose() { _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
+        public void Dispose() { _disposed = true; _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
+        public void ShowInterruption(bool canReturn)
+        {
+            _feedback.Cancel();
+            if (_interruptionCover == null)
+            {
+                // Disable siblings (including fixed combat actions) without rebuilding:
+                // selection, scroll offset and unfinished input stay in their own views.
+                (_root.focusController?.focusedElement as VisualElement)?.Blur();
+                foreach (var child in _root.Children().ToList())
+                {
+                    if (!child.enabledSelf) continue;
+                    _interruptionDisabled.Add(child);
+                    child.SetEnabled(false);
+                }
+                _interruptionCover = new ScrollView(ScrollViewMode.Vertical);
+                _interruptionCover.AddToClassList("interruption-cover");
+                var panel = new VisualElement();
+                panel.AddToClassList("interruption-panel");
+                panel.Add(Text("THE EMBER CAN WAIT", "eyebrow"));
+                panel.Add(Text("Take your time.", "title"));
+                panel.Add(Text("Your place is waiting. Return when you are ready.", "lead"));
+                _returnButton = Control("return-to-game", "Return to the game", () => ReturnRequested?.Invoke(), "primary");
+                panel.Add(_returnButton);
+                _interruptionCover.Add(panel);
+                _root.Add(_interruptionCover);
+            }
+            _returnButton.SetEnabled(canReturn);
+            if (canReturn) _returnButton.Focus();
+            Report();
+        }
+        public void HideInterruption()
+        {
+            _interruptionCover?.RemoveFromHierarchy();
+            _interruptionCover = null;
+            _returnButton = null;
+            foreach (var child in _interruptionDisabled) child.SetEnabled(true);
+            _interruptionDisabled.Clear();
+            Report();
+        }
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
             Shell("ASHEN SPIRE", "THREE ACTS · ONE EMBER · YOUR PATH");
@@ -421,7 +465,27 @@ namespace AshenSpire.Presentation
             if (refreshTouchTargets) RefreshTouchTargets();
             if (!_diagnostics)
                 return;
-            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Concat(_root.Query<Toggle>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
+            _root.schedule.Execute(ReportControls).StartingIn(180);
         }
+        private void ReportControls()
+        {
+            if (_disposed) return;
+            var surface = _interruptionCover ?? _root;
+            var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
+                .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList())
+                .Where(x => !string.IsNullOrEmpty(x.name))
+                .Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y,
+                    Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray();
+            var width = _root.resolvedStyle.width;
+            var height = _root.resolvedStyle.height;
+            // Rotation and detached elements can expose unmeasured bounds. Export only
+            // finite layouts; the next geometry/control event reports the settled view.
+            if (!Finite(width) || !Finite(height) || controls.Any(x =>
+                !Finite(x.X) || !Finite(x.Y) || !Finite(x.Width) || !Finite(x.Height))) return;
+            Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList {
+                Controls = controls, PanelWidth = width, PanelHeight = height,
+                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() }));
+        }
+        private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
     }
 }

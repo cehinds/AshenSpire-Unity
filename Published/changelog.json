@@ -1,29 +1,30 @@
 {
   "Added": [
-    "Mobile browser regression checks at densities 1, 2 and 3, repeated rotation and synthetic canvas insets.",
-    "Touchscreen taps and swipe scrolling now have a dedicated browser test, including combat, rewards and save/resume."
+    "Explicit return screen after browser hiding or native application interruption.",
+    "Real browser visibility, freeze/return and overlapping lifecycle regression checks.",
+    "Owner guide to lifecycle components and phone interruption testing."
   ],
   "Changed": [
-    "Browser layout uses the displayed canvas height while retaining the 1.5 render-density cap.",
-    "Existing controls resize after orientation and viewport changes; settings toggles and seed entry share the touch minimum."
+    "Backgrounding saves the active campaign and stops transient audio without changing mute.",
+    "The existing screen stays in place behind the cover, preserving selections, inspection, scroll and seed drafts."
   ],
   "Fixed": [
-    "Dense-phone compact controls measured 41.33 CSS pixels in 0.6.0; minimum touch height is now 44 CSS pixels.",
-    "High-density landscape no longer chooses its compact layout from render-buffer pixels.",
-    "Browser test input accounts for the actual canvas position and size, including synthetic safe-area padding."
+    "An interrupted animation is cancelled and cannot finish or replay after return.",
+    "Return waits for all interruption sources to clear; underlying controls cannot advance the run while covered.",
+    "Unmeasured layout bounds during rotation no longer produce invalid diagnostic JSON."
   ],
   "KnownIssues": [
-    "No physical Android device is connected. Real phones, iOS, native graphical Windows play and audible listening remain unverified.",
-    "Browser density, touch and inset tests are emulation; no physical-device performance gain is claimed.",
-    "Native safe-area behavior is retained. Gameplay, campaign content and save schema are unchanged.",
+    "Physical Android/iOS and native graphical Windows interruption tests remain pending; no phone is connected.",
+    "Seed-entry text has weak contrast on its light field and needs a focused UI follow-up.",
+    "Browser checks do not establish mobile performance or audible sound quality.",
     "Unity builds run locally; GitHub validates and publishes prepared players.",
-    "Full original-game parity and store release remain unfinished.",
-    "Two inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+    "Full original-game parity, additional art/music and store release remain unfinished.",
+    "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
   ],
   "WhatToTest": [
-    "Open the dev game on a dense phone screen and rotate between portrait and landscape.",
-    "Tap compact combat controls and settings; they should remain easy to hit.",
-    "Inspect intent after rotation, continue combat, then reload and resume.",
-    "Compare the denser landscape screenshots and test real mobile browser toolbars/notches on your device."
+    "Start typing a seed, switch tabs/apps, return, and check the draft.",
+    "Select a card or inspect intent, switch away, then explicitly return to the same screen.",
+    "Switch away during an action; its outcome should occur once, with no delayed sound or animation.",
+    "Try Home, screen lock, the keyboard, mute and reload/continue on a real phone."
   ]
 }

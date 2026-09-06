@@ -6,6 +6,7 @@
 // EDIT: campaign.json/Audio.Volume and Feedback.Cues for sweeps, noise and duration.
 // VERIFY: unmute, play an attack/guard, end a turn, claim reward; mute stops all feedback.
 // WEB: browser user interaction is required before audio playback is available.
+// PAUSE: SetSuspended stops transient cues without changing the player's mute choice.
 using System;
 using System.Collections.Generic;
 using AshenSpire.Domain;
@@ -15,6 +16,9 @@ namespace AshenSpire.Application
     public sealed class GameAudio : MonoBehaviour
     {
         private AudioSource _source;
+        private bool _suspended;
+        public bool IsPlaying => _source != null && _source.isPlaying;
+        public bool IsMuted => _source != null && _source.mute;
         private AudioListener _ownedListener;
         private readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
         private void Awake()
@@ -58,13 +62,18 @@ namespace AshenSpire.Application
         }
         public void Play(string cue)
         {
-            if (isActiveAndEnabled && _source != null && !_source.mute && _clips.TryGetValue(cue, out var clip))
+            if (!_suspended && isActiveAndEnabled && _source != null && !_source.mute && _clips.TryGetValue(cue, out var clip))
             {
                 // Bound overlap during rapid inputs; a new action replaces its predecessor.
                 _source.Stop();
                 _source.PlayOneShot(clip);
                 if (_diagnostics) Debug.Log("ASHENSPIRE_SOUND " + cue);
             }
+        }
+        public void SetSuspended(bool suspended)
+        {
+            _suspended = suspended;
+            if (suspended && _source != null) _source.Stop();
         }
         private bool _diagnostics;
         private void OnDisable() { if (_source != null) _source.Stop(); }

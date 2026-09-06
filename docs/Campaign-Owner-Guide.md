@@ -2,6 +2,8 @@
 
 Open `Unity/` in Unity 6.6 (6000.6.0f1). Open `Assets/AshenSpire/Scenes/Expedition.unity` and press Play. Choose a wanderer. The current campaign has four classes, three acts, nine encounter stops, three bosses and repeatable seeded runs.
 
+Backgrounding now preserves your current screen behind an explicit return cover. See [interruption and return](Interruption-Return-0.8.0.md) for the component map and phone test steps.
+
 ## Content has one home
 
 `GameContent/Unity/campaign.json` is authoritative. `Unity/Assets/AshenSpire/Resources/campaign.json` is generated. Use **AshenSpire → Campaign Content Editor** to edit structured Cards, Heroes, Foes, Encounters, Equipment, Tags, Feedback Cues and campaign settings. Field edits stay in the draft, support Unity Undo/Redo, and survive switching records. Use **Save & Import** after validation. Missing sprites and bad references are rejected, stale saves cannot replace externally changed source, and an exact source backup goes to `Builds/ContentBackups`. See [the 0.6 authoring guide](Content-Authoring-0.6.0.md) for draft recovery and editing recipes. Stop and restart Unity Play mode, or rebuild and reload the exported player after content changes. A new run inside an already-running player uses the previously loaded definitions.

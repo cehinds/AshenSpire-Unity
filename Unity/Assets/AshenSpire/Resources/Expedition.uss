@@ -55,3 +55,5 @@ Label { white-space: normal; }
 .actions > .button:disabled { opacity: 1; background-color: rgb(38,42,47); color: rgb(192,190,182); border-color: rgb(78,78,73); }
 
 .combat-feedback { position: absolute; top: 24px; left: 6px; right: 6px; padding: 7px; background-color: rgba(13,17,23,0.9); border-radius: 6px; font-size: 15px; -unity-font-style: bold; -unity-text-align: middle-center; white-space: normal; }
+.interruption-cover { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: #101317; padding: 24px 18px; }
+.interruption-panel { width: 100%; max-width: 580px; align-self: center; padding: 20px 0; }
