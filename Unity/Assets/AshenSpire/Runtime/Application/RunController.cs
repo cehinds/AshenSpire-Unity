@@ -1,7 +1,11 @@
 // RunController.cs — connects campaign rules, view and local save storage.
 // ATTACH: one instance on ExpeditionRoot in Scenes/Expedition.unity.
 // INSPECTOR: assign PanelSettings; BuildTools creates the initial reference.
-// LIFECYCLE: OnEnable binds commands; OnDisable unsubscribes/disposes view/saves; pause saves.
+// LIFECYCLE: OnEnable binds commands/browser visibility; OnDisable removes both.
+// PAUSE: InterruptionState gates an explicit return; CampaignView covers existing UI.
+// Change background behavior in Interrupt/ReturnFromInterruption, not CampaignSession.
+// Android keyboard focus loss is ignored; native pause and Web document hiding save,
+// cancel presentation and suspend audio without changing the player's preferences.
 // Update adjusts viewport scaling only. Web uses CSS canvas height via DisplayViewport;
 // native safe-area padding stays in screen pixels. CampaignSession owns gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
@@ -25,6 +29,7 @@ namespace AshenSpire.Application
         private int _screenHeight; private bool _diagnosticsEnabled;
         private int _screenWidth, _displayHeight; private Rect _safeArea;
         private GameAudio _audio;
+        private InterruptionState _interruption;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
         private void OnEnable()
         {
@@ -55,6 +60,8 @@ namespace AshenSpire.Application
                 }
                 _diagnosticsEnabled = UnityEngine.Application.isEditor || channel == "dev" || (uri != null && uri.IsLoopback);
                 _audio.Configure(_content.Audio, _content.Feedback, _diagnosticsEnabled);
+                _audio.SetSuspended(false);
+                _interruption = new InterruptionState();
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
@@ -71,9 +78,11 @@ namespace AshenSpire.Application
                 _view.RemoveRequested += Remove;
                 _view.MenuRequested += Menu;
                 _view.SettingsRequested += Settings;
+                _view.ReturnRequested += ReturnFromInterruption;
                 Menu();
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
+                BrowserVisibility.Install(gameObject.name);
             }
             catch (Exception error) { Debug.LogException(error); GetComponent<UIDocument>().rootVisualElement.Add(new Label("The game could not start. " + error.Message)); }
         }
@@ -173,8 +182,56 @@ namespace AshenSpire.Application
         }
         private void OnApplicationPause(bool paused)
         {
-            if (paused)
-                Save();
+#if !UNITY_WEBGL || UNITY_EDITOR
+            Interrupt(InterruptionSource.NativePause, paused);
+#endif
+        }
+        private void OnApplicationFocus(bool focused)
+        {
+#if !UNITY_WEBGL || UNITY_EDITOR
+            // Android soft keyboards emit focus loss without backgrounding the game.
+            if (!UnityEngine.Application.isMobilePlatform)
+                Interrupt(InterruptionSource.DesktopFocus, !focused);
+#endif
+        }
+        // Called only by the Web lifecycle adapter, not a gameplay command endpoint.
+        [UnityEngine.Scripting.Preserve]
+        public void OnBrowserVisibilityChanged(int hidden)
+        {
+            Interrupt(InterruptionSource.BrowserHidden, hidden != 0);
+        }
+        private void Interrupt(InterruptionSource source, bool active)
+        {
+            if (_view == null || _interruption == null) return;
+            var first = !_interruption.IsInterrupted;
+            if (!_interruption.Set(source, active)) return;
+            _audio.SetSuspended(true);
+            _view.ShowInterruption(_interruption.CanReturn);
+            if (first)
+            {
+                try { Save(); }
+                catch (Exception error) { Debug.LogWarning("Background save failed: " + error.Message); }
+            }
+            ReportInterruption();
+        }
+        private void ReturnFromInterruption()
+        {
+            if (!_interruption.TryReturn()) return;
+            _view.HideInterruption();
+            _audio.SetSuspended(false);
+            ReportInterruption();
+        }
+        [Serializable]
+        private sealed class InterruptionReport
+        {
+            public bool Blocked, CanReturn, AudioPlaying, Muted;
+        }
+        private void ReportInterruption()
+        {
+            if (_diagnosticsEnabled)
+                Debug.Log("ASHENSPIRE_INTERRUPTION " + JsonUtility.ToJson(new InterruptionReport {
+                    Blocked = _interruption.IsInterrupted, CanReturn = _interruption.CanReturn,
+                    AudioPlaying = _audio.IsPlaying, Muted = _audio.IsMuted }));
         }
         private void Update()
         {
@@ -197,6 +254,7 @@ namespace AshenSpire.Application
         }
         private void OnDisable()
         {
+            BrowserVisibility.Remove();
             Save();
             if (_audio != null) _audio.SetMuted(true);
             if (_session != null)
@@ -204,6 +262,7 @@ namespace AshenSpire.Application
             if (_view == null)
                 return;
             _view.Dispose();
+            _view.ReturnRequested -= ReturnFromInterruption;
             _view.MuteRequested -= Mute;
             _view.StartRequested -= StartRun;
             _view.ContinueRequested -= Resume;
@@ -217,6 +276,9 @@ namespace AshenSpire.Application
             _view.RemoveRequested -= Remove;
             _view.MenuRequested -= Menu;
             _view.SettingsRequested -= Settings;
+            _view = null;
+            _interruption = null;
+            _session = null;
         }
     }
 }
