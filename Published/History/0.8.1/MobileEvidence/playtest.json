@@ -1,0 +1,1793 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "deviceScaleFactor": 3,
+  "input": "emulated touch taps, swipes and padding taps to stop inertia; keyboard seed entry",
+  "scrollStops": [
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 31.333332061767578,
+      "y": 140,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 31.333332061767578,
+      "y": 140,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 26.666667938232422,
+      "y": 105,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 31.333332061767578,
+      "y": 140,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 20.88888888888889,
+      "y": 424,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 20.88888888888889,
+      "y": 424,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 8.088888603116251,
+      "y": 315,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 8.088888603116251,
+      "y": 315,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 8.088888603116251,
+      "y": 315,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 9.164444482317347,
+      "y": 367,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 9.164444482317347,
+      "y": 367,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    },
+    {
+      "x": 9.164444482317347,
+      "y": 367,
+      "stateUnchanged": true,
+      "controlsUnchanged": true
+    }
+  ],
+  "mobileLayout": [
+    {
+      "name": "32-viewport-0",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "buffer": {
+        "width": 480,
+        "height": 1110
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 44.66666768391927,
+          "width": 58.6666662484628
+        },
+        {
+          "id": "menu",
+          "height": 44.66666768391927,
+          "width": 46.666657779834644
+        },
+        {
+          "id": "intent-details",
+          "height": 44.66668023003472,
+          "width": 290.6666794218844
+        },
+        {
+          "id": "status-details",
+          "height": 44.00000474717882,
+          "width": 286.6666765990083
+        },
+        {
+          "id": "card-0",
+          "height": 125.33333468967014,
+          "width": 90.00000078413224
+        },
+        {
+          "id": "card-1",
+          "height": 125.33333468967014,
+          "width": 90.66666373923965
+        },
+        {
+          "id": "card-2",
+          "height": 125.33333468967014,
+          "width": 90.00001333024804
+        },
+        {
+          "id": "card-3",
+          "height": 125.33333468967014,
+          "width": 90.00000078413224
+        },
+        {
+          "id": "card-4",
+          "height": 125.33333468967014,
+          "width": 90.00001333024804
+        },
+        {
+          "id": "draw-pile",
+          "height": 44.66668023003472,
+          "width": 135.99999560885948
+        },
+        {
+          "id": "discard-pile",
+          "height": 44.66668023003472,
+          "width": 146.6666530750412
+        },
+        {
+          "id": "action-history",
+          "height": 43.999979654947914,
+          "width": 286.6666765990083
+        },
+        {
+          "id": "potion",
+          "height": 44.66668023003472,
+          "width": 290.6666794218844
+        },
+        {
+          "id": "play",
+          "height": 44.00002983940972,
+          "width": 157.33333563345457
+        },
+        {
+          "id": "end-turn",
+          "height": 44.00002983940972,
+          "width": 121.33333531980166
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-viewport-1",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "buffer": {
+        "width": 1110,
+        "height": 480
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66668701171875
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.66665649414062
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.66665649414062
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50.00001525878906,
+          "width": 351.3333435058594
+        },
+        {
+          "id": "end-turn",
+          "height": 50.00001525878906,
+          "width": 308.6666564941406
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-viewport-2",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "buffer": {
+        "width": 1266,
+        "height": 585
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66671752929688
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50,
+          "width": 398.6666564941406
+        },
+        {
+          "id": "end-turn",
+          "height": 50,
+          "width": 355.9999694824219
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-viewport-3",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "buffer": {
+        "width": 585,
+        "height": 1266
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 46.666664632161456,
+          "width": 65.99998525035973
+        },
+        {
+          "id": "menu",
+          "height": 46.666664632161456,
+          "width": 52.666659377458046
+        },
+        {
+          "id": "intent-details",
+          "height": 47.33333740234375,
+          "width": 356.66664954436453
+        },
+        {
+          "id": "status-details",
+          "height": 46.666664632161456,
+          "width": 351.99999765179854
+        },
+        {
+          "id": "card-0",
+          "height": 145.3332902018229,
+          "width": 110.6666648443645
+        },
+        {
+          "id": "card-1",
+          "height": 145.3332902018229,
+          "width": 109.99998495683455
+        },
+        {
+          "id": "card-2",
+          "height": 145.3332902018229,
+          "width": 110.66667199904076
+        },
+        {
+          "id": "card-3",
+          "height": 133.33335205078126,
+          "width": 110.6666648443645
+        },
+        {
+          "id": "card-4",
+          "height": 133.33335205078126,
+          "width": 110.66667199904076
+        },
+        {
+          "id": "draw-pile",
+          "height": 46.66663601345486,
+          "width": 167.99999757841726
+        },
+        {
+          "id": "discard-pile",
+          "height": 46.66663601345486,
+          "width": 179.33331956211032
+        },
+        {
+          "id": "action-history",
+          "height": 47.33328016493056,
+          "width": 351.99999765179854
+        },
+        {
+          "id": "potion",
+          "height": 46.66669325086806,
+          "width": 356.66664954436453
+        },
+        {
+          "id": "play",
+          "height": 46.66669325086806,
+          "width": 190.6666701645084
+        },
+        {
+          "id": "end-turn",
+          "height": 46.66669325086806,
+          "width": 149.9999768848921
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-viewport-4",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "buffer": {
+        "width": 480,
+        "height": 1110
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 44.66666768391927,
+          "width": 58.6666662484628
+        },
+        {
+          "id": "menu",
+          "height": 44.66666768391927,
+          "width": 46.666657779834644
+        },
+        {
+          "id": "intent-details",
+          "height": 44.66668023003472,
+          "width": 290.6666794218844
+        },
+        {
+          "id": "status-details",
+          "height": 44.00000474717882,
+          "width": 286.6666765990083
+        },
+        {
+          "id": "card-0",
+          "height": 125.33333468967014,
+          "width": 90.00000078413224
+        },
+        {
+          "id": "card-1",
+          "height": 125.33333468967014,
+          "width": 90.66666373923965
+        },
+        {
+          "id": "card-2",
+          "height": 125.33333468967014,
+          "width": 90.00001333024804
+        },
+        {
+          "id": "card-3",
+          "height": 125.33333468967014,
+          "width": 90.00000078413224
+        },
+        {
+          "id": "card-4",
+          "height": 125.33333468967014,
+          "width": 90.00001333024804
+        },
+        {
+          "id": "draw-pile",
+          "height": 44.66668023003472,
+          "width": 135.99999560885948
+        },
+        {
+          "id": "discard-pile",
+          "height": 44.66668023003472,
+          "width": 146.6666530750412
+        },
+        {
+          "id": "action-history",
+          "height": 43.999979654947914,
+          "width": 286.6666765990083
+        },
+        {
+          "id": "potion",
+          "height": 44.66668023003472,
+          "width": 290.6666794218844
+        },
+        {
+          "id": "play",
+          "height": 44.00002983940972,
+          "width": 157.33333563345457
+        },
+        {
+          "id": "end-turn",
+          "height": 44.00002983940972,
+          "width": 121.33333531980166
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-repeat-1-740",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "buffer": {
+        "width": 1110,
+        "height": 480
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66668701171875
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.66665649414062
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.66665649414062
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50.00001525878906,
+          "width": 351.3333435058594
+        },
+        {
+          "id": "end-turn",
+          "height": 50.00001525878906,
+          "width": 308.6666564941406
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-repeat-1-844",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "buffer": {
+        "width": 1266,
+        "height": 585
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66671752929688
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50,
+          "width": 398.6666564941406
+        },
+        {
+          "id": "end-turn",
+          "height": 50,
+          "width": 355.9999694824219
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-repeat-2-740",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "buffer": {
+        "width": 1110,
+        "height": 480
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66665649414062
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50.00001525878906,
+          "width": 351.3333435058594
+        },
+        {
+          "id": "end-turn",
+          "height": 50.00001525878906,
+          "width": 308.6666564941406
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "32-repeat-2-844",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "buffer": {
+        "width": 1266,
+        "height": 585
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 50.00000762939453,
+          "width": 72
+        },
+        {
+          "id": "menu",
+          "height": 50.00000762939453,
+          "width": 57.33331298828125
+        },
+        {
+          "id": "intent-details",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "status-details",
+          "height": 50.000030517578125,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "card-0",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-1",
+          "height": 141.3333740234375,
+          "width": 190.66671752929688
+        },
+        {
+          "id": "card-2",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "card-3",
+          "height": 141.3333740234375,
+          "width": 190
+        },
+        {
+          "id": "card-4",
+          "height": 141.3333740234375,
+          "width": 190.6666259765625
+        },
+        {
+          "id": "draw-pile",
+          "height": 50,
+          "width": 295.33331298828125
+        },
+        {
+          "id": "discard-pile",
+          "height": 50,
+          "width": 308
+        },
+        {
+          "id": "action-history",
+          "height": 50,
+          "width": 608.6666259765625
+        },
+        {
+          "id": "potion",
+          "height": 50,
+          "width": 614
+        },
+        {
+          "id": "play",
+          "height": 50,
+          "width": 398.6666564941406
+        },
+        {
+          "id": "end-turn",
+          "height": 50,
+          "width": 355.9999694824219
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "33-inset-canvas",
+      "canvas": {
+        "x": 12,
+        "y": 24,
+        "width": 360,
+        "height": 800
+      },
+      "buffer": {
+        "width": 540,
+        "height": 1200
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "deck",
+          "height": 44.666666666666664,
+          "width": 62.666666666666664
+        },
+        {
+          "id": "menu",
+          "height": 44.666666666666664,
+          "width": 50
+        },
+        {
+          "id": "intent-details",
+          "height": 44.666666666666664,
+          "width": 328
+        },
+        {
+          "id": "status-details",
+          "height": 44,
+          "width": 323.3333333333333
+        },
+        {
+          "id": "card-0",
+          "height": 136,
+          "width": 102
+        },
+        {
+          "id": "card-1",
+          "height": 136,
+          "width": 101.33333333333333
+        },
+        {
+          "id": "card-2",
+          "height": 136,
+          "width": 102
+        },
+        {
+          "id": "card-3",
+          "height": 124.66666666666667,
+          "width": 102
+        },
+        {
+          "id": "card-4",
+          "height": 124.66666666666667,
+          "width": 102
+        },
+        {
+          "id": "draw-pile",
+          "height": 44.666666666666664,
+          "width": 154
+        },
+        {
+          "id": "discard-pile",
+          "height": 44.666666666666664,
+          "width": 164.66666666666666
+        },
+        {
+          "id": "action-history",
+          "height": 44.666666666666664,
+          "width": 323.3333333333333
+        },
+        {
+          "id": "potion",
+          "height": 44,
+          "width": 328
+        },
+        {
+          "id": "play",
+          "height": 44,
+          "width": 175.33333333333334
+        },
+        {
+          "id": "end-turn",
+          "height": 44,
+          "width": 136.66666666666666
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "35-dense-settings",
+      "canvas": {
+        "x": 12,
+        "y": 24,
+        "width": 360,
+        "height": 800
+      },
+      "buffer": {
+        "width": 540,
+        "height": 1200
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "back",
+          "height": 44.666666666666664,
+          "width": 328
+        },
+        {
+          "id": "reduced-motion",
+          "height": 46,
+          "width": 328
+        },
+        {
+          "id": "fast-motion",
+          "height": 46.666666666666664,
+          "width": 328
+        },
+        {
+          "id": "mute-sound",
+          "height": 46,
+          "width": 328
+        }
+      ],
+      "stateUnchanged": true
+    },
+    {
+      "name": "36-dense-seed",
+      "canvas": {
+        "x": 12,
+        "y": 24,
+        "width": 360,
+        "height": 800
+      },
+      "buffer": {
+        "width": 540,
+        "height": 1200
+      },
+      "renderDensity": 1.5,
+      "heights": [
+        {
+          "id": "hero-reaver",
+          "height": 44.666666666666664,
+          "width": 300
+        },
+        {
+          "id": "hero-rogue",
+          "height": 44.666666666666664,
+          "width": 300
+        },
+        {
+          "id": "hero-herald",
+          "height": 44,
+          "width": 300
+        },
+        {
+          "id": "hero-starseer",
+          "height": 44.666666666666664,
+          "width": 300
+        },
+        {
+          "id": "back",
+          "height": 44.666666666666664,
+          "width": 328
+        },
+        {
+          "id": "seed",
+          "height": 46,
+          "width": 328
+        }
+      ],
+      "stateUnchanged": true
+    }
+  ],
+  "landscapeInspectionChecks": 6,
+  "feedbackEvents": [
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.099356174468994
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.43571662902832
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.997527599334717
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.997527599334717
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.19332504272461
+    },
+    {
+      "Cue": "attack",
+      "Status": "cancelled",
+      "Text": "FOE -10",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -1.6989357471466064
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.0320234298706055
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.980073928833008
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 22.168643951416016
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.345771789550781
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.164452075958252
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.90889835357666
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "guard\n",
+    "hit\n",
+    "guard\n",
+    "guard\n",
+    "attack\n",
+    "guard\n",
+    "guard\n",
+    "guard\n",
+    "attack\n",
+    "hit\n",
+    "guard\n",
+    "guard\n",
+    "attack\n",
+    "reward\n"
+  ],
+  "viewportEvidence": [
+    {
+      "width": 320,
+      "height": 740,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 6
+    },
+    {
+      "width": 740,
+      "height": 320,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "panelWidth": 740,
+      "panelHeight": 320,
+      "layout": 7
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 35
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "panelWidth": 415.8768005371094,
+      "panelHeight": 900,
+      "layout": 51
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 52
+    },
+    {
+      "width": 740,
+      "height": 320,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "panelWidth": 740,
+      "panelHeight": 320,
+      "layout": 53
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 80
+    },
+    {
+      "width": 740,
+      "height": 320,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 740,
+        "height": 320
+      },
+      "panelWidth": 740,
+      "panelHeight": 320,
+      "layout": 96
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 123
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canvas": {
+        "x": 12,
+        "y": 24,
+        "width": 360,
+        "height": 800
+      },
+      "panelWidth": 405,
+      "panelHeight": 900,
+      "layout": 139
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "panelWidth": 415.8768005371094,
+      "panelHeight": 900,
+      "layout": 168
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 169
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "panelWidth": 415.8768005371094,
+      "panelHeight": 900,
+      "layout": 204
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "panelWidth": 1280,
+      "panelHeight": 900,
+      "layout": 261
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 262
+    }
+  ],
+  "firstLoadMilliseconds": 1729,
+  "downloadedResourceBytes": 34305872,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "upgradedFrom": null,
+  "affinityRewardTaken": true,
+  "rewardOffersChecked": 1,
+  "inspectionPreservesState": true,
+  "pileGroupingChecked": true,
+  "narrowTouchTargetsChecked": true,
+  "unaffordableInspected": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 3,
+    "RandomState": 1780887291,
+    "Health": 59,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 12,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 4,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage",
+      "cleave"
+    ],
+    "Draw": [
+      "strike"
+    ],
+    "Hand": [
+      "cleave",
+      "defend",
+      "defend",
+      "cleave"
+    ],
+    "Discard": [
+      "rage",
+      "rage",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "02-seed-entered",
+    "02-seed-committed",
+    "03-campaign-map",
+    "04-phone-combat",
+    "32-viewport-0",
+    "32-viewport-1",
+    "32-viewport-2",
+    "32-viewport-3",
+    "32-viewport-4",
+    "32-repeat-1-740",
+    "32-repeat-1-844",
+    "32-repeat-2-740",
+    "32-repeat-2-844",
+    "33-inset-canvas",
+    "34-inset-inspection",
+    "35-dense-settings",
+    "36-dense-seed",
+    "18-intent-details",
+    "19-status-details",
+    "20-empty-discard",
+    "21-draw-pile",
+    "05-card-selected",
+    "26-action-impact",
+    "06-card-played",
+    "22-discard-pile",
+    "23-action-history",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "25-resumed-history",
+    "24-unaffordable-card",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop browser automation; physical phones and native player interaction are not covered.",
+    "Insets are synthetic CSS padding, not a physical-notch test.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}

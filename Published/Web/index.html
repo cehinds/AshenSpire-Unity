@@ -16,14 +16,14 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <div id="frame"><canvas id="unity-canvas" tabindex="0" aria-label="AshenSpire touch card game"></canvas></div>
 <div id="loading"><h1>ASHEN SPIRE</h1><p>Waking the ember…</p><progress id="progress" value="0" max="1"></progress></div>
 <div id="channel"></div>
-<script src="Build/Web.loader.js?build=1e82b1b871db4b1a6bb0f913d86bf108084efdca8342d8908c4bfb63d431b264"></script>
+<script src="Build/Web.loader.js?build=7c768d9db30dd433d1349bb0dcef04c79b64b9eee15cb13ea157e9d29c71169f"></script>
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
-document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.8.1';
+document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.8.2';
 createUnityInstance(canvas,{
- dataUrl:'Build/Web.data?build=1e82b1b871db4b1a6bb0f913d86bf108084efdca8342d8908c4bfb63d431b264',frameworkUrl:'Build/Web.framework.js?build=1e82b1b871db4b1a6bb0f913d86bf108084efdca8342d8908c4bfb63d431b264',codeUrl:'Build/Web.wasm?build=1e82b1b871db4b1a6bb0f913d86bf108084efdca8342d8908c4bfb63d431b264',
- streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.8.1',
+ dataUrl:'Build/Web.data?build=7c768d9db30dd433d1349bb0dcef04c79b64b9eee15cb13ea157e9d29c71169f',frameworkUrl:'Build/Web.framework.js?build=7c768d9db30dd433d1349bb0dcef04c79b64b9eee15cb13ea157e9d29c71169f',codeUrl:'Build/Web.wasm?build=7c768d9db30dd433d1349bb0dcef04c79b64b9eee15cb13ea157e9d29c71169f',
+ streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.8.2',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{
  window.unityInstance=instance;document.querySelector('#loading').remove();canvas.focus();

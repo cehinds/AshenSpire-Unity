@@ -1,27 +1,27 @@
 {
   "Added": [
-    "Phone-density seed editing and rendered-contrast regression checks, with portrait and landscape screenshots.",
-    "A seed field modification and testing guide."
+    "Verification of both the first typed seed and the corrected draft through actual campaign starts.",
+    "A Web renderer maintenance guide and reproducible build receipt."
   ],
   "Changed": [
-    "Seed entry uses the game palette for its background, text, focus border, caret and translucent selection."
+    "Web builds reserve enough rendering buffer space after geometry ranges expand."
   ],
   "Fixed": [
-    "Pale seed digits no longer disappear against the default light input background.",
-    "The focused label remains readable; selecting digits keeps them visible.",
-    "A long seed-validation label wraps without squeezing the editable input shut."
+    "Rotating a second expedition draft no longer drops the beginning of the seed validation label in the reproduced scenario.",
+    "The same scenario completes without the previous rendering buffer errors."
   ],
   "KnownIssues": [
-    "Physical Android/iOS and native graphical Windows testing remain pending; no phone is connected.",
-    "Browser checks do not establish mobile performance or audible sound quality.",
-    "Unity builds run locally; GitHub validates and publishes prepared players.",
+    "Web uses a workaround pinned to Unity 6000.6.0f1; review it before upgrading the Editor.",
+    "Physical Android/iOS and graphical Windows interaction remain unverified; no phone is connected.",
+    "Phone performance and audible sound quality still need device testing.",
+    "Unity compiles locally; GitHub validates and publishes prepared players.",
     "Full original-game parity, additional art/music and store release remain unfinished.",
     "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
   ],
   "WhatToTest": [
-    "Type a seed, select all, replace it and use Backspace. Check focused and unfocused text.",
-    "Enter a number above 4294967295, then correct it without leaving the hero screen.",
-    "Switch away and return, rotate the phone, then start the run with the retained seed.",
-    "Try the native keyboard, Home, screen lock, mute and reload/continue on a real phone."
+    "Start an expedition, return to Menu, then choose another wanderer.",
+    "Enter an invalid seed, correct it using selection and Backspace, then switch tabs and explicitly return.",
+    "Rotate to landscape and back; check that the full validation label stays visible.",
+    "Start the second expedition, continue playing, then reload and resume."
   ]
 }

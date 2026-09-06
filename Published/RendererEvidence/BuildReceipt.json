@@ -1,0 +1,7 @@
+{
+    "UnityVersion": "6000.6.0f1",
+    "InputSha256": "bfe25a4e12ab85d84fd4f905c17c472599a76e42bceeb5ed02349c3dbe50bcac",
+    "OutputSha256": "dbe778727cf7a8f456a8a74e8680e7f229826185c0d000b3e5295b4b1a24a2c3",
+    "PlayerAssembly": "Temp/StagingArea/Data/Managed/UnityEngine.UIElementsModule.dll",
+    "Algorithm": "consolidate-then-count-plus-two-per-range-v1"
+}

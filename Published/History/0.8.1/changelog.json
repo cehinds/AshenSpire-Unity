@@ -1,0 +1,27 @@
+{
+  "Added": [
+    "Phone-density seed editing and rendered-contrast regression checks, with portrait and landscape screenshots.",
+    "A seed field modification and testing guide."
+  ],
+  "Changed": [
+    "Seed entry uses the game palette for its background, text, focus border, caret and translucent selection."
+  ],
+  "Fixed": [
+    "Pale seed digits no longer disappear against the default light input background.",
+    "The focused label remains readable; selecting digits keeps them visible.",
+    "A long seed-validation label wraps without squeezing the editable input shut."
+  ],
+  "KnownIssues": [
+    "Physical Android/iOS and native graphical Windows testing remain pending; no phone is connected.",
+    "Browser checks do not establish mobile performance or audible sound quality.",
+    "Unity builds run locally; GitHub validates and publishes prepared players.",
+    "Full original-game parity, additional art/music and store release remain unfinished.",
+    "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+  ],
+  "WhatToTest": [
+    "Type a seed, select all, replace it and use Backspace. Check focused and unfocused text.",
+    "Enter a number above 4294967295, then correct it without leaving the hero screen.",
+    "Switch away and return, rotate the phone, then start the run with the retained seed.",
+    "Try the native keyboard, Home, screen lock, mute and reload/continue on a real phone."
+  ]
+}

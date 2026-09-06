@@ -1,0 +1,492 @@
+{
+  "success": false,
+  "checks": [
+    "02-title stops audio",
+    "02-title preserves campaign while covered",
+    "02-title exposes only the return control",
+    "02-title returns without a command",
+    "portrait seed touch height at least 44 CSS pixels",
+    "03-draft-before rendered digits have at least 4.5 contrast",
+    "first draft campaign starts with the exact typed seed",
+    "seed-02-selected rendered digits have at least 4.5 contrast",
+    "out of range seed stays on hero screen",
+    "seed-04-edited rendered digits have at least 4.5 contrast",
+    "03-draft stops audio",
+    "03-draft preserves campaign while covered",
+    "03-draft exposes only the return control",
+    "03-draft returns without a command",
+    "landscape seed touch height at least 44 CSS pixels",
+    "seed-05-landscape-unfocused rendered digits have at least 4.5 contrast",
+    "seed-06-landscape-focused rendered digits have at least 4.5 contrast",
+    "seed-07-landscape-selected rendered digits have at least 4.5 contrast",
+    "seed-08-landscape stops audio",
+    "seed-08-landscape preserves campaign while covered",
+    "seed-08-landscape exposes only the return control",
+    "seed-08-landscape returns without a command",
+    "seed-09-portrait-return rendered digits have at least 4.5 contrast",
+    "keyboard selection replacement and backspace after interruption and rotation campaign starts with the exact typed seed"
+  ],
+  "seedPixels": [
+    {
+      "name": "03-draft-before",
+      "foreground": {
+        "rgb": "216,210,197",
+        "count": 21,
+        "luminance": 0.6472333421007022
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 34381,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.144021007189565
+    },
+    {
+      "name": "seed-02-selected",
+      "foreground": {
+        "rgb": "203,181,151",
+        "count": 11,
+        "luminance": 0.47978622658639214
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 30540,
+          "luminance": 0.012565688062763173
+        },
+        {
+          "rgb": "77,63,44",
+          "count": 2988,
+          "luminance": 0.05314643189456311
+        }
+      ],
+      "contrast": 5.136253546103687
+    },
+    {
+      "name": "seed-04-edited",
+      "foreground": {
+        "rgb": "217,211,198",
+        "count": 11,
+        "luminance": 0.6541746190452311
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 34211,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.25496483533968
+    },
+    {
+      "name": "seed-05-landscape-unfocused",
+      "foreground": {
+        "rgb": "223,216,203",
+        "count": 10,
+        "luminance": 0.6911150574786825
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 67028,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.84539130673714
+    },
+    {
+      "name": "seed-06-landscape-focused",
+      "foreground": {
+        "rgb": "209,187,156",
+        "count": 10,
+        "luminance": 0.51496257440286
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 63772,
+          "luminance": 0.012565688062763173
+        },
+        {
+          "rgb": "77,63,44",
+          "count": 2264,
+          "luminance": 0.05314643189456311
+        }
+      ],
+      "contrast": 5.477286649918904
+    },
+    {
+      "name": "seed-07-landscape-selected",
+      "foreground": {
+        "rgb": "209,187,156",
+        "count": 10,
+        "luminance": 0.51496257440286
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 63772,
+          "luminance": 0.012565688062763173
+        },
+        {
+          "rgb": "77,63,44",
+          "count": 2264,
+          "luminance": 0.05314643189456311
+        }
+      ],
+      "contrast": 5.477286649918904
+    },
+    {
+      "name": "seed-09-portrait-return",
+      "foreground": {
+        "rgb": "217,211,198",
+        "count": 11,
+        "luminance": 0.6541746190452311
+      },
+      "backgrounds": [
+        {
+          "rgb": "25,30,35",
+          "count": 45280,
+          "luminance": 0.012565688062763173
+        }
+      ],
+      "contrast": 11.25496483533968
+    }
+  ],
+  "seedCampaigns": [
+    {
+      "stage": "first draft",
+      "expected": 240987,
+      "observed": 240987,
+      "revision": 1,
+      "state": {
+        "SchemaVersion": 1,
+        "HeroId": "reaver",
+        "Seed": 240987,
+        "RandomState": 240987,
+        "Health": 70,
+        "MaxHealth": 70,
+        "Energy": 0,
+        "Block": 0,
+        "EnemyHealth": 0,
+        "EnemyBlock": 0,
+        "EnemyPoison": 0,
+        "Poison": 0,
+        "Weak": 0,
+        "Strength": 0,
+        "EnemyStrength": 0,
+        "Encounter": 0,
+        "Route": 0,
+        "Turn": 0,
+        "Cinders": 0,
+        "Potions": 3,
+        "FoesDefeated": 0,
+        "Rested": false,
+        "Phase": 0,
+        "Deck": [
+          "strike",
+          "strike",
+          "defend",
+          "defend",
+          "cleave",
+          "cleave",
+          "rage",
+          "rage"
+        ],
+        "Draw": [],
+        "Hand": [],
+        "Discard": [],
+        "Items": [],
+        "Rewards": []
+      }
+    },
+    {
+      "stage": "keyboard selection replacement and backspace after interruption and rotation",
+      "expected": 240987,
+      "observed": 240987,
+      "revision": 2,
+      "state": {
+        "SchemaVersion": 1,
+        "HeroId": "reaver",
+        "Seed": 240987,
+        "RandomState": 240987,
+        "Health": 70,
+        "MaxHealth": 70,
+        "Energy": 0,
+        "Block": 0,
+        "EnemyHealth": 0,
+        "EnemyBlock": 0,
+        "EnemyPoison": 0,
+        "Poison": 0,
+        "Weak": 0,
+        "Strength": 0,
+        "EnemyStrength": 0,
+        "Encounter": 0,
+        "Route": 0,
+        "Turn": 0,
+        "Cinders": 0,
+        "Potions": 3,
+        "FoesDefeated": 0,
+        "Rested": false,
+        "Phase": 0,
+        "Deck": [
+          "strike",
+          "strike",
+          "defend",
+          "defend",
+          "cleave",
+          "cleave",
+          "rage",
+          "rage"
+        ],
+        "Draw": [],
+        "Hand": [],
+        "Discard": [],
+        "Items": [],
+        "Rewards": []
+      }
+    }
+  ],
+  "visibility": [
+    "hidden",
+    "visible",
+    "hidden",
+    "visible",
+    "hidden",
+    "visible"
+  ],
+  "interruptions": [
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": true,
+      "CanReturn": true,
+      "AudioPlaying": false,
+      "Muted": false
+    },
+    {
+      "Blocked": false,
+      "CanReturn": false,
+      "AudioPlaying": false,
+      "Muted": false
+    }
+  ],
+  "feedback": [],
+  "sounds": [],
+  "screenshots": [
+    "01-title",
+    "02-title-paused",
+    "02-title-returned",
+    "seed-01-empty",
+    "03-draft-before",
+    "seed-01-first-campaign",
+    "seed-02-selected",
+    "seed-03-invalid",
+    "seed-04-edited",
+    "03-draft-paused",
+    "03-draft-returned",
+    "seed-05-landscape-unfocused",
+    "seed-06-landscape-focused",
+    "seed-07-landscape-selected",
+    "seed-08-landscape-paused",
+    "seed-08-landscape-returned",
+    "seed-09-portrait-return",
+    "seed-10-created-campaign",
+    "failure"
+  ],
+  "errors": [
+    "GfxDevice::CopyBufferRanges: range reads out of bounds (srcEnd=16848 srcSize=16384)\n",
+    "GfxDevice::CopyBufferRanges: range reads out of bounds (srcEnd=16836 srcSize=16384)\n",
+    "Error: no browser or Unity errors\n    at assert (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:6:48)\n    at record (/home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:11:29)\n    at /home/runner/work/AshenSpire-Unity/AshenSpire-Unity/tools/interruption-playtest.cjs:154:42"
+  ],
+  "errorContexts": [
+    {
+      "message": "GfxDevice::CopyBufferRanges: range reads out of bounds (srcEnd=16848 srcSize=16384)\n",
+      "lastScreenshot": "03-draft-returned",
+      "lastInput": {
+        "id": "return-to-game",
+        "x": 194.9999910566547,
+        "y": 204.00002176920572
+      },
+      "revision": 1,
+      "layout": 11
+    },
+    {
+      "message": "GfxDevice::CopyBufferRanges: range reads out of bounds (srcEnd=16836 srcSize=16384)\n",
+      "lastScreenshot": "seed-08-landscape-returned",
+      "lastInput": {
+        "id": "return-to-game",
+        "x": 370,
+        "y": 217
+      },
+      "revision": 1,
+      "layout": 15
+    }
+  ],
+  "lastInput": {
+    "id": "hero-reaver",
+    "x": 195,
+    "y": 467.33334771050346
+  },
+  "state": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 240987,
+    "RandomState": 240987,
+    "Health": 70,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 0,
+    "Route": 0,
+    "Turn": 0,
+    "Cinders": 0,
+    "Potions": 3,
+    "FoesDefeated": 0,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage"
+    ],
+    "Draw": [],
+    "Hand": [],
+    "Discard": [],
+    "Items": [],
+    "Rewards": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "deck",
+        "X": 195.4976348876953,
+        "Y": 98.81517028808594,
+        "Width": 70.37913513183594,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "menu",
+        "X": 341.9431457519531,
+        "Y": 98.81517028808594,
+        "Width": 56.1611328125,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "enter-0",
+        "X": 33.412322998046875,
+        "Y": 439.3365173339844,
+        "Width": 349.0521545410156,
+        "Height": 50.473907470703125,
+        "Enabled": true
+      },
+      {
+        "Id": "enter-1",
+        "X": 33.412322998046875,
+        "Y": 620.6161499023438,
+        "Width": 349.0521545410156,
+        "Height": 49.76300048828125,
+        "Enabled": true
+      },
+      {
+        "Id": "shop",
+        "X": 17.772512435913086,
+        "Y": 708.056884765625,
+        "Width": 380.3317565917969,
+        "Height": 49.7630615234375,
+        "Enabled": true
+      },
+      {
+        "Id": "rest",
+        "X": 17.772512435913086,
+        "Y": 767.7725219726562,
+        "Width": 380.3317565917969,
+        "Height": 50.47393798828125,
+        "Enabled": false
+      },
+      {
+        "Id": "diagnostics",
+        "X": 17.772512435913086,
+        "Y": 879.3839111328125,
+        "Width": 380.3317565917969,
+        "Height": 49.76300048828125,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 415.8768005371094,
+    "PanelHeight": 900,
+    "Labels": [
+      "ASHEN SPIRE",
+      "REAVER · ACT 1 · 0 CINDERS",
+      "70 / 70 VITALITY",
+      "ASHEN APPROACH",
+      "Encounter 1 of 9 · 0 defeated",
+      "◇  ◇  ◇  ◇  ◇  ◇  ◇  ◇  ◇",
+      "Choose your route",
+      "Wandering Soldier",
+      "24 vitality · 20 cinders · attack 7 / guard 5 / attack 9",
+      "Blight Hound",
+      "28 vitality · 28 cinders · attack 6 / poison 2 / attack 8",
+      "Equipment stays with this expedition. Rest once per stop.\nYour route and every reward are saved."
+    ]
+  },
+  "revision": 2,
+  "layout": 17,
+  "physicalDevice": false
+}
