@@ -46,7 +46,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
  }
  let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput};});
+ page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput,feedbackEvents,soundEvents};});
  let url=process.argv[2]||'http://127.0.0.1:8787';
  const upgradeIndex=process.argv.indexOf('--upgrade-from');let servedDirectory;
  if(upgradeIndex>=0){
@@ -161,9 +161,16 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;
   assert(Math.abs(normal.Duration-normalCue.Milliseconds/1000)<.001&&Math.abs(fast.Duration-fastCue.Milliseconds/2000)<.001,'fast duration differs from authored half duration');
   await settings(['fast-motion','reduced-motion','mute-sound']);await probe('end-turn','28-reduced-impact',true,false,true);
   const saved=JSON.stringify(state);await load();await click('continue',true);assert(saved===JSON.stringify(state),'settings reload changed save');await probe('end-turn','29-persisted-impact',true,false,true);
-  await settings(['reduced-motion','mute-sound']);const before=feedbackEvents.length;await click('end-turn',true);
-  // The named menu is observed geometry; use a quick pointer press before the timeline ends.
-  const menu=controls.Controls.find(c=>c.Id==='menu'),vp=page.viewportSize();await page.mouse.click((menu.X+menu.Width/2)*vp.width/controls.PanelWidth,(menu.Y+menu.Height/2)*vp.height/controls.PanelHeight);
+  await settings(['reduced-motion','mute-sound']);const before=feedbackEvents.length;
+  // This probe must navigate during a 600 ms cue. The general click helper waits
+  // for geometry and adds a settling delay, which can consume that whole window.
+  // Capture stable bounds first, then react to the actual cue-start event.
+  const canvas=await page.locator('#unity-canvas').boundingBox();
+  const point=id=>{const c=controls.Controls.find(c=>c.Id===id&&c.Enabled);assert(c,'interruption control missing: '+id);return {x:canvas.x+(c.X+c.Width/2)*canvas.width/controls.PanelWidth,y:canvas.y+(c.Y+c.Height/2)*canvas.height/controls.PanelHeight};};
+  const turnPoint=point('end-turn'),menuPoint=point('menu');
+  await page.mouse.click(turnPoint.x,turnPoint.y,{delay:120});
+  await until(()=>feedbackEvents.slice(before).some(e=>e.Status==='started'),'interruption cue started');
+  await page.mouse.click(menuPoint.x,menuPoint.y,{delay:120});
   await until(()=>feedbackEvents.slice(before).some(e=>e.Status==='cancelled'),'navigation cancels timeline');await page.waitForTimeout(900);
   assert(!feedbackEvents.slice(before).some(e=>e.Status==='completed'),'cancelled timeline continued');await shot('31-interrupted-menu');
   const report={url,feedbackEvents,soundEvents,screenshots:shots,errors,normalFastReduced:true,preferencesPersisted:true,navigationCancelled:true,limits:['Sound dispatch and synthesized samples are checked; audible listening and physical mobile playback remain unverified.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');if(errors.length)throw new Error('Browser errors');console.log(JSON.stringify(report,null,2));return;
