@@ -46,6 +46,7 @@
     "reload resumes identical saved campaign",
     "no browser or Unity errors"
   ],
+  "seedPixels": [],
   "visibility": [
     "hidden",
     "visible",

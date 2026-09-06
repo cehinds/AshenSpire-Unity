@@ -1,30 +1,27 @@
 {
   "Added": [
-    "Explicit return screen after browser hiding or native application interruption.",
-    "Real browser visibility, freeze/return and overlapping lifecycle regression checks.",
-    "Owner guide to lifecycle components and phone interruption testing."
+    "Phone-density seed editing and rendered-contrast regression checks, with portrait and landscape screenshots.",
+    "A seed field modification and testing guide."
   ],
   "Changed": [
-    "Backgrounding saves the active campaign and stops transient audio without changing mute.",
-    "The existing screen stays in place behind the cover, preserving selections, inspection, scroll and seed drafts."
+    "Seed entry uses the game palette for its background, text, focus border, caret and translucent selection."
   ],
   "Fixed": [
-    "An interrupted animation is cancelled and cannot finish or replay after return.",
-    "Return waits for all interruption sources to clear; underlying controls cannot advance the run while covered.",
-    "Unmeasured layout bounds during rotation no longer produce invalid diagnostic JSON."
+    "Pale seed digits no longer disappear against the default light input background.",
+    "The focused label remains readable; selecting digits keeps them visible.",
+    "A long seed-validation label wraps without squeezing the editable input shut."
   ],
   "KnownIssues": [
-    "Physical Android/iOS and native graphical Windows interruption tests remain pending; no phone is connected.",
-    "Seed-entry text has weak contrast on its light field and needs a focused UI follow-up.",
+    "Physical Android/iOS and native graphical Windows testing remain pending; no phone is connected.",
     "Browser checks do not establish mobile performance or audible sound quality.",
     "Unity builds run locally; GitHub validates and publishes prepared players.",
     "Full original-game parity, additional art/music and store release remain unfinished.",
     "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
   ],
   "WhatToTest": [
-    "Start typing a seed, switch tabs/apps, return, and check the draft.",
-    "Select a card or inspect intent, switch away, then explicitly return to the same screen.",
-    "Switch away during an action; its outcome should occur once, with no delayed sound or animation.",
-    "Try Home, screen lock, the keyboard, mute and reload/continue on a real phone."
+    "Type a seed, select all, replace it and use Backspace. Check focused and unfocused text.",
+    "Enter a number above 4294967295, then correct it without leaving the hero screen.",
+    "Switch away and return, rotate the phone, then start the run with the retained seed.",
+    "Try the native keyboard, Home, screen lock, mute and reload/continue on a real phone."
   ]
 }

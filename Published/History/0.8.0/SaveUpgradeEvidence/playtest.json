@@ -1,0 +1,526 @@
+{
+  "url": "http://127.0.0.1:54730/",
+  "deviceScaleFactor": 1,
+  "input": "mouse",
+  "scrollStops": [],
+  "mobileLayout": [],
+  "landscapeInspectionChecks": 0,
+  "feedbackEvents": [
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.115840911865234
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "BLOCK +5",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.27648401260376
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -2",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.872501373291016
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 22.448286056518555
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.50409507751465
+    },
+    {
+      "Cue": "attack",
+      "Status": "cancelled",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -1.7551954984664917
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.8907670974731445
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.90889835357666
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 22.37929344177246
+    },
+    {
+      "Cue": "attack",
+      "Status": "cancelled",
+      "Text": "FOE -7",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "started",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "hit",
+      "Status": "impact",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -6.368520736694336
+    },
+    {
+      "Cue": "hit",
+      "Status": "completed",
+      "Text": "ENEMY ATTACK  ·  VITALITY -9",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 4.90889835357666
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.180373668670654
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "guard\n",
+    "hit\n",
+    "guard\n",
+    "attack\n",
+    "attack\n",
+    "guard\n",
+    "guard\n",
+    "guard\n",
+    "attack\n",
+    "hit\n",
+    "guard\n",
+    "guard\n",
+    "attack\n",
+    "reward\n"
+  ],
+  "viewportEvidence": [
+    {
+      "width": 320,
+      "height": 740,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 740
+      },
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 6
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "panelWidth": 415.87677001953125,
+      "panelHeight": 899.9999389648438,
+      "layout": 23
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "panelWidth": 1280,
+      "panelHeight": 900,
+      "layout": 70
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 71
+    }
+  ],
+  "firstLoadMilliseconds": 1809,
+  "downloadedResourceBytes": 34295241,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "upgradedFrom": "LOCAL · UNITY 0.7.0",
+  "affinityRewardTaken": true,
+  "rewardOffersChecked": 1,
+  "inspectionPreservesState": true,
+  "pileGroupingChecked": true,
+  "narrowTouchTargetsChecked": true,
+  "unaffordableInspected": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 3366354560,
+    "RandomState": 727801616,
+    "Health": 59,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 10,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 4,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage",
+      "sunder"
+    ],
+    "Draw": [
+      "strike"
+    ],
+    "Hand": [
+      "cleave",
+      "defend",
+      "cleave",
+      "defend"
+    ],
+    "Discard": [
+      "rage",
+      "rage",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "18-intent-details",
+    "19-status-details",
+    "20-empty-discard",
+    "21-draw-pile",
+    "05-card-selected",
+    "06-card-played",
+    "22-discard-pile",
+    "23-action-history",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "25-resumed-history",
+    "24-unaffordable-card",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop browser automation; physical phones and native player interaction are not covered.",
+    "Insets are synthetic CSS padding, not a physical-notch test.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}
