@@ -1,0 +1,989 @@
+{
+  "SchemaVersion": 1,
+  "Energy": 3,
+  "HandSize": 5,
+  "RestHealing": 16,
+  "PotionHealing": 20,
+  "StartingPotions": 3,
+  "Tags": [
+    {
+      "Id": "attack",
+      "Domain": "gameplay",
+      "Family": "card"
+    },
+    {
+      "Id": "skill",
+      "Domain": "gameplay",
+      "Family": "card"
+    },
+    {
+      "Id": "poison",
+      "Domain": "gameplay",
+      "Family": "card"
+    },
+    {
+      "Id": "faith",
+      "Domain": "gameplay",
+      "Family": "card"
+    },
+    {
+      "Id": "magic",
+      "Domain": "gameplay",
+      "Family": "card"
+    },
+    {
+      "Id": "hero",
+      "Domain": "gameplay",
+      "Family": "entity"
+    },
+    {
+      "Id": "humanoid",
+      "Domain": "gameplay",
+      "Family": "entity"
+    },
+    {
+      "Id": "beast",
+      "Domain": "gameplay",
+      "Family": "entity"
+    },
+    {
+      "Id": "boss",
+      "Domain": "gameplay",
+      "Family": "entity"
+    },
+    {
+      "Id": "reaver",
+      "Domain": "gameplay",
+      "Family": "class"
+    },
+    {
+      "Id": "rogue",
+      "Domain": "gameplay",
+      "Family": "class"
+    },
+    {
+      "Id": "herald",
+      "Domain": "gameplay",
+      "Family": "class"
+    },
+    {
+      "Id": "starseer",
+      "Domain": "gameplay",
+      "Family": "class"
+    },
+    {
+      "Id": "weapon",
+      "Domain": "gameplay",
+      "Family": "equipment"
+    },
+    {
+      "Id": "charm",
+      "Domain": "gameplay",
+      "Family": "equipment"
+    },
+    {
+      "Id": "armor",
+      "Domain": "gameplay",
+      "Family": "equipment"
+    }
+  ],
+  "Cards": [
+    {
+      "Id": "strike",
+      "Name": "Strike",
+      "Cost": 1,
+      "Tags": [
+        "attack"
+      ],
+      "Description": "Deal 6 damage.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 6
+        }
+      ]
+    },
+    {
+      "Id": "defend",
+      "Name": "Defend",
+      "Cost": 1,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 5 block.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "Id": "technique",
+      "Name": "Footwork",
+      "Cost": 1,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 3 block. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 3
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "cleave",
+      "Name": "Cleave",
+      "Cost": 2,
+      "Tags": [
+        "attack"
+      ],
+      "Description": "Deal 15 damage.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 15
+        }
+      ]
+    },
+    {
+      "Id": "rage",
+      "Name": "Battle Cry",
+      "Cost": 1,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 2 strength. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "strength",
+          "Amount": 2
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "venom",
+      "Name": "Venom Edge",
+      "Cost": 1,
+      "Tags": [
+        "attack",
+        "poison"
+      ],
+      "Description": "Deal 3 damage. Apply 3 poison.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 3
+        },
+        {
+          "Operation": "poison",
+          "Amount": 3
+        }
+      ]
+    },
+    {
+      "Id": "quickstep",
+      "Name": "Quickstep",
+      "Cost": 0,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 3 block. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 3
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "smite",
+      "Name": "Smite",
+      "Cost": 1,
+      "Tags": [
+        "attack",
+        "faith"
+      ],
+      "Description": "Deal 5 damage. Recover 2 vitality.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 5
+        },
+        {
+          "Operation": "heal",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "Id": "prayer",
+      "Name": "Golden Prayer",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "faith"
+      ],
+      "Description": "Recover 5 vitality. Gain 3 block.",
+      "Effects": [
+        {
+          "Operation": "heal",
+          "Amount": 5
+        },
+        {
+          "Operation": "block",
+          "Amount": 3
+        }
+      ]
+    },
+    {
+      "Id": "starbolt",
+      "Name": "Star Bolt",
+      "Cost": 1,
+      "Tags": [
+        "attack",
+        "magic"
+      ],
+      "Description": "Deal 8 damage.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "Id": "insight",
+      "Name": "Insight",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "magic"
+      ],
+      "Description": "Draw 2. Gain 2 block.",
+      "Effects": [
+        {
+          "Operation": "draw",
+          "Amount": 2
+        },
+        {
+          "Operation": "block",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "Id": "meteor",
+      "Name": "Falling Star",
+      "Cost": 2,
+      "Tags": [
+        "attack",
+        "magic"
+      ],
+      "Description": "Deal 18 damage.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 18
+        }
+      ]
+    },
+    {
+      "Id": "bulwark",
+      "Name": "Bulwark",
+      "Cost": 2,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 14 block.",
+      "Effects": [
+        {
+          "Operation": "block",
+          "Amount": 14
+        }
+      ]
+    },
+    {
+      "Id": "rupture",
+      "Name": "Rupture",
+      "Cost": 2,
+      "Tags": [
+        "attack",
+        "poison"
+      ],
+      "Description": "Deal 8 damage. Apply 5 poison.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 8
+        },
+        {
+          "Operation": "poison",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "Id": "feint",
+      "Name": "Feint",
+      "Cost": 1,
+      "Tags": [
+        "attack"
+      ],
+      "Description": "Deal 4 damage. Weaken for 2 turns.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 4
+        },
+        {
+          "Operation": "weak",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "Id": "renewal",
+      "Name": "Renewal",
+      "Cost": 1,
+      "Tags": [
+        "skill",
+        "faith"
+      ],
+      "Description": "Recover 8 vitality.",
+      "Effects": [
+        {
+          "Operation": "heal",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "Id": "tempo",
+      "Name": "Second Wind",
+      "Cost": 0,
+      "Tags": [
+        "skill"
+      ],
+      "Description": "Gain 1 energy. Draw 1.",
+      "Effects": [
+        {
+          "Operation": "energy",
+          "Amount": 1
+        },
+        {
+          "Operation": "draw",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "Id": "warding",
+      "Name": "Warding Blow",
+      "Cost": 1,
+      "Tags": [
+        "attack",
+        "skill"
+      ],
+      "Description": "Deal 5 damage. Gain 5 block.",
+      "Effects": [
+        {
+          "Operation": "damage",
+          "Amount": 5
+        },
+        {
+          "Operation": "block",
+          "Amount": 5
+        }
+      ]
+    }
+  ],
+  "Heroes": [
+    {
+      "Id": "reaver",
+      "Name": "Reaver",
+      "Description": "Build strength. Break their guard.",
+      "Art": "reaver",
+      "Health": 70,
+      "Deck": [
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "cleave",
+        "rage"
+      ],
+      "Tags": [
+        "hero",
+        "reaver"
+      ]
+    },
+    {
+      "Id": "rogue",
+      "Name": "Rogue",
+      "Description": "Poison persists. Stay one step ahead.",
+      "Art": "rogue",
+      "Health": 60,
+      "Deck": [
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "venom",
+        "quickstep"
+      ],
+      "Tags": [
+        "hero",
+        "rogue"
+      ]
+    },
+    {
+      "Id": "herald",
+      "Name": "Herald",
+      "Description": "Recover through faith. Outlast the dark.",
+      "Art": "herald",
+      "Health": 64,
+      "Deck": [
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "smite",
+        "prayer"
+      ],
+      "Tags": [
+        "hero",
+        "herald"
+      ]
+    },
+    {
+      "Id": "starseer",
+      "Name": "Starseer",
+      "Description": "Draw your answers. Call down the stars.",
+      "Art": "starseer",
+      "Health": 56,
+      "Deck": [
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "starbolt",
+        "insight"
+      ],
+      "Tags": [
+        "hero",
+        "starseer"
+      ]
+    }
+  ],
+  "Foes": [
+    {
+      "Id": "wanderingSoldier",
+      "Name": "Wandering Soldier",
+      "Art": "painted_wanderingSoldier",
+      "Health": 24,
+      "Reward": 20,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 7
+        },
+        {
+          "Operation": "guard",
+          "Amount": 5
+        },
+        {
+          "Operation": "attack",
+          "Amount": 9
+        }
+      ]
+    },
+    {
+      "Id": "blightHound",
+      "Name": "Blight Hound",
+      "Art": "painted_blightHound",
+      "Health": 28,
+      "Reward": 28,
+      "Tags": [
+        "beast"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 6
+        },
+        {
+          "Operation": "poison",
+          "Amount": 2
+        },
+        {
+          "Operation": "attack",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "Id": "livingArmor",
+      "Name": "Living Armor",
+      "Art": "painted_livingArmor",
+      "Health": 38,
+      "Reward": 30,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "guard",
+          "Amount": 8
+        },
+        {
+          "Operation": "attack",
+          "Amount": 10
+        },
+        {
+          "Operation": "charge",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "Id": "fellWarden",
+      "Name": "Fell Warden",
+      "Art": "painted_fellWarden",
+      "Health": 52,
+      "Reward": 50,
+      "Tags": [
+        "humanoid",
+        "boss"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 9
+        },
+        {
+          "Operation": "charge",
+          "Amount": 3
+        },
+        {
+          "Operation": "attack",
+          "Amount": 12
+        }
+      ]
+    },
+    {
+      "Id": "courtDuelist",
+      "Name": "Court Duelist",
+      "Art": "painted_courtDuelist",
+      "Health": 42,
+      "Reward": 35,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 10
+        },
+        {
+          "Operation": "guard",
+          "Amount": 7
+        },
+        {
+          "Operation": "attack",
+          "Amount": 13
+        }
+      ]
+    },
+    {
+      "Id": "courtSurgeon",
+      "Name": "Court Surgeon",
+      "Art": "painted_courtSurgeon",
+      "Health": 38,
+      "Reward": 40,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "poison",
+          "Amount": 3
+        },
+        {
+          "Operation": "attack",
+          "Amount": 8
+        },
+        {
+          "Operation": "guard",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "Id": "gildedKnight",
+      "Name": "Gilded Knight",
+      "Art": "painted_gildedKnight",
+      "Health": 50,
+      "Reward": 45,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "guard",
+          "Amount": 10
+        },
+        {
+          "Operation": "attack",
+          "Amount": 14
+        },
+        {
+          "Operation": "charge",
+          "Amount": 3
+        }
+      ]
+    },
+    {
+      "Id": "stitchedKing",
+      "Name": "The Stitched King",
+      "Art": "painted_stitchedKing",
+      "Health": 72,
+      "Reward": 65,
+      "Tags": [
+        "humanoid",
+        "boss"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 12
+        },
+        {
+          "Operation": "poison",
+          "Amount": 3
+        },
+        {
+          "Operation": "attack",
+          "Amount": 15
+        }
+      ]
+    },
+    {
+      "Id": "graveWisp",
+      "Name": "Grave Wisp",
+      "Art": "painted_graveWisp",
+      "Health": 48,
+      "Reward": 40,
+      "Tags": [
+        "magic"
+      ],
+      "Intents": [
+        {
+          "Operation": "poison",
+          "Amount": 4
+        },
+        {
+          "Operation": "attack",
+          "Amount": 10
+        }
+      ]
+    },
+    {
+      "Id": "wyrmAspirant",
+      "Name": "Wyrm Aspirant",
+      "Art": "painted_wyrmAspirant",
+      "Health": 62,
+      "Reward": 50,
+      "Tags": [
+        "beast"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 14
+        },
+        {
+          "Operation": "charge",
+          "Amount": 4
+        },
+        {
+          "Operation": "guard",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "Id": "valkyrieShade",
+      "Name": "Valkyrie Shade",
+      "Art": "painted_valkyrieShade",
+      "Health": 65,
+      "Reward": 55,
+      "Tags": [
+        "humanoid"
+      ],
+      "Intents": [
+        {
+          "Operation": "attack",
+          "Amount": 12
+        },
+        {
+          "Operation": "guard",
+          "Amount": 10
+        },
+        {
+          "Operation": "attack",
+          "Amount": 17
+        }
+      ]
+    },
+    {
+      "Id": "wyrmLord",
+      "Name": "The Wyrm Lord",
+      "Art": "painted_wyrmLord",
+      "Health": 100,
+      "Reward": 100,
+      "Tags": [
+        "beast",
+        "boss"
+      ],
+      "Intents": [
+        {
+          "Operation": "charge",
+          "Amount": 4
+        },
+        {
+          "Operation": "attack",
+          "Amount": 16
+        },
+        {
+          "Operation": "poison",
+          "Amount": 3
+        },
+        {
+          "Operation": "attack",
+          "Amount": 20
+        }
+      ]
+    }
+  ],
+  "Encounters": [
+    {
+      "Id": "step1",
+      "Name": "Ashen Approach",
+      "Act": 1,
+      "Background": "background1",
+      "Options": [
+        "wanderingSoldier",
+        "blightHound"
+      ]
+    },
+    {
+      "Id": "step2",
+      "Name": "The Broken Watch",
+      "Act": 1,
+      "Background": "background1",
+      "Options": [
+        "livingArmor",
+        "blightHound"
+      ]
+    },
+    {
+      "Id": "step3",
+      "Name": "Gate of Cinders",
+      "Act": 1,
+      "Background": "background1",
+      "Options": [
+        "fellWarden"
+      ]
+    },
+    {
+      "Id": "step4",
+      "Name": "The Hollow Court",
+      "Act": 2,
+      "Background": "background2",
+      "Options": [
+        "courtDuelist",
+        "courtSurgeon"
+      ]
+    },
+    {
+      "Id": "step5",
+      "Name": "Gilded Crossing",
+      "Act": 2,
+      "Background": "background2",
+      "Options": [
+        "gildedKnight",
+        "courtSurgeon"
+      ]
+    },
+    {
+      "Id": "step6",
+      "Name": "Throne of Threads",
+      "Act": 2,
+      "Background": "background2",
+      "Options": [
+        "stitchedKing"
+      ]
+    },
+    {
+      "Id": "step7",
+      "Name": "Beyond the Veil",
+      "Act": 3,
+      "Background": "background3",
+      "Options": [
+        "graveWisp",
+        "wyrmAspirant"
+      ]
+    },
+    {
+      "Id": "step8",
+      "Name": "The Last Ascent",
+      "Act": 3,
+      "Background": "background3",
+      "Options": [
+        "valkyrieShade",
+        "wyrmAspirant"
+      ]
+    },
+    {
+      "Id": "step9",
+      "Name": "Heart of the Spire",
+      "Act": 3,
+      "Background": "background3",
+      "Options": [
+        "wyrmLord"
+      ]
+    }
+  ],
+  "Equipment": [
+    {
+      "Id": "emberBlade",
+      "Name": "Ember Blade",
+      "Description": "Attacks deal 2 extra damage.",
+      "Art": "reaver_idle",
+      "Operation": "damage",
+      "Amount": 2,
+      "Price": 30,
+      "RequiredTag": "attack",
+      "Tags": [
+        "weapon"
+      ]
+    },
+    {
+      "Id": "ironward",
+      "Name": "Ironward Charm",
+      "Description": "Skills gain 2 extra block per block effect.",
+      "Art": "reaver_idle",
+      "Operation": "block",
+      "Amount": 2,
+      "Price": 30,
+      "RequiredTag": "skill",
+      "Tags": [
+        "charm"
+      ]
+    },
+    {
+      "Id": "goldenHeart",
+      "Name": "Golden Heart",
+      "Description": "Gain 16 maximum and current vitality.",
+      "Art": "reaver_idle",
+      "Operation": "health",
+      "Amount": 16,
+      "Price": 40,
+      "RequiredTag": "hero",
+      "Tags": [
+        "charm"
+      ]
+    },
+    {
+      "Id": "starLens",
+      "Name": "Star Lens",
+      "Description": "Magic attacks deal 4 extra damage.",
+      "Art": "reaver_idle",
+      "Operation": "damage",
+      "Amount": 4,
+      "Price": 35,
+      "RequiredTag": "magic",
+      "Tags": [
+        "charm"
+      ]
+    },
+    {
+      "Id": "pilgrimMail",
+      "Name": "Pilgrim Mail",
+      "Description": "Gain 12 maximum and current vitality.",
+      "Art": "reaver_idle",
+      "Operation": "health",
+      "Amount": 12,
+      "Price": 30,
+      "RequiredTag": "hero",
+      "Tags": [
+        "armor"
+      ]
+    },
+    {
+      "Id": "duelistEdge",
+      "Name": "Duelist Edge",
+      "Description": "Attacks deal 3 extra damage.",
+      "Art": "reaver_idle",
+      "Operation": "damage",
+      "Amount": 3,
+      "Price": 60,
+      "RequiredTag": "attack",
+      "Tags": [
+        "weapon"
+      ]
+    }
+  ],
+  "RewardCards": [
+    "technique",
+    "cleave",
+    "rage",
+    "venom",
+    "quickstep",
+    "smite",
+    "prayer",
+    "starbolt",
+    "insight",
+    "meteor",
+    "bulwark",
+    "rupture",
+    "feint",
+    "renewal",
+    "tempo",
+    "warding"
+  ],
+  "Audio": {
+    "Volume": 0.3,
+    "Duration": 0.16,
+    "AttackFrequency": 150,
+    "GuardFrequency": 360,
+    "HitFrequency": 90,
+    "RewardFrequency": 620
+  }
+}

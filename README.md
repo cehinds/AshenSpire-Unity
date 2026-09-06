@@ -2,13 +2,13 @@
 
 A mobile-first Unity adaptation of [AshenSpire](https://github.com/cehinds/AshenSpire), seeded from `dev` at `d5c982e777df06221e181c437652b705d2f6abbc`.
 
-**Early playable checkpoint, not the complete port.** One Reaver, three encounters, card rewards, a boss, save/resume and reused sprite art are implemented. Full classes, equipment, the original status/tag system, branching maps and richer animation remain on the migration backlog.
+**The Ember Endures — a complete three-act campaign.** Choose Reaver, Rogue, Herald or Starseer; follow nine encounter stops, read enemy intents, shape a deck, buy equipment and defeat the Wyrm Lord. Eighteen cards compose damage, block, poison, weakness, strength, healing, energy and draw effects. Saves, sprite pose animation, sound feedback and motion settings are included. This adaptation does not claim full mechanical parity with the original browser game.
 
 [Play and compare builds](https://cehinds.github.io/AshenSpire-Unity/) · [Dev](https://cehinds.github.io/AshenSpire-Unity/dev/) · [Test](https://cehinds.github.io/AshenSpire-Unity/test/) · [Release](https://cehinds.github.io/AshenSpire-Unity/release/) · [Main](https://cehinds.github.io/AshenSpire-Unity/main/)
 
-Open `Unity/` in Unity Hub. The pinned editor version is recorded in `Unity/ProjectSettings/ProjectVersion.txt`. Use the **AshenSpire** editor menu to import content, prepare the scene, and build Web or Windows players.
+Open `Unity/` in Unity Hub with Unity 6.6. Use the **AshenSpire** editor menu to edit/import campaign content, prepare the scene, and build Web, Windows or Android players.
 
-- [Owner editing guide](docs/Unity-Owner-Guide.md)
+- [Campaign editing and testing guide](docs/Campaign-Owner-Guide.md)
 - [Full build brief](docs/Unity-Build-Brief.md)
 - [Current Unity slice specification](docs/UNITY-SPEC.md)
 - [Changelog](Published/changelog.json)
@@ -16,9 +16,9 @@ Open `Unity/` in Unity Hub. The pinned editor version is recorded in `Unity/Proj
 
 ## Data and source
 
-`GameContent/Unity/expedition.json` is the first Unity slice's authoring source. `Unity/Assets/AshenSpire/Runtime` separates Domain, Application and Presentation. Editor tools live outside runtime. Script headers explain setup, ownership, edit points and verification.
+`GameContent/Unity/campaign.json` is authoritative. Edit records in Unity or round-trip any table through CSV with `tools/campaign-table.py`. The older expedition.json and its domain implementation remain as a reference for the first checkpoint. `Unity/Assets/AshenSpire/Runtime` separates Domain, Application and Presentation. Editor tools live outside runtime. Script headers explain setup, ownership, edit points and verification.
 
-The original browser files remain as migration reference. Existing sprites are reused with their provenance in `CREDITS.md`. Imported PNGs preserve the decoded pixels of the original WebP files.
+The original browser files remain as migration reference. Hero poses and backgrounds are reused. A new painterly enemy atlas and its extraction manifest live under `GameContent/Unity/Art`; original sprites remain intact. Provenance is in `CREDITS.md`.
 
 ## Build and verify
 

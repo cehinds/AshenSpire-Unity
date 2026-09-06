@@ -1,0 +1,1 @@
+C:\repos\AshenSpire-Unity\Unity\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\696g2n26\obj\arm64-v8a

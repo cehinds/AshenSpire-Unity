@@ -1,0 +1,60 @@
+// Read-only Unity control bounds guide real mouse input; no commands or state injection.
+// Usage: node tools/campaign-playtest.cjs [url] [evidenceDirectory] [--full]
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const fs=require('node:fs'),path=require('node:path');
+let browser;
+(async()=>{
+ const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ let controls,state,revision=0,layout=0;const errors=[],shots=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('console',message=>{const value=message.text();if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}});
+ const url=process.argv[2]||'http://127.0.0.1:8787';
+ async function until(predicate,description,timeout=15000){const end=Date.now()+timeout;while(Date.now()<end){if(predicate())return;await page.waitForTimeout(100);}throw new Error('Timed out: '+description);}
+ async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');}
+ async function click(id,changesState=false){
+  await until(()=>controls?.Controls.some(x=>x.Id===id),'control '+id);
+  for(let attempt=0;attempt<12;attempt++){
+   const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
+   const viewport=page.viewportSize();const x=(control.X+control.Width/2)*viewport.width/controls.PanelWidth;const y=(control.Y+control.Height/2)*viewport.height/controls.PanelHeight;
+   const bottom=viewport.height-(['play','end-turn'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn')?105:20);
+   if(y<30||y>bottom){const previous=layout;await page.mouse.move(viewport.width/2,viewport.height/2);await page.mouse.wheel(0,y<30?-450:450);await until(()=>layout>previous,'scroll layout');continue;}
+   const previous=changesState?revision:layout;await page.mouse.click(x,y,{delay:120});await until(()=>(changesState?revision:layout)>previous,'result of '+id);await page.waitForTimeout(220);return;
+  }throw new Error('Cannot scroll to '+id);
+ }
+ async function shot(name){await page.mouse.move(0,0);await page.waitForTimeout(300);await page.screenshot({path:path.join(output,name+'.png')});shots.push(name);}
+ const firstLoadStarted=Date.now();await load();const firstLoadMilliseconds=Date.now()-firstLoadStarted;
+ const downloadedResourceBytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,item)=>sum+(item.encodedBodySize||0),0));
+ const heroOption=process.argv.indexOf('--hero');const hero=heroOption>=0?process.argv[heroOption+1]:'reaver';
+ await shot('01-phone-title');await click('new');await shot('02-class-selection');await click('hero-'+hero,true);await shot('03-campaign-map');
+ await click('enter-0',true);await shot('04-phone-combat');
+ const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');await click('play',true);
+ const commandsChangedState=beforePlay!==JSON.stringify(state);await shot('06-card-played');
+ await click('end-turn',true);await shot('07-next-turn');const saved=JSON.stringify(state);
+ await load();await shot('08-resume-menu');await click('continue',true);const resumeStateMatches=saved===JSON.stringify(state);await shot('09-resumed-combat');
+ const content=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/campaign.json'),'utf8'));
+ const cards=new Map(content.Cards.map(x=>[x.Id,x]));let completed=false;let bought=false;
+ for(let step=0;step<1000;step++){
+  if(state.Phase===3||state.Phase===4){completed=state.Phase===3;await shot(completed?'15-campaign-victory':'15-campaign-defeat');break;}
+  if(state.Phase===0){
+   if(!process.argv.includes('--full'))break;
+   await click('shop');if(!bought)await shot('12-equipment-forge');
+   const item=content.Equipment.find(x=>!state.Items.includes(x.Id)&&x.Price<=state.Cinders);
+   if(item){await click('buy-'+item.Id,true);bought=true;}else await click('back');
+   if(state.Health<state.MaxHealth-content.RestHealing&&state.Cinders>=15&&!state.Rested)await click('rest',true);
+   await click('enter-0',true);if(state.Encounter===3||state.Encounter===6)await shot('13-act-'+content.Encounters[state.Encounter].Act);continue;
+  }
+  if(state.Phase===2){await shot('10-reward-'+state.Encounter);await click('reward-rest',true);if(state.Phase===0&&state.Encounter===1)await shot('11-next-map');continue;}
+  if(process.argv.includes('--defeat')){await click('end-turn',true);continue;}
+  if(state.Health<=state.MaxHealth-content.PotionHealing&&state.Potions>0)await click('potion',true);
+  let index=state.Hand.findIndex(id=>cards.get(id).Cost<=state.Energy&&cards.get(id).Effects.some(x=>x.Operation==='strength'));
+  if(index<0)index=state.Hand.findIndex(id=>cards.get(id).Cost<=state.Energy&&cards.get(id).Tags.includes('attack'));
+  if(index<0)index=state.Hand.findIndex(id=>cards.get(id).Cost<=state.Energy);
+  if(index>=0){await click('card-'+index);await click('play',true);}else await click('end-turn',true);
+ }
+ await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(700);await shot('16-desktop');
+ await page.setViewportSize({width:844,height:390});await page.waitForTimeout(700);await shot('17-landscape');
+ const report={url,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+ if(!commandsChangedState||!resumeStateMatches||errors.length||(process.argv.includes('--full')&&!completed)||(process.argv.includes('--defeat')&&state.Phase!==4))process.exitCode=1;
+})().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();});

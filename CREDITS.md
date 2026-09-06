@@ -69,6 +69,12 @@ row in the table below — no game-code changes.
 |---|---|---|---|
 | mulberry32 PRNG | seeded RNG (`src/engine/rng.js`) | widely published public-domain snippet by Tommy Ettinger | Public domain / CC0 |
 
+## Unity campaign artwork and sound
+
+The Unity campaign reuses the original Reaver, Rogue, Herald and Starseer pose art and three act backgrounds. The twelve `painted_*` enemy sprites were generated for this adaptation using the built-in image-generation tool. Their original atlas, exact prompt, extraction manifest and source SHA-256 are preserved in `GameContent/Unity/Art`. `tools/import-enemy-atlas.py` normalizes the transparent sprites to one scale and foot anchor. Original enemy files remain intact.
+
+Combat feedback tones are synthesized by `GameAudio.cs` from the campaign Audio record; no external sound recordings are included.
+
 ## Non-affiliation
 
 AshenSpire is an original fan-inspired work. It contains no assets, music, text, or proper nouns from Elden Ring, and is not affiliated with, endorsed by, or sponsored by FromSoftware Inc. or Bandai Namco Entertainment. Elden Ring is a trademark of its respective owners.

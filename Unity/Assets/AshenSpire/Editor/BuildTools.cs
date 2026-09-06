@@ -30,11 +30,20 @@ namespace AshenSpire.Editor
             var source = Path.Combine(Repository, "GameContent/Unity/expedition.json");
             var json = File.ReadAllText(source);
             var content = JsonUtility.FromJson<ContentDefinition>(json);
-            if (content == null) throw new InvalidDataException(source + ": not a content object.");
+            if (content == null)
+                throw new InvalidDataException(source + ": not a content object.");
             content.Validate();
+            var campaignJson = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/campaign.json"));
+            var campaign = JsonUtility.FromJson<CampaignDefinition>(campaignJson);
+            campaign.Validate();
+            foreach (var asset in campaign.Heroes.SelectMany(hero => new[] { hero.Art + "_idle", hero.Art + "_attack1", hero.Art + "_attack2", hero.Art + "_guard", hero.Art + "_hit" }).Concat(campaign.Foes.Select(foe => foe.Art)).Concat(campaign.Encounters.Select(encounter => encounter.Background)))
+                if (!File.Exists(Root + "/Resources/Art/" + asset + ".png"))
+                    throw new InvalidDataException("campaign.json/Art: missing " + asset + ". Run tools/convert-unity-art.py or supply this sprite.");
+            File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);
             var target = Root + "/Resources/expedition.json";
             Directory.CreateDirectory(Path.GetDirectoryName(target));
-            if (!File.Exists(target) || File.ReadAllText(target) != json) File.WriteAllText(target, json);
+            if (!File.Exists(target) || File.ReadAllText(target) != json)
+                File.WriteAllText(target, json);
             AssetDatabase.Refresh();
             Debug.Log($"Content import: {content.Cards.Length} cards and {content.Enemies.Length} enemies validated.");
         }
@@ -43,7 +52,8 @@ namespace AshenSpire.Editor
         public static void Prepare()
         {
             ImportContent();
-            if (File.Exists(ScenePath)) return;
+            if (File.Exists(ScenePath))
+                return;
             Directory.CreateDirectory(Root + "/Scenes");
             Directory.CreateDirectory(Root + "/Prefabs");
             AssetDatabase.Refresh();
@@ -55,8 +65,10 @@ namespace AshenSpire.Editor
             AssetDatabase.CreateAsset(panel, Root + "/ExpeditionPanel.asset");
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var cameraObject = new GameObject("MainCamera", typeof(Camera));
-            var camera = cameraObject.GetComponent<Camera>(); camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.06f, 0.07f, 0.09f); camera.orthographic = true;
+            var camera = cameraObject.GetComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.06f, 0.07f, 0.09f);
+            camera.orthographic = true;
             var root = new GameObject("ExpeditionRoot", typeof(UIDocument));
             root.GetComponent<UIDocument>().panelSettings = panel;
             root.AddComponent<RunController>().Configure(panel);
@@ -72,12 +84,16 @@ namespace AshenSpire.Editor
         [MenuItem("AshenSpire/4. Build Windows Player")]
         public static void BuildWindows() => Build(BuildTarget.StandaloneWindows64, "Windows/AshenSpire.exe");
 
+        [MenuItem("AshenSpire/5. Build Android APK")]
+        public static void BuildAndroid() => Build(BuildTarget.Android, "Android/AshenSpire.apk");
+
         private static void Build(BuildTarget target, string suffix)
         {
             Prepare();
             PlayerSettings.companyName = "AshenSpire";
             PlayerSettings.productName = "AshenSpire Unity";
-            PlayerSettings.bundleVersion = "0.1.0";
+            PlayerSettings.bundleVersion = "0.2.0";
+            PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;
             PlayerSettings.runInBackground = false;
@@ -87,7 +103,8 @@ namespace AshenSpire.Editor
             PlayerSettings.WebGL.template = "PROJECT:Mobile";
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
-                scenes = new[] { ScenePath }, target = target,
+                scenes = new[] { ScenePath },
+                target = target,
                 locationPathName = Path.Combine(Repository, "Builds", suffix),
                 options = BuildOptions.None
             });
@@ -112,7 +129,8 @@ namespace AshenSpire.Editor
             {
                 foreach (var path in paths)
                 {
-                    var name = Encoding.UTF8.GetBytes(path); stream.Write(name, 0, name.Length);
+                    var name = Encoding.UTF8.GetBytes(path);
+                    stream.Write(name, 0, name.Length);
                     var bytes = File.ReadAllBytes(Path.Combine(Repository, path));
                     var extension = Path.GetExtension(path).ToLowerInvariant();
                     if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf" }.Contains(extension))
