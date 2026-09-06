@@ -25,6 +25,19 @@ jobs:
         run: dotnet run --project UnityTests/Domain
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
+      - name: Install browser test tooling
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Exercise the packaged game with real pointer input
+        run: |
+          python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
+          node tools/unity-playtest.cjs http://127.0.0.1:8787 TestResults/Browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-evidence
+          path: TestResults/Browser
       - name: Refresh channel refs
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
       - name: Assemble all channels together
