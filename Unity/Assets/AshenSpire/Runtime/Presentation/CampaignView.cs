@@ -267,7 +267,7 @@ namespace AshenSpire.Presentation
         {
             Shell("EXPEDITION INSPECTOR", "Development only · read-only state");
             _body.Add(Text("Seed " + session.State.Seed + " · RNG " + session.State.RandomState + "\nEncounter " + session.Encounter.Id + " · Phase " + session.State.Phase + "\nHero tags: " + string.Join(", ", session.Hero.Tags), "lead"));
-            var report = new TextField("Bug report preview") { multiline = true, value = "AshenSpire 0.2.0 / Unity " + UnityEngine.Application.unityVersion + "\nSteps: describe what you did\nExpected: \nActual: \nState: " + JsonUtility.ToJson(session.State), isReadOnly = false };
+            var report = new TextField("Bug report preview") { multiline = true, value = "AshenSpire " + UnityEngine.Application.version + " / Unity " + UnityEngine.Application.unityVersion + "\nSteps: describe what you did\nExpected: \nActual: \nState: " + JsonUtility.ToJson(session.State), isReadOnly = false };
             report.AddToClassList("report-field");
             _body.Add(report);
             AddButton("copy-report", "Copy report", () => { GUIUtility.systemCopyBuffer = report.value; });

@@ -20,10 +20,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
-document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.2.0';
+document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.2.1';
 createUnityInstance(canvas,{
  dataUrl:'Build/{{{ DATA_FILENAME }}}',frameworkUrl:'Build/{{{ FRAMEWORK_FILENAME }}}',codeUrl:'Build/{{{ CODE_FILENAME }}}',
- streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.2.0',
+ streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.2.1',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{
  window.unityInstance=instance;document.querySelector('#loading').remove();canvas.focus();
