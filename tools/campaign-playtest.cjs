@@ -16,6 +16,10 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   // Cross two animation frames so input phases remain distinct on slow renderers.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  }
+ async function pressKey(key){
+  await page.keyboard.down(key);await renderedTouchFrame();await page.waitForTimeout(120);
+  await page.keyboard.up(key);await renderedTouchFrame();
+ }
  async function tap(x,y){
   if(!touch){await page.mouse.click(x,y,{delay:120});return;}
   // Hold a real touch across player frames, just as mouse clicks use a 120 ms press.
@@ -116,7 +120,13 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  const downloadedResourceBytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,item)=>sum+(item.encodedBodySize||0),0));
  const heroOption=process.argv.indexOf('--hero');const hero=heroOption>=0?process.argv[heroOption+1]:'reaver';
  await shot('01-phone-title');await click('new');await shot('02-class-selection');
- if(upgradeIndex<0){const seed=controls.Controls.find(control=>control.Id==='seed');assert(seed,'seed input missing');const viewport=page.viewportSize();await tap((seed.X+seed.Width*.8)*viewport.width/controls.PanelWidth,(seed.Y+seed.Height/2)*viewport.height/controls.PanelHeight);await page.waitForTimeout(250);await page.keyboard.type('3',{delay:120});if(touch){await page.keyboard.press('Enter');await page.keyboard.press('Tab');}await page.waitForTimeout(250);}
+ if(upgradeIndex<0){
+  const seed=controls.Controls.find(control=>control.Id==='seed');assert(seed,'seed input missing');const viewport=page.viewportSize();
+  await tap((seed.X+seed.Width*.8)*viewport.width/controls.PanelWidth,(seed.Y+seed.Height/2)*viewport.height/controls.PanelHeight);
+  await renderedTouchFrame();await pressKey('3');
+  if(touch){await shot('02-seed-entered');await pressKey('Enter');await pressKey('Tab');await shot('02-seed-committed');}
+  await renderedTouchFrame();
+ }
  await click('hero-'+hero,true);if(upgradeIndex<0)assert(state.Seed===3,'seed entry did not take effect');await shot('03-campaign-map');
  const authoredContent=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/campaign.json'),'utf8'));
  if(upgradeIndex<0)assert(JSON.stringify(state.Deck)===JSON.stringify(authoredContent.Heroes.find(item=>item.Id===hero).Deck),'starter deck differs from class definition');

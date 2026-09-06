@@ -1,12 +1,13 @@
 // Real browser target switches, pointer/keyboard input and read-only Unity diagnostics.
 // A raw CDP connection avoids Playwright's automatic focus/visibility emulation.
-// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline]
+// Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline | --seed-only] [--slow-input]
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const assert=(value,message)=>{if(!value)throw Error(message);};
 const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirSync(output,{recursive:true});
+const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
-const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[];
+const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],checks=[],seedPixels=[];
 const record=(name,value)=>{assert(value,name);checks.push(name);};
 async function until(predicate,name,timeout=20000){const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await sleep(50);}throw Error('Timed out: '+name);}
 const game=(method,params={})=>send(method,params,session);
@@ -23,9 +24,34 @@ async function click(id,changesState=false){
   const old=changesState?revision:layout;lastInput={id,...p};await tap(p);await until(()=>(changesState?revision:layout)>old,'response '+id);await sleep(250);return;
  }throw Error('Cannot reach '+id);
 }
-async function shot(name){await sleep(250);const {data}=await game('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(data,'base64'));screenshots.push(name);}
-async function key(key,code,windowsVirtualKeyCode){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode});await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode});}
-function evidence(success){return {success,checks,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
+async function shot(name){
+ await sleep(250);const {data}=await game('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(data,'base64'));screenshots.push(name);
+ if(seedOnly&&['03-draft-before','seed-02-selected','seed-04-edited','seed-05-landscape-unfocused','seed-06-landscape-focused','seed-07-landscape-selected','seed-09-portrait-return'].includes(name)){
+  const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');
+  const region={x:box.x+(field.X+field.Width*.54)*box.width/controls.PanelWidth,y:box.y+(field.Y+field.Height*.2)*box.height/controls.PanelHeight,width:field.Width*.4*box.width/controls.PanelWidth,height:field.Height*.6*box.height/controls.PanelHeight};
+  // Read pixels from the captured frame in a detached canvas. No game state or DOM changes.
+  const sample=async(data,region)=>{
+   const image=new Image();image.src='data:image/png;base64,'+data;await image.decode();
+   const surface=document.createElement('canvas');surface.width=image.width;surface.height=image.height;const context=surface.getContext('2d');context.drawImage(image,0,0);
+   const scale=image.width/innerWidth,pixels=context.getImageData(Math.round(region.x*scale),Math.round(region.y*scale),Math.round(region.width*scale),Math.round(region.height*scale)).data,counts=new Map();
+   for(let i=0;i<pixels.length;i+=4){const rgb=[pixels[i],pixels[i+1],pixels[i+2]].join(',');counts.set(rgb,(counts.get(rgb)||0)+1);}
+   const luminance=rgb=>rgb.split(',').map(Number).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[.2126,.7152,.0722][i],0);
+   const colors=[...counts].filter(([,count])=>count>=10).map(([rgb,count])=>({rgb,count,luminance:luminance(rgb)})).sort((a,b)=>b.count-a.count);
+   const foreground=colors.reduce((a,b)=>a.luminance>b.luminance?a:b),backgrounds=colors.slice(0,2).filter(c=>c.count>pixels.length/4*.02);
+   return{foreground,backgrounds,contrast:Math.min(...backgrounds.map(c=>(foreground.luminance+.05)/(c.luminance+.05)))};
+  };
+  const result=(await game('Runtime.evaluate',{expression:'('+sample.toString()+')('+JSON.stringify(data)+','+JSON.stringify(region)+')',awaitPromise:true,returnByValue:true})).result.value;
+  seedPixels.push({name,...result});record(name+' rendered digits have at least 4.5 contrast',result.foreground.luminance>.45&&result.contrast>=4.5);
+ }
+}
+// Let the player consume each press/release before the next key or modifier.
+// Wall-clock holds alone can place release and the next press in one slow frame.
+async function inputFrames(){await game('Runtime.evaluate',{expression:'new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))',awaitPromise:true});}
+async function key(key,code,windowsVirtualKeyCode,extra={}){await game('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode,...extra});await sleep(120);await inputFrames();await game('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode,modifiers:extra.modifiers||0});await inputFrames();}
+async function typeDigits(value){for(const digit of value)await key(digit,'Digit'+digit,48+Number(digit),{text:digit,unmodifiedText:digit});}
+async function selectAll(){await game('Input.dispatchKeyEvent',{type:'keyDown',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:2});await inputFrames();await key('a','KeyA',65,{modifiers:2});await game('Input.dispatchKeyEvent',{type:'keyUp',key:'Control',code:'ControlLeft',windowsVirtualKeyCode:17,modifiers:0});await inputFrames();}
+async function seedTarget(name){const box=await canvas(),field=controls.Controls.find(x=>x.Id==='seed');record(name+' seed touch height at least 44 CSS pixels',field.Height*box.height/controls.PanelHeight>=43.995);}
+function evidence(success){return {success,checks,seedPixels,visibility,interruptions,feedback,sounds,screenshots,errors,lastInput,state,controls,revision,layout,physicalDevice:false};}
 (async()=>{
  const profileRoot=path.resolve('Builds/BrowserProfiles');fs.mkdirSync(profileRoot,{recursive:true});
  const profile=fs.mkdtempSync(path.join(profileRoot,'Interruption-'));
@@ -55,7 +81,8 @@ function evidence(success){return {success,checks,visibility,interruptions,feedb
  const target=(await send('Target.createTarget',{url:'about:blank'})).targetId;
  session=(await send('Target.attachToTarget',{targetId:target,flatten:true})).sessionId;
  await game('Runtime.enable');await game('Page.enable');
- await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});
+ if(process.argv.includes('--slow-input'))await game('Emulation.setCPUThrottlingRate',{rate:6});
+ await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
  await until(()=>controls?.Controls.some(x=>x.Id==='new'),'Unity ready',120000);
  const other=(await send('Target.createTarget',{url:'about:blank',background:true})).targetId;
@@ -89,9 +116,31 @@ function evidence(success){return {success,checks,visibility,interruptions,feedb
   await shot('02-legacy-return');fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));return;
  }
  await interrupt('02-title');await click('new');
+ if(seedOnly){await shot('seed-01-empty');await seedTarget('portrait');}
  await tap(await point('seed'));await sleep(200);
- for(const digit of '240987'){await game('Input.dispatchKeyEvent',{type:'keyDown',key:digit,code:'Digit'+digit,text:digit,unmodifiedText:digit,windowsVirtualKeyCode:48+Number(digit)});await sleep(120);await game('Input.dispatchKeyEvent',{type:'keyUp',key:digit,code:'Digit'+digit,windowsVirtualKeyCode:48+Number(digit)});}
+ await typeDigits('240987');
  await shot('03-draft-before');
+ if(seedOnly){
+  await selectAll();await shot('seed-02-selected');
+  await typeDigits('42949672950');
+  const oldRevision=revision;await tap(await point('hero-reaver'));await sleep(500);
+  record('out of range seed stays on hero screen',revision===oldRevision&&controls.Controls.some(x=>x.Id==='seed'));
+  await shot('seed-03-invalid');
+  await tap(await point('seed'));await selectAll();await typeDigits('240986');
+  await key('Backspace','Backspace',8);await typeDigits('7');await shot('seed-04-edited');
+  await interrupt('03-draft');
+  await game('Emulation.setDeviceMetricsOverride',{width:740,height:320,deviceScaleFactor:3,mobile:false});
+  await until(()=>controls.PanelWidth>controls.PanelHeight,'seed landscape');await sleep(300);await seedTarget('landscape');
+  await shot('seed-05-landscape-unfocused');await tap(await point('seed'));await shot('seed-06-landscape-focused');
+  await selectAll();await shot('seed-07-landscape-selected');await interrupt('seed-08-landscape');
+  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:3,mobile:false});
+  await until(()=>controls.PanelHeight>controls.PanelWidth,'seed portrait return');await sleep(300);
+  await shot('seed-09-portrait-return');await click('hero-reaver',true);
+  record('keyboard selection replacement and backspace survive interruption and rotation',state.Seed===240987);
+  await shot('seed-10-created-campaign');record('no browser or Unity errors',errors.length===0);
+  fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));
+  console.log('Seed entry browser: '+checks.length+' checks passed; '+screenshots.length+' screenshots');return;
+ }
  await interrupt('03-draft');await click('hero-reaver',true);record('seed draft survived interruption',state.Seed===240987);
  await interrupt('04-map');await click('enter-0',true);
  await click('card-0');const selected=controls.Controls.find(x=>x.Id==='play').Enabled;const beforeSelection=JSON.stringify(controls);

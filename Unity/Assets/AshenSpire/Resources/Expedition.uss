@@ -44,6 +44,24 @@ Label { white-space: normal; }
 .campaign-stage > .fighter { height: 150px; }
 .portrait { height: 120px; width: 100%; }
 .seed-field { min-height: 48px; margin: 12px 0; font-size: 15px; }
+.seed-field > .unity-base-field__label { width: 48%; min-width: 0; flex-shrink: 0; white-space: normal; text-overflow: clip; color: rgb(231,224,210); }
+/* Seed entry: keep the editable child readable in the runtime theme.
+   Change this scoped palette for input, focus, caret and selection together. */
+.seed-field .unity-base-text-field__input {
+    min-width: 0;
+    background-color: rgb(25,30,35);
+    color: rgb(231,224,210);
+    border-width: 2px;
+    border-color: rgb(109,111,108);
+    border-radius: 7px;
+    padding-left: 10px;
+    padding-right: 10px;
+    --unity-cursor-color: rgb(240,192,103);
+    /* Unity paints this over the glyphs, so retain transparency. */
+    --unity-selection-color: rgba(175,124,61,0.35);
+}
+.seed-field:focus > .unity-base-field__label { color: rgb(231,224,210); }
+.seed-field:focus .unity-base-text-field__input { border-color: rgb(240,192,103); }
 .setting { min-height: 52px; font-size: 17px; margin: 12px 0; }
 .report-field { min-height: 240px; margin: 12px 0; }
 .intent-control { color: rgb(239,188,145); min-height: 48px; font-size: 13px; }

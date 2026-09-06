@@ -1,0 +1,30 @@
+{
+  "Added": [
+    "Explicit return screen after browser hiding or native application interruption.",
+    "Real browser visibility, freeze/return and overlapping lifecycle regression checks.",
+    "Owner guide to lifecycle components and phone interruption testing."
+  ],
+  "Changed": [
+    "Backgrounding saves the active campaign and stops transient audio without changing mute.",
+    "The existing screen stays in place behind the cover, preserving selections, inspection, scroll and seed drafts."
+  ],
+  "Fixed": [
+    "An interrupted animation is cancelled and cannot finish or replay after return.",
+    "Return waits for all interruption sources to clear; underlying controls cannot advance the run while covered.",
+    "Unmeasured layout bounds during rotation no longer produce invalid diagnostic JSON."
+  ],
+  "KnownIssues": [
+    "Physical Android/iOS and native graphical Windows interruption tests remain pending; no phone is connected.",
+    "Seed-entry text has weak contrast on its light field and needs a focused UI follow-up.",
+    "Browser checks do not establish mobile performance or audible sound quality.",
+    "Unity builds run locally; GitHub validates and publishes prepared players.",
+    "Full original-game parity, additional art/music and store release remain unfinished.",
+    "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+  ],
+  "WhatToTest": [
+    "Start typing a seed, switch tabs/apps, return, and check the draft.",
+    "Select a card or inspect intent, switch away, then explicitly return to the same screen.",
+    "Switch away during an action; its outcome should occur once, with no delayed sound or animation.",
+    "Try Home, screen lock, the keyboard, mute and reload/continue on a real phone."
+  ]
+}
