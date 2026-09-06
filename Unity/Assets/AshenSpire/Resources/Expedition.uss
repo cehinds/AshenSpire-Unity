@@ -53,3 +53,5 @@ Label { white-space: normal; }
 .card.unaffordable { background-color: rgb(24,28,33); border-color: rgb(92,77,67); }
 .card.unaffordable > .cost { color: rgb(227,160,140); }
 .actions > .button:disabled { opacity: 1; background-color: rgb(38,42,47); color: rgb(192,190,182); border-color: rgb(78,78,73); }
+
+.combat-feedback { position: absolute; top: 24px; left: 6px; right: 6px; padding: 7px; background-color: rgba(13,17,23,0.9); border-radius: 6px; font-size: 15px; -unity-font-style: bold; -unity-text-align: middle-center; white-space: normal; }

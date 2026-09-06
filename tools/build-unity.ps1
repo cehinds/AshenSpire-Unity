@@ -18,7 +18,10 @@ try {
     $buildLog = Join-Path $repositoryRoot "Builds\$Target-build.log"
     $unityProject = Join-Path $repositoryRoot 'Unity'
     $arguments = @('-batchmode','-nographics','-quit','-projectPath',('"'+$unityProject+'"'),'-executeMethod',"AshenSpire.Editor.BuildTools.Build$Target",'-logFile',('"'+$buildLog+'"'))
-    $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru -Wait
+    $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru
+    # Wait for this Editor only. Start-Process -Wait also waits for descendants,
+    # including a Hub helper that can survive an Editor compilation failure.
+    $process.WaitForExit()
     if ($process.ExitCode -ne 0) { throw "Unity build failed; see $buildLog" }
     if ($Target -eq 'Windows') { Compress-Archive -Path Builds/Windows/* -DestinationPath Published/Windows.zip -CompressionLevel Optimal -Force }
     if ($Target -eq 'Android') { Copy-Item -LiteralPath Builds/Android/AshenSpire.apk -Destination Published/Android.apk -Force }

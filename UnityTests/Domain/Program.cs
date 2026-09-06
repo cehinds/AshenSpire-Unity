@@ -73,3 +73,4 @@ Console.WriteLine($"Simulation: {wins}/30 simple-policy wins; not a fun or balan
 Console.WriteLine($"Domain: {passed} checks passed");
 CampaignChecks.Run(root);
 ClassIdentityChecks.Run(root);
+FeedbackChecks.Run(root);

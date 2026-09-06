@@ -24,6 +24,8 @@ namespace AshenSpire.Presentation
         private bool _fast;
         private bool _muted;
         private CampaignSession _session;
+        private readonly CombatFeedback _feedback = new CombatFeedback();
+        private VisualElement _stage;
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -47,7 +49,7 @@ namespace AshenSpire.Presentation
                 button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, MinimumTouchHeight);
             Report();
         }
-        public void Dispose() => _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        public void Dispose() { _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
             Shell("ASHEN SPIRE", "THREE ACTS · ONE EMBER · YOUR PATH");
@@ -151,6 +153,7 @@ namespace AshenSpire.Presentation
         {
             var s = session.State;
             var stage = new VisualElement();
+            _stage = stage;
             stage.AddToClassList("stage");
             stage.AddToClassList("campaign-stage");
             stage.style.backgroundImage = new StyleBackground(Resources.Load<Texture2D>("Art/" + session.Encounter.Background));
@@ -297,16 +300,19 @@ namespace AshenSpire.Presentation
             Shell("MAKE IT YOURS", "Changes save on this device.");
             var motion = new Toggle("Reduced motion") { value = _reducedMotion };
             var fast = new Toggle("Quick animations") { value = _fast };
+            motion.name = "reduced-motion";
             motion.AddToClassList("setting");
+            fast.name = "fast-motion";
             fast.AddToClassList("setting");
             _body.Add(motion);
             _body.Add(fast);
             var mute = new Toggle("Mute sound") { value = _muted };
+            mute.name = "mute-sound";
             mute.AddToClassList("setting");
-            mute.RegisterValueChangedCallback(e => { _muted = e.newValue; MuteRequested?.Invoke(e.newValue); });
+            mute.RegisterValueChangedCallback(e => { _muted = e.newValue; MuteRequested?.Invoke(e.newValue); Report(); });
             _body.Add(mute);
-            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); });
-            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); });
+            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             _body.Add(Text("HOW TO PLAY", "heading"));
             _body.Add(Text("Tap a card, then Play or the enemy. Energy refills each turn. Block expires when your next turn begins.\n\nRead the next intent: attack hurts, guard blocks, charge increases future attacks, poison hurts every turn. Poison bypasses block and decays. Weak reduces enemy attacks by 3. Strength boosts every damage effect this battle.\n\nUse flasks before you fall. Between battles, buy equipment, remove unwanted cards, or rest. Deck and equipment persist for this run.\n\nScroll to see all cards on smaller screens. No hover or keyboard is required.", "lead"));
             AddButton("back", "Back", back, "primary");
@@ -336,29 +342,14 @@ namespace AshenSpire.Presentation
             AddButton("back", "Back", back);
             Report();
         }
-        public void Animate(string pose, bool hitEnemy = false)
+        public void Feedback(FeedbackCue cue, FeedbackOutcome outcome, bool enemyTurn = false)
         {
-            if (_reducedMotion || _player == null || _player.panel == null)
-                return;
-            var player = _player;
-            var enemy = _enemy;
-            var art = _heroArt;
-            var duration = _fast ? 90 : 180;
-            player.image = Resources.Load<Texture2D>("Art/" + art + "_" + pose);
-            player.style.translate = new Translate(pose.StartsWith("attack") ? 10 : -4, 0);
-            if (hitEnemy && enemy != null)
-                enemy.tintColor = new Color(1, 0.55f, 0.35f);
-            if (pose.StartsWith("attack"))
-                player.schedule.Execute(() => { if (player.panel != null) player.image = Resources.Load<Texture2D>("Art/" + art + "_attack2"); }).StartingIn(duration);
-            for (var step = 0; step <= 8; step++)
-            {
-                var frame = step;
-                player.schedule.Execute(() => { if(player.panel!=null) player.style.translate = new Translate(Mathf.Sin(frame / 8f * Mathf.PI) * (hitEnemy ? 16 : -6), 0); }).StartingIn(duration * 2 * frame / 8);
-            }
-            player.schedule.Execute(() => { if (player.panel == null) return; player.image = Resources.Load<Texture2D>("Art/" + art + "_idle"); player.style.translate = new Translate(0, 0); if (enemy != null) enemy.tintColor = Color.white; }).StartingIn(duration * 2);
+            _feedback.Play(_stage ?? _root, _player, _enemy, _heroArt, cue, outcome, enemyTurn, _reducedMotion, _fast, _diagnostics);
         }
         private void Shell(string title, string subtitle)
         {
+            _feedback.Cancel();
+            _stage = null;
             _root.Clear();
             _player = null;
             _enemy = null;
@@ -416,7 +407,7 @@ namespace AshenSpire.Presentation
         {
             if (!_diagnostics)
                 return;
-            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
+            _root.schedule.Execute(() => { var controls = _root.Query<Button>().ToList().Cast<VisualElement>().Concat(_root.Query<TextField>().ToList()).Concat(_root.Query<Toggle>().ToList()).Where(x => !string.IsNullOrEmpty(x.name)).Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y, Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray(); Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList { Controls = controls, PanelWidth = _root.resolvedStyle.width, PanelHeight = _root.resolvedStyle.height, Labels = _root.Query<Label>().ToList().Select(label => label.text).ToArray() })); }).StartingIn(180);
         }
     }
 }

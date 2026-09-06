@@ -7,9 +7,9 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  const output=path.resolve(process.argv[3]||'Published/Screenshots');fs.mkdirSync(output,{recursive:true});evidenceDirectory=output;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});activePage=page;
- let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[];
+ let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors};});
+ page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors};});
  let url=process.argv[2]||'http://127.0.0.1:8787';
  const upgradeIndex=process.argv.indexOf('--upgrade-from');let servedDirectory;
  if(upgradeIndex>=0){
@@ -69,6 +69,32 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  const authoredContent=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/campaign.json'),'utf8'));
  if(upgradeIndex<0)assert(JSON.stringify(state.Deck)===JSON.stringify(authoredContent.Heroes.find(item=>item.Id===hero).Deck),'starter deck differs from class definition');
  await click('enter-0',true);await shot('04-phone-combat');
+ if(process.argv.includes('--feedback-only')){
+  async function probe(id,name,reduced,fast,muted){
+   const before=feedbackEvents.length,sounds=soundEvents.length;captureNextImpact=name;
+   await click(id,true);await until(()=>feedbackEvents.slice(before).some(e=>e.Status==='completed'),'feedback completion');await Promise.all(impactCaptures);
+   const events=feedbackEvents.slice(before),start=events.find(e=>e.Status==='started'),impact=events.find(e=>e.Status==='impact'),end=events.find(e=>e.Status==='completed');
+   assert(start&&impact&&end&&start.Reduced===reduced&&start.Fast===fast,'feedback preferences differ');
+   assert(end.PlayerX===0,'feedback did not reset translation');
+   assert(reduced?impact.PlayerX===0:Math.abs(impact.PlayerX)>0,'motion mode did not control translation');
+   assert(muted?soundEvents.length===sounds:soundEvents.length>sounds,'mute did not control sound dispatch');
+   await shot(name+'-settled');return start;
+  }
+  async function settings(ids){const before=JSON.stringify(state);await click('menu');await click('settings');for(const id of ids)await click(id);await shot('30-feedback-settings');await click('back');await click('continue',true);assert(JSON.stringify(state)===before,'settings changed campaign state');}
+  const firstAttack=state.Hand.findIndex(id=>authoredContent.Cards.find(c=>c.Id===id).Tags.includes('attack'));assert(firstAttack>=0,'attack required');await click('card-'+firstAttack);
+  const normal=await probe('play','26-normal-impact',false,false,false);
+  await settings(['fast-motion']);const fast=await probe('end-turn','27-fast-impact',false,true,false);
+  const normalCue=authoredContent.Feedback.Cues.find(c=>c.Id===normal.Cue),fastCue=authoredContent.Feedback.Cues.find(c=>c.Id===fast.Cue);
+  assert(Math.abs(normal.Duration-normalCue.Milliseconds/1000)<.001&&Math.abs(fast.Duration-fastCue.Milliseconds/2000)<.001,'fast duration differs from authored half duration');
+  await settings(['fast-motion','reduced-motion','mute-sound']);await probe('end-turn','28-reduced-impact',true,false,true);
+  const saved=JSON.stringify(state);await load();await click('continue',true);assert(saved===JSON.stringify(state),'settings reload changed save');await probe('end-turn','29-persisted-impact',true,false,true);
+  await settings(['reduced-motion','mute-sound']);const before=feedbackEvents.length;await click('end-turn',true);
+  // The named menu is observed geometry; use a quick pointer press before the timeline ends.
+  const menu=controls.Controls.find(c=>c.Id==='menu'),vp=page.viewportSize();await page.mouse.click((menu.X+menu.Width/2)*vp.width/controls.PanelWidth,(menu.Y+menu.Height/2)*vp.height/controls.PanelHeight);
+  await until(()=>feedbackEvents.slice(before).some(e=>e.Status==='cancelled'),'navigation cancels timeline');await page.waitForTimeout(900);
+  assert(!feedbackEvents.slice(before).some(e=>e.Status==='completed'),'cancelled timeline continued');await shot('31-interrupted-menu');
+  const report={url,feedbackEvents,soundEvents,screenshots:shots,errors,normalFastReduced:true,preferencesPersisted:true,navigationCancelled:true,limits:['Sound dispatch and synthesized samples are checked; audible listening and physical mobile playback remain unverified.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');if(errors.length)throw new Error('Browser errors');console.log(JSON.stringify(report,null,2));return;
+ }
  await resize(320,740);
  // Unity's transformed float bounds can report 43.99998 for a 44-pixel edge.
  for(const id of ['intent-details','status-details','draw-pile','discard-pile','action-history']){const c=controls.Controls.find(x=>x.Id===id);assert(c&&Math.round(c.Height*740/controls.PanelHeight*100)/100>=44,id+' touch target below 44 pixels');}
@@ -83,7 +109,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  await shot('21-draw-pile');await click('inspection-back');assert(JSON.stringify(state)===beforePile&&revision===beforePileRevision,'draw grouping changed state');
  await inspect('draw-pile','Draw order stays hidden.');
  await resize(390,844);
- const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');await click('play',true);
+ const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');if(upgradeIndex<0)captureNextImpact='26-action-impact';await click('play',true);if(upgradeIndex<0){await until(()=>feedbackEvents.some(e=>e.Status==='completed'),'first feedback settled');await Promise.all(impactCaptures);assert(feedbackEvents.some(e=>e.Status==='impact'&&Math.abs(e.PlayerX)>0),'normal feedback did not move');}
  const commandsChangedState=beforePlay!==JSON.stringify(state);await shot('06-card-played');
  await inspect('discard-pile','cards · grouped by name','22-discard-pile');
  await inspect('action-history','energy spent.','23-action-history');
@@ -122,6 +148,6 @@ let browser,activePage,evidenceDirectory,lastEvidence,server;
  }
  await resize(1280,900);await shot('16-desktop');
  await resize(844,390);await shot('17-landscape');
- const report={url,viewportEvidence,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+ const report={url,feedbackEvents,soundEvents,viewportEvidence,firstLoadMilliseconds,downloadedResourceBytes,commandsChangedState,resumeStateMatches,upgradedFrom:upgradeIndex>=0?previousVisibleVersion:null,affinityRewardTaken,rewardOffersChecked,inspectionPreservesState:true,pileGroupingChecked:true,narrowTouchTargetsChecked:true,unaffordableInspected,fullRunRequested:process.argv.includes('--full'),fullRunVictory:completed,equipmentPurchased:bought,finalState:state,screenshots:shots,errors,limits:['Desktop pointer automation; physical phones and native player interaction are not covered.','Load timing is from this desktop test environment and is not a mobile performance budget.']};fs.writeFileSync(path.join(output,'playtest.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  if(!commandsChangedState||!resumeStateMatches||errors.length||(!process.argv.includes('--defeat')&&!affinityRewardTaken)||(process.argv.includes('--full')&&!completed)||(process.argv.includes('--defeat')&&state.Phase!==4))process.exitCode=1;
 })().catch(async error=>{console.error(error);if(activePage&&evidenceDirectory){await activePage.screenshot({path:path.join(evidenceDirectory,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(evidenceDirectory,'failure.json'),JSON.stringify({error:error.message,...lastEvidence},null,2));}process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server)server.close();});

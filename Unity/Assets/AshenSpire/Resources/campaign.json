@@ -1201,5 +1201,145 @@
     "HitFrequency": 90,
     "RewardFrequency": 620
   },
-  "CommonRewardTag": "shared"
+  "CommonRewardTag": "shared",
+  "Feedback": {
+    "Cues": [
+      {
+        "Id": "poison",
+        "MatchTag": "poison",
+        "Poses": [
+          "guard",
+          "attack1",
+          "attack2",
+          "idle"
+        ],
+        "Milliseconds": 650,
+        "Distance": 14.0,
+        "Color": "#ADDE83",
+        "Frequency": 540.0,
+        "EndFrequency": 120.0,
+        "SoundDuration": 0.28,
+        "Noise": 0.65
+      },
+      {
+        "Id": "magic",
+        "MatchTag": "magic",
+        "Poses": [
+          "guard",
+          "attack1",
+          "attack2",
+          "idle"
+        ],
+        "Milliseconds": 700,
+        "Distance": 12.0,
+        "Color": "#A9C8FF",
+        "Frequency": 260.0,
+        "EndFrequency": 860.0,
+        "SoundDuration": 0.32,
+        "Noise": 0.04
+      },
+      {
+        "Id": "faith",
+        "MatchTag": "faith",
+        "Poses": [
+          "guard",
+          "attack1",
+          "guard",
+          "idle"
+        ],
+        "Milliseconds": 650,
+        "Distance": 10.0,
+        "Color": "#FFE0A3",
+        "Frequency": 440.0,
+        "EndFrequency": 660.0,
+        "SoundDuration": 0.3,
+        "Noise": 0.01
+      },
+      {
+        "Id": "attack",
+        "MatchTag": "attack",
+        "Poses": [
+          "idle",
+          "attack1",
+          "attack2",
+          "attack2",
+          "idle"
+        ],
+        "Milliseconds": 600,
+        "Distance": 26.0,
+        "Color": "#FFAC79",
+        "Frequency": 180.0,
+        "EndFrequency": 65.0,
+        "SoundDuration": 0.2,
+        "Noise": 0.4
+      },
+      {
+        "Id": "guard",
+        "MatchTag": "skill",
+        "Poses": [
+          "idle",
+          "guard",
+          "guard",
+          "idle"
+        ],
+        "Milliseconds": 600,
+        "Distance": 6.0,
+        "Color": "#A2DBE8",
+        "Frequency": 650.0,
+        "EndFrequency": 380.0,
+        "SoundDuration": 0.26,
+        "Noise": 0.02
+      },
+      {
+        "Id": "hit",
+        "MatchTag": "",
+        "Poses": [
+          "idle",
+          "hit",
+          "hit",
+          "idle"
+        ],
+        "Milliseconds": 600,
+        "Distance": 22.0,
+        "Color": "#FF927D",
+        "Frequency": 105.0,
+        "EndFrequency": 45.0,
+        "SoundDuration": 0.24,
+        "Noise": 0.5
+      },
+      {
+        "Id": "heal",
+        "MatchTag": "",
+        "Poses": [
+          "idle",
+          "guard",
+          "guard",
+          "idle"
+        ],
+        "Milliseconds": 700,
+        "Distance": 4.0,
+        "Color": "#BCEBA3",
+        "Frequency": 380.0,
+        "EndFrequency": 760.0,
+        "SoundDuration": 0.35,
+        "Noise": 0.01
+      },
+      {
+        "Id": "reward",
+        "MatchTag": "",
+        "Poses": [
+          "idle",
+          "guard",
+          "idle"
+        ],
+        "Milliseconds": 850,
+        "Distance": 0.0,
+        "Color": "#FFE0A3",
+        "Frequency": 520.0,
+        "EndFrequency": 1040.0,
+        "SoundDuration": 0.4,
+        "Noise": 0.01
+      }
+    ]
+  }
 }

@@ -17,6 +17,7 @@ namespace AshenSpire.Domain
         public int PotionHealing = 20;
         public int StartingPotions = 3;
         public SoundDefinition Audio = new SoundDefinition();
+        public FeedbackDefinition Feedback;
         public TagDefinition[] Tags;
         public CardDefinition[] Cards;
         public HeroDefinition[] Heroes;
@@ -44,6 +45,9 @@ namespace AshenSpire.Domain
                 return result;
             }
             var tags = Ids(Tags.Select(x => x.Id), "Tags");
+            // Older content definitions retain their legacy audio path; current content
+            // opts into the reusable cue library without changing save schema.
+            Feedback?.Validate(tags);
             foreach (var tag in Tags)
                 Require(!string.IsNullOrWhiteSpace(tag.Domain) && !string.IsNullOrWhiteSpace(tag.Family), "Tags/" + tag.Id + ": Domain and Family required.");
             void CheckTags(string[] values, string field)
