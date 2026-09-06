@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/cehinds/AshenSpire",
+  "branch": "dev",
+  "commit": "d5c982e777df06221e181c437652b705d2f6abbc",
+  "capturedOn": "2026-09-05",
+  "method": "Independent adaptation repository seeded from the exact committed source tree; original repository and local edits preserved.",
+  "scope": "Unity adaptation bootstrap and first playable checkpoint. Full migration remains in progress."
+}

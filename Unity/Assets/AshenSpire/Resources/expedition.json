@@ -1,0 +1,20 @@
+{
+  "SchemaVersion": 1,
+  "StartingHealth": 60,
+  "EnergyPerTurn": 3,
+  "HandSize": 5,
+  "Tags": ["attack", "skill", "humanoid", "beast", "boss"],
+  "StartingDeck": ["strike", "strike", "strike", "strike", "defend", "defend", "defend", "technique"],
+  "Cards": [
+    {"Id":"strike","Name":"Strike","Description":"Deal 6 damage.","Cost":1,"Tags":["attack"],"Effects":[{"Operation":"damage","Amount":6}]},
+    {"Id":"defend","Name":"Defend","Description":"Gain 5 Block this turn.","Cost":1,"Tags":["skill"],"Effects":[{"Operation":"block","Amount":5}]},
+    {"Id":"technique","Name":"Footwork","Description":"Gain 3 Block. Draw 1 card.","Cost":1,"Tags":["skill"],"Effects":[{"Operation":"block","Amount":3},{"Operation":"draw","Amount":1}]},
+    {"Id":"unity.heavyStrike","Name":"Tempered Strike","Description":"Deal 14 damage.","Cost":2,"Tags":["attack"],"Effects":[{"Operation":"damage","Amount":14}]},
+    {"Id":"unity.wardingBlow","Name":"Warding Blow","Description":"Deal 5 damage. Gain 4 Block.","Cost":1,"Tags":["attack","skill"],"Effects":[{"Operation":"damage","Amount":5},{"Operation":"block","Amount":4}]}
+  ],
+  "Enemies": [
+    {"Id":"wanderingSoldier","Name":"Wandering Soldier","Art":"enemy_wanderingSoldier","Health":24,"Damage":7,"Reward":20,"Tags":["humanoid"]},
+    {"Id":"blightHound","Name":"Blight Hound","Art":"enemy_blightHound","Health":32,"Damage":9,"Reward":25,"Tags":["beast"]},
+    {"Id":"unity.ashWarden","Name":"Ash Warden","Art":"enemy_wanderingSoldier","Health":48,"Damage":11,"Reward":50,"Tags":["humanoid","boss"]}
+  ]
+}

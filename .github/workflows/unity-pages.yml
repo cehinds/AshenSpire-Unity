@@ -1,0 +1,48 @@
+name: Unity checkpoint and Pages
+on:
+  push:
+    branches: [dev, test, release, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: unity-pages
+  cancel-in-progress: false
+jobs:
+  validate-and-assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test deterministic Unity rules
+        run: dotnet run --project UnityTests/Domain
+      - name: Verify packaged player matches its source
+        run: node tools/unity-package.mjs --check
+      - name: Refresh channel refs
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Assemble all channels together
+        run: node tools/unity-pages.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: validate-and-assemble
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish all four channel pages
+        id: deployment
+        uses: actions/deploy-pages@v4
