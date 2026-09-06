@@ -1,19 +1,19 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "stage": "Three-act campaign",
   "unityVersion": "6000.6.0f1",
-  "sourceCommit": "1a10b0618b8c45ea8b536b8540e890b0c954f57d",
-  "sourceDigest": "25819ed56fb110a539309c67b61d36f79d0520b134688aa402de106719ddf0d8",
-  "builtAt": "2026-09-06T07:15:34.4088099Z",
+  "sourceCommit": "551285af6c20b41ac11c97d2d2978d8561558c88",
+  "sourceDigest": "a8d7174753a64ffdab7e8d5efa7e8bd6fdcaa6087b3033f65f989c157b5fabd3",
+  "builtAt": "2026-09-06T08:16:56.8415940Z",
   "files": {
-    "Web/Build/Web.data": "f5ef71c41096a70c6bd23d60aa8d9a1514a8518227fbbada7882d9b10189d68f",
+    "Web/Build/Web.data": "1474fb5e52b39ef42f6f65639cbf96c2877fb8861c39d2a01b40a4c73f81a1a5",
     "Web/Build/Web.framework.js": "3ecb64e3740253c0530736a895a9cfba257c59d790c9680bd61cfa19c6ce6898",
     "Web/Build/Web.loader.js": "19b7fc0e515757442b2f1c34fcee49a8c96dd40e95843cdb96bd87e08ea537a6",
     "Web/Build/Web.wasm": "7ba2be5a049c28b57d736bf85718d95f1ed0c39cb9ba02e1e2140337df7a1f39",
-    "Web/build-source.json": "a293dd924826d66336093d66b2d2aef4b168c139c862356b6c0436b422e701c1",
-    "Web/index.html": "389337e37c6559d9cccc86ef76648945aff3754ddcb4b9539520ef9991d27bf7",
-    "Web.zip": "6acfdd3d0e2b776f5441a9bb380716ad67bed461488836f0c42175098894ed5a",
-    "Windows.zip": "2b77f7a89389d5019827123c094ab97d8f1262611f7a190f4517c242bf73b300",
-    "Android.apk": "0058b147e090ba88cec8058303200130f441cc356dd621c618710addd647900f"
+    "Web/build-source.json": "52a1f24e01573c1ab9c1794ef85422cfea0e9eec15b828e5796db144f8ac1a86",
+    "Web/index.html": "3be8bcef6f35ba0e8563be8e3c8581e8fecd684c8cde5b71e858bc533421bdc9",
+    "Web.zip": "3313a7e7d8d824d7f41fa96020b9766329fa692ef2f1b75051617b6f0f3fdd9f",
+    "Windows.zip": "78691bd48993dfce617c79a8cd0ad07cc9386e2640f90af5c93a0a5a0d257dc6",
+    "Android.apk": "5d709c633ce736b6e20f4e3748f690e589dce2144fb441570a5667fe78d19bd3"
   }
 }

@@ -1,0 +1,30 @@
+{
+  "Added": [
+    "Eight editable combat cue profiles combine sprite timelines, reaction colors and distinct synthesized sound sweeps.",
+    "Outcome labels show actual health damage, block gained, poison applied and capped healing.",
+    "FeedbackCues CSV export/import supports decimal tuning with validation before replacement."
+  ],
+  "Changed": [
+    "One reusable presentation component owns the timeline and caches sprite frames. New commands and screen changes cancel old motion.",
+    "Reduced motion keeps static feedback; quick animations halve duration; mute stops sound. Existing preference and campaign save keys remain.",
+    "Sound playback is bounded to the latest action; poison, magic, faith, strikes, guard, injury, healing and rewards have distinct profiles."
+  ],
+  "Fixed": [
+    "Build scripts wait only for their Editor process, avoiding hangs on a surviving Hub helper after compilation failure.",
+    "The audio listener lookup uses the current Unity API."
+  ],
+  "KnownIssues": [
+    "Physical Android/iOS devices and graphical Windows play remain unverified; Android APK is for testing.",
+    "Adapted campaign does not include every mechanic or content item from the original browser game.",
+    "Two inherited browser CI inventory failures remain documented and waived for this work.",
+    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds.",
+    "Fixed-policy tests show faster Starseer runs and slower Herald runs; class balance still needs player feedback.",
+    "Existing sprite art is reused. Physical-device playback, audible sound review and full original-game parity remain outside this checkpoint."
+  ],
+  "WhatToTest": [
+    "Play attacks, poison, magic and guard cards; compare their movement and sound.",
+    "Switch Reduced motion, Quick animations and Mute sound, reload and verify your preferences remain.",
+    "Navigate to the menu during an action; no delayed animation should carry into another screen.",
+    "Compare outcome labels with vitality and block changes; inspect Recent actions for full detail."
+  ]
+}

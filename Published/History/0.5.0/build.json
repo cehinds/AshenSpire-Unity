@@ -1,0 +1,19 @@
+{
+  "version": "0.5.0",
+  "stage": "Three-act campaign",
+  "unityVersion": "6000.6.0f1",
+  "sourceCommit": "1a10b0618b8c45ea8b536b8540e890b0c954f57d",
+  "sourceDigest": "25819ed56fb110a539309c67b61d36f79d0520b134688aa402de106719ddf0d8",
+  "builtAt": "2026-09-06T07:15:34.4088099Z",
+  "files": {
+    "Web/Build/Web.data": "f5ef71c41096a70c6bd23d60aa8d9a1514a8518227fbbada7882d9b10189d68f",
+    "Web/Build/Web.framework.js": "3ecb64e3740253c0530736a895a9cfba257c59d790c9680bd61cfa19c6ce6898",
+    "Web/Build/Web.loader.js": "19b7fc0e515757442b2f1c34fcee49a8c96dd40e95843cdb96bd87e08ea537a6",
+    "Web/Build/Web.wasm": "7ba2be5a049c28b57d736bf85718d95f1ed0c39cb9ba02e1e2140337df7a1f39",
+    "Web/build-source.json": "a293dd924826d66336093d66b2d2aef4b168c139c862356b6c0436b422e701c1",
+    "Web/index.html": "389337e37c6559d9cccc86ef76648945aff3754ddcb4b9539520ef9991d27bf7",
+    "Web.zip": "6acfdd3d0e2b776f5441a9bb380716ad67bed461488836f0c42175098894ed5a",
+    "Windows.zip": "2b77f7a89389d5019827123c094ab97d8f1262611f7a190f4517c242bf73b300",
+    "Android.apk": "0058b147e090ba88cec8058303200130f441cc356dd621c618710addd647900f"
+  }
+}

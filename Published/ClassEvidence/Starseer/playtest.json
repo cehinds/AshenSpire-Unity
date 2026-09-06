@@ -17,7 +17,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 10.131935119628906
+      "PlayerX": 10.160690307617188
     },
     {
       "Cue": "magic",
@@ -44,7 +44,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.368520736694336
+      "PlayerX": -6.668395519256592
     },
     {
       "Cue": "hit",
@@ -71,7 +71,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 22.37929344177246
+      "PlayerX": 21.73099136352539
     },
     {
       "Cue": "attack",
@@ -98,7 +98,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.082731246948242
+      "PlayerX": 5.180373668670654
     },
     {
       "Cue": "guard",
@@ -125,7 +125,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 10.160690307617188
+      "PlayerX": 10.01487922668457
     },
     {
       "Cue": "magic",
@@ -179,7 +179,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.7,
-      "PlayerX": 10.04444694519043
+      "PlayerX": 9.894596099853516
     },
     {
       "Cue": "magic",
@@ -259,8 +259,8 @@
       "layout": 67
     }
   ],
-  "firstLoadMilliseconds": 1880,
-  "downloadedResourceBytes": 34291799,
+  "firstLoadMilliseconds": 1042,
+  "downloadedResourceBytes": 34291797,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,

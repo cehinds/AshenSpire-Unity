@@ -35,10 +35,7 @@ namespace AshenSpire.Editor
             content.Validate();
             var campaignJson = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/campaign.json"));
             var campaign = JsonUtility.FromJson<CampaignDefinition>(campaignJson);
-            campaign.Validate();
-            foreach (var asset in campaign.Heroes.SelectMany(hero => new[] { hero.Art + "_idle", hero.Art + "_attack1", hero.Art + "_attack2", hero.Art + "_guard", hero.Art + "_hit" }).Concat(campaign.Foes.Select(foe => foe.Art)).Concat(campaign.Encounters.Select(encounter => encounter.Background)))
-                if (!File.Exists(Root + "/Resources/Art/" + asset + ".png"))
-                    throw new InvalidDataException("campaign.json/Art: missing " + asset + ". Run tools/convert-unity-art.py or supply this sprite.");
+            CampaignAuthoringValidation.Validate(campaign, Root + "/Resources/Art");
             File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);
             var target = Root + "/Resources/expedition.json";
             Directory.CreateDirectory(Path.GetDirectoryName(target));
@@ -92,7 +89,7 @@ namespace AshenSpire.Editor
             Prepare();
             PlayerSettings.companyName = "AshenSpire";
             PlayerSettings.productName = "AshenSpire Unity";
-            PlayerSettings.bundleVersion = "0.5.0";
+            PlayerSettings.bundleVersion = "0.6.0";
             PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;

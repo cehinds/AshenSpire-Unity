@@ -1,0 +1,153 @@
+{
+  "Content": "campaign.json",
+  "ContentSha256": "ee0dbbdbf43d2bb2b61b913b8fcfaf7c11692edba9c2b54485d313520d28e8c1",
+  "Seeds": "1..24",
+  "Routes": "seed modulo available routes",
+  "Note": "Fixed diagnostic policies; no claim of optimal play or fun. Final health includes defeats as zero.",
+  "Rows": [
+    {
+      "Hero": "reaver",
+      "Policy": "rest-rewards",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 20.29,
+      "MeanFinalHealthRatio": 0.933,
+      "MeanCardRewards": 0,
+      "Purchases": {
+        "emberBlade": 24,
+        "pilgrimMail": 24,
+        "rageBand": 24,
+        "goldenHeart": 24,
+        "duelistEdge": 24,
+        "ironward": 24
+      }
+    },
+    {
+      "Hero": "reaver",
+      "Policy": "build-deck",
+      "Runs": 24,
+      "Wins": 21,
+      "Deaths": 3,
+      "MeanEndedTurns": 21.75,
+      "MeanFinalHealthRatio": 0.334,
+      "MeanCardRewards": 7.83,
+      "Purchases": {
+        "emberBlade": 24,
+        "rageBand": 24,
+        "pilgrimMail": 24,
+        "goldenHeart": 23,
+        "duelistEdge": 23,
+        "ironward": 23
+      }
+    },
+    {
+      "Hero": "rogue",
+      "Policy": "rest-rewards",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 16.79,
+      "MeanFinalHealthRatio": 0.997,
+      "MeanCardRewards": 0,
+      "Purchases": {
+        "emberBlade": 24,
+        "ironward": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "goldenHeart": 24,
+        "venomVial": 24
+      }
+    },
+    {
+      "Hero": "rogue",
+      "Policy": "build-deck",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 18.17,
+      "MeanFinalHealthRatio": 0.89,
+      "MeanCardRewards": 9,
+      "Purchases": {
+        "emberBlade": 24,
+        "ironward": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "venomVial": 24,
+        "goldenHeart": 24
+      }
+    },
+    {
+      "Hero": "herald",
+      "Policy": "rest-rewards",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 22.92,
+      "MeanFinalHealthRatio": 0.999,
+      "MeanCardRewards": 0,
+      "Purchases": {
+        "ironward": 24,
+        "emberBlade": 24,
+        "sunwardSeal": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "goldenHeart": 24
+      }
+    },
+    {
+      "Hero": "herald",
+      "Policy": "build-deck",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 26.62,
+      "MeanFinalHealthRatio": 0.919,
+      "MeanCardRewards": 9,
+      "Purchases": {
+        "ironward": 24,
+        "sunwardSeal": 24,
+        "emberBlade": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "goldenHeart": 24
+      }
+    },
+    {
+      "Hero": "starseer",
+      "Policy": "rest-rewards",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 12.5,
+      "MeanFinalHealthRatio": 0.997,
+      "MeanCardRewards": 0,
+      "Purchases": {
+        "ironward": 24,
+        "starLens": 24,
+        "emberBlade": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "goldenHeart": 24
+      }
+    },
+    {
+      "Hero": "starseer",
+      "Policy": "build-deck",
+      "Runs": 24,
+      "Wins": 24,
+      "Deaths": 0,
+      "MeanEndedTurns": 10.71,
+      "MeanFinalHealthRatio": 0.856,
+      "MeanCardRewards": 9,
+      "Purchases": {
+        "starLens": 24,
+        "emberBlade": 24,
+        "ironward": 24,
+        "pilgrimMail": 24,
+        "duelistEdge": 24,
+        "goldenHeart": 24
+      }
+    }
+  ]
+}

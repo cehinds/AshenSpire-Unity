@@ -17,7 +17,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.763067245483398
+      "PlayerX": 8.118484497070312
     },
     {
       "Cue": "faith",
@@ -44,7 +44,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.8969807624816895
+      "PlayerX": -6.5013251304626465
     },
     {
       "Cue": "hit",
@@ -71,7 +71,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.34988021850586
+      "PlayerX": 22.3096866607666
     },
     {
       "Cue": "attack",
@@ -98,7 +98,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.049064636230469
+      "PlayerX": 4.8907670974731445
     },
     {
       "Cue": "guard",
@@ -125,7 +125,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.202286720275879
+      "PlayerX": 8.545286178588867
     },
     {
       "Cue": "faith",
@@ -152,7 +152,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -1.761208176612854
+      "PlayerX": -1.7491346597671509
     },
     {
       "Cue": "guard",
@@ -179,7 +179,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.65595245361328
+      "PlayerX": 23.227657318115234
     },
     {
       "Cue": "attack",
@@ -206,7 +206,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.14660930633545
+      "PlayerX": 8.338116645812988
     },
     {
       "Cue": "faith",
@@ -233,11 +233,11 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 8.520082473754883
+      "PlayerX": 8.118484497070312
     },
     {
       "Cue": "faith",
-      "Status": "completed",
+      "Status": "cancelled",
       "Text": "FOE -5",
       "Reduced": false,
       "Fast": false,
@@ -260,7 +260,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.27648401260376
+      "PlayerX": -6.914811611175537
     },
     {
       "Cue": "hit",
@@ -343,8 +343,8 @@
       "layout": 71
     }
   ],
-  "firstLoadMilliseconds": 3878,
-  "downloadedResourceBytes": 34291799,
+  "firstLoadMilliseconds": 1549,
+  "downloadedResourceBytes": 34291797,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,
