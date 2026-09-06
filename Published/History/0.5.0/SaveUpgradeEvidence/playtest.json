@@ -1,0 +1,216 @@
+{
+  "url": "http://127.0.0.1:55989/",
+  "feedbackEvents": [
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.196152687072754
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "GUARD",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.73099136352539
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -8",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
+      "Text": "FOE -1",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    }
+  ],
+  "soundEvents": [
+    "guard\n",
+    "attack\n",
+    "attack\n",
+    "reward\n"
+  ],
+  "viewportEvidence": [
+    {
+      "width": 320,
+      "height": 740,
+      "panelWidth": 389.1891784667969,
+      "panelHeight": 900,
+      "layout": 6
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "panelWidth": 415.87677001953125,
+      "panelHeight": 899.9999389648438,
+      "layout": 23
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "panelWidth": 1280,
+      "panelHeight": 900,
+      "layout": 53
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "panelWidth": 844,
+      "panelHeight": 390,
+      "layout": 54
+    }
+  ],
+  "firstLoadMilliseconds": 2100,
+  "downloadedResourceBytes": 34268070,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "upgradedFrom": "LOCAL · UNITY 0.4.0",
+  "affinityRewardTaken": true,
+  "rewardOffersChecked": 1,
+  "inspectionPreservesState": true,
+  "pileGroupingChecked": true,
+  "narrowTouchTargetsChecked": true,
+  "unaffordableInspected": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 421339312,
+    "RandomState": 2422141741,
+    "Health": 63,
+    "MaxHealth": 70,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 2,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 2,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "cleave",
+      "cleave",
+      "rage",
+      "rage",
+      "rage"
+    ],
+    "Draw": [
+      "rage",
+      "cleave"
+    ],
+    "Hand": [
+      "defend",
+      "defend",
+      "cleave"
+    ],
+    "Discard": [
+      "rage",
+      "strike",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "18-intent-details",
+    "19-status-details",
+    "20-empty-discard",
+    "21-draw-pile",
+    "05-card-selected",
+    "06-card-played",
+    "22-discard-pile",
+    "23-action-history",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "25-resumed-history",
+    "24-unaffordable-card",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}

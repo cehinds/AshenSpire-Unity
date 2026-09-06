@@ -1,30 +1,31 @@
 {
   "Added": [
-    "Eight editable combat cue profiles combine sprite timelines, reaction colors and distinct synthesized sound sweeps.",
-    "Outcome labels show actual health damage, block gained, poison applied and capped healing.",
-    "FeedbackCues CSV export/import supports decimal tuning with validation before replacement."
+    "Structured Unity content fields for seven tables, nested effects, tag lists and campaign settings.",
+    "Search, readable duplicate IDs, explicit reward enrollment and Unity Undo/Redo.",
+    "Recoverable draft checkpoints, stale-source detection and atomic saves with exact-byte backups.",
+    "Read-only Android device preflight reports real connected hardware and keeps physical gameplay status separate."
   ],
   "Changed": [
-    "One reusable presentation component owns the timeline and caches sprite frames. New commands and screen changes cancel old motion.",
-    "Reduced motion keeps static feedback; quick animations halve duration; mute stops sound. Existing preference and campaign save keys remain.",
-    "Sound playback is bounded to the latest action; poison, magic, faith, strikes, guard, injury, healing and rewards have distinct profiles."
+    "Editor saves, CSV imports and build imports share referenced-sprite validation, including equipment art.",
+    "The owner guide explains editing, recovery, backups and adding new content. Gameplay, balance and campaign save schema are unchanged."
   ],
   "Fixed": [
-    "Build scripts wait only for their Editor process, avoiding hangs on a surviving Hub helper after compilation failure.",
-    "The audio listener lookup uses the current Unity API."
+    "Missing equipment sprites and empty player-facing hero, encounter and equipment names fail before import.",
+    "Import failures after a successful save report that the source was already saved and backed up."
   ],
   "KnownIssues": [
-    "Physical Android/iOS devices and graphical Windows play remain unverified; Android APK is for testing.",
-    "Adapted campaign does not include every mechanic or content item from the original browser game.",
+    "Physical Android/iOS play and graphical Windows play remain unverified; no Android device is connected.",
+    "Unity Editor serialized fields and Undo/Redo have automated coverage; graphical authoring-window interaction remains unverified.",
+    "The adaptation does not include every original mechanic or content item.",
     "Two inherited browser CI inventory failures remain documented and waived for this work.",
-    "Unattended Unity compilation still requires runner/licensing setup; Pages publication is automated for packaged builds.",
-    "Fixed-policy tests show faster Starseer runs and slower Herald runs; class balance still needs player feedback.",
-    "Existing sprite art is reused. Physical-device playback, audible sound review and full original-game parity remain outside this checkpoint."
+    "Unity compilation uses the local licensed Editor; packaged-build validation and dev Pages publication are automated.",
+    "Draft checkpoints run explicitly and on window close/recompile; they are not continuous crash-proof autosave."
   ],
   "WhatToTest": [
-    "Play attacks, poison, magic and guard cards; compare their movement and sound.",
-    "Switch Reduced motion, Quick animations and Mute sound, reload and verify your preferences remain.",
-    "Navigate to the menu during an action; no delayed animation should carry into another screen.",
-    "Compare outcome labels with vitality and block changes; inspect Recent actions for full detail."
+    "Open AshenSpire > Campaign Content Editor, duplicate a card and expand its Effects list. Change an amount, then use Undo and Redo.",
+    "Search another table and return to confirm draft edits remain. Use Add this card to reward catalog when it should become a reward.",
+    "Checkpoint an unsaved draft, close and reopen the window, and verify recovery.",
+    "Use Save & Import, restart Play mode and test the modified card.",
+    "Play or resume a campaign and compare movement, preferences and saved progress with the previous build."
   ]
 }

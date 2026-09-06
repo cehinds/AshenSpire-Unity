@@ -1,0 +1,25 @@
+{
+  "passed": 19,
+  "checks": [
+    "dangling reference rejected before source replacement",
+    "invalid definition preserves source and creates no backup",
+    "missing equipment sprite rejected before source replacement",
+    "missing art leaves source byte-identical",
+    "empty hero display name rejected",
+    "empty encounter display name rejected",
+    "empty equipment display name rejected",
+    "stale draft cannot overwrite external source changes",
+    "stale save preserves the external bytes",
+    "valid save replaces source and imports once",
+    "backup preserves exact BOM and line ending bytes",
+    "save receipt identifies the committed source bytes",
+    "import failure reports source saved accurately",
+    "import failure still retains the prior source backup",
+    "identical checkpoint does not create redundant backups",
+    "recovery preserves draft and original disk baseline",
+    "recovered stale draft retains conflict detection",
+    "new checkpoint preserves the prior draft bytes",
+    "transactions leave no temporary files"
+  ],
+  "workspace": "C:\\repos\\AshenSpire-Unity\\Builds/AuthoringChecks\\4d5d73fb4ac9430f811cb02ae81cd964"
+}

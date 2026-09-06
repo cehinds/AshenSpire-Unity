@@ -17,7 +17,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.743916988372803
+      "PlayerX": 4.9624834060668945
     },
     {
       "Cue": "guard",
@@ -44,7 +44,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": -6.43571662902832
+      "PlayerX": -6.648146152496338
     },
     {
       "Cue": "hit",
@@ -71,7 +71,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 21.580320358276367
+      "PlayerX": 22.239471435546875
     },
     {
       "Cue": "attack",
@@ -95,114 +95,6 @@
       "Cue": "attack",
       "Status": "impact",
       "Text": "FOE -6",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 22.168643951416016
-    },
-    {
-      "Cue": "attack",
-      "Status": "completed",
-      "Text": "FOE -6",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "poison",
-      "Status": "started",
-      "Text": "FOE -3  ·  POISON +3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.65,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "poison",
-      "Status": "impact",
-      "Text": "FOE -3  ·  POISON +3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.65,
-      "PlayerX": 11.784196853637695
-    },
-    {
-      "Cue": "poison",
-      "Status": "completed",
-      "Text": "FOE -3  ·  POISON +3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.65,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "BLOCK +4",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "BLOCK +4",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 5.227282524108887
-    },
-    {
-      "Cue": "guard",
-      "Status": "cancelled",
-      "Text": "BLOCK +4",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "started",
-      "Text": "ENEMY GUARD  ·  FOE -3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "guard",
-      "Status": "impact",
-      "Text": "ENEMY GUARD  ·  FOE -3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": -1.7671725749969482
-    },
-    {
-      "Cue": "guard",
-      "Status": "completed",
-      "Text": "ENEMY GUARD  ·  FOE -3",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "started",
-      "Text": "ATTACK",
-      "Reduced": false,
-      "Fast": false,
-      "Duration": 0.6,
-      "PlayerX": 0
-    },
-    {
-      "Cue": "attack",
-      "Status": "impact",
-      "Text": "ATTACK",
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
@@ -211,6 +103,114 @@
     {
       "Cue": "attack",
       "Status": "completed",
+      "Text": "FOE -6",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "poison",
+      "Status": "started",
+      "Text": "FOE -3  ·  POISON +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "poison",
+      "Status": "impact",
+      "Text": "FOE -3  ·  POISON +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 12.54997730255127
+    },
+    {
+      "Cue": "poison",
+      "Status": "completed",
+      "Text": "FOE -3  ·  POISON +3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.65,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "BLOCK +4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "BLOCK +4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 5.287820816040039
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "BLOCK +4",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "started",
+      "Text": "ENEMY GUARD  ·  FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "guard",
+      "Status": "impact",
+      "Text": "ENEMY GUARD  ·  FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": -1.8711137771606445
+    },
+    {
+      "Cue": "guard",
+      "Status": "completed",
+      "Text": "ENEMY GUARD  ·  FOE -3",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "started",
+      "Text": "ATTACK",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 0
+    },
+    {
+      "Cue": "attack",
+      "Status": "impact",
+      "Text": "ATTACK",
+      "Reduced": false,
+      "Fast": false,
+      "Duration": 0.6,
+      "PlayerX": 21.50409507751465
+    },
+    {
+      "Cue": "attack",
+      "Status": "completed",
       "Text": "ATTACK",
       "Reduced": false,
       "Fast": false,
@@ -233,7 +233,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.65,
-      "PlayerX": 11.82059097290039
+      "PlayerX": 11.998406410217285
     },
     {
       "Cue": "poison",
@@ -260,7 +260,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 5.0320234298706055
+      "PlayerX": 5.257840156555176
     },
     {
       "Cue": "guard",
@@ -287,7 +287,7 @@
       "Reduced": false,
       "Fast": false,
       "Duration": 0.6,
-      "PlayerX": 4.8907670974731445
+      "PlayerX": 5.374270439147949
     },
     {
       "Cue": "guard",
@@ -371,8 +371,8 @@
       "layout": 70
     }
   ],
-  "firstLoadMilliseconds": 1903,
-  "downloadedResourceBytes": 34291799,
+  "firstLoadMilliseconds": 1878,
+  "downloadedResourceBytes": 34291797,
   "commandsChangedState": true,
   "resumeStateMatches": true,
   "upgradedFrom": null,
