@@ -1,0 +1,81 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "firstLoadMilliseconds": 967,
+  "downloadedResourceBytes": 33967257,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "herald",
+    "Seed": 25899264,
+    "RandomState": 3137181479,
+    "Health": 64,
+    "MaxHealth": 64,
+    "Energy": 0,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 1,
+    "Route": 0,
+    "Turn": 3,
+    "Cinders": 20,
+    "Potions": 3,
+    "FoesDefeated": 1,
+    "Rested": false,
+    "Phase": 0,
+    "Deck": [
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "smite",
+      "prayer"
+    ],
+    "Draw": [
+      "defend",
+      "strike",
+      "defend"
+    ],
+    "Hand": [
+      "defend",
+      "prayer"
+    ],
+    "Discard": [
+      "strike",
+      "smite",
+      "strike"
+    ],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "05-card-selected",
+    "06-card-played",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "10-reward-0",
+    "11-next-map",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}

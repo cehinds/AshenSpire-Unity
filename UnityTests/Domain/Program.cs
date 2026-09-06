@@ -3,6 +3,12 @@ using AshenSpire.Domain;
 
 var options = new JsonSerializerOptions { IncludeFields = true };
 var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+if(args.Length==2 && args[0]=="--validate-campaign")
+{
+    var strict=new JsonSerializerOptions {IncludeFields=true,UnmappedMemberHandling=System.Text.Json.Serialization.JsonUnmappedMemberHandling.Disallow};
+    JsonSerializer.Deserialize<CampaignDefinition>(File.ReadAllText(args[1]),strict)!.Validate();
+    Console.WriteLine("Campaign content: 1 complete schema validation passed");return;
+}
 var json = File.ReadAllText(Path.Combine(root, "GameContent/Unity/expedition.json"));
 ContentDefinition Content() => JsonSerializer.Deserialize<ContentDefinition>(json, options)!;
 var passed = 0;
@@ -65,3 +71,4 @@ for (uint seed = 1; seed <= 30; seed++)
 Check(wins > 0, "full expedition victory is reachable");
 Console.WriteLine($"Simulation: {wins}/30 simple-policy wins; not a fun or balance assessment.");
 Console.WriteLine($"Domain: {passed} checks passed");
+CampaignChecks.Run(root);

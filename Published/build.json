@@ -1,18 +1,19 @@
 {
-  "version": "0.1.0",
-  "stage": "Early Unity slice",
+  "version": "0.2.0",
+  "stage": "Three-act campaign",
   "unityVersion": "6000.6.0f1",
-  "sourceCommit": "9c44546dccabe2b4c507cef5dc86e8deb1711ff1",
-  "sourceDigest": "9a225ff53bb1e0b095b8a6c121eb49e909f671531fe5b3a76aad9a7586be03f2",
-  "builtAt": "2026-09-06T01:21:18.5408972Z",
+  "sourceCommit": "e37c3f22bb8658a2830367a8c7a96752ad48d781",
+  "sourceDigest": "490422617dc93e79d229342e85b1c5ac8a447eee5b8a330b74e98f85540f5058",
+  "builtAt": "2026-09-06T02:49:31.2474234Z",
   "files": {
-    "Web/Build/Web.data": "c7770deef5acf128114d182ffae5277e0a5a15321b0e439c2420bb70b08adb6a",
-    "Web/Build/Web.framework.js": "f01f1c0eab1aad78a600b76f8e43c390f4a188c82882a2e09efa2d475db12e54",
-    "Web/Build/Web.loader.js": "2b6f9607575f56821ba92fdd8ad6df85ef2a6eda13184b9704d47eb5de2d8733",
-    "Web/Build/Web.wasm": "bf46f4124b61620912287450f36cfeae9980138d8cdb10baf98ad41d3b1adcb2",
-    "Web/build-source.json": "e1eb97d0d0dd0857699d51935213c71eafc2ca9f49991a61b35515dda726bef2",
-    "Web/index.html": "78637f1ae744db6fd5dde251ca5e40563888e39596279dec4e376ea85f142053",
-    "Web.zip": "4912833db738c97ac3f01a890163fb367268df7b1a9f078b1b7b94dd68d7268b",
-    "Windows.zip": "e36b694685bc6deef51f00eabaa891d8909ff3746ca0a26278c778f160d2f3e0"
+    "Web/Build/Web.data": "4d1ba8f2411f5e4a2ac6ba12c7c7b214b0bcea4e382abe4777756782aa9ab691",
+    "Web/Build/Web.framework.js": "c3eca06613132e26851e64e796d37aca1ebe9d91186afc5127d16bedfaa518b3",
+    "Web/Build/Web.loader.js": "0f0cb50daade791c565fead018a92b61a45e151043df42a0973b5dcf4cd88e18",
+    "Web/Build/Web.wasm": "b66335a66bf5a7d187be47d9d891e9189d6e1c543c36fa625d51df26c95b2ee5",
+    "Web/build-source.json": "0417e02659a36c26c68aa81c07e9af51a5c4229c825a61f2bd0a9e337ac63ad8",
+    "Web/index.html": "73a45e07ff241103d5bb09a564fd9378590852fda6746c3b3cfa80968ab692a1",
+    "Web.zip": "adb398664a3d09f60da924d0dda63568ec83627447204a5d0188361034a96c25",
+    "Windows.zip": "8745d133483c3ac56fc9ec74b011111ef5c093e8512b816ea9a474fefde03696",
+    "Android.apk": "cad3e3bff7a5671445cd598fd0b9c25fd03beb65a2cec34e883ed7459ce4fba2"
   }
 }

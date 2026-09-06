@@ -4,7 +4,7 @@ Usage: .\tools\build-unity.ps1 -Target Web
 Needs the pinned Unity Editor and that target's build module. Does not push or publish.
 Preview: python -m http.server 8787 --directory Published/Web
 #>
-param([ValidateSet('Web','Windows')][string]$Target='Web',[string]$EditorPath)
+param([ValidateSet('Web','Windows','Android')][string]$Target='Web',[string]$EditorPath)
 $ErrorActionPreference='Stop'
 $repositoryRoot = Split-Path $PSScriptRoot -Parent
 $version = ((Get-Content -LiteralPath (Join-Path $repositoryRoot 'Unity\ProjectSettings\ProjectVersion.txt') | Select-Object -First 1) -split ': ')[1]
@@ -20,6 +20,8 @@ try {
     $arguments = @('-batchmode','-nographics','-quit','-projectPath',('"'+$unityProject+'"'),'-executeMethod',"AshenSpire.Editor.BuildTools.Build$Target",'-logFile',('"'+$buildLog+'"'))
     $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru -Wait
     if ($process.ExitCode -ne 0) { throw "Unity build failed; see $buildLog" }
+    if ($Target -eq 'Windows') { Compress-Archive -Path Builds/Windows/* -DestinationPath Published/Windows.zip -CompressionLevel Optimal -Force }
+    if ($Target -eq 'Android') { Copy-Item -LiteralPath Builds/Android/AshenSpire.apk -Destination Published/Android.apk -Force }
     if ($Target -eq 'Web') { node tools/unity-package.mjs; if ($LASTEXITCODE -ne 0) { throw 'Packaging failed.' } }
     Write-Output "Build ready: $repositoryRoot\Builds\$Target"
 } finally { Pop-Location }
