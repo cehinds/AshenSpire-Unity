@@ -1,0 +1,79 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "firstLoadMilliseconds": 1105,
+  "downloadedResourceBytes": 33967257,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "fullRunRequested": false,
+  "fullRunVictory": false,
+  "equipmentPurchased": false,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "rogue",
+    "Seed": 4143336560,
+    "RandomState": 1086910344,
+    "Health": 0,
+    "MaxHealth": 60,
+    "Energy": 3,
+    "Block": 0,
+    "EnemyHealth": 24,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 0,
+    "Weak": 0,
+    "Strength": 0,
+    "EnemyStrength": 0,
+    "Encounter": 0,
+    "Route": 0,
+    "Turn": 13,
+    "Cinders": 0,
+    "Potions": 3,
+    "FoesDefeated": 0,
+    "Rested": false,
+    "Phase": 4,
+    "Deck": [
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "venom",
+      "quickstep"
+    ],
+    "Draw": [
+      "quickstep",
+      "strike",
+      "strike"
+    ],
+    "Hand": [
+      "venom",
+      "defend",
+      "defend",
+      "strike",
+      "defend"
+    ],
+    "Discard": [],
+    "Items": [],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "05-card-selected",
+    "06-card-played",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "15-campaign-defeat",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}
