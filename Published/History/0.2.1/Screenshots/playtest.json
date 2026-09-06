@@ -1,0 +1,101 @@
+{
+  "url": "http://127.0.0.1:8787",
+  "firstLoadMilliseconds": 1717,
+  "downloadedResourceBytes": 33973954,
+  "commandsChangedState": true,
+  "resumeStateMatches": true,
+  "fullRunRequested": true,
+  "fullRunVictory": true,
+  "equipmentPurchased": true,
+  "finalState": {
+    "SchemaVersion": 1,
+    "HeroId": "reaver",
+    "Seed": 2754802784,
+    "RandomState": 1388803217,
+    "Health": 98,
+    "MaxHealth": 98,
+    "Energy": 1,
+    "Block": 0,
+    "EnemyHealth": 0,
+    "EnemyBlock": 0,
+    "EnemyPoison": 0,
+    "Poison": 2,
+    "Weak": 0,
+    "Strength": 4,
+    "EnemyStrength": 4,
+    "Encounter": 8,
+    "Route": 0,
+    "Turn": 4,
+    "Cinders": 215,
+    "Potions": 3,
+    "FoesDefeated": 9,
+    "Rested": false,
+    "Phase": 3,
+    "Deck": [
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "cleave",
+      "rage"
+    ],
+    "Draw": [
+      "rage",
+      "defend",
+      "cleave"
+    ],
+    "Hand": [
+      "defend",
+      "strike",
+      "defend"
+    ],
+    "Discard": [
+      "strike",
+      "strike"
+    ],
+    "Items": [
+      "emberBlade",
+      "ironward",
+      "goldenHeart",
+      "starLens",
+      "pilgrimMail",
+      "duelistEdge"
+    ],
+    "Rewards": []
+  },
+  "screenshots": [
+    "01-phone-title",
+    "02-class-selection",
+    "03-campaign-map",
+    "04-phone-combat",
+    "05-card-selected",
+    "06-card-played",
+    "07-next-turn",
+    "08-resume-menu",
+    "09-resumed-combat",
+    "10-reward-0",
+    "11-next-map",
+    "12-equipment-forge",
+    "10-reward-1",
+    "12-equipment-forge",
+    "10-reward-2",
+    "13-act-2",
+    "10-reward-3",
+    "10-reward-4",
+    "10-reward-5",
+    "13-act-3",
+    "10-reward-6",
+    "10-reward-7",
+    "10-reward-8",
+    "15-campaign-victory",
+    "16-desktop",
+    "17-landscape"
+  ],
+  "errors": [],
+  "limits": [
+    "Desktop pointer automation; physical phones and native player interaction are not covered.",
+    "Load timing is from this desktop test environment and is not a mobile performance budget."
+  ]
+}
