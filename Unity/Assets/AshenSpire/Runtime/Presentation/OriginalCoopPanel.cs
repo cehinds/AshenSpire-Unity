@@ -4,6 +4,7 @@
 // COMMANDS: send receives an intent only; the application owns authentication, sequence,
 // transport, saving and rejoin. Call ShowError after a refused/failed send to unlock this view.
 // MODIFY: labels/layout here; all prices, legal targets and outcomes remain domain-owned.
+// MAP: the shared board renders host-provided routes/votes and emits chooseNode intents.
 // No MonoBehaviour, global subscriptions, timers, simulation calls or persistent state.
 using System;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace AshenSpire.Presentation
         private readonly OriginalContentCatalog _catalog;
         private readonly Action<JObject> _send;
         private readonly Action _report, _menu;
+        private readonly OriginalMapViewServices _mapView;
+        private readonly bool _diagnostics;
         private VisualElement _body;
         private Label _notice;
         private readonly CoopPanelState _ui;
@@ -42,10 +45,11 @@ namespace AshenSpire.Presentation
         private bool Done => (bool?)Scene["done"]?[Id] == true;
         private JObject Body => Local["combat"]?["entity"] as JObject ?? Run;
 
-        public OriginalCoopPanel(VisualElement root, JObject view, OriginalContentCatalog catalog, JObject supplemental, Action<JObject> send, Action report, Action menu, CoopPanelState uiState = null)
+        public OriginalCoopPanel(VisualElement root, JObject view, OriginalContentCatalog catalog, JObject supplemental, Action<JObject> send, Action report, Action menu, CoopPanelState uiState = null, OriginalMapViewServices mapView = null, bool diagnostics = false)
         {
             _root = root; _view = (JObject)view.DeepClone(); _catalog = catalog;
             _ui = uiState ?? new CoopPanelState(); _ui.Reconcile(_view);
+            _mapView = mapView; _diagnostics = diagnostics;
             _supplement = supplemental; _balance = (JObject)catalog.Data()["balance"].DeepClone(); _send = send; _report = report; _menu = menu;
             Render();
         }
@@ -55,6 +59,7 @@ namespace AshenSpire.Presentation
         }
         private void Render()
         {
+            _mapView?.SetMapSurface?.Invoke(false);
             _root.Clear(); _root.AddToClassList("native-run");
             _notice = new Label { name = "coop-notice" }; _notice.AddToClassList("notice"); _notice.style.display = DisplayStyle.None; _root.Add(_notice);
             _body = new VisualElement(); _root.Add(_body);
@@ -99,14 +104,22 @@ namespace AshenSpire.Presentation
         }
         private void Routes()
         {
+            SetMapSurface(_ui.Surface == "main");
             Text("Vote for the party's next route", "node-title");
-            foreach (var value in _view["reachableIds"] ?? new JArray())
-            {
-                var id = (string)value; var node = _view["map"]?["nodes"]?[id];
-                var voters = Party.Where(m => (string)Scene["votes"]?[(string)m["id"]] == id).Select(m => (string)m["name"]);
-                Command("route-" + id, "Floor " + node?["floor"] + " · " + Human((string)node?["type"]) + (voters.Any() ? "\nVotes: " + string.Join(", ", voters) : ""), new JObject { ["type"] = "chooseNode", ["nodeId"] = id });
-            }
+            var legalIds = (_view["reachableIds"] as JArray ?? new JArray()).Values<string>().ToArray();
+            var votes = legalIds.ToDictionary(id => id, id => Party.Where(m => (string)Scene["votes"]?[(string)m["id"]] == id).Select(m => (string)m["name"]).ToArray());
+            var board = new OriginalMapBoard((JObject)_view["map"], (Run["path"] as JArray ?? new JArray()).Values<string>(),
+                (string)_view["cursorId"], legalIds, (int)_view["actNumber"],
+                ((string)Run["runId"] ?? _view["seed"]?.ToString() ?? (string)_view["seedString"]) + "/" + Id, "coop", false, _mapView,
+                id => Send(new JObject { ["type"] = "chooseNode", ["nodeId"] = id }), _diagnostics, votes);
+            board.style.flexGrow = 1; board.style.flexShrink = 1; board.style.minHeight = 0;
+            _body.Add(board);
             Text("The route advances once connected party members have voted.", "caption");
+        }
+        private void SetMapSurface(bool visible)
+        {
+            _mapView?.SetMapSurface?.Invoke(visible);
+            _body.style.flexGrow = visible ? 1 : 0; _body.style.minHeight = 0;
         }
         private void Combat()
         {
@@ -155,6 +168,7 @@ namespace AshenSpire.Presentation
         }
         private void Flasks()
         {
+            SetMapSurface(false);
             _ui.Surface = "flasks";
             _body.Clear(); Text("FLASKS", "heading"); Text("Choose a recipient. Using a flask consumes your charge or utility flask.", "caption");
             var charges = Body["flaskCharges"];
@@ -240,6 +254,7 @@ namespace AshenSpire.Presentation
             && (Local["catchup"] as JArray ?? new JArray()).Count == 0 && (bool?)Party.FirstOrDefault(m => (string)m["id"] == Id)?["alive"] == true;
         private void Deck()
         {
+            SetMapSurface(false);
             _ui.Surface = "deck";
             _body.Clear(); Text("YOUR DECK & EQUIPMENT", "heading");
             var locations = new WeaponLoadout(_catalog); var levels = Run["itemUpgradeLevels"] as JObject;
@@ -264,6 +279,7 @@ namespace AshenSpire.Presentation
         }
         private void Equipment()
         {
+            SetMapSurface(false);
             _ui.Surface = "equipment";
             _body.Clear(); Text("EQUIPMENT & PREPARED SETS", "heading");
             if (!CanChangeEquipment) { Text("Finish your current choice or fight before changing equipment.", "notice"); Button("equipment-back", "Back to deck", Deck); _report?.Invoke(); return; }
@@ -306,6 +322,7 @@ namespace AshenSpire.Presentation
         }
         private void Mounts()
         {
+            SetMapSurface(false);
             _ui.Surface = "mounts";
             _body.Clear(); Text("WEAPON CARD MOUNTS", "heading");
             var services = Room["smith"]?["services"] as JArray ?? new JArray();

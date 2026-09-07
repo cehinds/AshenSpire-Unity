@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "tapPixels": 51,
+  "rooms": {
+    "monster": { "name": "Monster", "icon": "swords", "color": "#D4C7AE", "description": "A fight — cinders and a card reward." },
+    "fight": { "name": "Monster", "icon": "swords", "color": "#D4C7AE", "description": "A fight — cinders and a card reward." },
+    "elite": { "name": "Elite", "icon": "skull", "color": "#E89362", "description": "A hard fight. Drops a relic." },
+    "boss": { "name": "Boss", "icon": "eye", "color": "#F1A071", "description": "The act boss." },
+    "shrine": { "name": "Shrine of Emberlight", "icon": "flame", "color": "#E9C678", "description": "Rest, smith an owned armament, or mend an ally." },
+    "merchant": { "name": "Merchant", "icon": "scales", "color": "#9ECDD0", "description": "Cards, relics, flasks, and card removal." },
+    "treasure": { "name": "Treasure", "icon": "chest", "color": "#E9C678", "description": "A relic, free." },
+    "event": { "name": "Unknown", "icon": "question", "color": "#B7ABC5", "description": "An event, a fight, a shrine… who can say." },
+    "unknown": { "name": "Unknown", "icon": "question", "color": "#B7ABC5", "description": "An event, a fight, a shrine… who can say." }
+  }
+}

@@ -1,0 +1,1881 @@
+{
+  "success": true,
+  "checks": [
+    "page reload rejoins same exact hand without extra draw",
+    "original disconnect semantics end this turn until the next player phase",
+    "rejoined guest becomes active on exactly the next player turn",
+    "rejoined guest plays an accepted card on the next turn",
+    "real fight counted once",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "state": null,
+  "coop": {
+    "revision": 23,
+    "lobby": {
+      "revision": 23,
+      "started": true,
+      "seed": 1,
+      "endless": false,
+      "maximumSeats": 4,
+      "seats": [
+        {
+          "id": "p1",
+          "name": "Host",
+          "host": true,
+          "connected": true,
+          "ready": true,
+          "setup": {
+            "classId": "reaver",
+            "modeId": "standard",
+            "attributes": {
+              "strength": 13,
+              "dexterity": 10,
+              "constitution": 12,
+              "wisdom": 10,
+              "intelligence": 10
+            },
+            "kitId": "reaverBaseline",
+            "startingArmourId": "default",
+            "startingRelicId": "forsakenMedallion",
+            "keepsakeId": "none",
+            "customization": {
+              "name": "Host",
+              "glyph": "⚔",
+              "tint": "gold",
+              "spriteStyle": "animated"
+            }
+          }
+        },
+        {
+          "id": "p2",
+          "name": "Guest",
+          "host": false,
+          "connected": true,
+          "ready": false,
+          "setup": {
+            "classId": "reaver",
+            "modeId": "standard",
+            "attributes": {
+              "strength": 13,
+              "dexterity": 10,
+              "constitution": 12,
+              "wisdom": 10,
+              "intelligence": 10
+            },
+            "kitId": "reaverBaseline",
+            "startingArmourId": "default",
+            "startingRelicId": "forsakenMedallion",
+            "keepsakeId": "none",
+            "customization": {
+              "name": "Guest",
+              "glyph": "⚔",
+              "tint": "gold",
+              "spriteStyle": "animated"
+            }
+          }
+        }
+      ]
+    },
+    "game": {
+      "schemaVersion": 1,
+      "seed": 1,
+      "seedString": "1",
+      "endless": false,
+      "scene": {
+        "kind": "map",
+        "votes": {}
+      },
+      "actNumber": 1,
+      "floor": 1,
+      "cursorId": "n1_5",
+      "reachableIds": [
+        "n2_4",
+        "n2_5",
+        "n2_6"
+      ],
+      "map": {
+        "nodes": {
+          "n1_5": {
+            "id": "n1_5",
+            "floor": 1,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n2_4",
+              "n2_5",
+              "n2_6"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n3_3"
+            ]
+          },
+          "n2_5": {
+            "id": "n2_5",
+            "floor": 2,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n3_6",
+              "n3_5",
+              "n3_4"
+            ]
+          },
+          "n2_6": {
+            "id": "n2_6",
+            "floor": 2,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n3_6"
+            ]
+          },
+          "n3_3": {
+            "id": "n3_3",
+            "floor": 3,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n3_6": {
+            "id": "n3_6",
+            "floor": 3,
+            "col": 6,
+            "type": "shrine",
+            "next": [
+              "n4_6",
+              "n4_5"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n5_2"
+            ]
+          },
+          "n4_6": {
+            "id": "n4_6",
+            "floor": 4,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n5_5",
+              "n5_6"
+            ]
+          },
+          "n4_5": {
+            "id": "n4_5",
+            "floor": 4,
+            "col": 5,
+            "type": "merchant",
+            "next": [
+              "n5_5"
+            ]
+          },
+          "n5_2": {
+            "id": "n5_2",
+            "floor": 5,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n5_5": {
+            "id": "n5_5",
+            "floor": 5,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n6_4",
+              "n6_6"
+            ]
+          },
+          "n5_6": {
+            "id": "n5_6",
+            "floor": 5,
+            "col": 6,
+            "type": "merchant",
+            "next": [
+              "n6_6"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_4": {
+            "id": "n6_4",
+            "floor": 6,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n7_4",
+              "n7_5"
+            ]
+          },
+          "n6_6": {
+            "id": "n6_6",
+            "floor": 6,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n7_6"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n9_0"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_5"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n9_5",
+              "n9_6"
+            ]
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n10_4",
+              "n10_6",
+              "n10_5"
+            ]
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n10_6"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n11_3",
+              "n11_4"
+            ]
+          },
+          "n10_6": {
+            "id": "n10_6",
+            "floor": 10,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n11_5",
+              "n11_6"
+            ]
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_5"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_5"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "party": [
+        {
+          "id": "p1",
+          "name": "Host",
+          "index": 0,
+          "connected": true,
+          "alive": true,
+          "classId": "reaver",
+          "hp": 48,
+          "maxHp": 64,
+          "catchupCount": 0,
+          "sequence": 10
+        },
+        {
+          "id": "p2",
+          "name": "Guest",
+          "index": 1,
+          "connected": true,
+          "alive": true,
+          "classId": "reaver",
+          "hp": 43,
+          "maxHp": 64,
+          "catchupCount": 0,
+          "sequence": 7
+        }
+      ],
+      "refusedMembers": [],
+      "local": {
+        "id": "p2",
+        "run": {
+          "id": "player",
+          "kind": "player",
+          "alive": true,
+          "attributeMode": "standard",
+          "startingKitId": "reaverBaseline",
+          "startingKitSnapshot": {
+            "id": "reaverBaseline",
+            "classId": "reaver",
+            "rightHand": "straightSword",
+            "leftHand": "roundShield"
+          },
+          "profileMeta": {},
+          "classId": "reaver",
+          "attributes": {
+            "strength": 13,
+            "dexterity": 10,
+            "constitution": 12,
+            "wisdom": 10,
+            "intelligence": 10
+          },
+          "loadout": {
+            "sets": {
+              "rightHand": [
+                "straightSword",
+                null,
+                null
+              ],
+              "leftHand": [
+                "roundShield",
+                null,
+                null
+              ],
+              "armor": [
+                "default"
+              ],
+              "talisman": [
+                null,
+                null,
+                null
+              ]
+            },
+            "active": {
+              "rightHand": 0,
+              "leftHand": 0,
+              "armor": 0,
+              "talisman": 0
+            },
+            "storage": [],
+            "creationArmourGrant": {
+              "classId": "reaver",
+              "id": "default"
+            }
+          },
+          "deck": [
+            {
+              "cardId": "technique",
+              "equipmentRole": "technique",
+              "profileId": "weaponTechnique",
+              "grantSource": "from:weapon",
+              "instanceId": "starting:8",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            {
+              "cardId": "gorefireSlash",
+              "grantSource": "from:class",
+              "instanceId": "starting:9",
+              "upgraded": false
+            },
+            {
+              "equipmentAttackSlotId": "attack:0",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:0",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            {
+              "equipmentAttackSlotId": "attack:1",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:1",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            {
+              "equipmentAttackSlotId": "attack:2",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:2",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            {
+              "equipmentAttackSlotId": "attack:3",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:3",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:4",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:5",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:6",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:7",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            }
+          ],
+          "hp": 43,
+          "maxHp": 64,
+          "maxMana": 2,
+          "mana": 0,
+          "maxStamina": 2,
+          "stamina": 2,
+          "energy": 3,
+          "draw": 5,
+          "statuses": {},
+          "block": 0,
+          "weightClass": {
+            "id": "medium",
+            "termId": "term.weightMedium",
+            "maxLoadPercent": 79,
+            "evasionModifier": 1,
+            "temporaryGuardModifier": 1,
+            "extraEligibleDexterityCards": 0,
+            "extraPhysicalAttacks": 0,
+            "dodgeStaminaCost": 2,
+            "dodgeActionCost": 1
+          },
+          "weight": {
+            "capacity": 37,
+            "load": 20,
+            "percent": 54,
+            "weightClass": {
+              "id": "medium",
+              "termId": "term.weightMedium",
+              "maxLoadPercent": 79,
+              "evasionModifier": 1,
+              "temporaryGuardModifier": 1,
+              "extraEligibleDexterityCards": 0,
+              "extraPhysicalAttacks": 0,
+              "dodgeStaminaCost": 2,
+              "dodgeActionCost": 1
+            }
+          },
+          "weights": {
+            "mainHandWeight": 5,
+            "offHandWeight": 7,
+            "armorWeight": 8,
+            "otherCountedWeight": 0
+          },
+          "flaskCharges": {
+            "capacity": 4,
+            "base": 4,
+            "hp": 3,
+            "mana": 1,
+            "hpCurrent": 3,
+            "manaCurrent": 1,
+            "grown": {
+              "hp": 0,
+              "mana": 0
+            },
+            "granted": 0
+          },
+          "relicIds": [
+            "forsakenMedallion"
+          ],
+          "relics": [
+            "forsakenMedallion"
+          ],
+          "startStatuses": [],
+          "keepsakeId": "none",
+          "customization": {
+            "name": "Guest",
+            "glyph": "⚔",
+            "tint": "gold",
+            "spriteStyle": "animated"
+          },
+          "equipmentPoolDeficits": {
+            "hp": 0,
+            "mana": 0,
+            "stamina": 0
+          },
+          "equipmentPoolBonuses": {
+            "maxHp": 0,
+            "maxMana": 0,
+            "maxStamina": 0
+          },
+          "maxHpAdjustment": 0,
+          "derivedStatRules": {
+            "energy": {
+              "pointsPerTier": 5,
+              "rounding": "floor",
+              "cap": null,
+              "base": 1,
+              "sourceStat": "dexterity",
+              "gainPerTier": 1
+            },
+            "draw": {
+              "pointsPerTier": 5,
+              "rounding": "floor",
+              "cap": null,
+              "base": 3,
+              "sourceStat": "intelligence",
+              "gainPerTier": 1
+            },
+            "hp": {
+              "pointsPerTier": 1,
+              "rounding": "floor",
+              "cap": null,
+              "base": 40,
+              "sourceStat": "constitution",
+              "gainPerTier": 2
+            },
+            "stamina": {
+              "pointsPerTier": 5,
+              "rounding": "floor",
+              "cap": null,
+              "base": 0,
+              "sourceStat": "constitution",
+              "gainPerTier": 1
+            },
+            "mana": {
+              "pointsPerTier": 5,
+              "rounding": "floor",
+              "cap": null,
+              "base": 0,
+              "sourceStat": "wisdom",
+              "gainPerTier": 1
+            }
+          },
+          "relicModifierReceipt": {
+            "resources": {
+              "hp": {
+                "flat": 10,
+                "attributeTiers": [],
+                "total": 10
+              },
+              "mana": {
+                "flat": 0,
+                "attributeTiers": [],
+                "total": 0
+              },
+              "stamina": {
+                "flat": 0,
+                "attributeTiers": [],
+                "total": 0
+              }
+            },
+            "damageBySchoolAdd": {
+              "physical": 0,
+              "magic": 0,
+              "arcane": 0,
+              "holy": 0,
+              "fire": 0
+            },
+            "sources": [
+              {
+                "relicId": "forsakenMedallion",
+                "index": 0,
+                "tag": "resource.flat",
+                "resource": "hp",
+                "value": 10
+              }
+            ]
+          },
+          "damageBySchoolAdd": {
+            "physical": 0,
+            "magic": 0,
+            "arcane": 0,
+            "holy": 0,
+            "fire": 0
+          },
+          "energyMax": 3,
+          "drawPerTurn": 5,
+          "poiseThreshold": 20,
+          "class": "reaver",
+          "cinders": 64,
+          "flasks": [],
+          "ownedItemRefs": [
+            "armament/roundShield",
+            "armament/straightSword",
+            "armor/reaver/default",
+            "relic/forsakenMedallion"
+          ],
+          "equipmentAttackSlotCount": 4,
+          "history": [],
+          "path": [
+            "n1_5"
+          ],
+          "lastEncounters": [],
+          "fightsWon": 1,
+          "bossesBeaten": [],
+          "stats": {
+            "fightsWon": 1,
+            "damageDealt": 46,
+            "damageTaken": 21
+          },
+          "actNumber": 1,
+          "floor": 1,
+          "mapNodeId": "n1_5",
+          "seed": 1013904227,
+          "phase": "Map",
+          "custom": {
+            "ascension": 0,
+            "mods": {},
+            "deckMode": "standard"
+          },
+          "isCustom": false,
+          "countsForWinRate": true,
+          "progressionMode": "normal",
+          "seedString": "JAMWX7",
+          "runId": "5b7b4ac9da5f428383f7bbb6f7a76c34:1",
+          "flaskChancePct": 45
+        },
+        "catchup": [],
+        "sequence": 7,
+        "deck": [
+          {
+            "instance": {
+              "cardId": "technique",
+              "equipmentRole": "technique",
+              "profileId": "weaponTechnique",
+              "grantSource": "from:weapon",
+              "instanceId": "starting:8",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "technique",
+              "name": "Weapon Technique",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "skill",
+              "keywords": [],
+              "icon": "✧",
+              "effects": [
+                {
+                  "op": "block",
+                  "target": "self",
+                  "amount": 3
+                },
+                {
+                  "op": "draw",
+                  "amount": 1
+                }
+              ],
+              "textTemplate": "Gain {block} Block. Draw {draw} card.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "block",
+                    "target": "self",
+                    "amount": 5
+                  },
+                  {
+                    "op": "draw",
+                    "amount": 1
+                  }
+                ]
+              },
+              "tags": [],
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "flavor": "Let the weapon teach the hand.",
+              "cardTags": [
+                "blade",
+                "flourish"
+              ],
+              "equipmentProfileId": "weaponTechnique",
+              "equipmentRole": "technique",
+              "attributeProgression": []
+            }
+          },
+          {
+            "instance": {
+              "cardId": "gorefireSlash",
+              "grantSource": "from:class",
+              "instanceId": "starting:9",
+              "upgraded": false
+            },
+            "card": {
+              "id": "gorefireSlash",
+              "name": "Gorefire Slash",
+              "class": "reaver",
+              "rarity": "starter",
+              "cost": 1,
+              "manaCost": 1,
+              "type": "attack",
+              "keywords": [],
+              "icon": "🗡",
+              "effects": [
+                {
+                  "op": "damage",
+                  "target": "enemy",
+                  "amount": 5,
+                  "attributeBonus": 8
+                },
+                {
+                  "op": "applyStatus",
+                  "target": "enemy",
+                  "status": "bleed",
+                  "stacks": 3
+                }
+              ],
+              "textTemplate": "Deal {damage} damage. Apply {bleed} Bleed.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "damage",
+                    "target": "enemy",
+                    "amount": 5
+                  },
+                  {
+                    "op": "applyStatus",
+                    "target": "enemy",
+                    "status": "bleed",
+                    "stacks": 5
+                  }
+                ]
+              },
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "tags": [
+                "blade",
+                "blood",
+                "gorefire"
+              ],
+              "attributeProgression": [
+                {
+                  "operation": "damage",
+                  "attribute": "strength",
+                  "points": 13,
+                  "bonus": 8,
+                  "scope": "totalAcrossHits"
+                }
+              ]
+            }
+          },
+          {
+            "instance": {
+              "equipmentAttackSlotId": "attack:0",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:0",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "strike",
+              "name": "Slashing Strike",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "attack",
+              "keywords": [],
+              "icon": "⚔",
+              "effects": [
+                {
+                  "op": "damage",
+                  "target": "enemy",
+                  "amount": 6,
+                  "tags": [
+                    "blade"
+                  ],
+                  "attributeBonus": 8
+                }
+              ],
+              "textTemplate": "Deal {damage} damage.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "damage",
+                    "target": "enemy",
+                    "amount": 9
+                  }
+                ]
+              },
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "tags": [
+                "blade"
+              ],
+              "flavor": "Steel gives the motion its name.",
+              "cardTags": [
+                "blade"
+              ],
+              "equipmentProfileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipMods": [
+                "damage=6"
+              ],
+              "attributeProgression": [
+                {
+                  "operation": "damage",
+                  "attribute": "strength",
+                  "points": 13,
+                  "bonus": 8,
+                  "scope": "totalAcrossHits"
+                }
+              ]
+            }
+          },
+          {
+            "instance": {
+              "equipmentAttackSlotId": "attack:1",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:1",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "strike",
+              "name": "Slashing Strike",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "attack",
+              "keywords": [],
+              "icon": "⚔",
+              "effects": [
+                {
+                  "op": "damage",
+                  "target": "enemy",
+                  "amount": 6,
+                  "tags": [
+                    "blade"
+                  ],
+                  "attributeBonus": 8
+                }
+              ],
+              "textTemplate": "Deal {damage} damage.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "damage",
+                    "target": "enemy",
+                    "amount": 9
+                  }
+                ]
+              },
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "tags": [
+                "blade"
+              ],
+              "flavor": "Steel gives the motion its name.",
+              "cardTags": [
+                "blade"
+              ],
+              "equipmentProfileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipMods": [
+                "damage=6"
+              ],
+              "attributeProgression": [
+                {
+                  "operation": "damage",
+                  "attribute": "strength",
+                  "points": 13,
+                  "bonus": 8,
+                  "scope": "totalAcrossHits"
+                }
+              ]
+            }
+          },
+          {
+            "instance": {
+              "equipmentAttackSlotId": "attack:2",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:2",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "strike",
+              "name": "Slashing Strike",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "attack",
+              "keywords": [],
+              "icon": "⚔",
+              "effects": [
+                {
+                  "op": "damage",
+                  "target": "enemy",
+                  "amount": 6,
+                  "tags": [
+                    "blade"
+                  ],
+                  "attributeBonus": 8
+                }
+              ],
+              "textTemplate": "Deal {damage} damage.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "damage",
+                    "target": "enemy",
+                    "amount": 9
+                  }
+                ]
+              },
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "tags": [
+                "blade"
+              ],
+              "flavor": "Steel gives the motion its name.",
+              "cardTags": [
+                "blade"
+              ],
+              "equipmentProfileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipMods": [
+                "damage=6"
+              ],
+              "attributeProgression": [
+                {
+                  "operation": "damage",
+                  "attribute": "strength",
+                  "points": 13,
+                  "bonus": 8,
+                  "scope": "totalAcrossHits"
+                }
+              ]
+            }
+          },
+          {
+            "instance": {
+              "equipmentAttackSlotId": "attack:3",
+              "sourceHand": "right",
+              "weaponId": "straightSword",
+              "cardId": "strike",
+              "profileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+              "instanceId": "starting:3",
+              "upgraded": false,
+              "sourceArmamentId": "straightSword",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "strike",
+              "name": "Slashing Strike",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "attack",
+              "keywords": [],
+              "icon": "⚔",
+              "effects": [
+                {
+                  "op": "damage",
+                  "target": "enemy",
+                  "amount": 6,
+                  "tags": [
+                    "blade"
+                  ],
+                  "attributeBonus": 8
+                }
+              ],
+              "textTemplate": "Deal {damage} damage.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "damage",
+                    "target": "enemy",
+                    "amount": 9
+                  }
+                ]
+              },
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "tags": [
+                "blade"
+              ],
+              "flavor": "Steel gives the motion its name.",
+              "cardTags": [
+                "blade"
+              ],
+              "equipmentProfileId": "bladeAttack",
+              "equipmentRole": "attack",
+              "equipMods": [
+                "damage=6"
+              ],
+              "attributeProgression": [
+                {
+                  "operation": "damage",
+                  "attribute": "strength",
+                  "points": 13,
+                  "bonus": 8,
+                  "scope": "totalAcrossHits"
+                }
+              ]
+            }
+          },
+          {
+            "instance": {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:4",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "defend",
+              "name": "Shield Defend",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "skill",
+              "keywords": [],
+              "icon": "🛡",
+              "effects": [
+                {
+                  "op": "block",
+                  "target": "self",
+                  "amount": 7
+                }
+              ],
+              "textTemplate": "Gain {block} Block.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "block",
+                    "target": "self",
+                    "amount": 8
+                  }
+                ]
+              },
+              "tags": [
+                "guard"
+              ],
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "flavor": "Meet the blow on carried iron.",
+              "cardTags": [
+                "guard"
+              ],
+              "equipmentProfileId": "shieldGuard",
+              "equipmentRole": "guard",
+              "equipMods": [
+                "block=5",
+                "block=+2"
+              ],
+              "attributeProgression": []
+            }
+          },
+          {
+            "instance": {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:5",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "defend",
+              "name": "Shield Defend",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "skill",
+              "keywords": [],
+              "icon": "🛡",
+              "effects": [
+                {
+                  "op": "block",
+                  "target": "self",
+                  "amount": 7
+                }
+              ],
+              "textTemplate": "Gain {block} Block.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "block",
+                    "target": "self",
+                    "amount": 8
+                  }
+                ]
+              },
+              "tags": [
+                "guard"
+              ],
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "flavor": "Meet the blow on carried iron.",
+              "cardTags": [
+                "guard"
+              ],
+              "equipmentProfileId": "shieldGuard",
+              "equipmentRole": "guard",
+              "equipMods": [
+                "block=5",
+                "block=+2"
+              ],
+              "attributeProgression": []
+            }
+          },
+          {
+            "instance": {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:6",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "defend",
+              "name": "Shield Defend",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "skill",
+              "keywords": [],
+              "icon": "🛡",
+              "effects": [
+                {
+                  "op": "block",
+                  "target": "self",
+                  "amount": 7
+                }
+              ],
+              "textTemplate": "Gain {block} Block.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "block",
+                    "target": "self",
+                    "amount": 8
+                  }
+                ]
+              },
+              "tags": [
+                "guard"
+              ],
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "flavor": "Meet the blow on carried iron.",
+              "cardTags": [
+                "guard"
+              ],
+              "equipmentProfileId": "shieldGuard",
+              "equipmentRole": "guard",
+              "equipMods": [
+                "block=5",
+                "block=+2"
+              ],
+              "attributeProgression": []
+            }
+          },
+          {
+            "instance": {
+              "cardId": "defend",
+              "equipmentRole": "guard",
+              "profileId": "shieldGuard",
+              "instanceId": "starting:7",
+              "upgraded": false,
+              "sourceArmamentId": "roundShield",
+              "smithingLevel": 0
+            },
+            "card": {
+              "id": "defend",
+              "name": "Shield Defend",
+              "class": "colorless",
+              "rarity": "starter",
+              "cost": 1,
+              "type": "skill",
+              "keywords": [],
+              "icon": "🛡",
+              "effects": [
+                {
+                  "op": "block",
+                  "target": "self",
+                  "amount": 7
+                }
+              ],
+              "textTemplate": "Gain {block} Block.",
+              "upgrade": {
+                "effects": [
+                  {
+                    "op": "block",
+                    "target": "self",
+                    "amount": 8
+                  }
+                ]
+              },
+              "tags": [
+                "guard"
+              ],
+              "damageSchool": "physical",
+              "exposureBuildupPerHit": 0,
+              "flavor": "Meet the blow on carried iron.",
+              "cardTags": [
+                "guard"
+              ],
+              "equipmentProfileId": "shieldGuard",
+              "equipmentRole": "guard",
+              "equipMods": [
+                "block=5",
+                "block=+2"
+              ],
+              "attributeProgression": []
+            }
+          }
+        ],
+        "room": {}
+      }
+    },
+    "events": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "coop-map-zoom-out",
+        "X": 12.085308074951172,
+        "Y": 216.82464599609375,
+        "Width": 94.54975891113281,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-fit",
+        "X": 110.90047454833984,
+        "Y": 216.82464599609375,
+        "Width": 95.26067352294922,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-zoom-in",
+        "X": 210.42654418945312,
+        "Y": 216.82464599609375,
+        "Width": 94.54977416992188,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-recenter",
+        "X": 309.24169921875,
+        "Y": 216.82464599609375,
+        "Width": 94.54977416992188,
+        "Height": 49.763031005859375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-glow",
+        "X": 12.085308074951172,
+        "Y": 270.85308837890625,
+        "Width": 127.96208190917969,
+        "Height": 50.47393798828125,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-routes",
+        "X": 144.31280517578125,
+        "Y": 270.85308837890625,
+        "Width": 127.25119018554688,
+        "Height": 50.47393798828125,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-map-legend",
+        "X": 275.8293762207031,
+        "Y": 270.85308837890625,
+        "Width": 127.96209716796875,
+        "Height": 50.47393798828125,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-route-n1_5",
+        "X": 173.459716796875,
+        "Y": 472.0379638671875,
+        "Width": 68.95735168457031,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n2_4",
+        "X": 64.69194793701172,
+        "Y": 357.5828857421875,
+        "Width": 68.95734405517578,
+        "Height": 68.2464599609375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-route-n2_5",
+        "X": 173.459716796875,
+        "Y": 357.5828857421875,
+        "Width": 68.95735168457031,
+        "Height": 68.2464599609375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-route-n2_6",
+        "X": 282.2275085449219,
+        "Y": 357.5828857421875,
+        "Width": 68.95733642578125,
+        "Height": 68.2464599609375,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-route-n3_3",
+        "X": -43.36492919921875,
+        "Y": 243.1279296875,
+        "Width": 68.24644470214844,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n3_6",
+        "X": 282.2275085449219,
+        "Y": 243.1279296875,
+        "Width": 68.95733642578125,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n3_5",
+        "X": 173.459716796875,
+        "Y": 243.1279296875,
+        "Width": 68.95735168457031,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n3_4",
+        "X": 64.69194793701172,
+        "Y": 243.1279296875,
+        "Width": 68.95734405517578,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n4_3",
+        "X": -43.36492919921875,
+        "Y": 128.6729736328125,
+        "Width": 68.24644470214844,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n4_6",
+        "X": 282.2275085449219,
+        "Y": 128.6729736328125,
+        "Width": 68.95733642578125,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n4_5",
+        "X": 173.459716796875,
+        "Y": 128.6729736328125,
+        "Width": 68.95735168457031,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n5_2",
+        "X": -152.13270568847656,
+        "Y": 14.218017578125,
+        "Width": 68.24644470214844,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n5_5",
+        "X": 173.459716796875,
+        "Y": 14.218017578125,
+        "Width": 68.95735168457031,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n5_6",
+        "X": 282.2275085449219,
+        "Y": 14.218017578125,
+        "Width": 68.95733642578125,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n6_2",
+        "X": -152.13270568847656,
+        "Y": -100.2369384765625,
+        "Width": 68.24644470214844,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n6_4",
+        "X": 64.69194793701172,
+        "Y": -100.2369384765625,
+        "Width": 68.95734405517578,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n6_6",
+        "X": 282.2275085449219,
+        "Y": -100.2369384765625,
+        "Width": 68.95733642578125,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n7_2",
+        "X": -152.13270568847656,
+        "Y": -214.69195556640625,
+        "Width": 68.24644470214844,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n7_4",
+        "X": 64.69194793701172,
+        "Y": -214.69195556640625,
+        "Width": 68.95734405517578,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n7_6",
+        "X": 282.2275085449219,
+        "Y": -214.69195556640625,
+        "Width": 68.95733642578125,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n7_5",
+        "X": 173.459716796875,
+        "Y": -214.69195556640625,
+        "Width": 68.95735168457031,
+        "Height": 68.24644470214844,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n8_1",
+        "X": -260.9004821777344,
+        "Y": -329.14691162109375,
+        "Width": 68.24644470214844,
+        "Height": 68.24642944335938,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n8_5",
+        "X": 173.459716796875,
+        "Y": -329.14691162109375,
+        "Width": 68.95735168457031,
+        "Height": 68.24642944335938,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n8_6",
+        "X": 282.2275085449219,
+        "Y": -329.14691162109375,
+        "Width": 68.95733642578125,
+        "Height": 68.24642944335938,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n9_0",
+        "X": -369.6682434082031,
+        "Y": -444.31280517578125,
+        "Width": 68.24642944335938,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n9_5",
+        "X": 173.459716796875,
+        "Y": -444.31280517578125,
+        "Width": 68.95735168457031,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n9_6",
+        "X": 282.2275085449219,
+        "Y": -444.31280517578125,
+        "Width": 68.95733642578125,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n10_0",
+        "X": -369.6682434082031,
+        "Y": -558.7677612304688,
+        "Width": 68.24642944335938,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n10_4",
+        "X": 64.69194793701172,
+        "Y": -558.7677612304688,
+        "Width": 68.95734405517578,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n10_6",
+        "X": 282.2275085449219,
+        "Y": -558.7677612304688,
+        "Width": 68.95733642578125,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n10_5",
+        "X": 173.459716796875,
+        "Y": -558.7677612304688,
+        "Width": 68.95735168457031,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n11_0",
+        "X": -369.6682434082031,
+        "Y": -673.2227783203125,
+        "Width": 68.24642944335938,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n11_3",
+        "X": -43.36492919921875,
+        "Y": -673.2227783203125,
+        "Width": 68.24644470214844,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n11_5",
+        "X": 173.459716796875,
+        "Y": -673.2227783203125,
+        "Width": 68.95735168457031,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n11_6",
+        "X": 282.2275085449219,
+        "Y": -673.2227783203125,
+        "Width": 68.95733642578125,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n11_4",
+        "X": 64.69194793701172,
+        "Y": -673.2227783203125,
+        "Width": 68.95734405517578,
+        "Height": 68.95733642578125,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n12_3",
+        "X": -43.36492919921875,
+        "Y": -787.677734375,
+        "Width": 68.24644470214844,
+        "Height": 68.2464599609375,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-route-n13_3",
+        "X": -55.45024108886719,
+        "Y": -913.5071411132812,
+        "Width": 91.70616149902344,
+        "Height": 90.99530029296875,
+        "Enabled": false
+      },
+      {
+        "Id": "coop-deck",
+        "X": 9.952607154846191,
+        "Y": 782.701416015625,
+        "Width": 395.9715881347656,
+        "Height": 50.47393798828125,
+        "Enabled": true
+      },
+      {
+        "Id": "coop-menu",
+        "X": 9.952607154846191,
+        "Y": 840.2843627929688,
+        "Width": 395.9715881347656,
+        "Height": 49.7630615234375,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 415.8768005371094,
+    "PanelHeight": 900,
+    "Labels": [
+      "",
+      "ACT 1 · Map · Seed 1",
+      "HP 43/64 · MP 0/2 · Stamina 2/2",
+      "64 cinders ·  Smithing Stones",
+      "Host · HP 48/64",
+      "Guest · You · HP 43/64",
+      "Vote for the party's next route",
+      "YOU",
+      "",
+      "",
+      "",
+      "ACT 1 · ALL PATHS · 3 routes",
+      "Tap a lit route to climb. Drag to explore the map.",
+      "The route advances once connected party members have voted."
+    ],
+    "LayoutAttempts": 1
+  },
+  "physicalDevice": false
+}

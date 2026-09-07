@@ -30,6 +30,7 @@ namespace AshenSpire.Presentation
         private int _displayHeight = 900;
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
+        public OriginalMapViewServices MapView { get; } = new OriginalMapViewServices();
         private VisualElement _stage;
         private VisualElement _interruptionCover;
         private Button _returnButton;
@@ -53,6 +54,9 @@ namespace AshenSpire.Presentation
             _reducedMotion = reducedMotion;
             _fast = fast;
             _muted = muted;
+            MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
+            MapView.SetMapSurface = SetMapSurface;
+            MapView.Report = () => Report();
             root.AddToClassList("app");
             root.styleSheets.Add(Resources.Load<StyleSheet>("Expedition"));
             root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
@@ -65,12 +69,16 @@ namespace AshenSpire.Presentation
         {
             _displayHeight = Math.Max(1, height);
             RefreshTouchTargets();
+            foreach (var board in _root.Query<OriginalMapBoard>().ToList()) board.RefreshDisplayScale();
         }
         private void RefreshTouchTargets()
         {
             var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight);
             foreach (var button in _root.Query<Button>().ToList())
+            {
+                if (button.ClassListContains("map-node")) continue; // Map geometry delivers its own physical tap floor.
                 button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, minimum);
+            }
             foreach (var toggle in _root.Query<Toggle>().ToList())
                 toggle.style.minHeight = Mathf.Max(52, minimum);
             foreach (var dropdown in _root.Query<DropdownField>().ToList())
@@ -78,10 +86,11 @@ namespace AshenSpire.Presentation
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
         }
-        public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); }
+        public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
         public void ShowInterruption(bool canReturn)
         {
             _feedback.Cancel();
+            foreach (var board in _root.Query<OriginalMapBoard>().ToList()) board.CancelGesture();
             if (_interruptionCover == null)
             {
                 // Disable siblings (including fixed combat actions) without rebuilding:
@@ -155,7 +164,7 @@ namespace AshenSpire.Presentation
         public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
         {
             Shell("ASHEN SPIRE", "THE ORIGINAL CLIMB");
-            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics);
+            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView);
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
             if (panel.Stage == null || projection == null) return null;
             var cue = feedback.Cue(projection.CueId);
@@ -467,6 +476,15 @@ namespace AshenSpire.Presentation
             _scroll.Add(_body);
             _body.Add(Text(title, "eyebrow"));
             _body.Add(Text(subtitle, "subtitle"));
+        }
+        private void SetMapSurface(bool active)
+        {
+            if (_scroll == null || _body == null) return;
+            _body.EnableInClassList("map-screen", active);
+            _scroll.contentContainer.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
+            _body.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
+            _body.style.flexShrink = active ? 1 : 0;
+            if (active) _scroll.scrollOffset = Vector2.zero;
         }
         private Button AddButton(string id, string label, Action clicked, string style = null)
         {

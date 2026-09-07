@@ -2,6 +2,7 @@
 // WIRING: CampaignView mounts this tree inside its existing safe-area scroll shell.
 // COMMANDS: delegate to OriginalGameSession; refresh/save are application-owned.
 // MODIFY: labels/layout here; original content and domain components own all rules.
+// MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
 // No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
 using System;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace AshenSpire.Presentation
         private readonly Action _report, _menu;
         private readonly VisualElement _actionHost;
         private readonly bool _diagnostics;
+        private readonly OriginalMapViewServices _mapView;
         private VisualElement _actions;
         private string _target, _selected;
         private int _handPage;
@@ -26,10 +28,11 @@ namespace AshenSpire.Presentation
         public Image PlayerImage { get; private set; }
         public Image EnemyImage { get; private set; }
         public VisualElement Stage { get; private set; }
-        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics)
-        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; Render(); }
+        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null)
+        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; Render(); }
         private void Render()
         {
+            _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             _root.Clear(); _root.AddToClassList("native-run"); _actions?.RemoveFromHierarchy(); var p = _game.Player; var run = _game.RunPlayer;
             Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading");
             _root.Add(OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject));
@@ -67,10 +70,12 @@ namespace AshenSpire.Presentation
                 if (player[key] != null) summary[key] = player[key].DeepClone();
             var room = _game.Room; room.Remove("combatSnapshot");
             var run = _game.RunPlayer; var visibleRun = new JObject();
-            foreach (var key in new[] { "attributes", "cinders", "smithingStones", "loadout", "deck", "custom", "keepsakeId", "customization", "startingKitId", "startingKitSnapshot", "mapShapeLimits" }) if (run[key] != null) visibleRun[key] = run[key].DeepClone();
+            foreach (var key in new[] { "attributes", "cinders", "smithingStones", "loadout", "deck", "custom", "keepsakeId", "customization", "startingKitId", "startingKitSnapshot", "mapShapeLimits", "path", "mapNodeId", "runId", "seed" }) if (run[key] != null) visibleRun[key] = run[key].DeepClone();
             visibleRun["mapDimensions"] = new JObject { ["floors"] = _game.Map["floors"]?.DeepClone(), ["columns"] = _game.Map["columns"]?.DeepClone() };
             var cards = new JArray(_game.Hand.OfType<JObject>().Select(card => new JObject { ["instance"] = card.DeepClone(), ["card"] = _game.Resolve(card), ["cost"] = _game.Cost(card) }));
-            var json = new JObject { ["phase"] = _game.Phase.ToString(), ["act"] = _game.ActNumber, ["turn"] = _game.Turn, ["player"] = summary, ["hand"] = _game.Hand, ["cards"] = cards, ["run"] = visibleRun, ["enemies"] = _game.Enemies, ["room"] = room, ["legalNodes"] = new JArray(_game.LegalNodeIds), ["routes"] = new JArray(_game.LegalNodeIds.Select(id => _game.Map["nodes"][id].DeepClone())) }.ToString(Newtonsoft.Json.Formatting.None);
+            var map = _game.Map;
+            var routes = new JArray(_game.LegalNodeIds.Select(id => { var node = (JObject)map["nodes"][id].DeepClone(); node.Remove("resolved"); return node; }));
+            var json = new JObject { ["phase"] = _game.Phase.ToString(), ["act"] = _game.ActNumber, ["turn"] = _game.Turn, ["player"] = summary, ["hand"] = _game.Hand, ["cards"] = cards, ["run"] = visibleRun, ["enemies"] = _game.Enemies, ["room"] = room, ["legalNodes"] = new JArray(_game.LegalNodeIds), ["routes"] = routes }.ToString(Newtonsoft.Json.Formatting.None);
             var sequence = ++_diagnosticSequence; var count = (json.Length + 2999) / 3000;
             for (var index = 0; index < count; index++)
                 Debug.Log("ASHENSPIRE_NATIVE_STATE_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = index, ["count"] = count, ["text"] = json.Substring(index * 3000, Math.Min(3000, json.Length - index * 3000)) }.ToString(Newtonsoft.Json.Formatting.None));
@@ -78,12 +83,15 @@ namespace AshenSpire.Presentation
         private void Routes()
         {
             Text("Choose a connected route", "node-title");
-            var image = new Image { image = Resources.Load<Texture2D>("Art/background" + ContentAct), scaleMode = ScaleMode.ScaleAndCrop }; image.style.height = 160; _root.Add(image);
-            foreach (var id in _game.LegalNodeIds)
-            {
-                var node = _game.Map["nodes"][id];
-                Button("native-route-" + id, "Floor " + node["floor"] + " · " + OriginalCardText.Humanize((string)node["type"]), () => _game.Enter(id));
-            }
+            var run = _game.RunPlayer;
+            var relicIds = (run["relics"] as JArray ?? new JArray()).Values<string>();
+            var revealUnknown = relicIds.Any(id => (bool?)_game.Catalog.Record("relics", id)["passives"]?["revealUnknown"] == true);
+            var board = new OriginalMapBoard(_game.Map, (run["path"] as JArray ?? new JArray()).Values<string>(),
+                (string)run["mapNodeId"], _game.LegalNodeIds, _game.ActNumber,
+                (string)run["runId"] ?? run["seed"]?.ToString() ?? "solo", "solo", revealUnknown, _mapView,
+                id => Execute(() => _game.Enter(id)), _diagnostics);
+            board.style.flexGrow = 1; board.style.flexShrink = 1; board.style.minHeight = 0;
+            _root.Add(board);
         }
         private int ContentAct => new OriginalCustomRunRules(_game.Catalog.Data()).ContentAct(_game.RunPlayer);
         private void Draft()
@@ -257,6 +265,7 @@ namespace AshenSpire.Presentation
         }
         private void Mounts()
         {
+            _mapView?.SetMapSurface?.Invoke(false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("WEAPON CARD MOUNTS", "heading"); _notice = Text("", "notice");
             var mounts = new CardMountService(_game.Catalog); var run = _game.RunPlayer;
             var services = _game.Room["smith"]["services"] as JArray ?? new JArray();
@@ -279,6 +288,7 @@ namespace AshenSpire.Presentation
         }
         private void Deck()
         {
+            _mapView?.SetMapSurface?.Invoke(false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
             foreach (var item in new WeaponLoadout(_game.Catalog).Pieces((JObject)run["loadout"], (string)run["classId"])) Text((string)item["name"], "stat");
             if (_game.Phase != OriginalRunPhase.Victory && _game.Phase != OriginalRunPhase.Defeat) Button("native-equipment", _game.Phase == OriginalRunPhase.Combat ? "Switch prepared weapon sets" : "Change equipment and weapon sets", Equipment);
@@ -287,6 +297,7 @@ namespace AshenSpire.Presentation
         }
         private void Equipment()
         {
+            _mapView?.SetMapSurface?.Invoke(false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("EQUIPMENT", "heading"); _notice = Text("", "notice");
             var run = _game.RunPlayer; var upgrades = new ItemUpgradeService(_game.Catalog);
             var owned = upgrades.OwnedRefs(run).Where(x => !x.StartsWith("relic/", StringComparison.Ordinal)).Select(upgrades.Definition).ToArray();
@@ -319,7 +330,13 @@ namespace AshenSpire.Presentation
         private static Label Label(string text, string style) { var label = new Label(text ?? ""); label.AddToClassList(style); return label; }
         private Button Button(string id, string text, Action command, VisualElement parent = null)
         {
-            var button = new Button(() => { try { command(); } catch (ArgumentException error) { _notice.text = error.Message; _notice.style.display = DisplayStyle.Flex; _report(); } catch (InvalidOperationException error) { _notice.text = error.Message; _notice.style.display = DisplayStyle.Flex; _report(); } }) { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button); return button;
+            var button = new Button(() => Execute(command)) { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button); return button;
+        }
+        private void Execute(Action command)
+        {
+            try { command(); }
+            catch (ArgumentException error) { _notice.text = error.Message; _notice.style.display = DisplayStyle.Flex; _report(); }
+            catch (InvalidOperationException error) { _notice.text = error.Message; _notice.style.display = DisplayStyle.Flex; _report(); }
         }
     }
 }

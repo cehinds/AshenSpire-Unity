@@ -1,0 +1,4785 @@
+[
+  {
+    "label": "initial-fog",
+    "view": {
+      "scope": "solo",
+      "mode": "fog",
+      "shrineGlow": true,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "Fit",
+        "zoom": 2,
+        "framing": "fit",
+        "scrollLeft": 0,
+        "scrollTop": 1955.1999999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 435,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1476,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": []
+    }
+  },
+  {
+    "label": "all-paths",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": true,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "Fit",
+        "zoom": 2,
+        "framing": "fit",
+        "scrollLeft": 0,
+        "scrollTop": 1955.1999999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 435,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 76,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1303,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1476,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": true
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": true
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  },
+  {
+    "label": "desktop-resized-minimum-zoom",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": false,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "100",
+        "zoom": 1,
+        "framing": "manual",
+        "scrollLeft": 0,
+        "scrollTop": 981.2,
+        "aimX": 435,
+        "viewportWidth": 976.5001220703125,
+        "viewportHeight": 468.0000305175781
+      },
+      "decisionFits": true,
+      "displayScale": 0.8888888888888888,
+      "viewport": {
+        "x": 230.625031,
+        "y": 246.375031,
+        "width": 978.7501,
+        "height": 470.250031
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 694.125061,
+          "y": 456.750122,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": 378.000122,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": 378.000122,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": 378.000122,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 544.500061,
+          "y": 298.125,
+          "width": 49.5,
+          "height": 50.625
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": 298.125,
+          "width": 49.5,
+          "height": 50.625
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": 298.125,
+          "width": 50.62506,
+          "height": 50.625
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": 298.125,
+          "width": 49.5,
+          "height": 50.625
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 544.500061,
+          "y": 219.375,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": 219.375,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": 219.375,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 469.125061,
+          "y": 140.625,
+          "width": 50.625,
+          "height": 49.5000153
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": 140.625,
+          "width": 50.62506,
+          "height": 49.5000153
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": 140.625,
+          "width": 49.5,
+          "height": 49.5000153
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 469.125061,
+          "y": 61.875,
+          "width": 50.625,
+          "height": 49.5000076
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": 61.875,
+          "width": 49.5,
+          "height": 49.5000076
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": 61.875,
+          "width": 49.5,
+          "height": 49.5000076
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 469.125061,
+          "y": -18,
+          "width": 50.625,
+          "height": 50.6250076
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": -18,
+          "width": 49.5,
+          "height": 50.6250076
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": -18,
+          "width": 49.5,
+          "height": 50.6250076
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": -18,
+          "width": 50.62506,
+          "height": 50.6250076
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 394.875061,
+          "y": -96.75,
+          "width": 49.5,
+          "height": 49.5000076
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": -96.75,
+          "width": 50.62506,
+          "height": 49.5000076
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": -96.75,
+          "width": 49.5,
+          "height": 49.5000076
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 319.500031,
+          "y": -175.5,
+          "width": 49.50003,
+          "height": 49.5
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": -175.5,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": -175.5,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 319.500031,
+          "y": -254.250031,
+          "width": 49.50003,
+          "height": 49.5
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": -254.250031,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": -254.250031,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": -254.250031,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 319.500031,
+          "y": -333.000031,
+          "width": 49.50003,
+          "height": 49.5
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 544.500061,
+          "y": -333.000031,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 694.125061,
+          "y": -333.000031,
+          "width": 50.62506,
+          "height": 49.5
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 769.5001,
+          "y": -333.000031,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 619.875061,
+          "y": -333.000031,
+          "width": 49.5,
+          "height": 49.5
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 544.500061,
+          "y": -412.875061,
+          "width": 49.5,
+          "height": 50.625
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 536.625061,
+          "y": -499.500061,
+          "width": 66.375,
+          "height": 66.375
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  },
+  {
+    "label": "saved-camera",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": false,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "200",
+        "zoom": 2,
+        "framing": "manual",
+        "scrollLeft": 0,
+        "scrollTop": 1918.0749999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 472,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 76,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1266,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1439,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  },
+  {
+    "label": "restored-camera",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": false,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "200",
+        "zoom": 2,
+        "framing": "manual",
+        "scrollLeft": 0,
+        "scrollTop": 1918.0749999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 472,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 314,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 156,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -2,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -160,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -318,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -476,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 76,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -634,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -792,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -950,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -1108,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1266,
+          "width": 88,
+          "height": 89
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1439,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  },
+  {
+    "label": "final-fit",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": false,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": null,
+        "setting": "Fit",
+        "zoom": 2,
+        "framing": "fit",
+        "scrollLeft": 0,
+        "scrollTop": 1955.1999999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 435,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 76,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1303,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1476,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  },
+  {
+    "label": "branching-decision",
+    "view": {
+      "scope": "solo",
+      "mode": "path",
+      "shrineGlow": false,
+      "camera": {
+        "actNumber": 1,
+        "nodeId": "n1_5",
+        "setting": "Fit",
+        "zoom": 2,
+        "framing": "fit",
+        "scrollLeft": 0,
+        "scrollTop": 1955.1999999999998,
+        "aimX": 435,
+        "viewportWidth": 978,
+        "viewportHeight": 476
+      },
+      "decisionFits": true,
+      "displayScale": 1,
+      "viewport": {
+        "x": 230,
+        "y": 240,
+        "width": 980,
+        "height": 478
+      },
+      "nodes": [
+        {
+          "id": "n1_5",
+          "type": "monster",
+          "current": true,
+          "visited": true,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 435,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 526,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 676,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n2_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": true,
+          "x": 826,
+          "y": 277,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_3",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_6",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n3_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": 119,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n4_5",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -39,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_2",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n5_6",
+          "type": "merchant",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -197,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_2",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n6_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -355,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_2",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 226,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_4",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_6",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n7_5",
+          "type": "treasure",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -513,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_1",
+          "type": "elite",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 76,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n8_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -671,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n9_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -829,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_4",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_6",
+          "type": "event",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n10_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -987,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_0",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": -74,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_3",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_5",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 676,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_6",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 826,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n11_4",
+          "type": "monster",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 526,
+          "y": -1145,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n12_3",
+          "type": "shrine",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 376,
+          "y": -1303,
+          "width": 88,
+          "height": 88
+        },
+        {
+          "id": "n13_3",
+          "type": "boss",
+          "current": false,
+          "visited": false,
+          "revealed": false,
+          "legal": false,
+          "x": 361,
+          "y": -1476,
+          "width": 118,
+          "height": 118
+        }
+      ],
+      "edges": [
+        {
+          "from": "n1_5",
+          "to": "n2_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n1_5",
+          "to": "n2_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_4",
+          "to": "n3_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_5",
+          "to": "n3_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n2_6",
+          "to": "n3_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_3",
+          "to": "n4_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_6",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_5",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n3_4",
+          "to": "n4_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_3",
+          "to": "n5_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_6",
+          "to": "n5_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n4_5",
+          "to": "n5_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_2",
+          "to": "n6_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_5",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n5_6",
+          "to": "n6_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_2",
+          "to": "n7_2",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_4",
+          "to": "n7_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n6_6",
+          "to": "n7_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_2",
+          "to": "n8_1",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_4",
+          "to": "n8_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_6",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n7_5",
+          "to": "n8_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_1",
+          "to": "n9_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_5",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n8_6",
+          "to": "n9_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_0",
+          "to": "n10_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_5",
+          "to": "n10_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n9_6",
+          "to": "n10_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_0",
+          "to": "n11_0",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_4",
+          "to": "n11_4",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_6",
+          "to": "n11_6",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n10_5",
+          "to": "n11_5",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_0",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_3",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_5",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_6",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n11_4",
+          "to": "n12_3",
+          "traveled": false,
+          "shrine": false
+        },
+        {
+          "from": "n12_3",
+          "to": "n13_3",
+          "traveled": false,
+          "shrine": false
+        }
+      ]
+    }
+  }
+]

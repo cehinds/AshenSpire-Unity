@@ -1,0 +1,70 @@
+[
+  {
+    "direction": "sent",
+    "type": "hello",
+    "hello": {
+      "inviteMatches": true,
+      "hostMatches": false,
+      "setup": {
+        "classId": "reaver",
+        "modeId": "standard",
+        "attributes": {
+          "strength": 13,
+          "dexterity": 10,
+          "constitution": 12,
+          "wisdom": 10,
+          "intelligence": 10
+        },
+        "kitId": "reaverBaseline",
+        "startingArmourId": "default",
+        "startingRelicId": "forsakenMedallion",
+        "keepsakeId": "none",
+        "customization": {
+          "name": "Guest",
+          "glyph": "⚔",
+          "tint": "gold"
+        }
+      }
+    }
+  },
+  {
+    "direction": "received",
+    "type": "welcome"
+  },
+  {
+    "direction": "received",
+    "type": "state"
+  },
+  {
+    "direction": "sent",
+    "type": "ready"
+  },
+  {
+    "direction": "received",
+    "type": "receipt"
+  },
+  {
+    "direction": "received",
+    "type": "state"
+  },
+  {
+    "direction": "received",
+    "type": "state"
+  },
+  {
+    "direction": "received",
+    "type": "state"
+  },
+  {
+    "direction": "sent",
+    "type": "intent"
+  },
+  {
+    "direction": "received",
+    "type": "receipt"
+  },
+  {
+    "direction": "received",
+    "type": "state"
+  }
+]
