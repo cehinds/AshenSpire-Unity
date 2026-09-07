@@ -1,0 +1,104 @@
+{
+  "fixture": "UnityTests/Parity/native-browser-replay.json",
+  "fixtureSha256": "a2abc8bbb4631f651196aab67ee1bc5961a0e71b58e298e36efeedc7569da613",
+  "commands": [
+    {
+      "command": "enter:n1_5",
+      "phase": "Combat",
+      "hp": 64,
+      "mana": 2,
+      "stamina": 2
+    },
+    {
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 64,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 58,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 58,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 58,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 58,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 58,
+      "mana": 1,
+      "stamina": 2
+    },
+    {
+      "command": "play:gorefireSlash",
+      "phase": "Rewards",
+      "hp": 58,
+      "mana": 0,
+      "stamina": 2
+    },
+    {
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 58,
+      "mana": 0,
+      "stamina": 2
+    },
+    {
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 58,
+      "mana": 0,
+      "stamina": 2
+    },
+    {
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 58,
+      "mana": 0,
+      "stamina": 2
+    },
+    {
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 58,
+      "mana": 0,
+      "stamina": 2
+    }
+  ]
+}

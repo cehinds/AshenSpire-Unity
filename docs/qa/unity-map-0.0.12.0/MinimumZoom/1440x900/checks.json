@@ -1,0 +1,800 @@
+{
+  "success": true,
+  "checks": [
+    "new profile defaults to solo fog",
+    "native route diagnostics omit hidden resolutions",
+    "initial-fog: solo map receipt",
+    "initial-fog: bounded map viewport is on screen",
+    "initial-fog: no hidden node controls",
+    "initial-fog: board choices match authoritative legal routes",
+    "initial-fog: 44 CSS-pixel route n1_5",
+    "initial-fog: reachable targets do not overlap",
+    "initial-fog: claimed fit contains every decision target",
+    "control is on screen: native-map-mode",
+    "mode button shows all paths",
+    "changing visibility does not mutate the run",
+    "fog excludes future nodes that paths can show",
+    "fog edges connect only visible nodes",
+    "all-paths: solo map receipt",
+    "all-paths: bounded map viewport is on screen",
+    "all-paths: no hidden node controls",
+    "all-paths: board choices match authoritative legal routes",
+    "all-paths: 44 CSS-pixel route n1_5",
+    "all-paths: reachable targets do not overlap",
+    "all-paths: claimed fit contains every decision target",
+    "control is on screen: native-map-glow",
+    "shrine highlight preference can be disabled",
+    "highlight toggle does not mutate the run",
+    "control is on screen: native-map-legend",
+    "legend opens a dismissible overlay",
+    "legend disables every underlying node control",
+    "control is on screen: native-map-close",
+    "control is on screen: native-map-routes",
+    "Routes lists all authoritative choices",
+    "control is on screen: native-map-close",
+    "opening and closing map overlays never travels",
+    "control is on screen: native-map-zoom-in",
+    "control is on screen: native-map-zoom-in",
+    "control is on screen: native-map-zoom-in",
+    "control is on screen: native-map-zoom-in",
+    "wheel moves the map camera",
+    "wheel camera movement never travels",
+    "control is on screen: native-map-recenter",
+    "recenter exposes a legal drag target",
+    "drag starting on a legal node suppresses travel",
+    "control is on screen: native-map-recenter",
+    "outside-release start is visible",
+    "releasing a map gesture outside the viewport never travels",
+    "control is on screen: native-map-zoom-out",
+    "zoom-out reduces manual zoom",
+    "control is on screen: native-map-fit",
+    "Fit restores automatic framing",
+    "wheel moves the map camera",
+    "control is on screen: native-map-recenter",
+    "Recenter restores the measured decision camera",
+    "control is on screen: native-map-zoom-out",
+    "control is on screen: native-map-zoom-out",
+    "control is on screen: native-map-zoom-out",
+    "control is on screen: native-map-zoom-out",
+    "control is on screen: native-map-zoom-out",
+    "resized desktop explicitly reaches minimum zoom100%",
+    "desktop-resized-minimum-zoom: solo map receipt",
+    "desktop-resized-minimum-zoom: bounded map viewport is on screen",
+    "desktop-resized-minimum-zoom: no hidden node controls",
+    "desktop-resized-minimum-zoom: board choices match authoritative legal routes",
+    "desktop-resized-minimum-zoom: 44 CSS-pixel route n1_5",
+    "desktop-resized-minimum-zoom: reachable targets do not overlap",
+    "desktop-resized-minimum-zoom: claimed fit contains every decision target",
+    "same-aspect resize preserves native run",
+    "control is on screen: native-map-fit",
+    "control is on screen: native-map-zoom-in",
+    "wheel moves the map camera",
+    "all viewer gestures leave native gameplay unchanged",
+    "deck replaces the map surface",
+    "deck remount restores local camera and preferences",
+    "deck remount leaves the run unchanged",
+    "page reload restores local camera, mode and shrine preference",
+    "page reload restores exact native run diagnostics",
+    "control is on screen: native-map-fit",
+    "final-fit: solo map receipt",
+    "final-fit: bounded map viewport is on screen",
+    "final-fit: no hidden node controls",
+    "final-fit: board choices match authoritative legal routes",
+    "final-fit: 44 CSS-pixel route n1_5",
+    "final-fit: reachable targets do not overlap",
+    "final-fit: claimed fit contains every decision target",
+    "Fit permits an actual map-node tap without driver route fallback",
+    "control is on screen: native-route-n1_5",
+    "route is inside clipped map viewport: native-route-n1_5",
+    "actual route tap enters the selected authoritative node",
+    "first room matches the committed seed-1 replay",
+    "replay precondition: play:gorefireSlash",
+    "authored replay card is actually in hand: starting:9",
+    "HP, MP, stamina, turn and phase match committed replay: play:gorefireSlash",
+    "replay precondition: play:strike",
+    "authored replay card is actually in hand: starting:3",
+    "HP, MP, stamina, turn and phase match committed replay: play:strike",
+    "replay precondition: play:strike",
+    "authored replay card is actually in hand: starting:2",
+    "HP, MP, stamina, turn and phase match committed replay: play:strike",
+    "replay precondition: endTurn",
+    "HP, MP, stamina, turn and phase match committed replay: endTurn",
+    "replay precondition: play:strike",
+    "authored replay card is actually in hand: starting:0",
+    "HP, MP, stamina, turn and phase match committed replay: play:strike",
+    "replay precondition: play:defend",
+    "authored replay card is actually in hand: starting:6",
+    "HP, MP, stamina, turn and phase match committed replay: play:defend",
+    "replay precondition: play:defend",
+    "authored replay card is actually in hand: starting:7",
+    "HP, MP, stamina, turn and phase match committed replay: play:defend",
+    "replay precondition: endTurn",
+    "HP, MP, stamina, turn and phase match committed replay: endTurn",
+    "replay precondition: play:gorefireSlash",
+    "authored replay card is actually in hand: starting:9",
+    "HP, MP, stamina, turn and phase match committed replay: play:gorefireSlash",
+    "replay precondition: reward:cinders",
+    "HP, MP, stamina, turn and phase match committed replay: reward:cinders",
+    "replay precondition: reward:flask",
+    "HP, MP, stamina, turn and phase match committed replay: reward:flask",
+    "replay precondition: reward:card",
+    "HP, MP, stamina, turn and phase match committed replay: reward:card",
+    "replay precondition: continueRewards",
+    "HP, MP, stamina, turn and phase match committed replay: continueRewards",
+    "control is on screen: native-map-fit",
+    "real first-fight victory returns to a branching decision",
+    "branching-decision: solo map receipt",
+    "branching-decision: bounded map viewport is on screen",
+    "branching-decision: no hidden node controls",
+    "branching-decision: board choices match authoritative legal routes",
+    "branching-decision: 44 CSS-pixel route n2_4",
+    "branching-decision: 44 CSS-pixel route n2_5",
+    "branching-decision: 44 CSS-pixel route n2_6",
+    "branching-decision: reachable targets do not overlap",
+    "branching-decision: claimed fit contains every decision target",
+    "served player stayed source-matched",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "state": {
+    "phase": "Map",
+    "act": 1,
+    "turn": 0,
+    "player": {
+      "classId": "reaver",
+      "hp": 58,
+      "maxHp": 64,
+      "mana": 0,
+      "maxMana": 2,
+      "stamina": 2,
+      "maxStamina": 2,
+      "energy": 3,
+      "block": 0,
+      "statuses": {},
+      "flaskCharges": {
+        "capacity": 4,
+        "base": 4,
+        "hp": 3,
+        "mana": 1,
+        "hpCurrent": 3,
+        "manaCurrent": 1,
+        "grown": {
+          "hp": 0,
+          "mana": 0
+        },
+        "granted": 0
+      },
+      "flasks": [
+        {
+          "flaskId": "blightCoating"
+        }
+      ]
+    },
+    "hand": [],
+    "cards": [],
+    "run": {
+      "attributes": {
+        "strength": 13,
+        "dexterity": 10,
+        "constitution": 12,
+        "wisdom": 10,
+        "intelligence": 10
+      },
+      "cinders": 68,
+      "loadout": {
+        "sets": {
+          "rightHand": [
+            "straightSword",
+            null,
+            null
+          ],
+          "leftHand": [
+            "roundShield",
+            null,
+            null
+          ],
+          "armor": [
+            "default"
+          ],
+          "talisman": [
+            null,
+            null,
+            null
+          ]
+        },
+        "active": {
+          "rightHand": 0,
+          "leftHand": 0,
+          "armor": 0,
+          "talisman": 0
+        },
+        "storage": [],
+        "creationArmourGrant": {
+          "classId": "reaver",
+          "id": "default"
+        }
+      },
+      "deck": [
+        {
+          "cardId": "technique",
+          "equipmentRole": "technique",
+          "profileId": "weaponTechnique",
+          "grantSource": "from:weapon",
+          "instanceId": "starting:8",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0
+        },
+        {
+          "cardId": "gorefireSlash",
+          "grantSource": "from:class",
+          "instanceId": "starting:9",
+          "upgraded": false
+        },
+        {
+          "equipmentAttackSlotId": "attack:0",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:0",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0
+        },
+        {
+          "equipmentAttackSlotId": "attack:1",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:1",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0
+        },
+        {
+          "equipmentAttackSlotId": "attack:2",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:2",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0
+        },
+        {
+          "equipmentAttackSlotId": "attack:3",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:3",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:4",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:5",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:6",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:7",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0
+        },
+        {
+          "instanceId": "nativeRun1",
+          "cardId": "crimsonCleave",
+          "upgraded": false
+        }
+      ],
+      "custom": {
+        "ascension": 0,
+        "mods": {},
+        "deckMode": "standard"
+      },
+      "keepsakeId": "none",
+      "customization": {
+        "name": "Forsaken",
+        "glyph": "⚔",
+        "tint": "gold"
+      },
+      "startingKitId": "reaverBaseline",
+      "startingKitSnapshot": {
+        "id": "reaverBaseline",
+        "classId": "reaver",
+        "rightHand": "straightSword",
+        "leftHand": "roundShield"
+      },
+      "path": [
+        "n1_5"
+      ],
+      "mapNodeId": "n1_5",
+      "runId": "1b21407e4e5f4139ae74d901b06a4736",
+      "seed": 1,
+      "mapDimensions": {
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    "enemies": [],
+    "room": {},
+    "legalNodes": [
+      "n2_4",
+      "n2_5",
+      "n2_6"
+    ],
+    "routes": [
+      {
+        "id": "n2_4",
+        "floor": 2,
+        "col": 4,
+        "type": "monster",
+        "next": [
+          "n3_3"
+        ]
+      },
+      {
+        "id": "n2_5",
+        "floor": 2,
+        "col": 5,
+        "type": "monster",
+        "next": [
+          "n3_6",
+          "n3_5",
+          "n3_4"
+        ]
+      },
+      {
+        "id": "n2_6",
+        "floor": 2,
+        "col": 6,
+        "type": "monster",
+        "next": [
+          "n3_6"
+        ]
+      }
+    ]
+  },
+  "coop": null,
+  "controls": {
+    "Controls": [
+      {
+        "Id": "native-map-zoom-out",
+        "X": 232,
+        "Y": 130,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-fit",
+        "X": 477,
+        "Y": 130,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-zoom-in",
+        "X": 722,
+        "Y": 130,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-recenter",
+        "X": 967,
+        "Y": 130,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-mode",
+        "X": 232,
+        "Y": 184,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-glow",
+        "X": 477,
+        "Y": 184,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-routes",
+        "X": 722,
+        "Y": 184,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-map-legend",
+        "X": 967,
+        "Y": 184,
+        "Width": 241,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-route-n1_5",
+        "X": 676,
+        "Y": 435,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n2_4",
+        "X": 526,
+        "Y": 277,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": true
+      },
+      {
+        "Id": "native-route-n2_5",
+        "X": 676,
+        "Y": 277,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": true
+      },
+      {
+        "Id": "native-route-n2_6",
+        "X": 826,
+        "Y": 277,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": true
+      },
+      {
+        "Id": "native-route-n3_3",
+        "X": 376,
+        "Y": 119,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n3_6",
+        "X": 826,
+        "Y": 119,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n3_5",
+        "X": 676,
+        "Y": 119,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n3_4",
+        "X": 526,
+        "Y": 119,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n4_3",
+        "X": 376,
+        "Y": -39,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n4_6",
+        "X": 826,
+        "Y": -39,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n4_5",
+        "X": 676,
+        "Y": -39,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n5_2",
+        "X": 226,
+        "Y": -197,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n5_5",
+        "X": 676,
+        "Y": -197,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n5_6",
+        "X": 826,
+        "Y": -197,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n6_2",
+        "X": 226,
+        "Y": -355,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n6_4",
+        "X": 526,
+        "Y": -355,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n6_6",
+        "X": 826,
+        "Y": -355,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n7_2",
+        "X": 226,
+        "Y": -513,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n7_4",
+        "X": 526,
+        "Y": -513,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n7_6",
+        "X": 826,
+        "Y": -513,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n7_5",
+        "X": 676,
+        "Y": -513,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n8_1",
+        "X": 76,
+        "Y": -671,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n8_5",
+        "X": 676,
+        "Y": -671,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n8_6",
+        "X": 826,
+        "Y": -671,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n9_0",
+        "X": -74,
+        "Y": -829,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n9_5",
+        "X": 676,
+        "Y": -829,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n9_6",
+        "X": 826,
+        "Y": -829,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n10_0",
+        "X": -74,
+        "Y": -987,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n10_4",
+        "X": 526,
+        "Y": -987,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n10_6",
+        "X": 826,
+        "Y": -987,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n10_5",
+        "X": 676,
+        "Y": -987,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n11_0",
+        "X": -74,
+        "Y": -1145,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n11_3",
+        "X": 376,
+        "Y": -1145,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n11_5",
+        "X": 676,
+        "Y": -1145,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n11_6",
+        "X": 826,
+        "Y": -1145,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n11_4",
+        "X": 526,
+        "Y": -1145,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n12_3",
+        "X": 376,
+        "Y": -1303,
+        "Width": 88,
+        "Height": 88,
+        "Enabled": false
+      },
+      {
+        "Id": "native-route-n13_3",
+        "X": 361,
+        "Y": -1476,
+        "Width": 118,
+        "Height": 118,
+        "Enabled": false
+      },
+      {
+        "Id": "native-deck",
+        "X": 230,
+        "Y": 786,
+        "Width": 980,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "native-menu",
+        "X": 230,
+        "Y": 840,
+        "Width": 980,
+        "Height": 50,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 1440,
+    "PanelHeight": 900,
+    "Labels": [
+      "ACT 1 · MAP",
+      "Forsaken · Crossed swords",
+      "HP 58/64 · MP 0/2 · Stamina 2/2",
+      "68 cinders · 0 Smithing Stones",
+      "",
+      "Choose a connected route",
+      "YOU",
+      "ACT 1 · ALL PATHS · 3 routes",
+      "Tap a lit route to climb. Drag to explore the map."
+    ],
+    "LayoutAttempts": 1
+  },
+  "physicalDevice": false
+}

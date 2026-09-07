@@ -94,3 +94,31 @@ Label { white-space: normal; }
 .native-stage > .fighter { height: 105px; }
 .native-target { font-size: 12px; padding: 6px; margin: 3px 0; }
 .native-page-count { font-size: 12px; align-self: center; padding: 5px; }
+/* Shared original map: shell height is bounded; only the map pans vertically. */
+.body.map-screen { padding: 6px 10px 8px; max-width: 1000px; }
+.map-screen > .heading { margin: 2px 0 4px; font-size: 18px; }
+.map-screen .caption { margin: 3px 0; }
+.map-screen .node-title { margin: 3px 0; font-size: 16px; }
+.map-screen > .button { margin: 2px 0; padding: 6px; flex-shrink: 0; }
+.map-screen #native-run-appearance { display: none; }
+.map-board { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.map-tools { flex-direction: row; flex-shrink: 0; align-items: center; }
+.map-tool { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 2px; padding: 3px; font-size: 13px; }
+.map-viewport { position: relative; flex-grow: 1; flex-shrink: 1; min-height: 0; overflow: hidden; background-color: rgb(21, 24, 26); border-width: 1px; border-color: rgb(66, 60, 49); border-radius: 10px; margin-top: 4px; }
+.map-content { position: absolute; left: 0; flex-shrink: 0; }
+.map-lines { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.map-node { position: absolute; min-width: 0; min-height: 0; margin: 0; padding: 10px; border-radius: 100px; border-width: 1px; border-color: rgb(105, 92, 70); background-color: rgb(29, 31, 31); }
+.map-node:disabled { opacity: 0.85; }
+.map-node.available { border-width: 3px; border-color: rgb(240, 197, 117); background-color: rgb(53, 44, 31); }
+.map-node.available:hover, .map-node.available:focus { border-color: rgb(255, 237, 199); background-color: rgb(76, 58, 35); }
+.map-node.visited { border-color: rgb(167, 128, 72); background-color: rgb(43, 38, 31); }
+.map-node.shrine-lane { border-color: rgb(112, 188, 185); }
+.map-node.current { border-width: 3px; border-color: rgb(245, 230, 198); background-color: rgb(230, 215, 179); }
+.map-node.revealed { border-width: 3px; border-color: rgb(146, 204, 204); }
+.map-icon { flex-grow: 1; width: 100%; height: 100%; }
+.map-marker { position: absolute; font-size: 9px; color: rgb(233, 199, 130); -unity-text-align: middle-center; white-space: nowrap; }
+.map-hint { flex-shrink: 0; font-size: 10px; color: rgb(199, 169, 118); margin-top: 5px; white-space: normal; }
+.map-detail { flex-shrink: 0; font-size: 11px; height: 34px; white-space: normal; color: rgb(188, 183, 169); margin-top: 3px; }
+.map-overlay { position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 8px; background-color: rgb(22, 25, 28); }
+.map-overlay > .map-tool { flex-grow: 0; flex-basis: auto; }
+.map-key-text { white-space: normal; flex-grow: 1; flex-shrink: 1; margin: 8px; font-size: 14px; color: rgb(218, 210, 193); }

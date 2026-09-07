@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "sealstone": false,
+      "checks": 120,
+      "touchCancel": true,
+      "physicalDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sealstone": false,
+      "checks": 121,
+      "touchCancel": true,
+      "physicalDevice": false
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "sealstone": false,
+      "checks": 121,
+      "touchCancel": true,
+      "physicalDevice": false
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sealstone": false,
+      "checks": 132,
+      "touchCancel": false,
+      "physicalDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sealstone": true,
+      "checks": 64,
+      "touchCancel": false,
+      "physicalDevice": false
+    }
+  ],
+  "checks": 558,
+  "physicalDevice": false,
+  "cooperativeBrowserProof": false
+}

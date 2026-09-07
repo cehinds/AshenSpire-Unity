@@ -17,6 +17,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Domain tests failed.' }
     dotnet run --project UnityTests/Parity
     if ($LASTEXITCODE -ne 0) { throw 'Original parity tests failed.' }
+    dotnet run --project UnityTests/MapKnowledge
+    if ($LASTEXITCODE -ne 0) { throw 'Original map knowledge tests failed.' }
+    dotnet run --project UnityTests/MapViewport
+    if ($LASTEXITCODE -ne 0) { throw 'Original map camera tests failed.' }
     $targets = if ($Target -eq 'All') { @('Windows','Android','Web') } else { @($Target) }
     New-Item -ItemType Directory -Path Builds -Force | Out-Null
     foreach ($platform in $targets) {
