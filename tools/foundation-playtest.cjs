@@ -60,7 +60,7 @@ function result(success) { return { success, checks, screenshots, errors, creati
   await click('attribute-strength-down'); check(creations.at(-1).remaining === 1 && creations.at(-1).attributes.strength === 12, 'attribute decrement returns a point');
   await click('attribute-strength-up'); check(creations.at(-1).remaining === 0 && creations.at(-1).attributes.strength === 13, 'attribute allocation commits exact point');
   await shot('03-phone-attributes');
-  await click('foundation-class', false, .8); await key('ArrowDown'); await key('Enter');
+  await click('foundation-class-starseer');
   await until(() => creations.at(-1).classId === 'starseer', 'Starseer selection');
   check(creations.at(-1).resources.mana === 2 && creations.at(-1).resources.hp === 46, 'class selection recalculates original resources');
   await shot('04-phone-starseer');

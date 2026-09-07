@@ -36,7 +36,8 @@ namespace AshenSpire.Domain.Original
             foreach (var property in payload.Properties()) record[property.Name] = property.Value.DeepClone();
             _events.Add(record); Emitted?.Invoke((JObject)record.DeepClone());
         }
-        public JArray Events() => new JArray(_events);
+        public JArray Events()
+        { var result = new JArray(); foreach (var record in _events) result.Add(record.DeepClone()); return result; }
         public void Enqueue(CombatAction action)
         {
             if (_queue.Count >= 10000) throw new InvalidOperationException("Combat queue capacity exceeded.");

@@ -75,3 +75,11 @@ Label { white-space: normal; }
 .combat-feedback { position: absolute; top: 24px; left: 6px; right: 6px; padding: 7px; background-color: rgba(13,17,23,0.9); border-radius: 6px; font-size: 15px; -unity-font-style: bold; -unity-text-align: middle-center; white-space: normal; }
 .interruption-cover { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: #101317; padding: 24px 18px; }
 .interruption-panel { width: 100%; max-width: 580px; align-self: center; padding: 20px 0; }
+.foundation-tabs { flex-direction: row; justify-content: space-between; }
+.foundation-tabs > .button { width: 32%; padding-left: 4px; padding-right: 4px; }
+.foundation-choices { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+.foundation-choices > .button { width: 48%; }
+.foundation-field { font-size: 15px; margin: 10px 0; }
+.foundation-field > .unity-base-field__label { color: rgb(231,224,210); min-width: 0; width: 32%; }
+.foundation-field .unity-base-field__input { background-color: rgb(25,30,35); color: rgb(231,224,210); border-color: rgb(109,111,108); border-width: 2px; border-radius: 7px; padding: 8px; min-width: 0; }
+.foundation-field .unity-base-popup-field__text { color: rgb(231,224,210); }

@@ -105,4 +105,7 @@ foreach (var fixture in oracle["derived"]!)
     Check(creation.Adjust(attribute, 1) && creation.CanBegin && changes == 2 && Equal(creation.Attributes(), original), "Creation budget round trip failed");
     Check(!creation.Adjust(attribute, 1) && changes == 2, "Creation overspent budget");
 }
+queueContext.Emit("example", new JObject { ["nested"] = new JObject { ["value"] = 1 } });
+var observerCopy = queueContext.Events(); observerCopy[0]!["nested"]!["value"] = 99;
+Check((int)queueContext.Events()[0]!["nested"]!["value"]! == 1, "Observer mutated internal event history");
 Console.WriteLine($"Original Unity parity: {checks} checks passed");
