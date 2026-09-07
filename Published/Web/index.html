@@ -16,14 +16,14 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 <div id="frame"><canvas id="unity-canvas" tabindex="0" aria-label="AshenSpire touch card game"></canvas></div>
 <div id="loading"><h1>ASHEN SPIRE</h1><p>Waking the ember…</p><progress id="progress" value="0" max="1"></progress></div>
 <div id="channel"></div>
-<script src="Build/Web.loader.js?build=62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b"></script>
+<script src="Build/Web.loader.js?build=eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e"></script>
 <script>
 const canvas=document.querySelector('#unity-canvas');
 const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
-document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.0.10.0';
+document.querySelector('#channel').textContent=channel.toUpperCase()+' · UNITY 0.0.11.0';
 createUnityInstance(canvas,{
- dataUrl:'Build/Web.data?build=62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b',frameworkUrl:'Build/Web.framework.js?build=62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b',codeUrl:'Build/Web.wasm?build=62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b',
- streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.0.10.0',
+ dataUrl:'Build/Web.data?build=eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e',frameworkUrl:'Build/Web.framework.js?build=eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e',codeUrl:'Build/Web.wasm?build=eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e',
+ streamingAssetsUrl:'StreamingAssets',companyName:'AshenSpire',productName:'AshenSpire Unity',productVersion:'0.0.11.0',
  devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5),matchWebGLToCanvasSize:true
 },p=>document.querySelector('#progress').value=p).then(instance=>{
  window.unityInstance=instance;document.querySelector('#loading').remove();canvas.focus();

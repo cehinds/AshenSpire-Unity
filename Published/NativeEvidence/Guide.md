@@ -1,51 +1,11 @@
-# Original AshenSpire in Unity — build 10
+# Painted enemies — Unity 0.0.11.0, build 11
 
-Version **0.0.10.0**, Unity **6000.6.0f1**. The native original climb is playable
-from character creation through three acts and progression. This is a foundation
-review build, not a completed-game release.
+Native solo and co-op now use all 19 painted enemies: the 12 earlier sprites you preferred plus 7 new creatures. PNG masters and exact built-in image-generation prompts are preserved. Runtime registration aligns visible silhouettes and feet without changing source pixels.
 
-## Try this build
+The current player was checked through real enemy selection, attack feedback, reload and two-player combat/rejoin. Current receipts are in validation.json. Full original-gameplay acceptance from build 10 is linked separately; it is not restamped as build 11 evidence.
 
-- Create a wanderer. Assign starts all five attributes at 5 with 35 points left;
-  Standard uses the original class preset. Every point benefits the character,
-  with mechanical thresholds every five points.
-- Choose your starting kit, hands, armour, relic, portrait, tint and sigil.
-  Equipment supplies cards; inspect action, MP and stamina costs.
-- Enter a seed and climb through combat, events, rewards, merchants and shrines.
-  Try flask allocation, equipment changes, smithing, card mounts and level points.
-- Open Custom climb for Ascension/chaos rules, Sealed/Draft starts, Endless,
-  and map floor/column caps with relative room weights.
-- Reload during a run and continue. Finish and inspect Chronicle progression.
-- For local co-op, follow the included Windows companion's README and generated
-  local address. Each player gets private rewards/cards while sharing the climb.
+Download and unzip Web.zip, then serve it over HTTP. The portable Windows companion includes local hosting instructions and its runtime. Windows.zip and Android.apk are also built from the same source. Keep host keys/private state outside the Web folder.
 
-## Downloads and editing
+Edit GameContent/Unity/Original/enemy-art.json and the PNG masters under GameContent/Unity/Art/EnemyExpansion. tools/import-painted-enemies.py copies unchanged PNGs and recalculates alpha registration. The Unity import validates every enemy mapping and caps new textures at 512 pixels. See the owner guide for other content/component editing.
 
-The build page links Web, Windows, Android and the portable Windows companion.
-Serve the unzipped Web folder over HTTP; opening index.html directly as a file
-is not supported. The companion includes its runtime and content. Keep its
-private state and credentials outside the served Web folder.
-
-See docs/Unity-Owner-Guide.md for component ownership and modification points.
-Author original JSON/CSV under GameContent/Unity/Original, preserve stable IDs,
-validate references, and rebuild with tools/build-unity.ps1. Script headers
-describe what to edit. The Pages workflow validates committed players and retains
-previous browser builds by channel.
-
-## Verification and remaining work
-
-The current Web player completed 22 fights across three acts through real input:
-657 checks and 280 commands, including reloads and Chronicle progression.
-Separate current-player checks cover co-op/rejoin, custom maps and actual browser
-hiding/freezing/return. See player-checks.json for each completed suite.
-All four packages have matching source receipts and checked file hashes.
-
-The map currently shows reachable route buttons; the original full branching
-graph remains a visual gap. Co-op animation, broader visual/audio polish, phone
-performance and human balance/fun testing remain. Physical Android and graphical
-Windows interaction are unverified; iOS is not built. Original JavaScript saves
-are preserved separately and cannot yet be imported into native runs. This
-checkpoint does not certify full original parity.
-
-Version format is game release · roadmap milestone · incremental upgrade · patch.
-Foundation acceptance is 0.1.0.0; the completed game is 1.0.0.0.
+Foundation remains in progress. Original full-map presentation, co-op animation, broader polish, physical-device checks, JS-save import and human balance testing remain. 0.1.0.0 is foundation acceptance; 1.0.0.0 is the completed game.

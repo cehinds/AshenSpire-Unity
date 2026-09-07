@@ -1,12 +1,18 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.10.0 · build 10 ·
+content while improving phone play. Current source: **0.0.11.0 · build 11 ·
 Foundation in progress**. Published channels may still carry earlier checkpoints.
 
 Checked items describe implemented functionality with focused evidence. Unchecked
 items are acceptance work, limitations or remaining scope; checkmarks do not certify
 every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receipts.
+
+Build 11 integrates the painted enemy expansion and has matching Web, Windows,
+Android and companion exports, package verification, 31 solo art checks and
+eight host/six guest co-op checks. Full-campaign, storage and other older counts
+below belong to build 10 at commit `890af027…` / digest `62aa53dc…`.
+Build 11's bounded results do not repeat that full baseline.
 
 ## Implemented foundation
 
@@ -24,7 +30,7 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
   saved kit identity; retain the uncustomized baseline kit's creation-only waiver.
 - [x] Compose weapon-owned cards and pay final action/MP/stamina costs.
 - [x] Resolve combat turns, piles, targets, enemy AI, triggers, dodge/poise,
-  statuses, flasks and the authored Catch Breath action.
+  statuses, flasks and the authored solo Catch Breath action.
 - [x] Traverse three acts, bosses, unknown rooms, events, rewards, shops and shrines.
 - [x] Track owned items and stable cards; equip unlocked sets, smith, extract and
   install supported mounts while preserving resource deficits.
@@ -48,6 +54,10 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
   The pinned original has no separate practice mode to port.
 - [x] Distinct Animated, Rendered, Classic and Sigil presentation paths, including
   original armour/tint poses and saved appearance in solo/co-op views.
+- [x] Map all 19 original enemies to the same painted resources in solo/co-op:
+  retain the earlier 12 paintings and add seven transparent sprites. Register
+  visible alpha bounds for consistent framing; cap the new texture imports at
+  512 pixels while preserving high-resolution masters and exact prompts.
 - [x] Native authoritative co-op combat with 2–4-seat original differential fixtures.
 - [x] Shared route votes, private rewards, shops/shrines/events, catch-up and
   actual cooperative combat; connected, disconnected and downed seat handling.
@@ -57,7 +67,14 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
 
 ## Finish foundation acceptance
 
-- [x] Complete the current-source scripted native browser run: 657 checks, 280
+- [x] Build matching-source build 11 Web, Windows, Android and companion exports;
+  pass 436 companion, 160 target-file and 18 root-package checks.
+- [x] Pass 217 source/art checks across all 19 painted mappings, 31 compiled solo
+  checks on hounds/wisp with nine screenshots, and eight host/six guest co-op
+  fight/reward/rejoin checks with nine non-lobby screenshots; zero browser errors.
+- [ ] Extend build 11 compiled art coverage beyond hounds/wisp and obtain owner
+  visual acceptance. Source mapping coverage does not prove every enemy on screen.
+- [x] Complete the build 10 scripted native browser run: 657 checks, 280
   commands, 22 fights, three acts, two reloads and Chronicle checks.
 - [ ] Complete owner acceptance and the broader profile unlock/new-creation,
   shopping, equipment and service interaction matrix.
@@ -70,8 +87,10 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
   A real browser fight/reward/exact-hand rejoin and 22 packaged restart checks
   already passed; these do not cover every multiplayer interaction.
 - [x] Pass 60 phone/desktop map-shape control, actual-combat and exact-reload checks.
-- [ ] Resolve co-op in-combat set changes plus original settings/inventory flows not covered by the
-  current commands. Co-op's original Endless option does not imply all solo custom rules.
+- [ ] Cover original settings/inventory flows not exercised by the current commands.
+  Co-op's original Endless option does not imply all solo custom rules. Paid combat
+  set changes and Catch Breath are intentionally solo-only: the pinned original
+  co-op offers neither. Cooperative extensions are future design, not missing parity.
 - [x] Pass 44 actual appearance choice/attack/feedback/reload checks, 11 each for
   Animated, Rendered, Classic and Sigil.
 - [ ] Finish broader armour/tint visual acceptance and co-op pose feedback.
@@ -79,13 +98,13 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
   recovery and result feedback throughout phone and desktop flows.
 - [ ] Finish field/schema/runtime authoring coverage. The native CSV demonstration
   already adds cards, equipment, enemies and encounters and executes real combat.
-- [x] Pass eight real raw-CDP background/freeze/return checks on the final source.
-- [x] Pass 50 final storage checks: 12 served-file hashes and 38 storage checks,
+- [x] Pass eight real raw-CDP background/freeze/return checks on build 10.
+- [x] Pass 50 build 10 storage checks: 12 served-file hashes and 38 storage checks,
   exact backup recovery and preservation of 729,414 damaged bytes.
 - [ ] Complete profile corruption, quota exhaustion and upgrade coverage.
 - [ ] Decide original JavaScript save import explicitly. Existing legacy saves are
   preserved; importing them into a native run is not implemented.
-- [x] Build matching-source Web, Windows, Android and companion packages; pass
+- [x] Build matching-source build 10 Web, Windows, Android and companion packages; pass
   433 companion, 160 Windows/APK and 18 root-package checks, plus 22 self-contained restart checks.
 - [ ] Verify hosted build/history links, downloadable folders and current screenshots.
   Packaging does not establish graphical Windows or physical phone acceptance.
@@ -95,8 +114,9 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
 ## Polish and completed-game readiness
 
 - [ ] Compare original and Unity screens side by side and retain the original aesthetic.
-  The native map exposes reachable route buttons; full original graph presentation
-  remains visual parity work despite working shape/generation controls.
+  The native map exposes reachable route buttons; full original branching-map
+  presentation, solo fog and Sealstone Key reveal remain parity work despite
+  working shape/generation controls.
 - [ ] Finish sprite animation, transitions, status feedback, sound/music and settings.
 - [ ] Make every required original flow comfortable on touch with consistent UI.
 - [ ] Test physical Android hardware and graphical Windows play; establish the iOS
@@ -114,10 +134,23 @@ host transport tests and physical devices are separate evidence categories. Ever
 compiled receipt must identify its build source. Earlier adaptation playthroughs
 and screenshots remain valid only for their historical checkpoints.
 
-The matched local build checkpoint is source commit
+The prior **0.0.10.0 / build 10** matched local checkpoint is source commit
 `890af027be07a5648119521165aaeadf2dc5e938`, build digest
 `62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b`. Its Web, Windows, Android
 and companion packages passed matching-source checks. Publication is separate.
+Build 11 has its own full build digest
+`eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e`,
+Web built 2026-09-07 06:25:03.732683 UTC. Its all-target builder exited zero and
+package checks passed 436 companion, 160 target-file and 18 root-package checks.
+Solo art passed 31 checks with nine screenshots at 390×844 and 1440×900, including
+two hound instances, one wisp, an action-spending attack (15→1 HP) and exact reload.
+Co-op passed eight host and six guest fight/reward/rejoin checks, with nine
+non-lobby screenshots and a visibly painted hound. Both suites recorded zero
+errors; asset-path console receipts were unavailable in the solo art test.
+The 217 source/art checks cover all 19 mappings, not all 19 compiled encounters.
+The prepared 21-image gallery combines nine solo, nine co-op and three art images.
+Current Pages assembly/link verification and publication remain separate; no
+new full campaign or storage result is claimed for build 11.
 
 The normal solo policy receipt records 12 victories, 264 fights, 3,450 accepted
 commands and 858 save/resume comparisons in
@@ -127,11 +160,12 @@ This runtime subset digest differs from the full Unity build source digest.
 Separate custom policies completed Sealed and Draft and reached the first scaled
 Act 4 fight in Endless. A normal-health two-player co-op policy completed three
 acts in 359 commands with nine exact resumes. These are simulation evidence,
-not owner acceptance or device certification. Separately, the final native solo
+not owner acceptance or device certification. Separately, the build 10 native solo
 browser, map-shape and raw-CDP interruption checks passed as recorded above.
-Final appearance passed 44 checks, custom-feature interactions passed 16 and
+Build 10 appearance passed 44 checks, custom-feature interactions passed 16 and
 served-file/storage recovery passed 50 on the unchanged full build source digest
-recorded above. These bounded receipts do not close the remaining graph, co-op
+recorded above. These bounded receipts do not close the remaining branching-map,
+solo fog/Sealstone reveal, co-op
 animation, balance, profile/quota, JavaScript-save import or owner/device gaps.
 No physical phone, graphical Windows, iOS or audible sound acceptance is recorded.
 

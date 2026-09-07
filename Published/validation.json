@@ -1,126 +1,76 @@
 {
-  "version": "0.0.10.0",
-  "buildNumber": 10,
+  "version": "0.0.11.0",
+  "buildNumber": 11,
+  "sourceCommit": "4d7ee0b60856d7b8475f7a13cd7aedbe8757a9a8",
+  "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+  "builtAt": "2026-09-07T06:25:03.7326830Z",
   "stage": "Foundation in progress",
-  "sourceCommit": "890af027be07a5648119521165aaeadf2dc5e938",
-  "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-  "builtAt": "2026-09-07T05:02:18.9459021Z",
   "unityVersion": "6000.6.0f1",
-  "originalReference": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "paintedEnemies": 19,
+  "reusedPaintedEnemies": 12,
+  "newGeneratedEnemies": 7,
+  "assetReviewChecks": 217,
   "webCompiled": true,
   "windowsCompiled": true,
   "androidCompiled": true,
   "companionPackaged": true,
-  "packageChecks": {
-    "companionSourceAndBinary": 433,
-    "windowsAndAndroidExport": 160,
-    "mainPackage": 18,
-    "actualPackagedCompanionRestart": 22
-  },
-  "nativeSoloPolicy": {
-    "victories": 12,
-    "fights": 264,
-    "commands": 3450,
-    "exactResumes": 858,
-    "runtimeSubsetDigest": "39286ae6213e53c5a6d657a0cd571bed04617ca73692f58e760cc5874cc883ea"
-  },
-  "nativeCoopPolicy": {
-    "acts": 3,
-    "commands": 359,
-    "exactResumes": 9,
-    "originalEnemyHealth": true
-  },
-  "browserSuites": [
+  "currentPlayerSuites": [
     {
-      "suite": "Solo",
-      "status": "passed",
-      "checks": 657,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "suite": "EnemyArtSolo",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+      "checks": 31,
+      "success": true,
       "physicalDevice": false
     },
     {
-      "suite": "MapPhone",
-      "status": "passed",
-      "checks": 30,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "MapDesktop",
-      "status": "passed",
-      "checks": 30,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Features",
-      "status": "passed",
-      "checks": 16,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Animated",
-      "status": "passed",
-      "checks": 11,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Rendered",
-      "status": "passed",
-      "checks": 11,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Classic",
-      "status": "passed",
-      "checks": 11,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Sigil",
-      "status": "passed",
-      "checks": 11,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "CoopHost",
-      "status": "passed",
+      "suite": "EnemyArtHost",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
       "checks": 8,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "success": true,
       "physicalDevice": false
     },
     {
-      "suite": "CoopGuest",
-      "status": "passed",
+      "suite": "EnemyArtGuest",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
       "checks": 6,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Interruption",
-      "status": "passed",
-      "checks": 8,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
-      "physicalDevice": false
-    },
-    {
-      "suite": "Storage",
-      "status": "passed",
-      "checks": 50,
-      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "success": true,
       "physicalDevice": false
     }
   ],
-  "currentLocalScreenshots": 70,
+  "screenshots": 21,
+  "gameplayBaseline": {
+    "version": "0.0.10.0",
+    "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+    "evidence": "https://github.com/cehinds/AshenSpire-Unity/blob/75769ddfaabf7011c58fea6b9dacc84df253565f/Published/validation.json",
+    "note": "Full native climb, original modes, profiles, storage and appearance acceptance belong to build 10. Gameplay rules did not change in build 11."
+  },
   "physicalPhoneTested": false,
   "nativeWindowsInteractionTested": false,
   "iosBuilt": false,
   "audibleListeningTested": false,
   "fullOriginalGameplayParity": false,
-  "note": "Completed checks are source-bound native engine or actual browser input evidence. Full visual, original-interaction and physical-device acceptance remains open. The previous adaptation is preserved separately; it is not the native parity target."
+  "packageChecks": {
+    "companion": 436,
+    "windowsAndAndroidFiles": 160,
+    "rootPackage": 18
+  },
+  "compiledEnemyCoverage": {
+    "types": [
+      "blightHound",
+      "graveWisp"
+    ],
+    "instances": 3,
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1440,
+        "height": 900
+      }
+    ],
+    "assetPathLogsAvailable": false,
+    "note": "Screenshots and actual selection, attack and reload checks cover these two types. Catalog/frame review covers all nineteen; all nineteen were not encountered in this browser check."
+  }
 }

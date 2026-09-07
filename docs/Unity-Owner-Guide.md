@@ -1,11 +1,16 @@
 # Editing and testing your Unity game
 
-This guide describes the native original-game rebuild at **0.0.10.0 · build 10**.
+This guide describes the native original-game rebuild at **0.0.11.0 · build 11**.
 Foundation acceptance is still in progress. The earlier
 [campaign editor guide](Content-Authoring-0.6.0.md) and
 [campaign validation report](Content-Authoring-Validation.md) describe preserved
 adaptation checkpoints; their `campaign.json` and `expedition.json` examples do
 not edit the native original-game content.
+
+Build 11 integrates painted artwork for all 19 enemies. Matching Web, Windows,
+Android and companion exports and package checks passed, together with bounded
+solo art and co-op checks. The full campaign, storage and other older results
+later in this guide remain explicitly build 10 evidence.
 
 ## Open and play
 
@@ -34,6 +39,8 @@ Paths below are relative to the repository root.
 | Run-shape control labels, limits and probe count | `GameContent/Unity/Original/custom-run-options.json` under `mapShape`; generation uses `OriginalMapShape` and `ActMapGenerator` |
 | Four renderer paths and imported pose registration | `GameContent/Unity/Original/sprite-styles.json`, `Runtime/Presentation/OriginalSpriteCatalog.cs` and `OriginalPlayerFigure.cs` |
 | Tint/sigil labels, palette and badge geometry | `GameContent/Unity/Original/appearance-options.json` |
+| Painted enemy IDs, resource paths and visible bounds | `GameContent/Unity/Original/enemy-art.json` and `Runtime/Presentation/OriginalEnemyFigure.cs` |
+| Seven new painted enemy masters and generation prompts | `GameContent/Unity/Art/EnemyExpansion/`; import with `tools/import-painted-enemies.py` |
 | Version, build number and foundation stage | `GameContent/Unity/version.json`; follow `docs/Unity-Versioning.md` |
 | Original sprite assets | `Unity/Assets/AshenSpire/Resources/Art` and imported source receipts; preserve sprite identities and pose alignment |
 | Combat rules and interpretation | `Runtime/Domain/Original/CombatSession*.cs`, `StatusSystem`, `FormulaEvaluator` |
@@ -66,16 +73,47 @@ counts for each act. This is density, not an estimated play duration, and it doe
 not consume the live run RNG. Reset removes the run-shape override. Selected
 shape and validation limits freeze with the saved run, including Draft
 continuation. There is no separate practice mode in the pinned original. These
-controls are implemented and passed 60 actual phone/desktop control, combat and
+controls are implemented and passed 60 build 10 phone/desktop control, combat and
 exact-reload checks. The current route-button view still lacks the original full
-graph presentation; working generation and shape controls do not close that
-visual parity gap.
+branching-map presentation, including solo fog and Sealstone Key reveal; working
+generation and shape controls do not close those parity gaps.
 
 The creator also offers Animated, Rendered, Classic and Sigil as distinct sprite
 styles. Animated uses the original registered outfit/tint poses; Rendered keeps
 its painting, Classic uses the original silhouette and Sigil shows the selected
 symbol. The saved choice reaches solo and co-op views. Co-op pose feedback and
 owner visual acceptance remain separate work.
+
+Paid combat set changes and Catch Breath are intentionally solo-only. The pinned
+original co-op offers neither command; adding them to cooperative play would be
+a future design extension, not a missing original behavior.
+
+## Edit painted enemy art
+
+Solo and co-op use `OriginalEnemyFigure` and the same 19 entries in
+`GameContent/Unity/Original/enemy-art.json`. The earlier 12 painted resources are
+retained unchanged. Seven added sprites cover Husk Brute, Stitched Hound, Court
+Marionette, Ash Revenant, Ember-Starved Pilgrim, Charred Colossus and Blighted
+Valkyrie. Their transparent, high-resolution masters and exact built-in generation
+prompts/provenance are in `GameContent/Unity/Art/EnemyExpansion/`.
+
+Preserve each enemy's stable ID and existing master before replacing artwork.
+Run `python tools/import-painted-enemies.py` with Pillow available to copy the
+masters into `Resources/Art/Enemies/Painted` and refresh normalized visible-alpha
+bounds. Then run **Validate and Import Content**. Import refuses a missing enemy
+mapping, resource PNG or invalid registration. The source PNGs remain unchanged;
+Unity's import policy caps these seven textures at 512 pixels, preserves alpha
+and disables mipmaps and CPU readback.
+
+The shared renderer fits the visible silhouette within 90% of frame width and
+84% of frame height, placing the registered bottom on the 94% baseline. This
+handles uneven generated margins without editing the masters. After replacing
+an image, check full wings/weapons/feet, target changes and feedback in both solo
+and co-op at phone and desktop sizes. Static art coverage is not animation or
+visual acceptance; co-op pose feedback remains open. Build 11 passed 217 source/art
+checks across all 19 mappings and 31 compiled solo checks on hounds/wisp, plus
+eight host/six guest co-op checks. Other enemy silhouettes still need compiled
+visual coverage; mapping every resource is not the same as seeing every enemy.
 
 ## Edit a table through CSV
 
@@ -164,7 +202,24 @@ locally; it does not commit, push or publish. iOS export/device validation remai
 separate work. Inspect the actual target log and `build-source.json` instead of
 assuming every platform was rebuilt because Web succeeded.
 
-The current local checkpoint uses source commit
+The current **0.0.11.0 / build 11** exports share full source digest
+`eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e`.
+Web was built 2026-09-07 06:25:03.732683 UTC; the all-target builder exited zero.
+Explicit package verification passed 436 companion, 160 target-file and 18
+root-package checks. The artifact commit also includes derived Unity version
+fields; use the full digest to match exports.
+
+The build 11 solo art test passed 31 checks with nine screenshots and no errors
+at 390×844 and 1440×900. It selected two hound instances and a wisp, spent an
+action on an attack that reduced hound HP from 15 to 1, and restored exact state
+after reload. Painted silhouettes were visually inspected; asset-path console
+receipts were unavailable. Co-op passed eight host and six guest checks through
+a fight, rewards and rejoin, with nine non-lobby screenshots and no errors; the
+host combat image shows a painted hound. The prepared gallery has 21 images
+(nine solo, nine co-op, three art galleries). These are local, bounded results;
+current Pages assembly/link verification and publication remain separate.
+
+The prior **0.0.10.0 / build 10** local checkpoint uses source commit
 `890af027be07a5648119521165aaeadf2dc5e938` and source digest
 `62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b`. Matching Web, Windows,
 Android and companion packages passed 433 companion, 160 Windows/APK and 18 root-package checks;
@@ -179,8 +234,10 @@ The feature test passed 16 checks for Draft, shrine CON/HP growth from 64 to 66,
 flask allocation, merchant purchase/resale and reload. Storage passed 50 checks
 (12 served-file hashes and 38 storage checks), restoring the exact backup and
 preserving 729,414 damaged bytes. These results use the unchanged source digest
-above. Broader profile corruption/quota, JavaScript-save import, full graph
-presentation, co-op animation, balance and owner/device/audio acceptance remain
+above, not build 11's changed source. Build 11 did not repeat the full campaign
+or storage run. Broader profile corruption/quota, JavaScript-save import,
+full branching-map presentation with solo fog/Sealstone reveal, co-op animation,
+balance and owner/device/audio acceptance remain
 open; iOS and audible sound acceptance are not established.
 
 GitHub Pages serves static game files. Native co-op requires the matching C# host;
