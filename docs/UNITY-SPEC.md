@@ -1,5 +1,15 @@
 # Unity specification — faithful rebuild with preserved campaign checkpoints
 
+## Owner-requested creation defaults (0.9.1)
+
+Assign points is the default creation mode. Tuned is removed from the fork's
+available modes. All five attributes start at the minimum value of 5 for every
+class. The total budget is 60, so the initial unspent pool is 60 - (5 × 5) = 35.
+The per-attribute maximum remains 15. Standard remains available with its existing
+presets. Plus/minus controls reflect the current bounds and remaining budget.
+These are Constantine's explicit fork settings; the pinned original-engine
+fixtures remain unchanged as historical parity evidence.
+
 Upstream baseline: `cehinds/AshenSpire` `dev` at `d5c982e777df06221e181c437652b705d2f6abbc`.
 
 The target is now a faithful Unity rebuild of the original AshenSpire, preserving

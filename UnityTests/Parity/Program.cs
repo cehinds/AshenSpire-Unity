@@ -109,3 +109,4 @@ queueContext.Emit("example", new JObject { ["nested"] = new JObject { ["value"] 
 var observerCopy = queueContext.Events(); observerCopy[0]!["nested"]!["value"] = 99;
 Check((int)queueContext.Events()[0]!["nested"]!["value"]! == 1, "Observer mutated internal event history");
 Console.WriteLine($"Original Unity parity: {checks} checks passed");
+OwnerCreationChecks.Run(new OriginalContentCatalog(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json"))));

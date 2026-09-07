@@ -42,16 +42,19 @@ namespace AshenSpire.Presentation
             Header("THE ORIGINAL WANDERERS");
             Choices("foundation-class", "Class", _catalog.Table("classes"), _creation.ClassId, value => { _creation.Select(value, _creation.ModeId); Creation(); });
             Choices("foundation-mode", "Allocation", _catalog.Table("creationModes"), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
+            Label("Unspent points: " + _creation.Remaining, "notice");
+            Label(_creation.TotalPoints + " total points · " + _creation.Minimum + " minimum per attribute", "caption");
             var hero = _catalog.Record("classes", _creation.ClassId);
             var portrait = new Image { image = Resources.Load<Texture2D>("Art/" + _creation.ClassId + "_idle"), scaleMode = ScaleMode.ScaleToFit }; portrait.AddToClassList("portrait"); _root.Add(portrait);
             Label((string)hero["name"], "node-title"); Label((string)hero["description"], "lead");
-            Label("Unspent points: " + _creation.Remaining, "notice");
             foreach (var attribute in _creation.Attributes().Properties())
             {
                 var id = attribute.Name; Label(id + "  " + attribute.Value, "stat");
                 var row = new VisualElement(); row.AddToClassList("stats"); _root.Add(row);
-                row.Add(MakeButton("attribute-" + id + "-down", "- " + id, () => { _creation.Adjust(id, -1); Creation(); }));
-                row.Add(MakeButton("attribute-" + id + "-up", "+ " + id, () => { _creation.Adjust(id, 1); Creation(); }));
+                var decrease = MakeButton("attribute-" + id + "-down", "- " + id, () => { _creation.Adjust(id, -1); Creation(); });
+                var increase = MakeButton("attribute-" + id + "-up", "+ " + id, () => { _creation.Adjust(id, 1); Creation(); });
+                decrease.SetEnabled(_creation.CanAdjust(id, -1)); increase.SetEnabled(_creation.CanAdjust(id, 1));
+                row.Add(decrease); row.Add(increase);
             }
             var resources = _creation.Resources();
             Label(string.Join(" · ", resources.Properties().Select(x => (x.Name == "energy" ? "Actions" : x.Name.ToUpperInvariant()) + " " + x.Value)), "lead");

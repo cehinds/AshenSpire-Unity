@@ -73,6 +73,13 @@ Inspect all four classes, change allocation modes and points, generate seeded ma
 walk routes to the boss, and search the content tables. These are development tools;
 the route explorer does not execute battles or alter a campaign save.
 
+Owner-requested defaults in 0.9.1: **Assign points** starts every attribute at 5.
+Five attributes consume 25 of the 60 total points, leaving **35 unspent**. The
+maximum remains 15. **Standard** keeps its presets; **Tuned** is removed from the
+fork. The original oracle still contains all original modes, so these intentional
+fork settings are checked separately from upstream parity. Removing Tuned does
+not delete its historical fixtures or rewrite the original import receipt.
+
 Authoritative fork data: `GameContent/Unity/Original/content.json`.
 Unity imports it to `Resources/Original/content.json` using
 **AshenSpire → 1. Validate and Import Content**. Never edit the generated copy.

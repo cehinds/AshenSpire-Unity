@@ -28,16 +28,21 @@ namespace AshenSpire.Domain.Original
         }
         private JObject Mode => (JObject)_content["creationModes"].First(x => (string)x["id"] == ModeId);
         public JObject Attributes() => (JObject)_attributes.DeepClone();
-        public int Remaining => (int)Mode["baseline"] * _content["attributes"].Count() + (int)Mode["bonusPool"] - _attributes.Properties().Sum(x => (int)x.Value);
+        public int TotalPoints => (int)Mode["baseline"] * _content["attributes"].Count() + (int)Mode["bonusPool"];
+        public int Minimum => (string)Mode["belowBaseline"] == "forbid" ? Math.Max((int)Mode["minimum"], (int)Mode["baseline"]) : (int)Mode["minimum"];
+        public int Maximum => (int)Mode["maximum"];
+        public int Remaining => TotalPoints - _attributes.Properties().Sum(x => (int)x.Value);
         public bool CanBegin => Remaining == 0;
-        public bool Adjust(string attribute, int delta)
+        public bool CanAdjust(string attribute, int delta)
         {
             if (_attributes[attribute] == null || (delta != -1 && delta != 1)) return false;
-            var mode = Mode;
-            var minimum = (string)mode["belowBaseline"] == "forbid" ? Math.Max((int)mode["minimum"], (int)mode["baseline"]) : (int)mode["minimum"];
             var value = (int)_attributes[attribute] + delta;
-            if (value < minimum || value > (int)mode["maximum"] || (delta > 0 && Remaining < delta)) return false;
-            _attributes[attribute] = value; Changed?.Invoke(); return true;
+            return value >= Minimum && value <= Maximum && (delta < 0 || Remaining >= delta);
+        }
+        public bool Adjust(string attribute, int delta)
+        {
+            if (!CanAdjust(attribute, delta)) return false;
+            _attributes[attribute] = (int)_attributes[attribute] + delta; Changed?.Invoke(); return true;
         }
         public JObject Resources()
         {

@@ -1,4 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
-  <ItemGroup><Compile Include="Program.cs"/><Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Original/*.cs"/><PackageReference Include="Newtonsoft.Json" Version="13.0.2"/></ItemGroup>
+  <ItemGroup><Compile Include="Program.cs"/><Compile Include="OwnerCreationChecks.cs"/><Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Original/*.cs"/><PackageReference Include="Newtonsoft.Json" Version="13.0.2"/></ItemGroup>
 </Project>
