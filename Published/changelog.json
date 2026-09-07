@@ -1,32 +1,35 @@
 {
   "Added": [
-    "Native original foundations: seeded streams, structured formulas, tags, derived stats, character allocation, flasks, maps, statuses, damage and an explicit combat effect queue.",
-    "Original catalog with 182 cards, 55 relics, 50 statuses, 19 enemies, 22 events, four classes, equipment, upgrades and unlock definitions.",
-    "Original game foundation preview: edit attributes, inspect base resources, explore seeded routes and search original records.",
-    "CSV table export and validated atomic import with stale-file protection and backups.",
-    "7,356 comparisons and checks against the pinned original engine, eight CSV transaction checks and 12 compiled-player browser checks."
+    "Playable native original climb: four classes, three acts, weapon decks, enemies, statuses, events, rewards, shops, shrines, smithing and card mounts.",
+    "Profiles, discoveries, frozen-content saves, checked backup recovery and original starting equipment choices.",
+    "Ascension/chaos rules, Sealed/Draft starts, Endless and editable map caps and room weights.",
+    "Local cooperative routes and battles, private rewards, authenticated host authority, rejoin and a portable Windows companion.",
+    "Original Animated, Rendered, Classic and Sigil portrait paths with retained art and combat-result feedback.",
+    "Immutable browser build history per channel with version, build number, date, source, associated PR and changes."
   ],
   "Changed": [
-    "The original game is the required parity target. The existing three-act adaptation remains playable while original systems are connected.",
-    "Web, Windows and Android players rebuilt as 0.9.0. This checkpoint includes 43 fresh screenshots and an explicit parity checklist.",
-    "Character and allocation choices use readable touch buttons; mobile landscape controls retain their minimum height."
+    "Assign is the default: five attributes at 5, 60 total and 35 unspent. Tuned is removed; original Standard remains.",
+    "Every attribute point contributes, with mechanical benefits at five-point intervals. MP/stamina costs, flask allocation and Catch Breath are integrated.",
+    "Four-part version 0.0.10.0 build 10 remains a foundation review candidate. Foundation acceptance is 0.1.0.0.",
+    "Web, Windows, Android and companion have matching source/file receipts. Android includes ARM64 and networking permission."
   ],
   "Fixed": [
-    "Combat event snapshots no longer expose mutable internal event records.",
-    "Foundation creation selectors remain readable against the dark mobile UI."
+    "Numbered original card-text tokens, full-inventory reward/shop availability, paid set transactions and stable card recomposition.",
+    "Co-op command receipt races, peer updates clearing selections, reconnect turn handling and disconnected lobby seats.",
+    "Sprite import resizing, renderer persistence and sigil alignment.",
+    "Large control diagnostics are chunked. Packaging refuses mixed targets, stale exports and private host files."
   ],
   "KnownIssues": [
-    "Full original gameplay parity is unfinished. Imported definitions are not equivalent to playable features.",
-    "The route explorer is a development tool; selecting an original map node does not start its encounter.",
-    "Original combat orchestration, equipment ownership and smithing, encounter services, progression and co-op still require integration.",
-    "Physical phones, graphical Windows interaction, iOS and audible sound quality remain unverified.",
-    "Web uses a version-pinned Unity 6000.6.0f1 renderer workaround; builds compile locally and GitHub validates and publishes prepared players."
+    "Full original parity is not certified. The map uses reachable route buttons instead of the original full branching graph.",
+    "Co-op animation, broader visual/audio polish, physical Android and graphical Windows interaction, iOS and human balance testing remain.",
+    "Original JavaScript saves are preserved separately; native import is not implemented. Additional profile corruption/quota and upgrade coverage remains.",
+    "Unity Web uses the documented Unity 6000.6.0f1 renderer workaround. Browser phone emulation is not a physical phone test."
   ],
   "WhatToTest": [
-    "Open Original game foundation preview from the title screen. Try all four classes and the allocation modes.",
-    "Return an attribute point and spend it again; inspect the recalculated base resource values.",
-    "Enter a seed, explore routes through all three acts and search for an original card or equipment ID.",
-    "Return to the playable campaign, play cards, reload and resume, buy equipment and reach victory.",
-    "Use the parity checklist to see which original systems are verified foundations and which gameplay flows remain unfinished."
+    "Create an Assign or Standard wanderer; inspect attribute benefits, equipment cards and resource costs.",
+    "Complete a seeded climb, use merchants/shrines/smithing, reload during combat and inspect Chronicle progression.",
+    "Try Draft, Sealed, Endless and map caps/room weights.",
+    "Host a shared climb, join from a second browser, complete a fight, take private rewards and reconnect.",
+    "Compare all four portrait styles and tint/sigil choices."
   ]
 }

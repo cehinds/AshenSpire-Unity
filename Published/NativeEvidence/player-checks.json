@@ -1,0 +1,92 @@
+{
+  "version": "0.0.10.0",
+  "sourceCommit": "890af027be07a5648119521165aaeadf2dc5e938",
+  "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+  "suites": [
+    {
+      "suite": "Solo",
+      "status": "passed",
+      "checks": 657,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "MapPhone",
+      "status": "passed",
+      "checks": 30,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "MapDesktop",
+      "status": "passed",
+      "checks": 30,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Features",
+      "status": "passed",
+      "checks": 16,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Animated",
+      "status": "passed",
+      "checks": 11,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Rendered",
+      "status": "passed",
+      "checks": 11,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Classic",
+      "status": "passed",
+      "checks": 11,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Sigil",
+      "status": "passed",
+      "checks": 11,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "CoopHost",
+      "status": "passed",
+      "checks": 8,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "CoopGuest",
+      "status": "passed",
+      "checks": 6,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Interruption",
+      "status": "passed",
+      "checks": 8,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    },
+    {
+      "suite": "Storage",
+      "status": "passed",
+      "checks": 50,
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "physicalDevice": false
+    }
+  ],
+  "screenshots": 70
+}

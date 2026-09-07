@@ -11,6 +11,7 @@ let browser,ui;
  const styles=['animated','rendered','classic','glyph'],tints=['gold','ember','frost','rot','grace'],sigils=['⚔','🛡','🔥','🌙','☀','🐺'];
  const summaries=[];
  for(let index=0;index<styles.length;index++){
+  if(process.env.NATIVE_APPEARANCE_STYLE&&styles[index]!==process.env.NATIVE_APPEARANCE_STYLE)continue;
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,styles[index]));const feedback=[],pendingShots=[];
   page.on('console',message=>{const value=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=value.indexOf(prefix);if(at<0)return;try{const row=JSON.parse(value.slice(at+prefix.length));feedback.push(row);if(row.Status==='impact'&&pendingShots.length===0)pendingShots.push(page.screenshot({path:path.join(ui.output,'03-combat-impact.png')}));}catch(error){ui.errors.push(error.message);}});
@@ -24,7 +25,7 @@ let browser,ui;
   await ui.fill('native-seed','1');await ui.command('native-begin');
   const expected={name:'Style '+styles[index],spriteStyle:styles[index],tint:tints[index+1],glyph:sigils[index+1]};
   const identity=()=>Object.entries(expected).every(([key,value])=>ui.state.run.customization[key]===value);
-  ui.check(identity(),'native run saves actual chosen style, tint, sigil and name');
+  ui.check(identity(),'native run saves actual chosen style, tint, sigil and name: expected '+JSON.stringify(expected)+'; observed '+JSON.stringify(ui.state.run.customization));
   ui.check(ui.state.phase==='Map','standard Reaver starts on map');
   const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];await ui.command('native-route-'+route.id);ui.check(ui.state.phase==='Combat','seed 1 opening route enters real combat');
   await ui.shot('02-combat-idle-'+styles[index]);

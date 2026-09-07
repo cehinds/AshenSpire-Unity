@@ -43,6 +43,11 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
 - [x] Standard, Sealed and three-round Draft starts; save offers before selection.
 - [x] Keepsakes, name/tint/sigil identity and original custom progression classification.
 - [x] Endless cycles beyond Act 3, with authored enemy growth and exact restoration.
+- [x] Original Custom Climb run shape: floor/column caps, relative node weights,
+  per-act validation, isolated 24-seed density estimates and frozen save limits.
+  The pinned original has no separate practice mode to port.
+- [x] Distinct Animated, Rendered, Classic and Sigil presentation paths, including
+  original armour/tint poses and saved appearance in solo/co-op views.
 - [x] Native authoritative co-op combat with 2–4-seat original differential fixtures.
 - [x] Shared route votes, private rewards, shops/shrines/events, catch-up and
   actual cooperative combat; connected, disconnected and downed seat handling.
@@ -52,33 +57,46 @@ every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receip
 
 ## Finish foundation acceptance
 
-- [ ] Complete current-source compiled solo playthrough and profile finish/reload/
-  unlock/creation loop, including choices, shopping, equipment and services.
+- [x] Complete the current-source scripted native browser run: 657 checks, 280
+  commands, 22 fights, three acts, two reloads and Chronicle checks.
+- [ ] Complete owner acceptance and the broader profile unlock/new-creation,
+  shopping, equipment and service interaction matrix.
 - [ ] Complete current-source compiled Custom/Sealed/Draft/Endless interaction and
   save/resume checks. Headless victories are recorded separately.
+- [x] Pass 16 compiled Draft/shrine/flask/merchant/reload checks, including CON
+  raising HP from 64 to 66 and actual purchase/resale transactions.
 - [ ] Complete current-source multi-browser co-op play, friendly targets, catch-up,
-  host restart, duplicate retry and rejoin checks using the packaged companion.
-- [ ] Resolve explicit scope gaps: debug custom map-shape overrides; co-op
-  in-combat set changes; any original settings/inventory flows not covered by the
+  host restart, duplicate retry and rejoin coverage using the packaged companion.
+  A real browser fight/reward/exact-hand rejoin and 22 packaged restart checks
+  already passed; these do not cover every multiplayer interaction.
+- [x] Pass 60 phone/desktop map-shape control, actual-combat and exact-reload checks.
+- [ ] Resolve co-op in-combat set changes plus original settings/inventory flows not covered by the
   current commands. Co-op's original Endless option does not imply all solo custom rules.
-- [ ] Verify full original appearance render paths, armour/tint poses and selected
-  style behavior. Tint/sigil identity is integrated; broader rendering is active work.
+- [x] Pass 44 actual appearance choice/attack/feedback/reload checks, 11 each for
+  Animated, Rendered, Classic and Sigil.
+- [ ] Finish broader armour/tint visual acceptance and co-op pose feedback.
 - [ ] Check actual card numbers, target availability, affordability, rejection
   recovery and result feedback throughout phone and desktop flows.
 - [ ] Finish field/schema/runtime authoring coverage. The native CSV demonstration
   already adds cards, equipment, enemies and encounters and executes real combat.
-- [ ] Rerun native storage recovery and real background/return on the final source;
-  add profile corruption, quota exhaustion and upgrade coverage.
+- [x] Pass eight real raw-CDP background/freeze/return checks on the final source.
+- [x] Pass 50 final storage checks: 12 served-file hashes and 38 storage checks,
+  exact backup recovery and preservation of 729,414 damaged bytes.
+- [ ] Complete profile corruption, quota exhaustion and upgrade coverage.
 - [ ] Decide original JavaScript save import explicitly. Existing legacy saves are
   preserved; importing them into a native run is not implemented.
-- [ ] Validate source-matched Web, Windows, Android and companion artifacts, hosted
-  build/history links, downloadable folders and current screenshots.
+- [x] Build matching-source Web, Windows, Android and companion packages; pass
+  433 companion, 160 Windows/APK and 18 root-package checks, plus 22 self-contained restart checks.
+- [ ] Verify hosted build/history links, downloadable folders and current screenshots.
+  Packaging does not establish graphical Windows or physical phone acceptance.
 - [ ] Record remaining defects and owner acceptance before selecting `0.1.0.0`.
   Native co-op and broader original parity have not been waived.
 
 ## Polish and completed-game readiness
 
 - [ ] Compare original and Unity screens side by side and retain the original aesthetic.
+  The native map exposes reachable route buttons; full original graph presentation
+  remains visual parity work despite working shape/generation controls.
 - [ ] Finish sprite animation, transitions, status feedback, sound/music and settings.
 - [ ] Make every required original flow comfortable on touch with consistent UI.
 - [ ] Test physical Android hardware and graphical Windows play; establish the iOS
@@ -96,12 +114,25 @@ host transport tests and physical devices are separate evidence categories. Ever
 compiled receipt must identify its build source. Earlier adaptation playthroughs
 and screenshots remain valid only for their historical checkpoints.
 
+The matched local build checkpoint is source commit
+`890af027be07a5648119521165aaeadf2dc5e938`, build digest
+`62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b`. Its Web, Windows, Android
+and companion packages passed matching-source checks. Publication is separate.
+
 The normal solo policy receipt records 12 victories, 264 fights, 3,450 accepted
-commands and 858 save/resume comparisons at source digest
-`3363adc7b3f7e9971513dc7cde6df24b5207aa8572f27ae7ffd91a43d374521c`.
+commands and 858 save/resume comparisons in
+`TestResults/NativePolicyFinal/results.json`, runtime-source digest
+`39286ae6213e53c5a6d657a0cd571bed04617ca73692f58e760cc5874cc883ea`.
+This runtime subset digest differs from the full Unity build source digest.
 Separate custom policies completed Sealed and Draft and reached the first scaled
 Act 4 fight in Endless. A normal-health two-player co-op policy completed three
 acts in 359 commands with nine exact resumes. These are simulation evidence,
-not owner acceptance, current browser proof or device certification.
+not owner acceptance or device certification. Separately, the final native solo
+browser, map-shape and raw-CDP interruption checks passed as recorded above.
+Final appearance passed 44 checks, custom-feature interactions passed 16 and
+served-file/storage recovery passed 50 on the unchanged full build source digest
+recorded above. These bounded receipts do not close the remaining graph, co-op
+animation, balance, profile/quota, JavaScript-save import or owner/device gaps.
+No physical phone, graphical Windows, iOS or audible sound acceptance is recorded.
 
 Issue: [#33](https://github.com/cehinds/AshenSpire-Unity/issues/33).

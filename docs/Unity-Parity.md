@@ -17,6 +17,14 @@ The current source version is **0.0.10.0**, build number **10**, with stage
 that a newly compiled player is published. Check the selected channel's build
 record for its actual version, source digest, date and verification evidence.
 
+The matched local Web, Windows, Android and companion checkpoint identifies source
+commit `890af027be07a5648119521165aaeadf2dc5e938` and build source digest
+`62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b`. The Web manifest records
+2026-09-07 05:02:18 UTC. Package verification passed 433 companion, 160 Windows/APK
+and 18 root-package checks; the actual self-contained companion restart check passed 22 checks.
+These are local build/package results, not publication, graphical Windows play or
+physical Android acceptance.
+
 The native game now connects character creation, equipment-derived cards, combat,
 three-act room traversal, rewards, profiles and persistence. Custom/Ascension,
 sealed/draft starts, Endless, original starting choices and native co-op now have
@@ -77,8 +85,10 @@ Additional integrated components:
 - `OriginalStartingOptions`: discovered kits and hand alternatives, starting
   relics/wardrobe, saved kit identity and the creation-only baseline waiver.
 - `OriginalCustomRunRules`: Ascension/modifiers, sealed and draft starts, keepsakes,
-  custom progression classification and Endless cycles. Debug map-shape overrides
-  and a separate practice mode are explicitly unsupported.
+  custom progression classification and Endless cycles. `OriginalMapShape` and
+  `OriginalMapShapePanel` add the original Custom Climb floor/column caps and
+  relative node weights, per-act validation, isolated density sampling and frozen
+  restoration. There is no separate practice mode in the pinned original.
 - `OriginalRunServices`: shrine level-point purchases and merchant resale of
   eligible relics/utility flasks. The original resale contract does not sell weapons,
   armour or cards; extraction is a separate smithing operation.
@@ -104,19 +114,19 @@ to working campaign behavior.
 |---|---|---|
 | Content | Full original JSON, IDs, tag joins, source receipts and native table consumers | Complete reachable interaction coverage and full original schema parity |
 | Randomness | Original streams/counters, map/offers, custom starts and resume comparisons | Broader adversarial and multiplayer command traces |
-| Maps and rooms | Seeded graph, encounters, unknown/history gates, all 62 event choices, services and act cycles | Player-driven coverage of every room/service branch; debug map-shape overrides remain unsupported |
-| Character creation | Four classes, Assign/Standard, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Compiled discovery-to-unlock-to-new-character loop; full appearance render parity |
+| Maps and rooms | Seeded graph, original run-shape caps/weights, encounters, unknown/history gates, all 62 event choices, services and act cycles; 60 phone/desktop map-shape controls/combat/reload checks passed | Full original graph presentation and player-driven coverage of every room/service branch |
+| Character creation | Four classes, Assign/Standard, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Broader discovery-to-unlock-to-new-character coverage and owner visual acceptance |
 | Formulas, tags and statuses | Native consumers and original differential formula/damage/status/command fixtures | All-content interactions, malformed-content and authoring coverage |
 | Flasks | Charges/utility commands, shrine split/refill, growth and cooperative friendly targets | Complete browser interaction, audible feedback and physical-device regression |
 | Equipment | Owned/unlocked sets, stable cards, tiers, mounts, smithing and paid solo combat swaps | Full touch flow; co-op in-combat set changes are explicitly refused |
 | Combat | Hand/resources, targets, AI/triggers/statuses, dodge/poise, deaths and real multi-enemy fights | Balance/pacing, all interactions, owner feedback and full target-dependent damage previews |
-| Standard run | Real three-act native combat policies plus deterministic run/room transactions | Owner acceptance through the compiled player, including services and restoration |
+| Standard run | Real three-act native combat policies plus deterministic run/room transactions; scripted compiled browser run passed 657 checks, 280 commands, 22 fights, three acts and two reloads | Owner acceptance and broader interaction coverage |
 | Profiles | History, unlock evaluation, discoveries, saved progression and controller consumers | End-to-end finish/reload/unlock acceptance and browser profile corruption coverage |
-| Custom modes | Ascension, authored modifiers, standard/sealed/draft starts, keepsakes and Endless cycles | Full compiled mode interaction/playthrough evidence; debug map-shape and practice remain unsupported |
-| Co-op | Native C# host/transport, 2–4-seat combat oracle, votes, private offers, catch-up, actual three-act two-player policy and host resume | Current multi-browser/network/host-restart acceptance; phone/LAN hardware testing; co-op supports Endless rather than all solo custom modifiers |
-| Presentation | Original painted sprites, tint/sigil identity, mobile panels and receipt-driven feedback | Four original style/armour render paths under active integration; side-by-side visual/audio and touch QA |
-| Save compatibility | Frozen native contracts and checksummed backup journals; isolated browser primary/backup corruption and real hidden/return checks | Current-source rerun, profile corruption/quota/upgrade matrix and explicit original-JavaScript save-import decision |
-| Delivery | Four channel pages, immutable build library, dated build metadata and changelogs | Latest source-matched Web/Windows/Android and companion package checks; hosted links and owner promotion |
+| Custom modes | Ascension, authored modifiers, standard/sealed/draft starts, keepsakes, original run-shape controls and Endless cycles | Broader compiled mode/playthrough matrix beyond the 16 passed Draft/service/reload checks; no separate practice mode exists in the pinned original |
+| Co-op | Native C# host/transport, 2–4-seat combat oracle, votes, private offers, catch-up, actual three-act two-player policy and host resume; browser fight/reward/exact-hand rejoin and packaged restart checks passed | Broader multiplayer/network and phone/LAN hardware acceptance; co-op supports Endless rather than all solo custom modifiers |
+| Presentation | Distinct Animated/Rendered/Classic/Sigil paths, original armour/tint pose assets, mobile panels and receipt-driven feedback; 44 actual style-choice/attack/feedback/reload checks passed | Co-op pose timeline, side-by-side owner visual/audio and physical touch QA |
+| Save compatibility | Frozen native contracts and checksummed backup journals; final 12 served-file hashes and 38 storage checks passed, including exact backup and damaged-byte preservation; current-source background/freeze/return passed eight checks | Profile corruption, quota/upgrade matrix and original-JavaScript save-import decision |
+| Delivery | Four channel pages, immutable build library, dated build metadata and changelogs; matched local Web/Windows/Android and companion builds/package checks passed | Hosted-link verification and owner promotion |
 
 No row is complete merely because its JSON exists or its happy path runs.
 The detailed remaining work is in [Unity-Roadmap.md](Unity-Roadmap.md).
@@ -176,6 +186,8 @@ dotnet run --project UnityTests/Parity
 dotnet run --project UnityTests/Domain
 dotnet run --project UnityTests/CardText
 dotnet run --project UnityTests/NativeFeedback
+dotnet run --project UnityTests/MapShape
+dotnet run --project UnityTests/SpriteStyles
 dotnet run --project UnityTests/CoopRun -- --focused
 .\tools\build-unity.ps1 -Target Windows
 .\tools\build-unity.ps1 -Target Android
@@ -216,8 +228,35 @@ legacy saves are preserved rather than silently converted into native runs.
 - Co-op: the focused handoff has 233 checks, four tier-flask checks and 6,587
   original combat comparisons. A separate two-Rogue, seed-1 policy completed three
   acts using normal authored enemy health in 359 commands with nine exact resumes.
-  These are C# engine receipts, not browser, network-latency or fun evidence.
-- Native browser storage/interruption was exercised on source digest
+  These are C# engine receipts, not network-latency or fun evidence. Separately,
+  the current co-op browser check passed a real fight, rewards and exact-hand
+  rejoin. The packaged companion passed 22 actual self-contained restart checks;
+  this does not certify physical phone/LAN hardware or every multiplayer flow.
+- Normal-content solo policies record 12 victories, 264 fights, 3,450 accepted
+  commands and 858 save/resume comparisons. The final policy receipt is
+  `TestResults/NativePolicyFinal/results.json`, with runtime-source digest
+  `39286ae6213e53c5a6d657a0cd571bed04617ca73692f58e760cc5874cc883ea`.
+  That digest covers a runtime subset, not the full Unity build digest above.
+- Native Browser-Final passed 657 checks, 280 commands, 22 fights, three acts,
+  two reloads and Chronicle checks through actual browser controls. This is
+  scripted compiled-player evidence, not owner or physical-device acceptance.
+- Map shape has 2,696 native/source checks, including 339 original shape cases,
+  720 exact maps/RNG counters and twelve 24-seed sampler receipts. The shaped
+  room traversal supplies combat results, so it is not combat-play evidence.
+  Separately, MapShape-Final passed 60 actual phone/desktop control, combat and
+  exact-reload checks. The map view remains reachable route buttons; it does not
+  reproduce the original full graph presentation.
+- Appearance-Final-R2 passed 44 checks, 11 each for Animated, Rendered, Classic
+  and Sigil, through actual choice, attack, feedback and reload interactions.
+- Feature-Final passed 16 checks covering Draft, shrine CON/HP growth from 64 to
+  66, flask allocation, merchant purchase/resale and reload.
+- Storage-Final passed 50 checks: 12 served-file hashes plus 38 storage checks.
+  Backup recovery restored exact state, and 729,414 damaged bytes were preserved.
+  This does not establish profile corruption, quota or upgrade coverage.
+- Interruption-Final passed eight actual raw-CDP
+  background/freeze/return checks on the current build; this is not phone lifecycle
+  or audible audio acceptance.
+- Earlier native browser storage/interruption was exercised on source digest
   `496d262a1639afac75ca8d8d01e5361cf9cf31b8c66c4d51d1eb99184846f96f`,
   built 2026-09-07 03:46:40 UTC. An isolated fresh browser passed 38 journal checks
   and eight raw-CDP real hide/freeze/return checks. Primary corruption restored

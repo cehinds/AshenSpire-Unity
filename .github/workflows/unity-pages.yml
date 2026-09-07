@@ -89,6 +89,8 @@ jobs:
         run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
       - name: Verify original sprite styles and saved appearance through actual controls
         run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
+      - name: Exercise custom map caps and weights through actual controls
+        run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
       - name: Complete an actual two-player Unity fight and rejoin
         run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
       - name: Exercise the packaged game with real pointer input
@@ -114,6 +116,7 @@ jobs:
             TestResults/NativeFeatures
             TestResults/NativeCoopBrowser
             TestResults/NativeAppearance
+            TestResults/NativeMapShape
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'

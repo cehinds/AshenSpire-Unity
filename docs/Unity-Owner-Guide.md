@@ -31,6 +31,8 @@ Paths below are relative to the repository root.
 | Weight, resource and original supplementary mechanics | `GameContent/Unity/Original/mechanics.json` |
 | Authored event choice/history rules | `GameContent/Unity/Original/event-choices.json` |
 | Custom menu labels/options | `GameContent/Unity/Original/custom-run-options.json`; magnitudes live in `content.json` under `balance.customMods` and `balance.endless` |
+| Run-shape control labels, limits and probe count | `GameContent/Unity/Original/custom-run-options.json` under `mapShape`; generation uses `OriginalMapShape` and `ActMapGenerator` |
+| Four renderer paths and imported pose registration | `GameContent/Unity/Original/sprite-styles.json`, `Runtime/Presentation/OriginalSpriteCatalog.cs` and `OriginalPlayerFigure.cs` |
 | Tint/sigil labels, palette and badge geometry | `GameContent/Unity/Original/appearance-options.json` |
 | Version, build number and foundation stage | `GameContent/Unity/version.json`; follow `docs/Unity-Versioning.md` |
 | Original sprite assets | `Unity/Assets/AshenSpire/Resources/Art` and imported source receipts; preserve sprite identities and pose alignment |
@@ -49,6 +51,31 @@ header before editing; it identifies dependencies and the intended modification
 point. Keep C# PascalCase public APIs/types, `_camelCase` private fields and
 namespaces consistent with their folders. Preserve original JSON property names
 and stable IDs, which are saved-data contracts.
+
+## Shape a Custom Climb
+
+In character creation, open **Custom climb**, then **Run shape**. Floors and
+columns are caps: they can shorten/narrow an act but do not enlarge its authored
+map. Relative weights affect rolled room types. A zero weight does not remove
+forced elite/merchant minima or Monster fallback nodes; the readout explains
+these exceptions and reports small-map shortfalls. All-zero weights are refused,
+and invalid settings disable Begin with an explanation.
+
+Opening the group samples 24 isolated probe seeds and reports mean map-node
+counts for each act. This is density, not an estimated play duration, and it does
+not consume the live run RNG. Reset removes the run-shape override. Selected
+shape and validation limits freeze with the saved run, including Draft
+continuation. There is no separate practice mode in the pinned original. These
+controls are implemented and passed 60 actual phone/desktop control, combat and
+exact-reload checks. The current route-button view still lacks the original full
+graph presentation; working generation and shape controls do not close that
+visual parity gap.
+
+The creator also offers Animated, Rendered, Classic and Sigil as distinct sprite
+styles. Animated uses the original registered outfit/tint poses; Rendered keeps
+its painting, Classic uses the original silhouette and Sigil shows the selected
+symbol. The saved choice reaches solo and co-op views. Co-op pose feedback and
+owner visual acceptance remain separate work.
 
 ## Edit a table through CSV
 
@@ -104,6 +131,8 @@ dotnet run --project UnityTests/Parity
 dotnet run --project UnityTests/CardText
 python UnityTests/Parity/authoring-checks.py
 dotnet run --project UnityTests/NativeFeedback
+dotnet run --project UnityTests/MapShape
+dotnet run --project UnityTests/SpriteStyles
 dotnet run --project UnityTests/CoopRun -- --focused
 ```
 
@@ -134,6 +163,25 @@ the companion from matching source. The script tests, builds and packages
 locally; it does not commit, push or publish. iOS export/device validation remains
 separate work. Inspect the actual target log and `build-source.json` instead of
 assuming every platform was rebuilt because Web succeeded.
+
+The current local checkpoint uses source commit
+`890af027be07a5648119521165aaeadf2dc5e938` and source digest
+`62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b`. Matching Web, Windows,
+Android and companion packages passed 433 companion, 160 Windows/APK and 18 root-package checks;
+22 actual self-contained companion restart checks also passed. A separate co-op
+browser run passed a fight, rewards and exact-hand rejoin. These results do not
+mean the build is published or accepted on physical phones/graphical Windows.
+The native browser run passed 657 checks, 280 commands, 22 fights, three acts,
+two reloads and Chronicle checks. Map-shape controls passed 60 phone/desktop
+checks; actual background/freeze/return passed eight raw-CDP checks. Appearance
+passed 44 actual choice/attack/feedback/reload checks, 11 for each original style.
+The feature test passed 16 checks for Draft, shrine CON/HP growth from 64 to 66,
+flask allocation, merchant purchase/resale and reload. Storage passed 50 checks
+(12 served-file hashes and 38 storage checks), restoring the exact backup and
+preserving 729,414 damaged bytes. These results use the unchanged source digest
+above. Broader profile corruption/quota, JavaScript-save import, full graph
+presentation, co-op animation, balance and owner/device/audio acceptance remain
+open; iOS and audible sound acceptance are not established.
 
 GitHub Pages serves static game files. Native co-op requires the matching C# host;
 it cannot run a server inside Pages. The portable Windows companion instructions
