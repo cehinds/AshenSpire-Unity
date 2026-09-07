@@ -1,20 +1,20 @@
 {
-  "version": "0.8.3",
+  "version": "0.9.0",
   "stage": "Three-act campaign",
   "unityVersion": "6000.6.0f1",
-  "sourceCommit": "7d523664b7b65ff193df9e349747e4afb11a0f3c",
-  "sourceDigest": "2ba6d610a6b8415392bee4d54a1460931e023fa66a5c757c77f45cc5dfa34fbe",
-  "builtAt": "2026-09-06T22:40:56.0622502Z",
+  "sourceCommit": "668c5776b5dd81cef710b44c8b79d62cdd23a020",
+  "sourceDigest": "8495f6c6d351d5f7f3902fc74e1791af73358149df9ce21f6c544cfe4b1fde56",
+  "builtAt": "2026-09-07T00:52:36.3881428Z",
   "files": {
-    "Web/Build/Web.data": "2dd1ff1c4ad29c01ce3b83d9046dd71545bbd484646f9bfaa64e96abd544739d",
-    "Web/Build/Web.framework.js": "5e673312934011819fe2317ffc6a9dec91db4a1c198e88a8f7da66c81f667c2e",
-    "Web/Build/Web.loader.js": "de8921c2cad1dbad0790318d03be4a00c8f77a0875e5b8fbfe1d1545a17e16d1",
-    "Web/Build/Web.wasm": "600a2b8f1a57aa639430ed600ecbfdb1fc5e637a52638aea221d15c1ccb6d30c",
-    "Web/build-source.json": "bdccf90ea7e51f50ab312fe28cbe6cefb64921d4b441f9ba12bddf58c6c411b4",
-    "Web/index.html": "39f4b6ac13b5ca16a9245f96ccd456cec1e181abb0bc50ab70f90dc9437278b2",
+    "Web/Build/Web.data": "558d26ca89172e8752170fec0af4c7245de890de5defed1d3798d19e29498ac3",
+    "Web/Build/Web.framework.js": "8cfe003c72e1e76076f8dcb330919427089515514f53ffc575bd7acf511a3435",
+    "Web/Build/Web.loader.js": "3ed78a3c434e53faa2f6cd1c199e4467a7164efc1cf62cc90b7c35787cb523f0",
+    "Web/Build/Web.wasm": "9dd070d6e279ba2ec1e73ff84a016386ce595f37114414ab3a092c0ceaf720d3",
+    "Web/build-source.json": "b47edf350395e8056207d015289788d8f37ae01266d392d289b369cc46a69272",
+    "Web/index.html": "928d5fcd5933c65b2913d722cc46e62c2a5c307d97e16fc50a32a5aa8f166743",
     "Web/renderer-workaround.json": "b600d2801f3552a0a38075a012638d76ec7de82f23be476122c4e4f419f47fee",
-    "Web.zip": "620cb8f4ad8fadcb6cbed9952dd4ca6eaa54a0173913fee0f6da68b8e62b5f3c",
-    "Windows.zip": "b4a5f8cb96640cf37f714414868fe6ef855ce1d7c222a64a5d7d39a48c95c2d0",
-    "Android.apk": "6bfe60751a80f5657a9856a5dfe4e4b729b830fb8bffa29a37c74a20c39ba91b"
+    "Web.zip": "b66e67b6f41ab41d7faaff964683affeb5012b955ce4870502bfe15804faafd8",
+    "Windows.zip": "348624a9c97444de8449913a91c2cb7bbd01b17f17c40142be071c0b39ecdc78",
+    "Android.apk": "e54eb781ddd82020d7c2d3bbb677c78988c2d2daebcd9a713087b1caa56e1b16"
   }
 }
