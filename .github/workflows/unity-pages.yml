@@ -25,6 +25,10 @@ jobs:
           node-version: '22'
       - name: Test deterministic Unity rules
         run: dotnet run --project UnityTests/Domain
+      - name: Compare native foundations with the original engine
+        run: |
+          dotnet run --project UnityTests/Parity
+          python3 UnityTests/Parity/authoring-checks.py
       - name: Test authoring file transactions and asset validation
         run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
       - name: Test displayed viewport sizing

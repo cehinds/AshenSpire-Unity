@@ -14,6 +14,8 @@ Push-Location $repositoryRoot
 try {
     dotnet run --project UnityTests/Domain
     if ($LASTEXITCODE -ne 0) { throw 'Domain tests failed.' }
+    dotnet run --project UnityTests/Parity
+    if ($LASTEXITCODE -ne 0) { throw 'Original parity tests failed.' }
     New-Item -ItemType Directory -Path Builds -Force | Out-Null
     $buildLog = Join-Path $repositoryRoot "Builds\$Target-build.log"
     $unityProject = Join-Path $repositoryRoot 'Unity'

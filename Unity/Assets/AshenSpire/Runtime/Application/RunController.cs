@@ -9,6 +9,8 @@
 // Update adjusts viewport scaling only. Web uses CSS canvas height via DisplayViewport;
 // native safe-area padding stays in screen pixels. CampaignSession owns gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
+// ORIGINAL PREVIEW: OpenFoundation loads the pinned catalog lazily; its C# components
+// are under Runtime/Domain/Original. It is development-only and never writes campaign saves.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
 // SAVES: CampaignSaveStore owns checksummed primary/backup records per channel.
 // Legacy Expedition.v1 saves are preserved under their original keys.
@@ -30,6 +32,7 @@ namespace AshenSpire.Application
         private int _screenWidth, _displayHeight; private Rect _safeArea;
         private GameAudio _audio;
         private InterruptionState _interruption;
+        private AshenSpire.Domain.Original.OriginalContentCatalog _originalContent;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
         private void OnEnable()
         {
@@ -79,12 +82,24 @@ namespace AshenSpire.Application
                 _view.MenuRequested += Menu;
                 _view.SettingsRequested += Settings;
                 _view.ReturnRequested += ReturnFromInterruption;
+                _view.FoundationRequested += OpenFoundation;
                 Menu();
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
                 BrowserVisibility.Install(gameObject.name);
             }
             catch (Exception error) { Debug.LogException(error); GetComponent<UIDocument>().rootVisualElement.Add(new Label("The game could not start. " + error.Message)); }
+        }
+        private void OpenFoundation()
+        {
+            if (!_diagnosticsEnabled) return;
+            if (_originalContent == null)
+            {
+                var source = Resources.Load<TextAsset>("Original/content");
+                if (source == null) throw new InvalidOperationException("Import the original content using the AshenSpire menu.");
+                _originalContent = new AshenSpire.Domain.Original.OriginalContentCatalog(source.text);
+            }
+            _view.Foundation(_originalContent);
         }
         private void StartRun(string hero, uint seed)
         {
@@ -263,6 +278,7 @@ namespace AshenSpire.Application
                 return;
             _view.Dispose();
             _view.ReturnRequested -= ReturnFromInterruption;
+            _view.FoundationRequested -= OpenFoundation;
             _view.MuteRequested -= Mute;
             _view.StartRequested -= StartRun;
             _view.ContinueRequested -= Resume;
