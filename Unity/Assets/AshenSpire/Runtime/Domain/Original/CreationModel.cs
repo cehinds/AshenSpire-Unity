@@ -15,9 +15,9 @@ namespace AshenSpire.Domain.Original
         public string ClassId { get; private set; }
         public string ModeId { get; private set; }
         public event Action Changed;
-        public CreationModel(OriginalContentCatalog catalog, string classId, string modeId)
+        public CreationModel(OriginalContentCatalog catalog, string classId, string modeId, AttributeProgression progression = null)
         {
-            _content = catalog.Data(); _rules = DerivedStatCalculator.Resolve((JObject)_content["derivedStatRules"]);
+            _content = catalog.Data(); _rules = DerivedStatCalculator.Resolve((JObject)_content["derivedStatRules"], progression?.DerivedLayer());
             Select(classId, modeId);
         }
         public void Select(string classId, string modeId)

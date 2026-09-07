@@ -83,3 +83,14 @@ Label { white-space: normal; }
 .foundation-field > .unity-base-field__label { color: rgb(231,224,210); min-width: 0; width: 32%; }
 .foundation-field .unity-base-field__input { background-color: rgb(25,30,35); color: rgb(231,224,210); border-color: rgb(109,111,108); border-width: 2px; border-radius: 7px; padding: 8px; min-width: 0; }
 .foundation-field .unity-base-popup-field__text { color: rgb(231,224,210); }
+.native-hand > .card { width: 48%; min-height: 114px; padding: 7px; }
+.native-hand .cost { font-size: 13px; }
+.native-hand .card-name { font-size: 14px; }
+.native-hand .card-description { font-size: 13px; }
+.native-run > .heading { font-size: 20px; margin-top: 0; margin-bottom: 5px; }
+.native-run > .caption { margin-top: 4px; margin-bottom: 5px; }
+.native-run > .node-title { font-size: 16px; }
+.native-stage { height: 110px; margin-bottom: 5px; }
+.native-stage > .fighter { height: 105px; }
+.native-target { font-size: 12px; padding: 6px; margin: 3px 0; }
+.native-page-count { font-size: 12px; align-self: center; padding: 5px; }

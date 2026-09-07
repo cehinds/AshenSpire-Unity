@@ -1,0 +1,196 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "conversion": "WebP to PNG; identical decoded RGBA pixels",
+  "sprites": [
+    {
+      "source": "assets/sprites/enemy_ashRevenant.webp",
+      "sourceSha256": "5638037eb93387ded59317e853a65dcbdb08cc07f91aad49b64ba8160891fe63",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_ashRevenant.png",
+      "targetSha256": "e056279147e5f8777489e9ebe73c83360470020bc5ec3c7b6d0f43e405d24fc2",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_blightedValkyrie.webp",
+      "sourceSha256": "628eb9b44face1b8139f2f2b17c0f1ce96455c481557ca391826c1253388dd2b",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_blightedValkyrie.png",
+      "targetSha256": "8e96136b1c678afe72c36af3889fd5724890b76b210b96a47e14446dff642d92",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_blightHound.webp",
+      "sourceSha256": "1acb28a6102615b19487e8877e2db49563b628c18e2bf451cdc95bd52226ddc9",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_blightHound.png",
+      "targetSha256": "bdf893f0063a7badbd90670e39734f738bcd0279615b28a7a2633a2234c955f0",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_charredColossus.webp",
+      "sourceSha256": "57c68196812cffb8071fedebf12fcce6aae9d93e285bc18e02ff55ad002e0e96",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_charredColossus.png",
+      "targetSha256": "e60adfa640b84f7ec0d4c378e41cf1311b295ee5d042268493b002df7097b515",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_courtDuelist.webp",
+      "sourceSha256": "865e1d9517db1fde1b69e7996fa9d1d51ba6646b7f32a79177832b9722ba2bfa",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_courtDuelist.png",
+      "targetSha256": "d9fb8f095b44f22d62329fe74fced8fc0e9e29a83fd2aba8459a97c9308fd4d9",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_courtMarionette.webp",
+      "sourceSha256": "c3cdce38b94b25acad4b30589302caf37d67c31f122fe85fd990828d406caeaa",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_courtMarionette.png",
+      "targetSha256": "d4e5a80568282d53bab5567d34e6fd3f8896cdff9cec79f27ae29af29d4e5962",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_courtSurgeon.webp",
+      "sourceSha256": "e95688d7c62c83b76b4a06335e33c1dd7aafb50dd34c35f29839f6d840e55bea",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_courtSurgeon.png",
+      "targetSha256": "93b1ac7cc4b25849397a98f7b0fb9b62bd23bffe09f915220ae26b1e7c90e855",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_emberStarvedPilgrim.webp",
+      "sourceSha256": "0fd9673ea20b6cc35f746f09eaef1738dba76f060ba6606d255a11198a6eef7e",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_emberStarvedPilgrim.png",
+      "targetSha256": "abd6ec94b300d776fe34e1fb22f4e0c19fdae381d814737c50d55b512fa7e37d",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_fellWarden.webp",
+      "sourceSha256": "f329b73ce0cfcbe6f3a745f11ea19f0627330b546fe233d516739cd6e79fe27b",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_fellWarden.png",
+      "targetSha256": "c515bab9d8e4610209288f4ea84a1bba9927a36784a6df6e93aea086bae8651b",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_gildedKnight.webp",
+      "sourceSha256": "73ed98b9d1c60a9232f1471e6c1ed66fc8fd46d7ca62b6c716c9d575666ec3ff",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_gildedKnight.png",
+      "targetSha256": "940432325de3226c11dab135fda29ca05c08e8578477bb5f83981cb17f0c3b92",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_graveWisp.webp",
+      "sourceSha256": "a2f51bd22e332cdc6d0a4ece58bc2dbe3d586bf74e564f40317e3bf509fe89b5",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_graveWisp.png",
+      "targetSha256": "f9d5c9009009afe0490a2a7ade31a6af66adf92f927021278f8e71ec515ae679",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_huskBrute.webp",
+      "sourceSha256": "4ddf17cb1b3c24e6a40fbd28aa9176e42e631c3de4f7dcbbfea014a02229415a",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_huskBrute.png",
+      "targetSha256": "baa11b281de1ba9aef47d5d6078b5edfa7edc257afb428c3c507494feef59546",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_livingArmor.webp",
+      "sourceSha256": "497e7166742699c7bbb383c4b7e2a8d9870973ea72a844f40054d449fa9aa8b6",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_livingArmor.png",
+      "targetSha256": "3e52e8c83bb1045ece39909e5977efe862baee2e82203b3d7a863cb7be716b1e",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_stitchedHound.webp",
+      "sourceSha256": "935ef24e6b55e6c08dbdee5b0844893c385f94d0b128eebb3bde0d3053a410e0",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_stitchedHound.png",
+      "targetSha256": "968030326974f1c8450a35a4a5eaa38e8a3245391981030c9606755773fae50f",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_stitchedKing.webp",
+      "sourceSha256": "87f45411bbf94c62da7d5d89821902e1a0a449c80c83e7e8400440433cae3a4a",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_stitchedKing.png",
+      "targetSha256": "0b40b063d08091f788dee4c1499069e5ede4f79a87b30f28caea8b891a5032d8",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_valkyrieShade.webp",
+      "sourceSha256": "0ba3b471567369dfefb5b680e2428fb77644201eed8606cd1514a1486c98cf99",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_valkyrieShade.png",
+      "targetSha256": "7813ef9692dc58add158c006ea01d7827f27628b44938ceabf0094dfd7b8378f",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_wanderingSoldier.webp",
+      "sourceSha256": "ff0e06834a967b6d5722c8ca7b4e7a3c0a7cb494624dd76dd147b8c13cc31926",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_wanderingSoldier.png",
+      "targetSha256": "3d442bb9d636ba1479645b4c1d7fcadb23f2f802efe85bd97d787504c23ebb62",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_wyrmAspirant.webp",
+      "sourceSha256": "1659f2cec9c39bbcd717ed0e749b907ef64d1fd2b0626ba944e99c8d0e405b75",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_wyrmAspirant.png",
+      "targetSha256": "f26e06039106a42e2796e21771a75089a7c9dd3bbb45294a0e97459c1eb14798",
+      "size": [
+        300,
+        380
+      ]
+    },
+    {
+      "source": "assets/sprites/enemy_wyrmLord.webp",
+      "sourceSha256": "098cb5bff233a85e578ec2c96ba51391173a8d2add88868c10bc696d5d88a663",
+      "target": "Unity/Assets/AshenSpire/Resources/Art/Original/enemy_wyrmLord.png",
+      "targetSha256": "c228187693838890f86173089f1346327772977bdcc2d686bee1281784fbc721",
+      "size": [
+        300,
+        380
+      ]
+    }
+  ]
+}

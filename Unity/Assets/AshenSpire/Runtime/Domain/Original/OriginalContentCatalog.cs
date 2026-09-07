@@ -31,6 +31,7 @@ namespace AshenSpire.Domain.Original
                 }
             }
             _tags = new TagCatalog(_content);
+            OriginalContentValidation.ValidateReferences(_content);
             var cards = ((JArray)_content["cards"]).Select(x => (string)x["id"]).ToHashSet();
             foreach (var hero in _content["classes"])
             {

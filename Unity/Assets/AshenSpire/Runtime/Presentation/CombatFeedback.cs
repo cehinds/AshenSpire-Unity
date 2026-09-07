@@ -22,7 +22,8 @@ namespace AshenSpire.Presentation
         {
             Cancel();
             _player = player; _enemy = enemy;
-            _idle = Texture(art + "_idle");
+            _idle = _player is OriginalPlayerFigure ? null : Texture(art + "_idle");
+            if (!reduced && _player is OriginalPlayerFigure originalFigure) originalFigure.BeginFeedback(cue.Id);
             var text = outcome.Describe();
             _label = new Label(string.IsNullOrEmpty(text) ? cue.Id.ToUpperInvariant() : text) { pickingMode = PickingMode.Ignore, name = "combat-feedback" };
             _label.AddToClassList("combat-feedback");
@@ -30,10 +31,10 @@ namespace AshenSpire.Presentation
             _label.style.color = color;
             host.Add(_label);
             var frames = new Texture2D[cue.Poses.Length];
-            for (var i = 0; i < frames.Length; i++) frames[i] = Texture(art + "_" + cue.Poses[i]);
+            if (!(_player is OriginalPlayerFigure)) for (var i = 0; i < frames.Length; i++) frames[i] = Texture(art + "_" + cue.Poses[i]);
             var started = Time.realtimeSinceStartupAsDouble;
             var duration = cue.Milliseconds / 1000.0 * (fast ? .5 : 1);
-            _report = diagnostics ? status => Debug.Log("ASHENSPIRE_FEEDBACK " + JsonUtility.ToJson(new FeedbackReport { Cue = cue.Id, Status = status, Reduced = reduced, Fast = fast, Duration = duration, Text = _label?.text, PlayerX = _player?.resolvedStyle.translate.x ?? 0 })) : null;
+            _report = diagnostics ? status => Debug.Log("ASHENSPIRE_FEEDBACK " + JsonUtility.ToJson(new FeedbackReport { Cue = cue.Id, Status = status, Reduced = reduced, Fast = fast, Duration = duration, Text = _label?.text, PlayerX = _player?.resolvedStyle.translate.x ?? 0, SpriteStyle = (_player as OriginalPlayerFigure)?.RenderStyle, Pose = (_player as OriginalPlayerFigure)?.Pose })) : null;
             _report?.Invoke("started");
             var reportedImpact = false;
             _timeline = host.schedule.Execute(() =>
@@ -44,9 +45,10 @@ namespace AshenSpire.Presentation
                     var arc = Mathf.Sin(progress * Mathf.PI);
                     if (_player != null)
                     {
-                        _player.image = frames[Math.Min(frames.Length - 1, (int)(progress * frames.Length))];
+                        if (!(_player is OriginalPlayerFigure)) _player.image = frames[Math.Min(frames.Length - 1, (int)(progress * frames.Length))];
                         _player.style.translate = new Translate(arc * cue.Distance * (enemyTurn ? -.35f : 1), -arc * (enemyTurn ? 0 : 3));
-                        _player.tintColor = Color.Lerp(Color.white, color, arc * (outcome.Hurt > 0 || outcome.Healing > 0 || outcome.Block > 0 ? .55f : 0));
+                        var playerTint = Color.Lerp(Color.white, color, arc * (outcome.Hurt > 0 || outcome.Healing > 0 || outcome.Block > 0 ? .55f : 0));
+                        if (_player is OriginalPlayerFigure figure) figure.FeedbackTint(playerTint); else _player.tintColor = playerTint;
                     }
                     if (_enemy != null)
                     {
@@ -69,12 +71,12 @@ namespace AshenSpire.Presentation
         private void Finish(string status)
         {
             _timeline?.Pause(); _timeline = null;
-            if (_player != null) { _player.image = _idle; _player.style.translate = new Translate(0, 0); _player.tintColor = Color.white; }
+            if (_player != null) { if (_player is OriginalPlayerFigure figure) figure.Settle(); else _player.image = _idle; _player.style.translate = new Translate(0, 0); _player.tintColor = Color.white; }
             if (_enemy != null) { _enemy.style.translate = new Translate(0, 0); _enemy.tintColor = Color.white; }
             _report?.Invoke(status); _report = null;
             _label?.RemoveFromHierarchy(); _label = null; _player = null; _enemy = null;
         }
         public void Dispose() { Cancel(); _textures.Clear(); }
-        [Serializable] private sealed class FeedbackReport { public string Cue, Status, Text; public bool Reduced, Fast; public double Duration; public float PlayerX; }
+        [Serializable] private sealed class FeedbackReport { public string Cue, Status, Text, SpriteStyle, Pose; public bool Reduced, Fast; public double Duration; public float PlayerX; }
     }
 }

@@ -1,6 +1,7 @@
 // Real browser target switches, pointer/keyboard input and read-only Unity diagnostics.
 // A raw CDP connection avoids Playwright's automatic focus/visibility emulation.
 // Usage: node tools/interruption-playtest.cjs URL OUTPUT [--baseline | --seed-only] [--slow-input]
+const {ControlReportAssembler}=require('./control-report.cjs');
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const assert=(value,message)=>{if(!value)throw Error(message);};
@@ -8,6 +9,7 @@ const output=path.resolve(process.argv[3]||'TestResults/Interruption');fs.mkdirS
 const seedOnly=process.argv.includes('--seed-only');
 let child,ws,send,session,controls,state,layout=0,revision=0,lastInput;
 const interruptions=[],feedback=[],sounds=[],visibility=[],screenshots=[],errors=[],errorContexts=[],checks=[],seedPixels=[],seedCampaigns=[],layoutRetries=[];
+const controlReports=new ControlReportAssembler({onError:e=>errors.push(e)});
 const record=(name,value)=>{assert(value,name);checks.push(name);};
 async function until(predicate,name,timeout=20000){const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await sleep(50);}throw Error('Timed out: '+name);}
 const game=(method,params={})=>send(method,params,session);
@@ -76,9 +78,10 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
   const message=JSON.parse(e.data);
   if(message.id){const p=pending.get(message.id);if(!p)return;pending.delete(message.id);clearTimeout(p.timer);message.error?p.reject(Error(JSON.stringify(message.error))):p.resolve(message.result);return;}
   if(message.sessionId!==session)return;
+  if(message.method==='Runtime.executionContextsCleared'||message.method==='Page.frameNavigated'&&!message.params.frame.parentId)controlReports.reset();
   if(message.method==='Runtime.exceptionThrown')errors.push(message.params.exceptionDetails.text);
   if(message.method==='Runtime.consoleAPICalled'){
-   const value=message.params.args.map(x=>x.value??x.description??'').join(' ');
+   const value=controlReports.normalize(message.params.args.map(x=>x.value??x.description??'').join(' '));if(value===null)return;
    if(value.startsWith('ASHENSPIRE_CONTROLS ')){
     try{
      const {LayoutAttempts,...measuredControls}=JSON.parse(value.slice(20));

@@ -1,5 +1,6 @@
 // Real browser input against the compiled Unity foundation preview. Diagnostics are
 // read-only; tests never call game commands or replace state through JavaScript.
+const {controlReportsForPage}=require('./control-report.cjs');
 const fs = require('node:fs'), path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const output = path.resolve(process.argv[3] || 'TestResults/Foundation');
@@ -40,9 +41,10 @@ function result(success) { return { success, checks, screenshots, errors, creati
 (async () => {
   browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}), args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'] });
   page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const normalizeControls=controlReportsForPage(page,e=>errors.push(e));
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', message => {
-    const value = message.text(); if (message.type() === 'error') errors.push(value);
+    const value = normalizeControls(message.text()); if(value === null) return; if (message.type() === 'error') errors.push(value);
     for (const [prefix, receive] of [
       ['ASHENSPIRE_CONTROLS ', data => { controls = data; layout++; }],
       ['ASHENSPIRE_FOUNDATION_CREATION ', data => creations.push(data)],

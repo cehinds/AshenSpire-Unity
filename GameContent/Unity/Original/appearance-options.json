@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "sourceOptions": "src/ui/assets.js PORTRAIT_GLYPHS and PORTRAIT_TINTS",
+  "sourceColors": "styles/base.css default palette",
+  "tints": [
+    { "id": "gold", "name": "Goldbough gold", "color": "#c9a227" },
+    { "id": "ember", "name": "Gorefire ember", "color": "#c9502e" },
+    { "id": "frost", "name": "Hoarfrost", "color": "#7fa8c9" },
+    { "id": "rot", "name": "Crimson blight", "color": "#b5541c" },
+    { "id": "grace", "name": "Lost ember", "color": "#9fc3e8" }
+  ],
+  "sigils": [
+    { "id": "⚔", "name": "Crossed swords", "shapes": [
+      { "fill": true, "points": [[3,2],[7,3],[17,16],[16,18],[3,5]] },
+      { "fill": true, "points": [[21,2],[17,3],[7,16],[8,18],[21,5]] },
+      { "points": [[4,15],[10,20]] }, { "points": [[14,20],[20,15]] },
+      { "points": [[6,18],[3,22]] }, { "points": [[18,18],[21,22]] }
+    ] },
+    { "id": "🛡", "name": "Shield", "shapes": [
+      { "fill": false, "closed": true, "points": [[3,4],[12,1],[21,4],[20,13],[17,19],[12,23],[7,19],[4,13]] },
+      { "points": [[12,3],[12,20]] }, { "points": [[5,9],[19,9]] }
+    ] },
+    { "id": "🔥", "name": "Flame", "shapes": [
+      { "fill": true, "points": [[12,1],[17,8],[17,12],[21,9],[22,16],[20,20],[16,23],[8,23],[3,19],[2,14],[6,7],[7,13],[10,9]] },
+      { "cutout": true, "fill": true, "points": [[12,11],[16,17],[15,21],[10,22],[8,18]] }
+    ] },
+    { "id": "🌙", "name": "Moon", "shapes": [
+      { "fill": true, "points": [[16,1],[9,1],[4,5],[1,10],[1,15],[4,20],[9,23],[15,23],[20,20],[23,15],[18,17],[13,16],[9,12],[8,7],[11,3]] }
+    ] },
+    { "id": "☀", "name": "Sun", "shapes": [
+      { "fill": true, "circle": [12,12,5] },
+      { "points": [[12,0],[12,4]] }, { "points": [[12,20],[12,24]] },
+      { "points": [[0,12],[4,12]] }, { "points": [[20,12],[24,12]] },
+      { "points": [[3,3],[6,6]] }, { "points": [[18,18],[21,21]] },
+      { "points": [[3,21],[6,18]] }, { "points": [[18,6],[21,3]] }
+    ] },
+    { "id": "🐺", "name": "Wolf", "shapes": [
+      { "fill": false, "closed": true, "points": [[2,1],[8,5],[12,4],[16,5],[22,1],[21,12],[18,18],[14,23],[10,23],[6,18],[3,12]] },
+      { "points": [[5,10],[9,12],[7,14]] }, { "points": [[19,10],[15,12],[17,14]] },
+      { "fill": true, "points": [[9,17],[15,17],[12,20]] },
+      { "points": [[12,20],[12,23]] }
+    ] }
+  ],
+  "originalStyles": ["animated", "rendered", "classic", "glyph"],
+  "presentation": "Original tint accents and readable vector sigil badges around existing native class sprites. This does not implement the four original sprite-style renderers."
+}

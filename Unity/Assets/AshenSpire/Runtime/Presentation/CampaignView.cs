@@ -10,13 +10,14 @@ using UnityEngine.UIElements;
 
 namespace AshenSpire.Presentation
 {
-    public sealed class CampaignView : IDisposable
+    public sealed partial class CampaignView : IDisposable
     {
         private readonly VisualElement _root;
         private readonly bool _diagnostics;
         private bool _disposed;
         private IVisualElementScheduledItem _controlReport;
         private int _controlReportAttempts;
+        private int _controlReportSequence;
         private VisualElement _body;
         private ScrollView _scroll;
         private Image _player;
@@ -35,6 +36,10 @@ namespace AshenSpire.Presentation
         private readonly List<VisualElement> _interruptionDisabled = new List<VisualElement>();
         public event Action ReturnRequested;
         public event Action FoundationRequested;
+        public event Action NativeRequested, NativeContinueRequested;
+        public event Action ProfileRequested;
+        public event Action CoopRequested;
+        public bool NativeSaveAvailable { get; set; }
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -116,30 +121,57 @@ namespace AshenSpire.Presentation
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
             Shell("ASHEN SPIRE", "THREE ACTS · ONE EMBER · YOUR PATH");
+            if (notice != null) _body.Add(Text(notice, "notice"));
             var art = Picture("reaver_idle", "campaign-title-art");
             _body.Add(art);
             _body.Add(Text("THE EMBER ENDURES", "title"));
             _body.Add(Text("Read their intent. Shape your deck.\nReach the heart of the Spire.", "lead"));
+            AddButton("native-new", "Begin the climb", () => NativeRequested?.Invoke(), "primary");
+            if (NativeSaveAvailable) AddButton("native-continue", "Continue your climb", () => NativeContinueRequested?.Invoke(), "primary");
+            AddButton("native-profile", "Chronicle & unlocks", () => ProfileRequested?.Invoke());
+            AddButton("native-coop", "Climb together", () => CoopRequested?.Invoke());
             if (canResume)
-                AddButton("continue", "Continue expedition", () => ContinueRequested?.Invoke(), "primary");
-            AddButton("new", "Choose your wanderer", () => Heroes(content), "primary");
+                AddButton("continue", "Continue earlier campaign", () => ContinueRequested?.Invoke());
+            AddButton("new", "Play earlier campaign", () => Heroes(content));
             AddButton("settings", "Settings & how to play", () => Settings(() => Title(content, canResume)));
             if (_diagnostics)
                 AddButton("gallery", "Component gallery", () => Gallery(() => Title(content, canResume)));
-            if (notice != null)
-            {
-                _body.Add(Text(notice, "notice"));
-            }
             if (_diagnostics)
                 AddButton("foundation", "Original game foundation preview", () => FoundationRequested?.Invoke());
-            _body.Add(Text("Nine encounters · four classes · seeded expeditions\nProgress saves after every command.", "caption"));
+            _body.Add(Text("Four wanderers · three acts · seeded routes\nProgress saves after every command.", "caption"));
             Report();
         }
-        public void Foundation(AshenSpire.Domain.Original.OriginalContentCatalog catalog)
+        public void Foundation(AshenSpire.Domain.Original.OriginalContentCatalog catalog, AshenSpire.Domain.Original.AttributeProgression progression, Newtonsoft.Json.Linq.JObject mechanics)
         {
             if (!_diagnostics) return;
             Shell("ASHEN SPIRE", "FAITHFUL UNITY REBUILD");
-            _ = new OriginalFoundationPanel(_body, catalog, () => Report(), () => MenuRequested?.Invoke());
+            _ = new OriginalFoundationPanel(_body, catalog, progression, mechanics, () => Report(), () => MenuRequested?.Invoke());
+        }
+        public void NativeCreation(AshenSpire.Domain.Original.OriginalContentCatalog catalog, AshenSpire.Domain.Original.AttributeProgression progression, Newtonsoft.Json.Linq.JObject mechanics, Action<Newtonsoft.Json.Linq.JObject,uint> start, Newtonsoft.Json.Linq.JObject profile)
+        {
+            Shell("ASHEN SPIRE", "CHOOSE YOUR WANDERER");
+            _ = new OriginalFoundationPanel(_body, catalog, progression, mechanics, () => Report(), () => MenuRequested?.Invoke(), start, profile);
+        }
+        public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
+        {
+            Shell("ASHEN SPIRE", "THE ORIGINAL CLIMB");
+            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics);
+            var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
+            if (panel.Stage == null || projection == null) return null;
+            var cue = feedback.Cue(projection.CueId);
+            _feedback.Play(panel.Stage, panel.PlayerImage, panel.EnemyImage, (string)game.RunPlayer["classId"], cue, projection.Outcome, projection.EnemyTurn, _reducedMotion, _fast, _diagnostics);
+            return cue.Id;
+        }
+
+        public void Profile(AshenSpire.Domain.Original.OriginalProfile profile)
+        {
+            Shell("CHRONICLE", "YOUR WANDERERS AND DISCOVERIES");
+            var state = profile.Snapshot(); var progress = state["progress"];
+            _body.Add(Text(progress["runs"] + " climbs · " + progress["wins"] + " victories · Act " + progress["maxAct"] + " reached", "lead"));
+            foreach (var row in profile.UnlockView()) _body.Add(Text(((bool)row["earned"] ? "Unlocked · " : "Locked · ") + ((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]) + "\n" + (string)row["hint"], "stat"));
+            _body.Add(Text("Recent climbs", "node-title"));
+            foreach (var result in state["results"].Reverse()) _body.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat") + " · Act " + result["act"] + ", floor " + result["floor"] + "\n" + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+            AddButton("native-profile-back", "Back to title", () => MenuRequested?.Invoke()); Report();
         }
         private void Heroes(CampaignDefinition content)
         {
@@ -387,7 +419,7 @@ namespace AshenSpire.Presentation
             motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             fast.RegisterValueChangedCallback(e => { _fast = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             _body.Add(Text("HOW TO PLAY", "heading"));
-            _body.Add(Text("Tap a card, then Play or the enemy. Energy refills each turn. Block expires when your next turn begins.\n\nRead the next intent: attack hurts, guard blocks, charge increases future attacks, poison hurts every turn. Poison bypasses block and decays. Weak reduces enemy attacks by 3. Strength boosts every damage effect this battle.\n\nUse flasks before you fall. Between battles, buy equipment, remove unwanted cards, or rest. Deck and equipment persist for this run.\n\nScroll to see all cards on smaller screens. No hover or keyboard is required.", "lead"));
+            _body.Add(Text("Choose a card and its target, then confirm Play. Actions refresh each turn. MP and stamina pay the additional costs shown on cards; use Azure charges to restore MP or Catch Breath to recover stamina in a native solo fight.\n\nRead every enemy's intent before ending your turn. Guard absorbs damage. Status effects can change damage, resources and upcoming turns. Watch their counters and the results of each action.\n\nWeapons supply cards. Prepare equipment sets between battles; switching prepared sets during a solo fight pays the displayed cost. Shrines restore resources, reallocate flask charges and sell attribute improvements. Every attribute point has a benefit.\n\nIn a shared climb, vote for a route, play your own hand and end your own turn. The enemy phase starts when the active party finishes. You can target allies with supported cards and flasks.\n\nScroll or use More cards on smaller screens. Progress saves after accepted commands. Co-op progress belongs to the companion host; rejoin your saved seat after disconnecting.", "lead"));
             AddButton("back", "Back", back, "primary");
             Report();
         }
@@ -502,7 +534,7 @@ namespace AshenSpire.Presentation
         {
             var surface = _interruptionCover ?? _root;
             var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
-                .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList()).Concat(surface.Query<DropdownField>().ToList())
+                .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList()).Concat(surface.Query<DropdownField>().ToList()).Concat(surface.Query<SliderInt>().ToList()).Concat(surface.Query<IntegerField>().ToList())
                 .Where(x => !string.IsNullOrEmpty(x.name))
                 .Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y,
                     Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray();
@@ -512,10 +544,25 @@ namespace AshenSpire.Presentation
             // export those bounds; the pending report will measure the next layout.
             if (!Finite(width) || !Finite(height) || controls.Any(x =>
                 !Finite(x.X) || !Finite(x.Y) || !Finite(x.Width) || !Finite(x.Height))) return false;
-            Debug.Log("ASHENSPIRE_CONTROLS " + JsonUtility.ToJson(new ControlList {
+            var report = JsonUtility.ToJson(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
                 LayoutAttempts = _controlReportAttempts + 1,
-                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() }));
+                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() });
+            // Web console messages have a finite byte limit. Expanded creators
+            // and inventories must keep their complete read-only report rather
+            // than silently truncating controls or labels used by pointer tests.
+            if (System.Text.Encoding.UTF8.GetByteCount(report) <= 6000)
+                Debug.Log("ASHENSPIRE_CONTROLS " + report);
+            else
+            {
+                var sequence = ++_controlReportSequence;
+                var count = (report.Length + 2499) / 2500;
+                for (var index = 0; index < count; index++)
+                    Debug.Log("ASHENSPIRE_CONTROLS_CHUNK " + new Newtonsoft.Json.Linq.JObject {
+                        ["sequence"] = sequence, ["index"] = index, ["count"] = count,
+                        ["text"] = report.Substring(index * 2500, Math.Min(2500, report.Length - index * 2500))
+                    }.ToString(Newtonsoft.Json.Formatting.None));
+            }
             return true;
         }
         private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);

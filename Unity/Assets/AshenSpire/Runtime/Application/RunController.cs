@@ -9,8 +9,9 @@
 // Update adjusts viewport scaling only. Web uses CSS canvas height via DisplayViewport;
 // native safe-area padding stays in screen pixels. CampaignSession owns gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
-// ORIGINAL PREVIEW: OpenFoundation loads the pinned catalog lazily; its C# components
-// are under Runtime/Domain/Original. It is development-only and never writes campaign saves.
+// NATIVE GAME: Runtime/Domain/Original owns the original climb and frozen rules.
+// Native saves/profile use separate checksummed keys; the earlier campaign is preserved.
+// CO-OP: RunController.Coop.cs binds a host-authoritative companion connection.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
 // SAVES: CampaignSaveStore owns checksummed primary/backup records per channel.
 // Legacy Expedition.v1 saves are preserved under their original keys.
@@ -19,12 +20,14 @@
 using System;
 using AshenSpire.Domain;
 using AshenSpire.Presentation;
+using AshenSpire.Domain.Original;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace AshenSpire.Application
 {
     [RequireComponent(typeof(UIDocument))]
-    public sealed class RunController : MonoBehaviour
+    public sealed partial class RunController : MonoBehaviour
     {
         [SerializeField, Tooltip("Shared phone panel settings required by UIDocument.")] private PanelSettings _panelSettings;
         private CampaignDefinition _content; private CampaignSession _session; private CampaignView _view; private CampaignSaveStore _saves;
@@ -33,6 +36,10 @@ namespace AshenSpire.Application
         private GameAudio _audio;
         private InterruptionState _interruption;
         private AshenSpire.Domain.Original.OriginalContentCatalog _originalContent;
+        private OriginalGameSession _originalGame;
+        private OriginalSaveJournal _originalSaves;
+        private OriginalProfile _profile;
+        private OriginalSaveJournal _profileSaves;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
         private void OnEnable()
         {
@@ -67,6 +74,8 @@ namespace AshenSpire.Application
                 _interruption = new InterruptionState();
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
+                _originalSaves = new OriginalSaveJournal("AshenSpire.Unity.Original.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
+                _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.SetDisplayHeight(DisplayViewport.Height);
                 _view.StartRequested += StartRun;
@@ -83,6 +92,10 @@ namespace AshenSpire.Application
                 _view.SettingsRequested += Settings;
                 _view.ReturnRequested += ReturnFromInterruption;
                 _view.FoundationRequested += OpenFoundation;
+                _view.NativeRequested += CreateOriginal;
+                _view.NativeContinueRequested += ResumeOriginal;
+                _view.ProfileRequested += ShowOriginalProfile;
+                _view.CoopRequested += OpenCoop;
                 Menu();
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
@@ -99,8 +112,66 @@ namespace AshenSpire.Application
                 if (source == null) throw new InvalidOperationException("Import the original content using the AshenSpire menu.");
                 _originalContent = new AshenSpire.Domain.Original.OriginalContentCatalog(source.text);
             }
-            _view.Foundation(_originalContent);
+            var progression = new AshenSpire.Domain.Original.AttributeProgression(Newtonsoft.Json.Linq.JObject.Parse(Resources.Load<TextAsset>("Original/progression").text));
+            var mechanics = Newtonsoft.Json.Linq.JObject.Parse(Resources.Load<TextAsset>("Original/mechanics").text);
+            _view.Foundation(_originalContent, progression, mechanics);
         }
+        private JObject OriginalRules(string name)
+        {
+            var asset = Resources.Load<TextAsset>("Original/" + name);
+            if (asset == null) throw new InvalidOperationException("Import native game content using the AshenSpire menu.");
+            return JObject.Parse(asset.text);
+        }
+        private void CreateOriginal()
+        {
+            LoadOriginalProfile();
+            var progression = new AttributeProgression(OriginalRules("progression")); var mechanics = OriginalRules("mechanics");
+            _view.NativeCreation(_originalContent, progression, mechanics, (player, seed) =>
+            {
+                player["runId"] = Guid.NewGuid().ToString("N"); player["profileMeta"] = _profile.Snapshot();
+                var supplemental = OriginalRules("event-choices"); supplemental["mapShapeLimits"] = OriginalRules("custom-run-options")["mapShape"]["limits"].DeepClone();
+                BindOriginal(OriginalGameSession.Start(_originalContent, supplemental, mechanics, player, seed));
+                RefreshOriginal();
+            }, _profile.Snapshot());
+        }
+        private void ResumeOriginal()
+        {
+            try
+            {
+                LoadOriginalProfile();
+                var snapshot = _originalSaves.Load(value => OriginalGameSession.Restore(value), out var recovered);
+                BindOriginal(OriginalGameSession.Restore(snapshot));
+                if (recovered) Debug.LogWarning("Recovered the previous native run checkpoint.");
+                RefreshOriginal();
+            }
+            catch (Exception error) { Debug.LogWarning(error.Message); _view.Title(_content, _saves.HasSave, "The native save could not be restored. Existing records are preserved."); }
+        }
+        private void BindOriginal(OriginalGameSession value)
+        {
+            if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
+            _originalGame = value; _originalGame.Changed += RefreshOriginal;
+        }
+        private void RefreshOriginal()
+        {
+            _originalSaves.Save(_originalGame.Snapshot());
+            if (_profile != null)
+            {
+                var run = _originalGame.RunPlayer;
+                foreach (var id in run["foundArmaments"] ?? new JArray()) _profile.CollectArmament(run, (string)id, (string)run["room"]?["source"] ?? "run");
+                if (_originalGame.Phase == OriginalRunPhase.Victory || _originalGame.Phase == OriginalRunPhase.Defeat)
+                    _profile.Finish((string)run["runId"], run, _originalGame.Phase == OriginalRunPhase.Victory);
+                _profileSaves.Save(_profile.Snapshot());
+            }
+            var feedbackCue = _view.Native(_originalGame, _content.Feedback);
+            if (feedbackCue != null) _audio.Play(feedbackCue);
+        }
+        private void LoadOriginalProfile()
+        {
+            if (_originalContent == null) _originalContent = new OriginalContentCatalog(OriginalRules("content").ToString());
+            if (_profile != null) return;
+            _profile = _profileSaves.HasSave ? OriginalProfile.Restore(_originalContent, _profileSaves.Load(value => OriginalProfile.Restore(_originalContent, value), out _)) : new OriginalProfile(_originalContent);
+        }
+        private void ShowOriginalProfile() { LoadOriginalProfile(); _view.Profile(_profile); }
         private void StartRun(string hero, uint seed)
         {
             Bind(new CampaignSession(_content, hero, seed));
@@ -175,6 +246,7 @@ namespace AshenSpire.Application
         private void Menu()
         {
             Save();
+            _view.NativeSaveAvailable = _originalSaves?.HasSave == true;
             _view.Title(_content, _saves.HasSave);
         }
         private void Settings(bool reduced, bool fast)
@@ -194,6 +266,8 @@ namespace AshenSpire.Application
         {
             if (_session != null && _saves != null)
                 _saves.Save(_session.State);
+            if (_originalGame != null && _originalSaves != null)
+                _originalSaves.Save(_originalGame.Snapshot());
         }
         private void OnApplicationPause(bool paused)
         {
@@ -233,6 +307,7 @@ namespace AshenSpire.Application
         {
             if (!_interruption.TryReturn()) return;
             _view.HideInterruption();
+            if (_coopActive && _coopSnapshot != null) RenderCoop();
             _audio.SetSuspended(false);
             ReportInterruption();
         }
@@ -269,16 +344,22 @@ namespace AshenSpire.Application
         }
         private void OnDisable()
         {
+            CloseCoop();
             BrowserVisibility.Remove();
             Save();
             if (_audio != null) _audio.SetMuted(true);
             if (_session != null)
                 _session.Changed -= Refresh;
+            if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
             if (_view == null)
                 return;
             _view.Dispose();
             _view.ReturnRequested -= ReturnFromInterruption;
             _view.FoundationRequested -= OpenFoundation;
+            _view.NativeRequested -= CreateOriginal;
+            _view.NativeContinueRequested -= ResumeOriginal;
+            _view.ProfileRequested -= ShowOriginalProfile;
+            _view.CoopRequested -= OpenCoop;
             _view.MuteRequested -= Mute;
             _view.StartRequested -= StartRun;
             _view.ContinueRequested -= Resume;

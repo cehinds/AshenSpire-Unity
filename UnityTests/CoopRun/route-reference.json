@@ -1,0 +1,2790 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "fixtures": [
+    {
+      "seed": 1,
+      "map": {
+        "nodes": {
+          "n1_5": {
+            "id": "n1_5",
+            "floor": 1,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n2_4",
+              "n2_5",
+              "n2_6"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n3_3"
+            ]
+          },
+          "n2_5": {
+            "id": "n2_5",
+            "floor": 2,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n3_6",
+              "n3_5",
+              "n3_4"
+            ]
+          },
+          "n2_6": {
+            "id": "n2_6",
+            "floor": 2,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n3_6"
+            ]
+          },
+          "n3_3": {
+            "id": "n3_3",
+            "floor": 3,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n4_3"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "abandonedCart"
+            }
+          },
+          "n3_6": {
+            "id": "n3_6",
+            "floor": 3,
+            "col": 6,
+            "type": "shrine",
+            "next": [
+              "n4_6",
+              "n4_5"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n5_2"
+            ]
+          },
+          "n4_6": {
+            "id": "n4_6",
+            "floor": 4,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n5_5",
+              "n5_6"
+            ],
+            "resolved": {
+              "kind": "shrine"
+            }
+          },
+          "n4_5": {
+            "id": "n4_5",
+            "floor": 4,
+            "col": 5,
+            "type": "merchant",
+            "next": [
+              "n5_5"
+            ]
+          },
+          "n5_2": {
+            "id": "n5_2",
+            "floor": 5,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n5_5": {
+            "id": "n5_5",
+            "floor": 5,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n6_4",
+              "n6_6"
+            ]
+          },
+          "n5_6": {
+            "id": "n5_6",
+            "floor": 5,
+            "col": 6,
+            "type": "merchant",
+            "next": [
+              "n6_6"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_4": {
+            "id": "n6_4",
+            "floor": 6,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n7_4",
+              "n7_5"
+            ]
+          },
+          "n6_6": {
+            "id": "n6_6",
+            "floor": 6,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n7_6"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n9_0"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_5"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n9_5",
+              "n9_6"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "weepingPilgrim"
+            }
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n10_4",
+              "n10_6",
+              "n10_5"
+            ]
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n10_6"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n11_3",
+              "n11_4"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "bloodstainedAltar"
+            }
+          },
+          "n10_6": {
+            "id": "n10_6",
+            "floor": 10,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n11_5",
+              "n11_6"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "ancientRuneStone"
+            }
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_5"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_5"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "rng": {
+        "map": 164,
+        "shuffle": 0,
+        "cardRewards": 0,
+        "relicRewards": 0,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 9,
+        "shop": 0,
+        "misc": 0,
+        "smith": 0
+      },
+      "reachableIds": [
+        "n1_5"
+      ],
+      "waiting": {
+        "kind": "map",
+        "votes": {
+          "host": "n1_5"
+        }
+      },
+      "cursorId": "n1_5",
+      "kind": "combat",
+      "encounterId": null
+    },
+    {
+      "seed": 17,
+      "map": {
+        "nodes": {
+          "n1_5": {
+            "id": "n1_5",
+            "floor": 1,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n2_5",
+              "n2_4",
+              "n2_6"
+            ]
+          },
+          "n2_5": {
+            "id": "n2_5",
+            "floor": 2,
+            "col": 5,
+            "type": "merchant",
+            "next": [
+              "n3_4",
+              "n3_5",
+              "n3_6"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n3_4"
+            ]
+          },
+          "n2_6": {
+            "id": "n2_6",
+            "floor": 2,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n3_6"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n4_4",
+              "n4_5"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "discardedReliquary"
+            }
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n3_6": {
+            "id": "n3_6",
+            "floor": 3,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n4_6",
+              "n4_5"
+            ]
+          },
+          "n4_4": {
+            "id": "n4_4",
+            "floor": 4,
+            "col": 4,
+            "type": "shrine",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n4_5": {
+            "id": "n4_5",
+            "floor": 4,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n5_6",
+              "n5_4"
+            ]
+          },
+          "n4_6": {
+            "id": "n4_6",
+            "floor": 4,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n5_6"
+            ]
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n6_5",
+              "n6_3"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n5_6": {
+            "id": "n5_6",
+            "floor": 5,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n6_6"
+            ]
+          },
+          "n6_5": {
+            "id": "n6_5",
+            "floor": 6,
+            "col": 5,
+            "type": "elite",
+            "next": [
+              "n7_4"
+            ]
+          },
+          "n6_6": {
+            "id": "n6_6",
+            "floor": 6,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n7_6"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "merchant",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_3"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_6",
+              "n8_5"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_3",
+              "n8_2"
+            ]
+          },
+          "n8_3": {
+            "id": "n8_3",
+            "floor": 8,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n9_3",
+              "n9_2"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "shrine",
+            "next": [
+              "n9_6"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "shrine",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "event",
+            "next": [
+              "n9_5"
+            ],
+            "resolved": {
+              "kind": "treasure"
+            }
+          },
+          "n9_3": {
+            "id": "n9_3",
+            "floor": 9,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n10_3"
+            ]
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n10_6",
+              "n10_5"
+            ],
+            "resolved": {
+              "kind": "shrine"
+            }
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n10_3"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n10_2"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "omensAltar"
+            }
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n10_5"
+            ]
+          },
+          "n10_3": {
+            "id": "n10_3",
+            "floor": 10,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n11_2",
+              "n11_3"
+            ]
+          },
+          "n10_6": {
+            "id": "n10_6",
+            "floor": 10,
+            "col": 6,
+            "type": "shrine",
+            "next": [
+              "n11_6"
+            ]
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_5",
+              "n11_6"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n11_2"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ],
+            "resolved": {
+              "kind": "treasure"
+            }
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_5"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "rng": {
+        "map": 102,
+        "shuffle": 0,
+        "cardRewards": 0,
+        "relicRewards": 0,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 8,
+        "shop": 0,
+        "misc": 0,
+        "smith": 0
+      },
+      "reachableIds": [
+        "n1_5"
+      ],
+      "waiting": {
+        "kind": "map",
+        "votes": {
+          "host": "n1_5"
+        }
+      },
+      "cursorId": "n1_5",
+      "kind": "combat",
+      "encounterId": null
+    },
+    {
+      "seed": 999,
+      "map": {
+        "nodes": {
+          "n1_2": {
+            "id": "n1_2",
+            "floor": 1,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n2_3",
+              "n2_2",
+              "n2_1"
+            ]
+          },
+          "n2_3": {
+            "id": "n2_3",
+            "floor": 2,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n3_2",
+              "n3_3"
+            ]
+          },
+          "n2_2": {
+            "id": "n2_2",
+            "floor": 2,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n3_2",
+              "n3_1"
+            ]
+          },
+          "n2_1": {
+            "id": "n2_1",
+            "floor": 2,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n3_1"
+            ]
+          },
+          "n3_2": {
+            "id": "n3_2",
+            "floor": 3,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n4_2",
+              "n4_1"
+            ]
+          },
+          "n3_3": {
+            "id": "n3_3",
+            "floor": 3,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n4_4"
+            ]
+          },
+          "n3_1": {
+            "id": "n3_1",
+            "floor": 3,
+            "col": 1,
+            "type": "shrine",
+            "next": [
+              "n4_1"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n5_2"
+            ]
+          },
+          "n4_1": {
+            "id": "n4_1",
+            "floor": 4,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n5_0",
+              "n5_2",
+              "n5_1"
+            ]
+          },
+          "n4_4": {
+            "id": "n4_4",
+            "floor": 4,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n5_2": {
+            "id": "n5_2",
+            "floor": 5,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n6_3"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n6_0"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "shrine",
+            "next": [
+              "n6_3"
+            ]
+          },
+          "n5_1": {
+            "id": "n5_1",
+            "floor": 5,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "elite",
+            "next": [
+              "n7_2",
+              "n7_4"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_3",
+              "n8_2"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_1",
+              "n8_2"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_4",
+              "n8_3"
+            ]
+          },
+          "n8_3": {
+            "id": "n8_3",
+            "floor": 8,
+            "col": 3,
+            "type": "elite",
+            "next": [
+              "n9_3",
+              "n9_4"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n9_0"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "ancientRuneStone"
+            }
+          },
+          "n8_4": {
+            "id": "n8_4",
+            "floor": 8,
+            "col": 4,
+            "type": "merchant",
+            "next": [
+              "n9_5"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n9_2",
+              "n9_3"
+            ]
+          },
+          "n9_3": {
+            "id": "n9_3",
+            "floor": 9,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n10_4"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "event",
+            "next": [
+              "n10_5"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n9_4": {
+            "id": "n9_4",
+            "floor": 9,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n10_4"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n10_1"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n11_5",
+              "n11_3",
+              "n11_4"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "shrine",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "shrine",
+            "next": [
+              "n11_6"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n11_2"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "abandonedCart"
+            }
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_2"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "rng": {
+        "map": 211,
+        "shuffle": 0,
+        "cardRewards": 0,
+        "relicRewards": 0,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 7,
+        "shop": 0,
+        "misc": 0,
+        "smith": 0
+      },
+      "reachableIds": [
+        "n1_2"
+      ],
+      "waiting": {
+        "kind": "map",
+        "votes": {
+          "host": "n1_2"
+        }
+      },
+      "cursorId": "n1_2",
+      "kind": "combat",
+      "encounterId": null
+    },
+    {
+      "seed": 420,
+      "map": {
+        "nodes": {
+          "n1_6": {
+            "id": "n1_6",
+            "floor": 1,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n2_6",
+              "n2_5"
+            ]
+          },
+          "n2_6": {
+            "id": "n2_6",
+            "floor": 2,
+            "col": 6,
+            "type": "merchant",
+            "next": [
+              "n3_5",
+              "n3_6"
+            ]
+          },
+          "n2_5": {
+            "id": "n2_5",
+            "floor": 2,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n3_5"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "shrine",
+            "next": [
+              "n4_6"
+            ]
+          },
+          "n3_6": {
+            "id": "n3_6",
+            "floor": 3,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n4_6"
+            ]
+          },
+          "n4_6": {
+            "id": "n4_6",
+            "floor": 4,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n5_6",
+              "n5_5"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n5_6": {
+            "id": "n5_6",
+            "floor": 5,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n6_6"
+            ]
+          },
+          "n5_5": {
+            "id": "n5_5",
+            "floor": 5,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n6_4",
+              "n6_6"
+            ]
+          },
+          "n6_6": {
+            "id": "n6_6",
+            "floor": 6,
+            "col": 6,
+            "type": "elite",
+            "next": [
+              "n7_6",
+              "n7_5"
+            ]
+          },
+          "n6_4": {
+            "id": "n6_4",
+            "floor": 6,
+            "col": 4,
+            "type": "merchant",
+            "next": [
+              "n7_3"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_5",
+              "n8_6"
+            ]
+          },
+          "n7_3": {
+            "id": "n7_3",
+            "floor": 7,
+            "col": 3,
+            "type": "treasure",
+            "next": [
+              "n8_3"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_4",
+              "n8_5"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_4"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n9_6"
+            ]
+          },
+          "n8_3": {
+            "id": "n8_3",
+            "floor": 8,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n9_3"
+            ]
+          },
+          "n8_4": {
+            "id": "n8_4",
+            "floor": 8,
+            "col": 4,
+            "type": "shrine",
+            "next": [
+              "n9_4"
+            ]
+          },
+          "n9_4": {
+            "id": "n9_4",
+            "floor": 9,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n10_4",
+              "n10_5"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "bloodstainedAltar"
+            }
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n10_6"
+            ],
+            "resolved": {
+              "kind": "fight"
+            }
+          },
+          "n9_3": {
+            "id": "n9_3",
+            "floor": 9,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n11_5",
+              "n11_4"
+            ]
+          },
+          "n10_6": {
+            "id": "n10_6",
+            "floor": 10,
+            "col": 6,
+            "type": "elite",
+            "next": [
+              "n11_6"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n11_1"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "wyrmTrial"
+            }
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_5"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_6"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "rng": {
+        "map": 119,
+        "shuffle": 0,
+        "cardRewards": 0,
+        "relicRewards": 0,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 6,
+        "shop": 0,
+        "misc": 0,
+        "smith": 0
+      },
+      "reachableIds": [
+        "n1_6"
+      ],
+      "waiting": {
+        "kind": "map",
+        "votes": {
+          "host": "n1_6"
+        }
+      },
+      "cursorId": "n1_6",
+      "kind": "combat",
+      "encounterId": null
+    },
+    {
+      "seed": 2026,
+      "map": {
+        "nodes": {
+          "n1_0": {
+            "id": "n1_0",
+            "floor": 1,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n2_0",
+              "n2_1"
+            ]
+          },
+          "n2_0": {
+            "id": "n2_0",
+            "floor": 2,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n3_0"
+            ]
+          },
+          "n2_1": {
+            "id": "n2_1",
+            "floor": 2,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n3_2"
+            ]
+          },
+          "n3_0": {
+            "id": "n3_0",
+            "floor": 3,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n4_0",
+              "n4_1"
+            ],
+            "resolved": {
+              "kind": "treasure"
+            }
+          },
+          "n3_2": {
+            "id": "n3_2",
+            "floor": 3,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n5_1",
+              "n5_0"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n4_1": {
+            "id": "n4_1",
+            "floor": 4,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n5_1"
+            ]
+          },
+          "n5_1": {
+            "id": "n5_1",
+            "floor": 5,
+            "col": 1,
+            "type": "shrine",
+            "next": [
+              "n6_0",
+              "n6_1",
+              "n6_2"
+            ]
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n6_3"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "weepingPilgrim"
+            }
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n6_0"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n7_0",
+              "n7_1"
+            ],
+            "resolved": {
+              "kind": "shrine"
+            }
+          },
+          "n6_1": {
+            "id": "n6_1",
+            "floor": 6,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n7_1",
+              "n7_2"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "merchant",
+            "next": [
+              "n7_4"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n7_0": {
+            "id": "n7_0",
+            "floor": 7,
+            "col": 0,
+            "type": "treasure",
+            "next": [
+              "n8_0"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_0"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_3"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_3",
+              "n8_1"
+            ]
+          },
+          "n8_0": {
+            "id": "n8_0",
+            "floor": 8,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n9_0",
+              "n9_1"
+            ]
+          },
+          "n8_3": {
+            "id": "n8_3",
+            "floor": 8,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n9_2"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "rotPriestOffer"
+            }
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n10_1"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n10_2",
+              "n10_1"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n11_0",
+              "n11_1"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n11_3",
+              "n11_1"
+            ],
+            "resolved": {
+              "kind": "event",
+              "eventId": "fadedGrace"
+            }
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_0"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      },
+      "rng": {
+        "map": 146,
+        "shuffle": 0,
+        "cardRewards": 0,
+        "relicRewards": 0,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 8,
+        "shop": 0,
+        "misc": 0,
+        "smith": 0
+      },
+      "reachableIds": [
+        "n1_0"
+      ],
+      "waiting": {
+        "kind": "map",
+        "votes": {
+          "host": "n1_0"
+        }
+      },
+      "cursorId": "n1_0",
+      "kind": "combat",
+      "encounterId": null
+    }
+  ],
+  "rewards": [
+    {
+      "seed": 1,
+      "index": 0,
+      "pool": "normal",
+      "cards": [
+        "twinbladeFlurry",
+        "kickOff",
+        "shieldwall",
+        "sharedFlame"
+      ],
+      "cinders": 58,
+      "flaskId": null,
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 1,
+      "index": 1,
+      "pool": "normal",
+      "cards": [
+        "warSurgeon",
+        "crimsonCleave",
+        "ironVowCard",
+        "ashOath"
+      ],
+      "cinders": 64,
+      "flaskId": null,
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 1,
+      "index": 0,
+      "pool": "elite",
+      "cards": [
+        "stitchedArms",
+        "ruinousBlow",
+        "shieldwall",
+        "sharedFlame"
+      ],
+      "cinders": 125,
+      "flaskId": null,
+      "relicId": "crackedLantern",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 1,
+      "index": 1,
+      "pool": "elite",
+      "cards": [
+        "warSurgeon",
+        "crimsonCleave",
+        "poiseBreaker",
+        "ashOath"
+      ],
+      "cinders": 134,
+      "flaskId": null,
+      "relicId": "titansCinder",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 1,
+      "index": 0,
+      "pool": "boss",
+      "cards": [
+        "stitchedArms",
+        "ruinousBlow",
+        "shieldwall",
+        "sharedFlame"
+      ],
+      "cinders": 245,
+      "flaskId": null,
+      "relicId": "crownOfStitches",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 1,
+      "index": 1,
+      "pool": "boss",
+      "cards": [
+        "warSurgeon",
+        "crimsonCleave",
+        "poiseBreaker",
+        "ashOath"
+      ],
+      "cinders": 254,
+      "flaskId": null,
+      "relicId": "ashOfRemembrance",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 0,
+      "pool": "normal",
+      "cards": [
+        "rend",
+        "enterBulwark",
+        "enterGorefire",
+        "ashOath"
+      ],
+      "cinders": 59,
+      "flaskId": "flaskOfStone",
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 1,
+      "pool": "normal",
+      "cards": [
+        "warSurgeon",
+        "quickstep",
+        "impale",
+        "sharedFlame"
+      ],
+      "cinders": 54,
+      "flaskId": "blightCoating",
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 0,
+      "pool": "elite",
+      "cards": [
+        "rend",
+        "wardingLunge",
+        "enterBulwark",
+        "ashOath"
+      ],
+      "cinders": 126,
+      "flaskId": "flaskOfStone",
+      "relicId": "ivoryComb",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 1,
+      "pool": "elite",
+      "cards": [
+        "warSurgeon",
+        "quickstep",
+        "impale",
+        "sharedFlame"
+      ],
+      "cinders": 118,
+      "flaskId": "blightCoating",
+      "relicId": "bloodstainedChalice",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 0,
+      "pool": "boss",
+      "cards": [
+        "rend",
+        "wardingLunge",
+        "enterBulwark",
+        "ashOath"
+      ],
+      "cinders": 246,
+      "flaskId": null,
+      "relicId": "wardenHorn",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 17,
+      "index": 1,
+      "pool": "boss",
+      "cards": [
+        "warSurgeon",
+        "quickstep",
+        "impale",
+        "sharedFlame"
+      ],
+      "cinders": 238,
+      "flaskId": null,
+      "relicId": "ashOfRemembrance",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 0,
+      "pool": "normal",
+      "cards": [
+        "quickstep",
+        "rallyingStandard",
+        "cleavingBlow",
+        "sharedFlame"
+      ],
+      "cinders": 60,
+      "flaskId": "blightCoating",
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 1,
+      "pool": "normal",
+      "cards": [
+        "warcry",
+        "impale",
+        "rend",
+        "sharedFlame"
+      ],
+      "cinders": 71,
+      "flaskId": "blightCoating",
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 0,
+      "pool": "elite",
+      "cards": [
+        "rallyingStandard",
+        "goreblood",
+        "rend",
+        "sharedFlame"
+      ],
+      "cinders": 128,
+      "flaskId": "blightCoating",
+      "relicId": "ivoryComb",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 1,
+      "pool": "elite",
+      "cards": [
+        "warcry",
+        "sanguinePactCard",
+        "rend",
+        "sharedFlame"
+      ],
+      "cinders": 145,
+      "flaskId": "blightCoating",
+      "relicId": "flayersCenser",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 0,
+      "pool": "boss",
+      "cards": [
+        "rallyingStandard",
+        "goreblood",
+        "rend",
+        "sharedFlame"
+      ],
+      "cinders": 248,
+      "flaskId": null,
+      "relicId": "wardenHorn",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 999,
+      "index": 1,
+      "pool": "boss",
+      "cards": [
+        "warcry",
+        "sanguinePactCard",
+        "rend",
+        "sharedFlame"
+      ],
+      "cinders": 265,
+      "flaskId": null,
+      "relicId": "cinderOfTheFallen",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 0,
+      "pool": "normal",
+      "cards": [
+        "quickstep",
+        "crimsonCleave",
+        "riposte",
+        "rallyingBanner"
+      ],
+      "cinders": 65,
+      "flaskId": null,
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 1,
+      "pool": "normal",
+      "cards": [
+        "serratedBlade",
+        "wardingLunge",
+        "guardCounter",
+        "rallyingBanner"
+      ],
+      "cinders": 66,
+      "flaskId": null,
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 0,
+      "pool": "elite",
+      "cards": [
+        "quickstep",
+        "crimsonCleave",
+        "riposte",
+        "rallyingBanner"
+      ],
+      "cinders": 135,
+      "flaskId": null,
+      "relicId": "crackedTear",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 1,
+      "pool": "elite",
+      "cards": [
+        "shieldwall",
+        "ruinousBlow",
+        "hemorrhage",
+        "rallyingBanner"
+      ],
+      "cinders": 137,
+      "flaskId": null,
+      "relicId": "flayersCenser",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 0,
+      "pool": "boss",
+      "cards": [
+        "quickstep",
+        "crimsonCleave",
+        "riposte",
+        "rallyingBanner"
+      ],
+      "cinders": 255,
+      "flaskId": null,
+      "relicId": "wardenHorn",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 420,
+      "index": 1,
+      "pool": "boss",
+      "cards": [
+        "shieldwall",
+        "ruinousBlow",
+        "hemorrhage",
+        "rallyingBanner"
+      ],
+      "cinders": 257,
+      "flaskId": null,
+      "relicId": "cinderOfTheFallen",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 0,
+      "pool": "normal",
+      "cards": [
+        "bracingStance",
+        "flameToBlade",
+        "riposte",
+        "ashOath"
+      ],
+      "cinders": 69,
+      "flaskId": null,
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 1,
+      "pool": "normal",
+      "cards": [
+        "cleavingBlow",
+        "kickOff",
+        "rallyingStandard",
+        "ashOath"
+      ],
+      "cinders": 46,
+      "flaskId": "flaskOfFerocity",
+      "relicId": null,
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 0,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 0,
+      "pool": "elite",
+      "cards": [
+        "ironVowCard",
+        "bloodTithe",
+        "wardingLunge",
+        "ashOath"
+      ],
+      "cinders": 141,
+      "flaskId": null,
+      "relicId": "sacrificialKnife",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 1,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 1,
+      "pool": "elite",
+      "cards": [
+        "cleavingBlow",
+        "kickOff",
+        "goreblood",
+        "ashOath"
+      ],
+      "cinders": 106,
+      "flaskId": "flaskOfFerocity",
+      "relicId": "hollowedHorn",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 2,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 0,
+      "pool": "boss",
+      "cards": [
+        "ironVowCard",
+        "bloodTithe",
+        "wardingLunge",
+        "ashOath"
+      ],
+      "cinders": 261,
+      "flaskId": null,
+      "relicId": "crownOfStitches",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    },
+    {
+      "seed": 2026,
+      "index": 1,
+      "pool": "boss",
+      "cards": [
+        "cleavingBlow",
+        "kickOff",
+        "goreblood",
+        "ashOath"
+      ],
+      "cinders": 226,
+      "flaskId": null,
+      "relicId": "crimsonCovenant",
+      "rng": {
+        "map": 0,
+        "shuffle": 0,
+        "cardRewards": 7,
+        "relicRewards": 1,
+        "flaskRewards": 0,
+        "armaments": 0,
+        "enemyAI": 0,
+        "enemyHP": 0,
+        "events": 0,
+        "shop": 0,
+        "misc": 1,
+        "smith": 0
+      }
+    }
+  ]
+}

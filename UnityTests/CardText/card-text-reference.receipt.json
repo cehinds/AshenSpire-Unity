@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "sources": {
+    "src/model/validate.js": "e0265401edf14f65d1380406029bb64e2e35ea0b437b339f7be5932dca79cf25",
+    "src/ui/components/card.js": "1cd44b6a3c9756351be376283640b810411f6f2e53e94d3a26bd88e7b4b0036b",
+    "src/model/registries.js": "828c793818076ef79abb6d1c5aa82a9e16eea772ae3040551e298e97a0728cc4"
+  },
+  "outputSha256": "053deda107bfa5f36df46e3e0cb8cfac91811c06b6baa99b597a2a0acfcf3ee3",
+  "authoredDefinitions": 364,
+  "fixtures": 366
+}

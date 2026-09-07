@@ -20,32 +20,49 @@ namespace AshenSpire.Presentation
         private readonly OriginalContentCatalog _catalog;
         private readonly Action _report, _back;
         private readonly CreationModel _creation;
+        private readonly AttributeProgression _progression;
+        private readonly OriginalCharacterBuilder _builder;
+        private readonly Action<JObject, uint> _start;
+        private readonly JObject _profileMeta;
+        private readonly JObject _starting = new JObject();
+        private string _kit;
+        private readonly JObject _setup = new JObject { ["custom"] = new JObject { ["ascension"] = 0, ["mods"] = new JObject(), ["deckMode"] = "standard" }, ["keepsakeId"] = "none", ["customization"] = new JObject { ["name"] = "Forsaken", ["glyph"] = "⚔", ["tint"] = "gold" } };
         private string _seed = "ASHEN", _table = "cards", _search = "";
-        public OriginalFoundationPanel(VisualElement root, OriginalContentCatalog catalog, Action report, Action back)
+        public OriginalFoundationPanel(VisualElement root, OriginalContentCatalog catalog, AttributeProgression progression, JObject mechanics, Action report, Action back, Action<JObject, uint> start = null, JObject profile = null)
         {
             _root = root; _catalog = catalog; _report = report; _back = back;
-            _creation = new CreationModel(catalog, "reaver", (string)catalog.Data()["attributeRules"]["defaultMode"]);
+            _progression = progression; _builder = new OriginalCharacterBuilder(catalog, progression, mechanics); _start = start;
+            _profileMeta = (JObject)(profile?.DeepClone() ?? new JObject());
+            _creation = new CreationModel(catalog, "reaver", (string)catalog.Data()["attributeRules"]["defaultMode"], progression);
             Creation();
         }
         private void Header(string title)
         {
             _root.Clear(); Label(title, "heading");
-            Label("Original foundation preview · campaign integration is in progress.", "caption");
-            var tabs = new VisualElement(); tabs.AddToClassList("foundation-tabs"); _root.Add(tabs);
-            tabs.Add(MakeButton("foundation-creation", "Wanderer", Creation));
-            tabs.Add(MakeButton("foundation-map", "Routes", Map));
-            tabs.Add(MakeButton("foundation-catalog", "Content", Catalog));
+            Label(_start == null ? "Original foundation preview · campaign integration is in progress." : "Choose your wanderer, attributes and weapon cards.", "caption");
+            if (_start == null)
+            {
+                var tabs = new VisualElement(); tabs.AddToClassList("foundation-tabs"); _root.Add(tabs);
+                tabs.Add(MakeButton("foundation-creation", "Wanderer", Creation));
+                tabs.Add(MakeButton("foundation-map", "Routes", Map));
+                tabs.Add(MakeButton("foundation-catalog", "Content", Catalog));
+            }
             Button("foundation-back", "Back to title", _back);
         }
         private void Creation()
         {
             Header("THE ORIGINAL WANDERERS");
-            Choices("foundation-class", "Class", _catalog.Table("classes"), _creation.ClassId, value => { _creation.Select(value, _creation.ModeId); Creation(); });
+            Choices("foundation-class", "Class", _catalog.Table("classes"), _creation.ClassId, value => { _creation.Select(value, _creation.ModeId); _starting.RemoveAll(); Creation(); });
             Choices("foundation-mode", "Allocation", _catalog.Table("creationModes"), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
             Label("Unspent points: " + _creation.Remaining, "notice");
             Label(_creation.TotalPoints + " total points · " + _creation.Minimum + " minimum per attribute", "caption");
             var hero = _catalog.Record("classes", _creation.ClassId);
-            var portrait = new Image { image = Resources.Load<Texture2D>("Art/" + _creation.ClassId + "_idle"), scaleMode = ScaleMode.ScaleToFit }; portrait.AddToClassList("portrait"); _root.Add(portrait);
+            var options = new OriginalStartingOptions(_catalog); var kits = options.AvailableKits(_creation.ClassId, _profileMeta);
+            if (!kits.Any(x => (string)x["id"] == _kit && (bool?)x["available"] == true)) _kit = (string)kits.First(x => (bool?)x["available"] == true)["id"];
+            var portrait = new OriginalPlayerFigure(_setup); portrait.AddToClassList("portrait"); _root.Add(portrait);
+            var appearance = OriginalAppearance.Badge("native-preview-appearance", (JObject)_setup["customization"]); _root.Add(appearance);
+            void RefreshAppearance() { var loadout = (JObject)_builder.Preview(_creation, _kit, _profileMeta, _starting)["loadout"]; portrait.Configure(_creation.ClassId, (JObject)_setup["customization"], OriginalPlayerFigure.ActiveArmour(loadout)); OriginalAppearance.Apply(portrait, appearance, (JObject)_setup["customization"]); }
+            RefreshAppearance();
             Label((string)hero["name"], "node-title"); Label((string)hero["description"], "lead");
             foreach (var attribute in _creation.Attributes().Properties())
             {
@@ -55,19 +72,70 @@ namespace AshenSpire.Presentation
                 var increase = MakeButton("attribute-" + id + "-up", "+ " + id, () => { _creation.Adjust(id, 1); Creation(); });
                 decrease.SetEnabled(_creation.CanAdjust(id, -1)); increase.SetEnabled(_creation.CanAdjust(id, 1));
                 row.Add(decrease); row.Add(increase);
+                var benefit = _progression.Benefits(_creation.Attributes()).First(x => (string)x["id"] == id);
+                Label((string)benefit["perPoint"], "caption");
+                if (benefit["nextAt"] != null) Label("At " + benefit["nextAt"] + ": " + (string)benefit["milestone"], "caption");
             }
             var resources = _creation.Resources();
             Label(string.Join(" · ", resources.Properties().Select(x => (x.Name == "energy" ? "Actions" : x.Name.ToUpperInvariant()) + " " + x.Value)), "lead");
             Label("Base resources before equipment and relic bonuses. " + string.Join(" / ", hero["startingFlaskAllocation"].Children<JProperty>().Select(x => x.Value + " " + x.Name)) + " flask charges.", "caption");
             Label("Opening loadouts", "node-title");
-            foreach (var kitId in hero["eligibleStartingKitIds"])
+            foreach (JObject kit in kits)
             {
-                var kit = _catalog.Record("equipment.startingKits", (string)kitId);
-                Label((string)kit["label"] + " · " + (string)kit["rightHand"] + " / " + (string)kit["leftHand"], "caption");
+                var selectedKit = (string)kit["id"]; var available = (bool)kit["available"];
+                var label = available ? (string)kit["label"] + " · " + OriginalCardText.Humanize((string)kit["rightHand"]) + " / " + (string.IsNullOrEmpty((string)kit["leftHand"]) ? "Empty hand" : OriginalCardText.Humanize((string)kit["leftHand"])) : "Undiscovered loadout";
+                var choose = MakeButton("kit-" + selectedKit, label, () => { _kit = selectedKit; _starting.Remove("startingHands"); Creation(); }); choose.SetEnabled(available);
+                if (_kit == selectedKit) choose.AddToClassList("primary"); _root.Add(choose);
+            }
+            var preview = _builder.Preview(_creation, _kit, _profileMeta, _starting);
+            if (_start != null)
+            {
+                foreach (var hand in new[] { "rightHand", "leftHand" })
+                {
+                    var handId = hand; var rows = options.AvailableHands(_creation.ClassId, handId); rows.Insert(0, new JObject { ["id"] = "", ["name"] = "Empty hand" });
+                    StartingChoice("native-start-" + handId, OriginalCardText.Humanize(handId), rows, (string)preview["loadout"]["sets"][handId][0], value =>
+                    {
+                        var hands = new JObject { ["leftHand"] = preview["loadout"]["sets"]["leftHand"][0].DeepClone(), ["rightHand"] = preview["loadout"]["sets"]["rightHand"][0].DeepClone() };
+                        _starting["startingHands"] = OriginalStartingOptions.SelectHand(hands, handId, value); Creation();
+                    });
+                }
+                StartingChoice("native-start-armour", "Armour", options.AvailableArmour(_creation.ClassId, _profileMeta), (string)preview["loadout"]["sets"]["armor"][0], value => { _starting["startingArmourId"] = value; Creation(); });
+                StartingChoice("native-start-relic", "Starting relic", options.AvailableRelics(_creation.ClassId), (string)preview["relicId"], value => { _starting["startingRelicId"] = value; Creation(); });
+                Label("Starting pools: HP " + preview["resources"]["hp"] + " · MP " + preview["resources"]["mana"] + " · Stamina " + preview["resources"]["stamina"], "stat");
+            }
+            if (_start != null)
+            {
+                Button begin = null;
+                var shapeValid = true;
+                OriginalCustomSetupPanel.Render(_root, _catalog, _setup, _report, RefreshAppearance, valid => { shapeValid = valid; begin?.SetEnabled((bool)preview["canBegin"] && valid); });
+                var seed = new TextField("Run seed") { name = "native-seed", value = _seed }; seed.AddToClassList("seed-field"); seed.RegisterValueChangedCallback(e => _seed = e.newValue); _root.Add(seed);
+                begin = MakeButton("native-begin", "Begin the climb", () =>
+                {
+                    var player = _builder.Build(_creation, _kit, _profileMeta, _starting);
+                    foreach (var property in _setup.Properties()) player[property.Name] = property.Value.DeepClone();
+                    _start(player, RandomStreams.ParseSeed(_seed));
+                });
+                begin.AddToClassList("primary"); begin.SetEnabled((bool)preview["canBegin"] && shapeValid); _root.Add(begin);
+            }
+            Label("Load " + preview["weight"]["load"] + " / " + preview["weight"]["capacity"] + " · " + (string)preview["weight"]["weightClass"]["id"], "stat");
+            foreach (var requirement in preview["requirements"]) Label(requirement["itemId"] + " needs " + requirement["required"] + " " + requirement["attribute"], "notice");
+            Label("Your weapon cards", "node-title");
+            foreach (var group in preview["cards"].GroupBy(x => ((JObject)x["card"]).ToString()))
+            {
+                var card = group.First()["card"];
+                Label(group.Count() + " × " + (string)card["name"] + " · " + card["cost"] + " actions / " + (card["manaCost"] ?? new JValue(0)) + " mana / " + (card["staminaCost"] ?? new JValue(0)) + " stamina", "stat");
+                Label(OriginalCardText.Describe((JObject)card, _catalog), "caption");
             }
             Label(hero["cardPool"].Count() + " class reward cards", "caption");
             Debug.Log("ASHENSPIRE_FOUNDATION_CREATION " + new JObject { ["classId"] = _creation.ClassId, ["mode"] = _creation.ModeId, ["attributes"] = _creation.Attributes(), ["resources"] = resources, ["remaining"] = _creation.Remaining }.ToString(Newtonsoft.Json.Formatting.None));
             _report();
+        }
+        private void StartingChoice(string id, string label, JArray rows, string selected, Action<string> changed)
+        {
+            var values = rows.OfType<JObject>().ToArray(); var labels = values.Select(x => (string)x["label"] ?? (string)x["name"]).ToList();
+            var index = Array.FindIndex(values, x => ((string)x["id"] ?? "") == (selected ?? ""));
+            var field = new DropdownField(label, labels, Math.Max(0, index)) { name = id }; field.AddToClassList("foundation-field");
+            field.RegisterValueChangedCallback(e => changed((string)values[labels.IndexOf(e.newValue)]["id"])); _root.Add(field);
         }
         private void Map()
         {

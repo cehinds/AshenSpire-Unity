@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using AshenSpire.Application;
 using AshenSpire.Domain;
 using AshenSpire.Editor.Rendering;
@@ -24,6 +25,22 @@ namespace AshenSpire.Editor
         private const string Root = "Assets/AshenSpire";
         private const string ScenePath = Root + "/Scenes/Expedition.unity";
         private static string Repository => Path.GetFullPath(Path.Combine(UnityEngine.Application.dataPath, "../.."));
+        // One authored version for UI, platform metadata and package manifests.
+        // Format: game release.roadmap milestone.incremental upgrade.patch.
+        [Serializable]
+        private sealed class VersionDefinition
+        {
+            public string Version;
+            public int BuildNumber;
+            public string Stage;
+        }
+        private static VersionDefinition ReadVersion()
+        {
+            var version = JsonUtility.FromJson<VersionDefinition>(File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/version.json")));
+            if (version == null || !Regex.IsMatch(version.Version ?? "", @"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$") || version.BuildNumber < 1 || string.IsNullOrWhiteSpace(version.Stage))
+                throw new InvalidDataException("version.json requires a four-part Version, positive BuildNumber and Stage.");
+            return version;
+        }
 
         [MenuItem("AshenSpire/1. Validate and Import Content")]
         public static void ImportContent()
@@ -41,12 +58,25 @@ namespace AshenSpire.Editor
             _ = new AshenSpire.Domain.Original.OriginalContentCatalog(originalJson);
             Directory.CreateDirectory(Root + "/Resources/Original");
             File.WriteAllText(Root + "/Resources/Original/content.json", originalJson);
+            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles" })
+            {
+                var authored = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/Original/" + file + ".json"));
+                var parsed = Newtonsoft.Json.Linq.JObject.Parse(authored);
+                if (file == "mechanics")
+                {
+                    _ = new AshenSpire.Domain.Original.WeightSystem(parsed);
+                    _ = new AshenSpire.Domain.Original.ResourceWallet(0, 0, 0, parsed);
+                }
+                if (file == "progression") _ = new AshenSpire.Domain.Original.AttributeProgression(parsed);
+                File.WriteAllText(Root + "/Resources/Original/" + file + ".json", authored);
+            }
             File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);
             var target = Root + "/Resources/expedition.json";
             Directory.CreateDirectory(Path.GetDirectoryName(target));
             if (!File.Exists(target) || File.ReadAllText(target) != json)
                 File.WriteAllText(target, json);
             AssetDatabase.Refresh();
+            OriginalSpriteImport.Configure();
             Debug.Log($"Content import: {content.Cards.Length} cards and {content.Enemies.Length} enemies validated.");
         }
 
@@ -91,10 +121,14 @@ namespace AshenSpire.Editor
 
         private static void Build(BuildTarget target, string suffix)
         {
+            if (UnityEngine.Application.isBatchMode && EditorUserBuildSettings.activeBuildTarget != target)
+                throw new InvalidOperationException($"Start this Editor with -buildTarget {target} so platform-specific assemblies are compiled before export.");
             Prepare();
             PlayerSettings.companyName = "AshenSpire";
             PlayerSettings.productName = "AshenSpire Unity";
-            PlayerSettings.bundleVersion = "0.9.1";
+            var version = ReadVersion();
+            PlayerSettings.bundleVersion = version.Version;
+            PlayerSettings.Android.bundleVersionCode = version.BuildNumber;
             PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;
@@ -114,15 +148,25 @@ namespace AshenSpire.Editor
                 throw new InvalidOperationException($"{target} build failed: {report.summary.totalErrors} errors.");
             // The exporter, rather than a later copy command, records the source it built.
             AssetDatabase.SaveAssets();
+            var digest = SourceDigest();
             if (target == BuildTarget.WebGL)
             {
                 WebStagingBuildProcessor.WriteReceipt(report.summary.outputPath);
-                var digest = SourceDigest();
                 var index = Path.Combine(report.summary.outputPath, "index.html");
                 File.WriteAllText(index, File.ReadAllText(index).Replace("__ASHENSPIRE_BUILD_TOKEN__", digest).Replace("__ASHENSPIRE_VERSION__", PlayerSettings.bundleVersion));
-                File.WriteAllText(Path.Combine(report.summary.outputPath, "build-source.json"),
-                    "{\"sourceDigest\":\"" + digest + "\",\"builtAt\":\"" + DateTime.UtcNow.ToString("O") + "\"}");
             }
+            var outputDirectory = target == BuildTarget.WebGL ? report.summary.outputPath : Path.GetDirectoryName(report.summary.outputPath);
+            var platform = target == BuildTarget.WebGL ? "Web" : target == BuildTarget.Android ? "Android" : "Windows";
+            var exportedFiles = new Newtonsoft.Json.Linq.JObject();
+            foreach (var path in Directory.GetFiles(outputDirectory, "*", SearchOption.AllDirectories).OrderBy(value => value, StringComparer.Ordinal))
+            {
+                var relative = path.Substring(outputDirectory.Length + 1).Replace('\\', '/');
+                if (relative == "build-source.json") continue;
+                using (var sha = SHA256.Create())
+                    exportedFiles[relative] = string.Concat(sha.ComputeHash(File.ReadAllBytes(path)).Select(value => value.ToString("x2")));
+            }
+            File.WriteAllText(Path.Combine(outputDirectory, "build-source.json"),
+                new Newtonsoft.Json.Linq.JObject { ["sourceDigest"] = digest, ["builtAt"] = DateTime.UtcNow.ToString("O"), ["version"] = version.Version, ["buildNumber"] = version.BuildNumber, ["target"] = platform, ["files"] = exportedFiles }.ToString(Newtonsoft.Json.Formatting.None));
             Debug.Log($"ASHENSPIRE BUILD PASSED: {target}; {report.summary.totalSize} bytes; {report.summary.outputPath}");
         }
 

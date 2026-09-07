@@ -9,6 +9,16 @@ Wandering Soldier and Blight Hound sprites, and Act 1 backdrop. PNG imports unde
 original WebP files. The original provenance and license rows below still apply.
 No new third-party artwork was introduced for this checkpoint.
 
+The native foundation additionally imports the original four sprite styles from
+`cehinds/AshenSpire` at `b17a7f4543e1710f49fae8b58880121690a314de`:
+560 cropped class/armour/tint pose frames, 20 class/tint paintings and 20 raster
+renderings of the original classic SVG silhouettes. These are the same project
+assets and provenance described below. Their 600 output hashes are recorded in
+`UnityTests/SpriteStyles/asset-receipts.json`; 580 WebP-to-PNG conversions were
+checked for decoded-pixel equality. Classic SVG rendering and native vector
+sigils are documented separately from pixel-equality claims. No new external art
+provider is introduced by this port.
+
 Every third-party asset shipped in this repository is listed here with its source and license. **A PR that adds an asset without a row in this file does not merge.**
 
 Allowed licenses: CC0, CC BY 3.0/4.0 (with attribution), SIL OFL (fonts).

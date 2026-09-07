@@ -72,6 +72,8 @@ namespace AshenSpire.Domain.Original
             }
             finally { _draining = false; }
         }
+        internal void TransferPendingTo(CombatContext destination)
+        { if (_draining) throw new InvalidOperationException("Cannot transfer a draining queue."); while (_queue.Count > 0) destination.Enqueue(_queue.Dequeue()); }
         public JArray PendingEffects()
         { var result = new JArray(); foreach (var action in _queue) result.Add(action.Effect.DeepClone()); return result; }
     }
