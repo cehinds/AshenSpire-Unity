@@ -129,6 +129,10 @@ namespace AshenSpire.Editor
             var version = ReadVersion();
             PlayerSettings.bundleVersion = version.Version;
             PlayerSettings.Android.bundleVersionCode = version.BuildNumber;
+            // The managed WebSocket client is not detected by Unity's automatic
+            // permission scan. Native Android co-op requires this manifest entry.
+            PlayerSettings.Android.forceInternetPermission = true;
+            PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;
