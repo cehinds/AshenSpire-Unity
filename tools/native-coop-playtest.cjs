@@ -18,6 +18,7 @@ let browser,players=[];
  const [host,guest]=players;await host.coopCommand('coop-start');await guest.until(()=>guest.coop?.game?.scene?.kind==='map','shared map');
  host.check(host.coop.game.local.id!==guest.coop.game.local.id,'different authenticated seats');
  const node=host.coop.game.reachableIds[0];await host.coopCommand('coop-route-'+node);host.check(host.coop.game.scene.kind==='map','one vote waits for other connected player');await guest.coopCommand('coop-route-'+node);await host.until(()=>host.coop.game.scene.kind==='combat','shared real encounter');
+ await guest.until(()=>guest.coop?.game?.scene?.kind==='combat'&&Array.isArray(guest.coop.game.local?.hand)&&guest.has('coop-end-turn'),'guest combat hand received and rendered');
  await host.shot('02-combat');await guest.shot('02-own-hand');
  const guestHand=JSON.stringify(guest.coop.game.local.hand.map(r=>r.instance));const guestSequence=guest.coop.game.local.sequence;
  await guest.click('coop-menu');const beforeReload=guest.coopRevision;await guest.page.reload();await guest.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await guest.click('native-coop');await guest.click('coop-rejoin');await guest.until(()=>guest.coopRevision>beforeReload&&guest.coop?.game?.local?.sequence===guestSequence&&guest.has('coop-menu'),'rejoined own seat');
@@ -36,7 +37,13 @@ let browser,players=[];
   // its start so a later policy choice on an earlier page remains reachable.
   for(let page=0;ui.has('coop-cards-prev')&&page<100;page++)await ui.click('coop-cards-prev');
   for(let page=0;!ui.has(id)&&ui.has('coop-cards-next')&&page<100;page++)await ui.click('coop-cards-next');
-  await ui.click(id);
+  // Peer redraws and scrolling can cross a pointer gesture. Confirm selection
+  // before issuing a game command; only retry this reversible UI interaction.
+  for(let attempt=0;attempt<3;attempt++){
+   await ui.click(id);
+   try{await ui.until(()=>ui.has('coop-play'),'affordable card selected',3000);return;}
+   catch(error){if(attempt===2)throw error;}
+  }
  }
  async function playCard(ui,row,selected=false){
   if(!selected)await selectCard(ui,row);
