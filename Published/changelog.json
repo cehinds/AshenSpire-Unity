@@ -1,25 +1,26 @@
 {
-  "KnownIssues": [
-    "Foundation acceptance remains open: co-op animation, broader visual/audio polish and human balance testing remain.",
-    "Physical Android and graphical Windows interaction are unverified; iOS is not built. Original JavaScript saves remain separate from native saves."
-  ],
-  "Fixed": [
-    "Map gestures cancel safely across interruptions and overlays; direct taps issue one legal command.",
-    "Minimum-zoom targets retain at least 44 CSS pixels after same-aspect desktop resize.",
-    "Routes remain accessible through a named choice list when a wide decision cannot fit."
+  "Added": [
+    "Shared card-cost labels and exact resource-shortage explanations in solo and co-op.",
+    "Current-build guide and screenshot selection through presentation metadata; prior evidence remains intact."
   ],
   "Changed": [
-    "Version 0.0.12.0, build 12. Web, Windows, Android and the portable companion share current source.",
-    "Map camera preferences stay local and survive save/reload; Fit, zoom, recenter and touch navigation use original camera rules."
+    "Version 0.0.13.0, build 13. Web, Windows, Android and portable companion use the recorded source.",
+    "Single-hit whole-valued equipment damage includes its existing attribute contribution in the displayed total; an Includes sentence identifies that contribution.",
+    "Costs use 1 action, plural actions, Free or X actions, with positive MP/stamina costs only."
   ],
-  "Added": [
-    "Original branching map shared by solo and co-op, with legal routes, visited markers and party votes.",
-    "Solo fog, earned Sealstone room readings and optional nearest-shrine guidance.",
-    "Editable map presentation table plus original-oracle and real-input browser coverage."
+  "Fixed": [
+    "Cards with insufficient resources remain inspectable; Play explains the deficit and stays disabled until requirements are met.",
+    "Whole-valued JSON floating numbers display the same damage total as equivalent integer amounts."
+  ],
+  "KnownIssues": [
+    "This readability checkpoint does not establish original HTML visual parity. Faithful layout and aesthetics remain the next priority.",
+    "Foundation acceptance remains open; broader graphics/audio polish and human balance testing remain.",
+    "Physical Android and graphical Windows interaction are unverified; iOS is not built. Original JavaScript saves remain separate."
   ],
   "WhatToTest": [
-    "Switch Fog/Paths and shrine guidance, open the key and route list, pan/zoom, then reload.",
-    "Finish the opening fight and choose the next branch directly on the map.",
-    "Play a shared climb with the matching companion and check independent camera preferences."
+    "Start a Standard Reaver with seed 1. Inspect the starting weapon card and its included Strength contribution.",
+    "Spend the three actions, select an unaffordable card, and check its shortage plus disabled Play.",
+    "End the turn, inspect restored affordability, then save/reload and confirm the same combat state.",
+    "Try a shared climb with the matching companion and check each player uses their own resource pools."
   ]
 }

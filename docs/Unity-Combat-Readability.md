@@ -89,11 +89,36 @@ reload state. Inspect the PNGs as well as the label/control receipts, including
 the Play-button wording. Match the recorded `build-source.json` to the export;
 a URL alone does not identify the tested build.
 
-**Pending build 13 evidence:** compiled browser execution, visual inspection,
-co-op browser verification and platform exports/package verification have not
-yet been recorded for this change. Replace this paragraph with source-matched
-results after those checks complete. Earlier build results do not establish
-build 13 acceptance.
+**Build 13 acceptance recorded:** source commit
+`b353058064d6c765ecc64144d7b7d7eba09d883c`, compiled source digest
+`e162744f76dbfc50212711190eaa9fa00bfb62c492f71bd495f75282436b3105`.
+The final focused browser run passed **168 checks**, 56 each at 320×640,
+390×844 and 1440×900, with 12 screenshots and zero runtime errors. It exercised
+real card payments, selectable unaffordable cards, disabled Play, next-turn
+recovery and exact reload state. Phone weapon/shortage and desktop shortage
+screenshots were inspected for the reported cost and damage wording.
+
+Separate source-matched checks passed the full three-act native climb
+(657 checks, 280 commands), two-player combat/rewards/rejoin (8 host and
+6 guest checks), and actual companion process restart (22 checks). Web,
+Windows and Android exports are built. The portable companion and package
+checks passed 442 companion checks, 160 exported-file checks and 18 package
+checks. The original Node suite passed 136/136. These are different evidence
+types; no physical-phone or graphical Windows playtest is claimed.
+
+Earlier focused harness failures remain in the QA folder. The first reserved
+a fixed 120-pixel footer margin and could not click a menu that was actually
+visible. The second compared a measured 43.999916-pixel target with exactly 44;
+the harness now measures the real footer and allows 0.1 pixel of floating-point
+tolerance. A third run passed both phone sizes but was interrupted during
+desktop testing, so it has no aggregate pass. The subsequent complete final
+run above passed all three sizes. These were harness changes, not combat fixes.
+
+Receipts, logs and screenshots are under
+`docs/qa/unity-combat-readability-0.0.13.0`; the smaller current-build gallery
+and play guide are under `Published/CombatReadability`. The optional
+`Published/presentation.json` selects that gallery without changing the older
+shared `Published/NativeEvidence` folder.
 
 ## Remaining scope
 
@@ -103,3 +128,6 @@ total; it must not be multiplied once per hit. Fractional, nonfinite and
 out-of-range amounts do not claim a folded bonus. These presentation checks
 also do not establish physical-device usability, balance or completed
 foundation parity. Version `0.1.0.0` remains the foundation acceptance milestone.
+The current stacked layout and narrow combat stage have not established visual
+parity with the original HTML game. Faithful original layout and aesthetics are
+the next visual priority, separate from this readability checkpoint.
