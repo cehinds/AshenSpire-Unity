@@ -1,0 +1,3 @@
+<Project><PropertyGroup>
+ <NativeLanSourceRoot Condition="'$(NativeLanSourceRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</NativeLanSourceRoot>
+</PropertyGroup></Project>

@@ -1,0 +1,7 @@
+{
+  "suite": "EnemyArtHost",
+  "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+  "checks": 8,
+  "success": true,
+  "physicalDevice": false
+}

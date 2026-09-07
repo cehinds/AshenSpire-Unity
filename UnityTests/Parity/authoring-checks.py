@@ -55,4 +55,35 @@ with tempfile.TemporaryDirectory(prefix='AshenSpire-Original-') as folder:
         raise AssertionError('Existing CSV overwritten')
     except ValueError:
         check(source.read_bytes() == before)
+    # Add interdependent rows through five actual CSV exports/imports. Never edit
+    # the game source. The final C# check equips and plays these authored additions.
+    additions = [
+        ('cards', 'strike', {'id': 'authoringStrike', 'name': 'Authoring Strike'}),
+        ('enemies', 'wanderingSoldier', {'id': 'authoringSoldier', 'name': 'Authoring Soldier'}),
+        ('encounters', 'loneSoldier', {'id': 'authoringEncounter', 'enemies': ['authoringSoldier']}),
+        ('equipment.armaments', 'straightSword', {'id': 'authoringSword', 'name': 'Authoring Sword', 'attackRating': 9}),
+        ('equipment.startingKits', 'reaverBaseline', {'id': 'authoringKit', 'rightHand': 'authoringSword'})]
+    for table, template, changed in additions:
+        sheet = root / ('Demo-' + table + '.csv')
+        tool.execute('export', table, sheet, source)
+        with sheet.open(encoding='utf-8', newline='') as stream:
+            reader = csv.DictReader(stream); headers = reader.fieldnames; rows = list(reader)
+        row = next(dict(row) for row in rows if json.loads(row['id']) == template)
+        row.update({key: json.dumps(value) for key, value in changed.items()}); rows.append(row)
+        with sheet.open('w', encoding='utf-8', newline='') as stream:
+            writer = csv.DictWriter(stream, fieldnames=headers); writer.writeheader(); writer.writerows(rows)
+        tool.execute('import', table, sheet, source)
+        check(True)
+    sheet = root / 'Classes.csv'
+    tool.execute('export', 'classes', sheet, source)
+    with sheet.open(encoding='utf-8', newline='') as stream:
+        reader = csv.DictReader(stream); headers = reader.fieldnames; rows = list(reader)
+    reaver = next(row for row in rows if json.loads(row['id']) == 'reaver')
+    reaver['eligibleStartingKitIds'] = json.dumps(json.loads(reaver['eligibleStartingKitIds']) + ['authoringKit'])
+    with sheet.open('w', encoding='utf-8', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=headers); writer.writeheader(); writer.writerows(rows)
+    tool.execute('import', 'classes', sheet, source)
+    subprocess.run(['dotnet', 'run', '--project', str(ROOT / 'UnityTests/OriginalAuthoring'), '--', str(source)], cwd=ROOT, check=True)
+    check(True)
+
 print(f'Original CSV authoring: {checks} checks passed')

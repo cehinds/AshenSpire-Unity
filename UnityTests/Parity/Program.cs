@@ -109,3 +109,23 @@ queueContext.Emit("example", new JObject { ["nested"] = new JObject { ["value"] 
 var observerCopy = queueContext.Events(); observerCopy[0]!["nested"]!["value"] = 99;
 Check((int)queueContext.Events()[0]!["nested"]!["value"]! == 1, "Observer mutated internal event history");
 Console.WriteLine($"Original Unity parity: {checks} checks passed");
+OwnerCreationChecks.Run(new OriginalContentCatalog(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json"))));
+Console.WriteLine($"Original resources and card lifecycle: {FrameworkChecks.Run(Path.Combine(root, "UnityTests/Parity/framework-reference.json"))} checks passed");
+AttributeProgressionChecks.Run(root);
+
+Console.WriteLine($"WeaponChecks: {WeaponChecks.Run(Path.Combine(root, "UnityTests/Parity/weapon-reference.json"))} checks passed");
+
+Console.WriteLine($"NativeRunChecks: {NativeRunChecks.Run(Path.Combine(root, "UnityTests/Parity/run-reference.json"))} checks passed");
+Console.WriteLine($"Equipment transactions: {EquipmentChecks.Run(JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/run-reference.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/event-choices.json"))))} checks passed");
+
+Console.WriteLine($"CombatSessionChecks: {CombatSessionChecks.Run(Path.Combine(root, "UnityTests/Parity/combat-reference.json"))} checks passed");
+
+NativeServicesChecks.Run(root);
+
+CustomRunChecks.Run(root);
+
+Console.WriteLine($"Paid swaps: {SwapChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), Path.Combine(root, "UnityTests/Parity/swap-reference.json"))} checks passed");
+
+Console.WriteLine($"Starting choices: {StartingOptionsChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Path.Combine(root, "UnityTests/Parity/starting-reference.json"))} checks passed");
+
+Console.WriteLine($"Co-op combat: {CoopCombatChecks.Run(root)} checks passed");

@@ -1,5 +1,9 @@
 # Content authoring — 0.6.0
 
+This is a historical adaptation document. For the native original-game rebuild
+at 0.0.10.0, use [Unity-Owner-Guide.md](Unity-Owner-Guide.md). Editing its
+`Original/content.json` tables is separate from the campaign editor described here.
+
 Open **AshenSpire → Campaign Content Editor** in Unity. Fields now edit a shared draft directly; switching records does not discard work. Save & Import writes the authoritative JSON only after validation. The game, card balance and save schema are unchanged in this slice.
 
 ## Add a card

@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "sourceFile": "src/engine/coopCombat.js",
+  "sourceSha256": "2279d634bb668b022afe9599554151a086bef969f66bb1b02514fd4142bf5580",
+  "outputSha256": "1a333ae4b436b37bdf4577fa78d7b823612b22ac801836c9260c34fa045be817",
+  "fixtures": 482,
+  "commands": 2035
+}

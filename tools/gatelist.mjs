@@ -40,7 +40,7 @@
 // A tool is INVOKED when its path appears in COMMAND POSITION in something a
 // list executes. Everything else is PROSE, however much it looks like coverage.
 //
-//  (1) SHELL LISTS (`.github/workflows/ci.yml`). A step's `run:` payload is a
+//  (1) SHELL LISTS (`.github/workflows/unity-pages.yml`). A step's `run:` payload is a
 //      shell script, not a string. It is comment-stripped (a `#` at a word
 //      boundary outside quotes begins a comment), split into COMMANDS on
 //      newlines and on `;` `&&` `||` `|` `&`, and each command tokenized with
@@ -196,10 +196,10 @@ function readSource(path, ref) {
 
 function listTools(ref) {
   if (!ref) {
-    return readdirSync(join(ROOT, 'tools')).filter((f) => /\.(mjs|sh|py)$/.test(f)).map((f) => `tools/${f}`).sort();
+    return readdirSync(join(ROOT, 'tools')).filter((f) => /\.(mjs|cjs|sh|py)$/.test(f)).map((f) => `tools/${f}`).sort();
   }
   return git(['ls-tree', '--name-only', `${ref}:tools`]).split('\n')
-    .filter((f) => /\.(mjs|sh|py)$/.test(f)).map((f) => `tools/${f}`).sort();
+    .filter((f) => /\.(mjs|cjs|sh|py)$/.test(f)).map((f) => `tools/${f}`).sort();
 }
 
 const SINCE = (() => { const i = process.argv.indexOf('--since'); return i >= 0 ? process.argv[i + 1] : null; })();
@@ -207,14 +207,14 @@ const SINCE = (() => { const i = process.argv.indexOf('--since'); return i >= 0 
 // THE DECLARED HOMES. A list not here is not consulted; a home here that cannot
 // be read is exit 2, never a smaller census reported as a verdict.
 const GATE_LISTS = [
-  { path: '.github/workflows/ci.yml', kind: 'workflow' },
+  { path: '.github/workflows/unity-pages.yml', kind: 'workflow' },
   { path: 'tests/run-node.mjs', kind: 'js' },
 ];
 
-// `.sh` and `.py` are in the population because the boundary block already names
-// `tools/palette-check.sh`; a category that silently drops a file kind is the
-// defect this file is about.
-const TOOL_RE = 'tools/[A-Za-z0-9._-]+\\.(?:mjs|sh|py)';
+// Unity browser gates use `.cjs`; excluding that extension would hide real
+// invocations, including the paired interruption/seed checks. Keep `.sh` and
+// `.py` for the inherited boundary references such as tools/palette-check.sh.
+const TOOL_RE = 'tools/[A-Za-z0-9._-]+\\.(?:mjs|cjs|sh|py)';
 const TOOL_REF = new RegExp(TOOL_RE, 'g');
 
 // A cost must be words, not a bare name. Four is the floor: "and NO job here
@@ -595,215 +595,132 @@ if (args.includes('--selftest')) {
   const { doorSelftest } = await import('./doorplant.mjs');
   // Plant anchors are byte-for-byte by design. Derive each file's native EOL
   // so the same corpus arms in LF clones and CRLF Windows checkouts.
-  const workflowEol = readSource('.github/workflows/ci.yml', null).includes('\r\n') ? '\r\n' : '\n';
+  const workflow = GATE_LISTS.find((list) => list.kind === 'workflow').path;
+  const workflowSource = readSource(workflow, null);
+  // Generated/editor-touched workflows can contain mixed line endings. Use
+  // the actual anchor's ending for multi-line edits, not a file-wide guess.
+  const workflowEol = (anchor) => {
+    const end = workflowSource.indexOf(anchor) + anchor.length;
+    return workflowSource.slice(end, end + 2) === '\r\n' ? '\r\n' : '\n';
+  };
   const toolEol = readSource('tools/gatelist.mjs', null).includes('\r\n') ? '\r\n' : '\n';
+  // The Unity fork has no ci.yml. Every workflow plant anchors to a real Unity
+  // step; it still has to fail for its original mechanism, not merely exit red.
+  // The JS plant retains its separate run-node parser door. Wrappers are planted
+  // around real commands here without changing the actual shipping workflow.
   const PLANTS = [
-      {
-        // ⚠ PLANT 1 — THE ONE I PERSONALLY OWE. A real invocation moved into an
-        // `echo`. This is the mistake I made tonight, made re-runnable: the
-        // tool must STOP reading `listed` and must say so by name.
-        // ⚠ THE FIRST VERSION OF THIS PLANT WAS NOT CAUGHT, AND THE HARNESS WAS
-        // RIGHT. It moved ONE of shotguard-probe's three invocations into an
-        // echo — and the tool is still invoked by the other two, so `listed` is
-        // the correct answer and G1 correctly said nothing. A plant that fails
-        // because it was badly aimed teaches nothing about the check; this one
-        // takes EVERY invocation of a tool out of command position, which is the
-        // defect I actually mean. THE RESIDUE IS REAL AND IS NAMED IN THE
-        // BOUNDARY: nothing here can see one STEP losing its invocation while
-        // the tool stays listed elsewhere.
-        name: 'every invocation of a tool is moved into an echo, so it is prose wearing coverage',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          // RE-AIMED 2026-08-22 (Sten, #294's replay): every checker step in
-          // ci.yml is now spelled through `node tools/verdict.mjs -- …`, so the
-          // old find-string `run: node tools/buildstamp-shot.mjs` no longer
-          // exists and this plant reported PLANT SITE DRIFTED — the corpus
-          // catching its own premise moving, which is what it is for.
-          find: '        run: node tools/verdict.mjs -- node tools/buildstamp-shot.mjs',
-          all: true,
-          replace: '        run: echo node tools/verdict.mjs -- node tools/buildstamp-shot.mjs',
-        }],
-        expectRed: /BAD\s+G1 /,
-      },
-      {
-        // ⚠ PLANT 2 — THE SECOND ONE I OWE, AND IT IS VIRA'S. `|| true` on a
-        // real step. The tool is STILL `listed` — every census stays happy —
-        // and the gate is silent. This is the property I claimed at #301 and
-        // did not have. It must be red on a GREEN tree, which is the whole
-        // point: it is the only state in which a regression can be introduced.
-        name: 'a listed invocation has its exit status swallowed by `|| true`',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          // RE-AIMED 2026-08-22 (Sten) for the same reason as plant 1.
-          find: '        run: node tools/verdict.mjs -- node tools/buildstamp-shot.mjs --selftest',
-          replace: '        run: node tools/verdict.mjs -- node tools/buildstamp-shot.mjs --selftest || true',
-        }],
-        expectRed: /BAD\s+G4 /,
-      },
-      {
-        // PLANT 3 — the same silence at the YAML level rather than the shell's.
-        name: 'a listed invocation is silenced by continue-on-error instead of by the shell',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          find: '      - name: Storage gate holds, and a normal boot still saves',
-          replace: '      - name: Storage gate holds, and a normal boot still saves\n        continue-on-error: true',
-        }],
-        expectRed: /BAD\s+G4 /,
-      },
-      {
-        // PLANT 4 — an exclusion that names a tool and no cost. D78's clause.
-        name: 'an exclusion declaration keeps the tool name and drops the cost',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          find: 'echo "    tools/tutorial-reach.mjs drives 8 viewports (zoom 0.62–1.70) and NO job"',
-          replace: 'echo "    tools/tutorial-reach.mjs"',
-        }],
-        expectRed: /BAD\s+G1 |BAD\s+G2 /,
-      },
-      {
-        // PLANT 5 — the JS list's own door. ⚠ THE FIRST VERSION OF THIS PLANT WAS
-        // ALSO NOT CAUGHT, and that failure is the most useful thing the corpus
-        // produced. It redirected `surfaces`' real invocation and the tool
-        // stayed GREEN — because run-node also PRINTS "`node tools/surfaces.mjs`
-        // for the sets, `--selftest` for the reds", which clears a four-word
-        // cost floor while saying nothing about what goes unwatched. So the word
-        // floor cannot tell a boundary statement from a run-it-yourself pointer.
-        // I could not close that with a rule I trust — it is a judgement about
-        // English — so it is NAMED in the boundary rather than papered over, and
-        // this plant now aims at what the JS reader genuinely catches: a printed
-        // name for a tool the list does not run and says no cost for.
-        // ⚠ RESTORED TO THE VERSION THAT ESCAPED. This plant drops `surfaces`'
-        // real invocation and leaves the printed hint "`node tools/surfaces.mjs`
-        // for the sets" standing. At b60503d it came back GREEN and I boundaried
-        // it as "a judgement about English". Vira ruled that wrong — right about
-        // the English, wrong that it was the gap — and she was correct: the
-        // decidable test is FORM, not meaning. A command-form reference gets no
-        // cost escape, so this is red now, and the boundary paragraph that
-        // excused it is deleted rather than softened.
-        name: 'a JS list drops an invocation while its printed command-form hint survives',
-        edits: [{
-          file: 'tests/run-node.mjs',
-          find: "['tools/surfaces.mjs', ...args]",
-          replace: "['tools/verify-shipped.mjs', ...args]",
-        }],
-        expectRed: /BAD\s+G1 /,
-      },
-      {
-        // ⚠ PLANT 6 — THE REVIEWER'S OWN, AND THE THIRD I OWE. Only hintstrip's
-        // MAIN step is emptied into an echo; its `--selftest` step survives, so
-        // the tool stays `listed` and G4 has a live invocation to bless. The
-        // list-scoped G1 this file shipped at b60503d could not discriminate
-        // this — it needed EVERY invocation of a tool removed. The step-scoped
-        // G1 fires on the one site. This is the residue I named in my own
-        // boundary and shipped behind it: a stated boundary is not a discharged
-        // one (Vira's law, in her words).
-        name: 'ONE step is emptied into an echo while a sibling step keeps the tool listed',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          // ⚠ ANCHOR MOVED TWICE, AND IT HAS MOVED BACK. First on 2026-08-21
-          // when the step became a folded scalar carrying --waive: the old
-          // anchor stopped matching, the corpus reported PLANT SITE DRIFTED, and
-          // the paired test went red rather than passing over a plant that no
-          // longer planted.
-          //
-          // It has now moved BACK to that original `run:` scalar form, because
-          // #295's layout half landed and the waiver DELETED ITSELF — the step
-          // is a plain `run:` again. The corpus caught the drift a second time,
-          // the same way, in the same act that removed the waiver.
-          //
-          // BOTH MOVES ARE THE CORPUS WORKING, AND THE NOTE IS KEPT RATHER THAN
-          // TIDIED: a find-string is a SECOND COPY of a line that lives in
-          // another file, and nothing but this drift report checks that the two
-          // still agree. That is the defect this whole tool is about, sitting
-          // inside its own selftest — declared, not quietly fixed.
-          find: `        run: node tools/verdict.mjs -- node tools/hintstrip.mjs${workflowEol}`,
-          replace: `        run: echo node tools/verdict.mjs -- node tools/hintstrip.mjs${workflowEol}`,
-        }],
-        expectRed: /BAD\s+G1 /,
-      },
-      {
-        // PLANT 7 — a declared home stops being readable. Not a smaller census:
-        // exit 2, `unknown`, which blocks.
-        name: 'a declared gate list stops being recognisable and the census may not shrink quietly',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          find: '        run: ',
-          all: true,
-          replace: '        x-run-removed-by-plant: ',
-        }],
-        expectRed: /BAD\s+G3 |no `run:` payloads/,
-      },
-      {
-        // PLANT 8 — THE SAME EDIT AS PLANT 7, A DIFFERENT CLAIM, AND THE SHARED
-        // SITE IS DELIBERATE. Plant 7 asserts the census refuses to shrink
-        // quietly. This one asserts that on that very path the tool still says
-        // WHAT IT DOES NOT AUDIT. Both refusal prints used to sit BELOW
-        // `process.exit(2)` while their own comments called them unconditional,
-        // so a reader who hit an unreadable gate list got exit 2 and silence.
-        // Bjorn measured the class in #320 — 41 of 69 boundary-printing tools
-        // have an exit path above their print — and Sunna repaired the same
-        // shape in tools/armoury-arrival-figure.mjs the same night. One edit
-        // cannot carry two expectRed regexes, so it carries two plants.
-        name: 'the census cannot be taken, and the refusal must still reach the reader',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          find: '        run: ',
-          all: true,
-          replace: '        x-run-removed-by-plant: ',
-        }],
-        expectRed: /G4 IS NOT AUDITED IN JAVASCRIPT GATE LISTS/,
-      },
-      {
-        // PLANT 9 — THE DELEGATING-WRAPPER RECOGNITION, PLANTED WHERE IT IS
-        // ASSERTED. The census itself is REPORTED, never asserted, so a wrong
-        // census has no red of its own (that silence is exactly what D104
-        // weighed). G4 does assert, and it NAMES the tools it found — so a
-        // swallowed WRAPPED step is the one place the recognition is visible to
-        // a machine. The red must name `tools/workflow-lint.mjs`, the tool the
-        // wrapper fronts. Against the pre-recognition door this is
-        // RED-FOR-WRONG-REASON, not CAUGHT: G4 still fires, and it names only
-        // `tools/verdict.mjs`. Measured both ways, 2026-08-22.
-        name: 'a WRAPPED invocation is swallowed, and the red must name the tool the wrapper fronts',
-        edits: [{
-          file: '.github/workflows/ci.yml',
-          find: `        run: node tools/verdict.mjs -- node tools/workflow-lint.mjs${workflowEol}`,
-          replace: `        run: node tools/verdict.mjs -- node tools/workflow-lint.mjs || true${workflowEol}`,
-        }],
-        expectRed: /BAD\s+G4 [^\n]*tools\/workflow-lint\.mjs/,
-      },
-      {
-        // PLANT 10 — `WRAPPERS.add()` IS INERT, AND THIS IS THE PROOF THAT
-        // RE-RUNS. #301's boundary line warned whoever landed this that the fix
-        // is not a token in WRAPPERS. A warning in a deleted comment protects
-        // nobody, so the claim is planted instead: the recognition is REPLACED
-        // by the one-line fix that does nothing, and a step that names the tool
-        // it runs through the wrapper becomes a FALSE ORPHAN under G1.
-        //
-        // BOTH EDGES, AND THE SECOND ONE IS WHY THE ci.yml EDIT IS HERE RATHER
-        // THAN IN THE REAL FILE: with the recognition intact, edit 2 alone is
-        // GREEN — the step invokes what it names. With edit 1 on top of it the
-        // step reads as the wrapper, the printed command-form name matches
-        // nothing invoked, and G1 goes red naming tools/workflow-lint.mjs.
-        // Same site, same bytes; the only difference is the recognition.
-        name: 'the recognition is replaced by an inert WRAPPERS.add(), and a wrapped step becomes a false orphan',
-        edits: [
-          {
-            file: 'tools/gatelist.mjs',
-            // THE LEADING NEWLINE IS LOAD-BEARING: this find-string is a second
-            // copy of a line that lives 500 lines up in this same file, so an
-            // unanchored match would hit THIS definition first if the two ever
-            // swap order. Anchored to column 0, it can only match the real one.
-            find: `${toolEol}const DELEGATING = new Set(['tools/verdict.mjs']);${toolEol}`,
-            replace: `${toolEol}const DELEGATING = new Set([]);${toolEol}WRAPPERS.add('tools/verdict.mjs');${toolEol}WRAPPERS.add('verdict.mjs');${toolEol}`,
-          },
-          {
-            file: '.github/workflows/ci.yml',
-            find: `      - name: Every workflow step actually runs a command${workflowEol}        run: node tools/verdict.mjs -- node tools/workflow-lint.mjs${workflowEol}`,
-            replace: `      - name: Every workflow step actually runs a command${workflowEol}        run: |${workflowEol}          echo running node tools/workflow-lint.mjs${workflowEol}          node tools/verdict.mjs -- node tools/workflow-lint.mjs${workflowEol}`,
-          },
-        ],
-        expectRed: /BAD\s+G1 [^\n]*tools\/workflow-lint\.mjs/,
-      },
+    {
+      // G1: remove the tool's only workflow invocation, leaving command-form prose.
+      name: 'every invocation of a tool is moved into an echo, so it is prose wearing coverage',
+      edits: [{
+        file: workflow,
+        find: '        run: node tools/unity-package.mjs --check',
+        all: true,
+        replace: '        run: echo node tools/unity-package.mjs --check',
+      }],
+      expectRed: /BAD\s+G1 [^\n]*tools\/unity-package\.mjs/,
+    },
+    {
+      // G4: command position remains intact but the shell masks its exit status.
+      name: 'a listed invocation has its exit status swallowed by `|| true`',
+      edits: [{
+        file: workflow,
+        find: '        run: node tools/unity-build-history.test.mjs',
+        replace: '        run: node tools/unity-build-history.test.mjs || true',
+      }],
+      expectRed: /BAD\s+G4 [^\n]*tools\/unity-build-history\.test\.mjs/,
+    },
+    {
+      // G4: the same failure suppression at the YAML step boundary.
+      name: 'a listed invocation is silenced by continue-on-error instead of by the shell',
+      edits: [{
+        file: workflow,
+        find: '      - name: Verify packaged player matches its source',
+        replace: `      - name: Verify packaged player matches its source${workflowEol('      - name: Verify packaged player matches its source')}        continue-on-error: true`,
+      }],
+      expectRed: /BAD\s+G4 [^\n]*tools\/unity-package\.mjs/,
+    },
+    {
+      // G1/G2: a bare exclusion name is insufficient; no unwatched cost is stated.
+      name: 'an exclusion declaration keeps the tool name and states no cost',
+      edits: [{
+        file: workflow,
+        find: '          node tools/unity-pages.mjs',
+        replace: '          echo "tools/unity-pages.mjs"',
+      }],
+      expectRed: /BAD\s+G1 [^\n]*tools\/unity-pages\.mjs|BAD\s+G2 /,
+    },
+    {
+      // JS G1: deleting execution cannot leave a printed command-form hint credited.
+      name: 'a JS list drops an invocation while its printed command-form hint survives',
+      edits: [{
+        file: 'tests/run-node.mjs',
+        find: "['tools/surfaces.mjs', ...args]",
+        replace: "['tools/verify-shipped.mjs', ...args]",
+      }],
+      expectRed: /BAD\s+G1 /,
+    },
+    {
+      // Step-local G1: the real seed-only sibling still invokes this .cjs tool.
+      name: 'ONE step is emptied into an echo while a sibling step keeps the tool listed',
+      edits: [{
+        file: workflow,
+        find: '        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
+        replace: '        run: echo node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
+      }],
+      expectRed: /BAD\s+G1 [^\n]*tools\/interruption-playtest\.cjs/,
+    },
+    {
+      // G3: the declared home must become UNKNOWN, never a smaller clean census.
+      name: 'a declared gate list stops being recognisable and the census may not shrink quietly',
+      edits: [{
+        file: workflow,
+        find: '        run: ',
+        all: true,
+        replace: '        x-run-removed-by-plant: ',
+      }],
+      expectRed: /BAD\s+G3 |no `run:` payloads/,
+    },
+    {
+      // Same unreadable-home bytes, distinct claim: the JS audit refusal still prints.
+      name: 'the census cannot be taken, and the refusal must still reach the reader',
+      edits: [{
+        file: workflow,
+        find: '        run: ',
+        all: true,
+        replace: '        x-run-removed-by-plant: ',
+      }],
+      expectRed: /G4 IS NOT AUDITED IN JAVASCRIPT GATE LISTS/,
+    },
+    {
+      // G4 must name the delegated Unity tool, not merely the verdict wrapper.
+      name: 'a WRAPPED invocation is swallowed, and the red must name the tool the wrapper fronts',
+      edits: [{
+        file: workflow,
+        find: '        run: node tools/unity-package.mjs --check',
+        replace: '        run: node tools/verdict.mjs -- node tools/unity-package.mjs --check || true',
+      }],
+      expectRed: /BAD\s+G4 [^\n]*tools\/unity-package\.mjs/,
+    },
+    {
+      // Workflow edit alone is valid. Disabling delegated-script recognition
+      // makes the printed Unity command a false orphan despite WRAPPERS.add().
+      name: 'the recognition is replaced by an inert WRAPPERS.add(), and a wrapped step becomes a false orphan',
+      edits: [
+        {
+          file: 'tools/gatelist.mjs',
+          // Column-zero anchoring avoids accidentally editing this fixture itself.
+          find: `${toolEol}const DELEGATING = new Set(['tools/verdict.mjs']);${toolEol}`,
+          replace: `${toolEol}const DELEGATING = new Set([]);${toolEol}WRAPPERS.add('tools/verdict.mjs');${toolEol}WRAPPERS.add('verdict.mjs');${toolEol}`,
+        },
+        {
+          file: workflow,
+          find: `      - name: Verify packaged player matches its source${workflowEol('      - name: Verify packaged player matches its source')}        run: node tools/unity-package.mjs --check`,
+          replace: `      - name: Verify packaged player matches its source${workflowEol('      - name: Verify packaged player matches its source')}        run: |\n          echo running node tools/unity-package.mjs --check\n          node tools/verdict.mjs -- node tools/unity-package.mjs --check`,
+        },
+      ],
+      expectRed: /BAD\s+G1 [^\n]*tools\/unity-package\.mjs/,
+    },
   ];
   const code = await doorSelftest({ tool: 'gatelist.mjs', timeoutMs: 120000, extraCopy: ['.github', 'tests'], plants: PLANTS });
   // The corpus's own verdict, in the shape tests/run-node.mjs quotes. The plant

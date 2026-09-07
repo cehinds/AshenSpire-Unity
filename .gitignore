@@ -67,3 +67,4 @@ Builds/
 TestResults/
 **/bin/
 **/obj/
+**/__pycache__/

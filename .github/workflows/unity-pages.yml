@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: read
 concurrency:
   group: unity-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'channels' }}
   cancel-in-progress: false
@@ -29,6 +30,24 @@ jobs:
         run: |
           dotnet run --project UnityTests/Parity
           python3 UnityTests/Parity/authoring-checks.py
+          dotnet run --project UnityTests/NativeFeedback
+          dotnet run --project UnityTests/CardText
+          dotnet run --project UnityTests/SpriteStyles
+          dotnet run --project UnityTests/MapShape
+          dotnet run --project UnityTests/CoopRun
+          dotnet run --project UnityTests/CoopRun -- --policy
+          dotnet run --project UnityTests/Playthrough -- 3 TestResults/NativePolicy
+      - name: Verify cooperative host authority, persistence and packaging guards
+        run: |
+          dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/Checks/TransportChecks.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/NativeChecks/NativeChecks.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/PersistenceChecks/PersistenceChecks.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/StartingChoicesChecks/StartingChoicesChecks.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/CommandGateChecks/CommandGateChecks.csproj -c Release
+          dotnet run --project tools/NativeLan/Tests/PanelStateChecks/PanelStateChecks.csproj -c Release
+          python3 tools/validate-companion.test.py
+          python3 tools/validate-unity-targets.test.py
       - name: Test authoring file transactions and asset validation
         run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
       - name: Test displayed viewport sizing
@@ -39,12 +58,17 @@ jobs:
         run: |
           dotnet run --project UnityTests/Interruption
           node tools/browser-visibility.test.cjs
+          node tools/control-report.test.cjs
       - name: Exercise fixed campaign policies
         run: |
           mkdir -p TestResults/Balance
           dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
+      - name: Verify immutable build history and channel membership
+        run: node tools/unity-build-history.test.mjs
+      - name: Verify bounded Pages artifact copying
+        run: node tools/unity-git-blobs.test.mjs
       - name: Install browser test tooling
         run: |
           npm install --no-save playwright
@@ -61,6 +85,18 @@ jobs:
         run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
       - name: Exercise dense mobile layout with touch input
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
+      - name: Complete the native three-act climb with reloads
+        run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+      - name: Exercise native draft, level-up, flask allocation and merchant transactions
+        run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
+      - name: Verify original sprite styles and saved appearance through actual controls
+        run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
+      - name: Verify painted enemies through target selection and combat
+        run: node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
+      - name: Exercise custom map caps and weights through actual controls
+        run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
+      - name: Complete an actual two-player Unity fight and rejoin
+        run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
       - name: Exercise the packaged game with real pointer input
         run: |
           node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
@@ -77,12 +113,25 @@ jobs:
             TestResults/Interruption
             TestResults/Seed
             TestResults/Foundation
+            TestResults/NativeBrowser
+            TestResults/NativePolicy
+            TestResults/NativeFeedback
+            TestResults/CardText
+            TestResults/NativeFeatures
+            TestResults/NativeCoopBrowser
+            TestResults/NativeAppearance
+            TestResults/NativeEnemyArt
+            TestResults/NativeMapShape
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
       - name: Assemble all channels together
         if: github.event_name != 'pull_request'
-        run: node tools/unity-pages.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node tools/unity-pages.mjs
+          node tools/unity-pages-links.test.mjs
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

@@ -1,5 +1,9 @@
 # Content authoring validation — 0.6.0
 
+This is a historical adaptation document. For the native original-game rebuild
+at 0.0.10.0, use [Unity-Owner-Guide.md](Unity-Owner-Guide.md). Editing its
+`Original/content.json` tables is separate from the campaign editor described here.
+
 Compiled source: `551285af6c20b41ac11c97d2d2978d8561558c88`.
 Source digest: `a8d7174753a64ffdab7e8d5efa7e8bd6fdcaa6087b3033f65f989c157b5fabd3`.
 

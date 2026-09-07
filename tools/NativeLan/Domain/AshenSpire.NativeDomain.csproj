@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  <RepositoryRoot Condition="'$(RepositoryRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\'))</RepositoryRoot>
+ </PropertyGroup>
+ <ItemGroup><Compile Include="$(RepositoryRoot)/Unity/Assets/AshenSpire/Runtime/Domain/Original/*.cs"/><PackageReference Include="Newtonsoft.Json" Version="13.0.2"/></ItemGroup>
+</Project>

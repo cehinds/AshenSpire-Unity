@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "sources": {
+    "src/model/floorplan.js": "d93dcbf59f76def962eead3845abb7900092676f2973a82370333734f671decf",
+    "src/content/mapconfig.js": "1e19be9c02b494d89c0a9629ed82e82b4b2a722ac1d675f5ff9efd6104a4851e",
+    "src/engine/actmap.js": "008a7cd145c69630973cb1eaf92ce5e3966d7db5e34c28e3bc009841eb39a467",
+    "src/engine/mapgen.js": "23edd53974d7dff11b2eda3ea346e220a560132a8bc26df59a7d1d373d3738cb",
+    "src/engine/rng.js": "e4b2312c06d2cc4630b4e344ec94a153fbf3280f795e3d6e36a43e31bfbac553",
+    "src/ui/screens/customRun.js": "969d1945807a89aeab01af938bf76da28580d82d5a0631e05acc14856b06d0ac",
+    "src/main.js": "e0ff5a483c611626ee39e820835ead11767dd3b0afb8581f69a9b252de723151"
+  },
+  "outputSha256": "42ea29052a2390f77ab53ff4a076f458754226ece30e1ea318ab303214e6b90b",
+  "fixtures": 339,
+  "graphs": 720,
+  "samples": 12
+}

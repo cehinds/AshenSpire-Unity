@@ -1,0 +1,18 @@
+// Exports pinned original run-shape semantics and actual generated graph/RNG receipts.
+import fs from 'node:fs';import path from 'node:path';import{pathToFileURL,fileURLToPath}from'node:url';import{execFileSync}from'node:child_process';import{createHash}from'node:crypto';
+if(!process.argv[2])throw Error('Pass a clean pinned original checkout path.');
+const root=path.resolve(process.argv[2]),out=path.dirname(fileURLToPath(import.meta.url));
+const sha=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();if(sha!=='b17a7f4543e1710f49fae8b58880121690a314de'||execFileSync('git',['status','--porcelain','--','src'],{cwd:root,encoding:'utf8'}).trim())throw Error('Expected clean pinned original');
+const load=p=>import(pathToFileURL(path.join(root,p)).href);
+const{mapConfigs,MAP_SHAPE_LIMITS}=await load('src/content/mapconfig.js');const{applyRunShape,minViableFloors}=await load('src/model/floorplan.js');const{generateActMap,sampleActShape}=await load('src/engine/mapgen.js');const{buildActMap}=await load('src/engine/actmap.js');const{createRng}=await load('src/engine/rng.js');const{contentBundle}=await load('src/content/index.js');const{createRegistries}=await load('src/model/registries.js');const registries=createRegistries(contentBundle);
+const shapes=[null,{}, {floors:null}, {columns:null}, {typeWeights:{}}, {floors:999,columns:999}, {floors:1}, {floors:3}, {columns:1}, {floors:4.5}, {floors:'5'}, {columns:[]}, {wat:2}, [], 'bad', {typeWeights:[]}, {typeWeights:{wat:3}}, {typeWeights:{monster:-1}}, {typeWeights:{monster:101}}, {typeWeights:{monster:'4'}}, {typeWeights:Object.fromEntries(Object.keys(mapConfigs[1].typeWeights).map(k=>[k,0]))}];
+for(let floors=4;floors<=15;floors++)for(let columns=2;columns<=7;columns++)shapes.push({floors,columns});
+for(const type of Object.keys(mapConfigs[1].typeWeights))for(const amount of[0,0.5,10,100])shapes.push({floors:7,columns:3,typeWeights:{[type]:amount}});
+const fixtures=[];
+for(const[act,config]of Object.entries(mapConfigs))for(const shape of shapes){const r=applyRunShape(config,shape,MAP_SHAPE_LIMITS);const row={act:Number(act),shape,valid:!r.errors.length,config:r.config,changed:r.changed,notes:r.notes};if(!r.errors.length){row.maps=[];for(const seed of[1,13,492]){const rng=createRng(seed);const map=buildActMap(registries,rng,Number(act),shape);row.maps.push({seed,map,rng:rng.getCounters()});}}fixtures.push(row);}
+const samples=[];for(const shape of[null,{floors:7,columns:2},{floors:8,columns:4},{floors:7,typeWeights:{monster:0,elite:0}}])for(const[act,config]of Object.entries(mapConfigs)){const c=applyRunShape(config,shape,MAP_SHAPE_LIMITS);samples.push({act:Number(act),shape,sample:sampleActShape(c.config,24)});}
+const data={sourceCommit:sha,configs:mapConfigs,limits:MAP_SHAPE_LIMITS,minimumFloors:Object.fromEntries(Object.entries(mapConfigs).map(([a,c])=>[a,minViableFloors(c).floors])),fixtures,samples};const bytes=JSON.stringify(data)+'\n';fs.writeFileSync(path.join(out,'map-shape-reference.json'),bytes);
+const sourceFiles=['src/model/floorplan.js','src/content/mapconfig.js','src/engine/actmap.js','src/engine/mapgen.js','src/engine/rng.js','src/ui/screens/customRun.js','src/main.js'];
+fs.writeFileSync(path.join(out,'map-shape-reference.receipt.json'),JSON.stringify({sourceCommit:sha,sources:Object.fromEntries(sourceFiles.map(p=>[p,createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')])),outputSha256:createHash('sha256').update(bytes).digest('hex'),fixtures:fixtures.length,graphs:fixtures.reduce((s,f)=>s+(f.maps?.length??0),0),samples:samples.length},null,2)+'\n');
+
+console.log(`${fixtures.length} cases, ${fixtures.reduce((s,f)=>s+(f.maps?.length??0),0)} actual act maps, ${samples.length} sampler receipts`);

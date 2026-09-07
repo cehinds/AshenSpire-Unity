@@ -1,0 +1,84 @@
+{
+  "current": {
+    "version": "0.0.11.0",
+    "buildNumber": 11,
+    "sourceCommit": "4d7ee0b60856d7b8475f7a13cd7aedbe8757a9a8",
+    "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+    "builtAt": "2026-09-07T06:25:03.7326830Z",
+    "stage": "Foundation in progress",
+    "unityVersion": "6000.6.0f1",
+    "paintedEnemies": 19,
+    "reusedPaintedEnemies": 12,
+    "newGeneratedEnemies": 7,
+    "assetReviewChecks": 217,
+    "webCompiled": true,
+    "windowsCompiled": true,
+    "androidCompiled": true,
+    "companionPackaged": true,
+    "currentPlayerSuites": [
+      {
+        "suite": "EnemyArtSolo",
+        "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+        "checks": 31,
+        "success": true,
+        "physicalDevice": false
+      },
+      {
+        "suite": "EnemyArtHost",
+        "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+        "checks": 8,
+        "success": true,
+        "physicalDevice": false
+      },
+      {
+        "suite": "EnemyArtGuest",
+        "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+        "checks": 6,
+        "success": true,
+        "physicalDevice": false
+      }
+    ],
+    "screenshots": 21,
+    "gameplayBaseline": {
+      "version": "0.0.10.0",
+      "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+      "evidence": "https://github.com/cehinds/AshenSpire-Unity/blob/75769ddfaabf7011c58fea6b9dacc84df253565f/Published/validation.json",
+      "note": "Full native climb, original modes, profiles, storage and appearance acceptance belong to build 10. Gameplay rules did not change in build 11."
+    },
+    "physicalPhoneTested": false,
+    "nativeWindowsInteractionTested": false,
+    "iosBuilt": false,
+    "audibleListeningTested": false,
+    "fullOriginalGameplayParity": false,
+    "packageChecks": {
+      "companion": 436,
+      "windowsAndAndroidFiles": 160,
+      "rootPackage": 18
+    },
+    "compiledEnemyCoverage": {
+      "types": [
+        "blightHound",
+        "graveWisp"
+      ],
+      "instances": 3,
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "assetPathLogsAvailable": false,
+      "note": "Screenshots and actual selection, attack and reload checks cover these two types. Catalog/frame review covers all nineteen; all nineteen were not encountered in this browser check."
+    }
+  },
+  "baseline": {
+    "version": "0.0.10.0",
+    "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+    "evidence": "https://github.com/cehinds/AshenSpire-Unity/blob/75769ddfaabf7011c58fea6b9dacc84df253565f/Published/validation.json",
+    "note": "Full native climb, original modes, profiles, storage and appearance acceptance belong to build 10. Gameplay rules did not change in build 11."
+  }
+}

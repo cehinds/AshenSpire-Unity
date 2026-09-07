@@ -1,5 +1,6 @@
 // Read-only Unity control bounds guide real mouse input; no commands or state injection.
 // Usage: node tools/campaign-playtest.cjs [url] [evidenceDirectory] [--full]
+const {controlReportsForPage}=require('./control-report.cjs');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scrollStops=[];
@@ -62,8 +63,9 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   scrollStops.push({x:stopX,y:stopY,stateUnchanged:true,controlsUnchanged:true});
  }
  let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
+ const normalizeControls=controlReportsForPage(page,e=>errors.push(e));
  page.on('pageerror',e=>errors.push(e.message));
- page.on('console',message=>{const value=message.text();if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput,feedbackEvents,soundEvents,scrollStops};});
+ page.on('console',message=>{const value=normalizeControls(message.text());if(value===null)return;if(value.startsWith('ASHENSPIRE_FEEDBACK ')){const event=JSON.parse(value.slice(20));feedbackEvents.push(event);if(event.Status==='impact'&&captureNextImpact){const name=captureNextImpact;captureNextImpact=null;impactCaptures.push(page.screenshot({path:path.join(output,name+'.png')}).then(()=>shots.push(name)));}}if(value.startsWith('ASHENSPIRE_SOUND '))soundEvents.push(value.slice(17));if(message.type()==='error')errors.push(value);let i=value.indexOf('ASHENSPIRE_CAMPAIGN ');if(i>=0){state=JSON.parse(value.slice(i+19));revision++;layoutAtState=layout;}i=value.indexOf('ASHENSPIRE_CONTROLS ');if(i>=0){controls=JSON.parse(value.slice(i+19));layout++;}lastEvidence={state,controls,revision,layout,layoutAtState,errors,lastInput,feedbackEvents,soundEvents,scrollStops};});
  let url=process.argv[2]||'http://127.0.0.1:8787';
  const upgradeIndex=process.argv.indexOf('--upgrade-from');let servedDirectory;
  if(upgradeIndex>=0){

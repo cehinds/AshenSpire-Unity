@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "gameVersion": "0.0.11.0",
+  "buildNumber": 11,
+  "previewDevRef": "0546f0702ca9d9e1c8f3edbc4ce5cc22db65fe66",
+  "files": 1826,
+  "bytes": 989198780,
+  "mebibytes": 943.3734703063965,
+  "unchangedBudgetMiB": 950,
+  "remainingMiB": 6.626529693603516,
+  "archivedPlayers": 16,
+  "channels": 4,
+  "navigationChecks": 242,
+  "libraryPages": 38,
+  "allSiteBytesIdentical": true,
+  "siteDigest": "c2a5226f3cc0f99f7fc707feff9eab3be038cc1881f9732c49413abf7f6f2284",
+  "published": false,
+  "note": "Local preview explicitly selects the candidate as Dev; this does not move any branch or publish a channel. This comparison verifies the bounded Git-copy optimization against the prior generated site. Further native archives require additional hosting capacity before the existing budget is exceeded."
+}

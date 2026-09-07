@@ -1,0 +1,312 @@
+{
+  "method": "PNG bytes unchanged; alpha > 16 bounds used for runtime placement",
+  "baseline": 0.94,
+  "maximumWidth": 0.9,
+  "maximumHeight": 0.84,
+  "enemies": [
+    {
+      "enemyId": "wanderingSoldier",
+      "resource": "Art/painted_wanderingSoldier",
+      "sha256": "d164c7ca5384861879ae26afd4e2757a0c0929e619b197f84ad7ccc409c6617e",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        59,
+        109,
+        323,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "blightHound",
+      "resource": "Art/painted_blightHound",
+      "sha256": "01ce38ace9d485c6d3d677cfc636fdd7de7f92dd14b3e9bd0f47295af00d94ae",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        59,
+        162,
+        324,
+        363
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "graveWisp",
+      "resource": "Art/painted_graveWisp",
+      "sha256": "9bbe5a44a3b0d86377b4ff17ac214e8e05daf4a8825d6669ba3554a2c5c83cfd",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        62,
+        46,
+        321,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "wyrmAspirant",
+      "resource": "Art/painted_wyrmAspirant",
+      "sha256": "27f91c5617a5879c2029cd009fa62ec27ed64ba25b3d0729b676fca144e8b444",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        49,
+        54,
+        335,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "fellWarden",
+      "resource": "Art/painted_fellWarden",
+      "sha256": "8247ac98009ebfcf287c6dd3a9979bf164dd9058b4fb0fb24b80c82a89836bad",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        23,
+        91,
+        360,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "gildedKnight",
+      "resource": "Art/painted_gildedKnight",
+      "sha256": "655fde73c0b04c26d843cb2cf86ca0c66cc98c31bed88ce7495d951f62c56bbb",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        32,
+        93,
+        351,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "courtSurgeon",
+      "resource": "Art/painted_courtSurgeon",
+      "sha256": "de28b5c36c0fddb1873625eba8b78dcecd44ddbed9c46bff050bcc6d2a490706",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        77,
+        103,
+        306,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "livingArmor",
+      "resource": "Art/painted_livingArmor",
+      "sha256": "5a979e9067e47606f63aa14d708886a1b9ac6d5c0670f3f00b770e0b396f7f30",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        78,
+        93,
+        305,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "courtDuelist",
+      "resource": "Art/painted_courtDuelist",
+      "sha256": "452fb0586949dfd8f1a258d7d052c4b4d4f1c80f3cfc0ac05b65d2cb89e3cde0",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        44,
+        94,
+        339,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "stitchedKing",
+      "resource": "Art/painted_stitchedKing",
+      "sha256": "5a8d81b767af0308b253559aa6668f5de9af9f527b6d5e8352e142ce71beeef7",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        28,
+        78,
+        356,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "valkyrieShade",
+      "resource": "Art/painted_valkyrieShade",
+      "sha256": "3df6c50432ca84654a0c893735282e4de2796085c003869fb3cd291e1035de7c",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        52,
+        36,
+        332,
+        362
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "wyrmLord",
+      "resource": "Art/painted_wyrmLord",
+      "sha256": "6f916273ba5e05f351fab92c8ca4015a2ea7ce6642f850fceee33b4b920e1dc0",
+      "canvas": [
+        384,
+        384
+      ],
+      "alphaBounds": [
+        50,
+        24,
+        333,
+        364
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "huskBrute",
+      "resource": "Art/Enemies/Painted/HuskBrute",
+      "sha256": "1928d934eb33f2b4d1fe3af02d706c237fd4d6cbc1e795e82c15d1d6824fdc23",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        64,
+        44,
+        1183,
+        1207
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "stitchedHound",
+      "resource": "Art/Enemies/Painted/StitchedHound",
+      "sha256": "d6dc0281a361e880576fe22d6db45def2cff638f2c68ca4603fe26f93ab00395",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        35,
+        171,
+        1229,
+        1070
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "courtMarionette",
+      "resource": "Art/Enemies/Painted/CourtMarionette",
+      "sha256": "ad4c26f637e344d147fc28ad204e2e3f99ab56471282105a9fc7dfda2fd26c06",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        71,
+        22,
+        1119,
+        1228
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "ashRevenant",
+      "resource": "Art/Enemies/Painted/AshRevenant",
+      "sha256": "e21962261705c1ef0189483c6f673a9cadaa4febb3458aaa6de14d42e3976259",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        50,
+        24,
+        1184,
+        1220
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "emberStarvedPilgrim",
+      "resource": "Art/Enemies/Painted/EmberStarvedPilgrim",
+      "sha256": "0859fbb96af961efb346aa14129cf2d5d5828c4e3b66f5c413cb4fa09bc139e5",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        187,
+        52,
+        1027,
+        1201
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "charredColossus",
+      "resource": "Art/Enemies/Painted/CharredColossus",
+      "sha256": "bbfeb0293b91d83242e28597103e40a2579fa11d750494147fc391f05ba996eb",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        125,
+        14,
+        1133,
+        1238
+      ],
+      "hasTransparentPixels": true
+    },
+    {
+      "enemyId": "blightedValkyrie",
+      "resource": "Art/Enemies/Painted/BlightedValkyrie",
+      "sha256": "ccb07016761947fe341c9ea5cc48055edd67e303d9a817fd6dbe6c87a556e01a",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alphaBounds": [
+        16,
+        2,
+        1226,
+        1245
+      ],
+      "hasTransparentPixels": true
+    }
+  ]
+}

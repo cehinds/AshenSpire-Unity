@@ -1,33 +1,76 @@
 {
-  "version": "0.9.0",
-  "sourceCommit": "668c5776b5dd81cef710b44c8b79d62cdd23a020",
-  "sourceDigest": "8495f6c6d351d5f7f3902fc74e1791af73358149df9ce21f6c544cfe4b1fde56",
+  "version": "0.0.11.0",
+  "buildNumber": 11,
+  "sourceCommit": "4d7ee0b60856d7b8475f7a13cd7aedbe8757a9a8",
+  "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+  "builtAt": "2026-09-07T06:25:03.7326830Z",
+  "stage": "Foundation in progress",
   "unityVersion": "6000.6.0f1",
-  "originalReference": "b17a7f4543e1710f49fae8b58880121690a314de",
-  "originalFoundationChecks": 7356,
-  "originalCsvTransactionChecks": 8,
-  "originalFoundationBrowserChecks": 12,
-  "domainChecks": 224,
-  "authoringFileChecks": 19,
-  "viewportChecks": 14,
-  "interruptionStateChecks": 39,
-  "browserBridgeChecks": 9,
-  "rendererPatchChecks": 1011,
-  "packageChecks": 14,
-  "fullCampaignVictory": true,
-  "equipmentPurchased": true,
-  "resumeStateMatches": true,
-  "campaignFoesDefeated": 9,
-  "currentLocalScreenshots": 43,
-  "browserErrors": 0,
+  "paintedEnemies": 19,
+  "reusedPaintedEnemies": 12,
+  "newGeneratedEnemies": 7,
+  "assetReviewChecks": 217,
   "webCompiled": true,
   "windowsCompiled": true,
   "androidCompiled": true,
+  "companionPackaged": true,
+  "currentPlayerSuites": [
+    {
+      "suite": "EnemyArtSolo",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+      "checks": 31,
+      "success": true,
+      "physicalDevice": false
+    },
+    {
+      "suite": "EnemyArtHost",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+      "checks": 8,
+      "success": true,
+      "physicalDevice": false
+    },
+    {
+      "suite": "EnemyArtGuest",
+      "sourceDigest": "eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e",
+      "checks": 6,
+      "success": true,
+      "physicalDevice": false
+    }
+  ],
+  "screenshots": 21,
+  "gameplayBaseline": {
+    "version": "0.0.10.0",
+    "sourceDigest": "62aa53dcfe5f399be01efd6ed697b43a6aaf09c544950a90337641ba5101032b",
+    "evidence": "https://github.com/cehinds/AshenSpire-Unity/blob/75769ddfaabf7011c58fea6b9dacc84df253565f/Published/validation.json",
+    "note": "Full native climb, original modes, profiles, storage and appearance acceptance belong to build 10. Gameplay rules did not change in build 11."
+  },
   "physicalPhoneTested": false,
   "nativeWindowsInteractionTested": false,
   "iosBuilt": false,
   "audibleListeningTested": false,
   "fullOriginalGameplayParity": false,
-  "note": "Original foundation comparisons and real browser controls passed. The existing nine-encounter campaign remains a separate adaptation. Original combat orchestration, equipment, services, progression and co-op are unfinished. Browser emulation is not physical device testing. Web uses the documented temporary renderer workaround.",
-  "balanceDiagnosticRuns": 192
+  "packageChecks": {
+    "companion": 436,
+    "windowsAndAndroidFiles": 160,
+    "rootPackage": 18
+  },
+  "compiledEnemyCoverage": {
+    "types": [
+      "blightHound",
+      "graveWisp"
+    ],
+    "instances": 3,
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1440,
+        "height": 900
+      }
+    ],
+    "assetPathLogsAvailable": false,
+    "note": "Screenshots and actual selection, attack and reload checks cover these two types. Catalog/frame review covers all nineteen; all nineteen were not encountered in this browser check."
+  }
 }

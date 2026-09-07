@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "baseline": 5,
+  "damagePerPoint": 1,
+  "healingPerPoint": 1,
+  "healingAttribute": "wisdom",
+  "damageTags": { "pierce": "dexterity" },
+  "damageSchools": {
+    "physical": "strength",
+    "pierce": "dexterity",
+    "piercing": "dexterity",
+    "magic": "intelligence",
+    "arcane": "wisdom"
+  },
+  "attributes": {
+    "strength": { "perPoint": "+1 total damage on strength attacks; +1 carry capacity." },
+    "dexterity": { "perPoint": "+1 total damage on finesse attacks.", "milestone": { "interval": 5, "description": "+1 action each turn." } },
+    "intelligence": { "perPoint": "+1 total magic damage.", "milestone": { "interval": 5, "description": "+1 card drawn each turn." } },
+    "wisdom": { "perPoint": "+1 total arcane damage and +1 card healing.", "milestone": { "interval": 5, "description": "+1 maximum mana." } },
+    "constitution": { "perPoint": "+2 maximum health and +2 carry capacity.", "milestone": { "interval": 5, "description": "+1 maximum stamina." } }
+  },
+  "derivedStats": {
+    "rules": {
+      "energy": { "base": 1, "pointsPerTier": 5 },
+      "draw": { "base": 3, "pointsPerTier": 5 }
+    }
+  }
+}
