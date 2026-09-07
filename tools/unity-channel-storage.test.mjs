@@ -7,7 +7,8 @@ import {createHash} from 'node:crypto';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,dirname,resolve,relative} from 'node:path';
-import {rewriteChannelPlayer,planChannelStorage,channelAssetUrl} from './unity-channel-storage.mjs';
+import {fileURLToPath} from 'node:url';
+import {rewriteChannelPlayer,planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
 import {collectHistory,materializeHistory} from './unity-build-history.mjs';
 import {materializePublished} from './unity-git-blobs.mjs';
 
@@ -194,5 +195,79 @@ check('public channel URLs resolve to exact committed bytes after materializatio
  // Sharing an entire evidence folder keeps its own relative image links valid.
  const guide=new URL(channelAssetUrl(plan,'test','Published/NativeEvidence/Guide.md'),'https://example.invalid/AshenSpire-Unity/test/');const image=new URL('Shots/phone.png',guide);
  assert.deepEqual(readFileSync(join(out,image.pathname.slice('/AshenSpire-Unity/'.length))),execFileSync('git',['show',evidence+':Published/NativeEvidence/Shots/phone.png'],{cwd:root,windowsHide:true}));
+});
+const presentation={guide:'Published/NativeEvidence/Guide.md',screenshots:['Published/NativeEvidence/Shots/phone.png']};
+check('missing presentation metadata leaves historical selection in charge',()=>{
+ assert.equal(parseChannelPresentation(plan,'dev',undefined),null);
+});
+check('current presentation validates against exact selected artifacts and shared URLs',()=>{
+ const text=JSON.stringify(presentation),result=parseChannelPresentation(plan,'test',text);
+ assert.deepEqual(result,presentation);assert.equal(JSON.stringify(presentation),text);
+ assert.equal(channelAssetUrl(plan,'test',result.guide),'../dev/NativeEvidence/Guide.md');
+ assert.equal(channelAssetUrl(plan,'test',result.screenshots[0]),'../dev/NativeEvidence/Shots/phone.png');
+});
+check('explicit malformed presentation never silently falls back',()=>{
+ for(const text of ['{','null','[]','true','1','"string"','{}',null,{},JSON.stringify({guide:presentation.guide}),
+  JSON.stringify({...presentation,extra:'ignored'}),JSON.stringify({...presentation,screenshots:[]}),
+  JSON.stringify({...presentation,screenshots:'not an array'}),JSON.stringify({...presentation,screenshots:Array(33).fill(presentation.screenshots[0])}),
+  JSON.stringify({...presentation,screenshots:[...presentation.screenshots,...presentation.screenshots]}),' '.repeat(32769)])assert.throws(()=>parseChannelPresentation(plan,'dev',text));
+});
+check('presentation guide and screenshot formats cannot select executable or wrong media',()=>{
+ for(const guide of [null,{},123,'Published/validation.json','Published/Web/index.html'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,guide})));
+ for(const image of [null,{},123,presentation.guide,'Published/AudioEvidence/hit.wav'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,screenshots:[image]})));
+});
+check('presentation paths cannot escape or refer to unselected/misspelled files',()=>{
+ for(const guide of ['Published/../Guide.md','Published//Guide.md','Published/NativeEvidence\\Guide.md','https://outside.invalid/Guide.md','Published/missing.md','Published/nativeevidence/Guide.md'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,guide})));
+ for(const image of ['Published/../shot.png','Published/NativeEvidence/../../shot.png','Published/NUL.png','Published/missing.png','Published/NativeEvidence/Shots/Phone.png'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,screenshots:[image]})));
+});
+check('presentation screenshot order is preserved with the bounded maximum',()=>{
+ const selectedRows=clone(rows.slice(0,1));const paths=Array.from({length:32},(_,index)=>`Published/Current/shot-${index}.png`);
+ for(const path of paths)selectedRows[0].files.push({path,blob:'c'.repeat(40),mode:'100644'});
+ const result=planChannelStorage(selectedRows,history.builds),screenshots=[...paths].reverse();
+ assert.deepEqual(parseChannelPresentation(result,'dev',JSON.stringify({...presentation,screenshots})).screenshots,screenshots);
+});
+
+// Assemble the actual page generator against tiny committed inputs. This catches
+// a correct validator that is accidentally ignored by the rendered guide/gallery.
+put('Published/NativeEvidence/gallery.json',JSON.stringify(presentation.screenshots));
+const fallbackCommit=commit('Native gallery fallback');
+put('Published/CombatReadability/Guide.md','# Current guide\n![Phone](01-phone.png)\n');
+put('Published/CombatReadability/01-phone.png',Buffer.from([137,80,78,71,42]));
+put('Published/CombatReadability/02-desktop.png',Buffer.from([137,80,78,71,43]));
+const currentPresentation={guide:'Published/CombatReadability/Guide.md',screenshots:['Published/CombatReadability/02-desktop.png','Published/CombatReadability/01-phone.png']};
+put('Published/presentation.json',JSON.stringify(currentPresentation));
+const presentationCommit=commit('Select current presentation without changing existing evidence');
+writeFileSync(join(root,'AshenSpire.html'),'<!doctype html><title>Original fixture</title>');
+const assembler=fileURLToPath(new URL('./unity-pages.mjs',import.meta.url));
+function assemble(name,dev,test){
+ const out=join(fixture,name);
+ execFileSync(process.execPath,[assembler],{cwd:root,encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,GITHUB_TOKEN:'',UNITY_PAGES_OUT:out,UNITY_PAGES_DEV_REF:dev,UNITY_PAGES_TEST_REF:test,UNITY_PAGES_RELEASE_REF:'missing',UNITY_PAGES_MAIN_REF:'missing'}});
+ return out;
+}
+check('actual channel page uses current guide/gallery while missing metadata preserves fallback',()=>{
+ const out=assemble('presentation-site',presentationCommit,fallbackCommit);
+ const currentHtml=readFileSync(join(out,'dev/index.html'),'utf8'),fallbackHtml=readFileSync(join(out,'test/index.html'),'utf8');
+ assert(currentHtml.includes('href="CombatReadability/Guide.md">What to try in this build'));
+ assert(!currentHtml.includes('href="NativeEvidence/Guide.md">What to try in this build'));
+ const currentImages=[...currentHtml.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]);
+ assert.deepEqual(currentImages,['CombatReadability/02-desktop.png','CombatReadability/01-phone.png']);
+ const fallbackImages=[...fallbackHtml.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]);
+ assert.deepEqual(fallbackImages,['../dev/NativeEvidence/Shots/phone.png']);
+ assert(fallbackHtml.includes('href="../dev/NativeEvidence/Guide.md">What to try in this build'));
+ assert(!existsSync(join(out,'test/NativeEvidence')),'unchanged NativeEvidence folder duplicated');
+ for(const file of ['Guide.md','01-phone.png','02-desktop.png'])assert.deepEqual(readFileSync(join(out,'dev/CombatReadability',file)),bytes.get('Published/CombatReadability/'+file));
+ assert.equal(git(['rev-parse',fallbackCommit+':Published/NativeEvidence']),git(['rev-parse',presentationCommit+':Published/NativeEvidence']));
+});
+check('promoted presentation resolves current guide/screenshots through shared folder ownership',()=>{
+ const out=assemble('promoted-presentation-site',presentationCommit,presentationCommit);
+ const html=readFileSync(join(out,'test/index.html'),'utf8');
+ assert(html.includes('href="../dev/CombatReadability/Guide.md">What to try in this build'));
+ assert.deepEqual([...html.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]),['../dev/CombatReadability/02-desktop.png','../dev/CombatReadability/01-phone.png']);
+ assert(!existsSync(join(out,'test/CombatReadability')));
+});
+put('Published/presentation.json','{malformed');const malformedPresentation=commit('Malformed explicit selection');
+check('actual assembler refuses malformed explicit metadata instead of showing old evidence',()=>{
+ assert.throws(()=>assemble('malformed-presentation-site',malformedPresentation,fallbackCommit),error=>/Invalid presentation manifest JSON/.test(String(error.stderr)));
+ assert(!existsSync(join(fixture,'malformed-presentation-site/dev/index.html')));
 });
 console.log(`${checks} checks passed; fixture preserved at ${fixture}`);

@@ -1,0 +1,34 @@
+PASS promotion and evidence changes retain actual Web archive identity
+PASS planning does not mutate channel or immutable history inputs
+PASS tree enumeration order cannot change immutable identity or evidence reuse
+PASS identical evidence folders share their complete original tree
+PASS one changed screenshot retains the whole differing evidence folder
+PASS folder membership and excluded downloads still prevent false evidence sharing
+PASS sharing works in any channel order and never depends on dev being selected
+PASS URL encoding preserves spaces, Unicode and literal percent signs in evidence names
+PASS per-channel validation and manifests remain local even when equal
+PASS same version with changed runtime bytes selects a distinct archived payload
+PASS modern channels keep loader HTML at their own browser location
+PASS exactly the four runtime URL paths change and every query fragment is retained
+PASS queryless runtime URLs also preserve unrelated text
+PASS unknown loader shapes fall back to byte-identical local Web storage
+PASS partial or duplicate loader patterns never get partly rewritten
+PASS SHA-256 Git object identities are accepted without conflating different blobs
+PASS non-text templates and unresolved channel commits are refused
+PASS unsafe archive destinations are refused
+PASS unknown channel or unplanned artifact cannot invent a public URL
+PASS unsafe paths, special file modes, invalid blobs and collisions refuse planning
+PASS unselected, duplicate and unsafe channel identities are refused
+PASS an unmatched full Web tree is refused rather than trusting version or digest
+PASS missing and additional Web artifacts invalidate archive reuse
+PASS public channel URLs resolve to exact committed bytes after materialization
+PASS missing presentation metadata leaves historical selection in charge
+PASS current presentation validates against exact selected artifacts and shared URLs
+PASS explicit malformed presentation never silently falls back
+PASS presentation guide and screenshot formats cannot select executable or wrong media
+PASS presentation paths cannot escape or refer to unselected/misspelled files
+PASS presentation screenshot order is preserved with the bounded maximum
+PASS actual channel page uses current guide/gallery while missing metadata preserves fallback
+PASS promoted presentation resolves current guide/screenshots through shared folder ownership
+PASS actual assembler refuses malformed explicit metadata instead of showing old evidence
+33 checks passed; fixture preserved at C:\Users\const\AppData\Local\Temp\ashenspire-channel-storage-H9uZm5

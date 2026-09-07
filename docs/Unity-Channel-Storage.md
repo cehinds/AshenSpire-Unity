@@ -10,11 +10,31 @@ Issue #40 addresses a publishing failure after build 12 was promoted into both D
 - Identical complete evidence folders are stored once. Generated channel links point to the owning folder. A changed file makes the whole folder distinct, preserving relative links and historical evidence boundaries. Small channel manifests, validation and change notes remain local. Evidence folders must keep relative links within their folder; use exact-commit URLs for links outside it. Current evidence contains no parent-folder references. Cross-folder relative links would need explicit resolution before sharing.
 - Unsupported player templates retain their entire original Web folder. Missing archive matches fail. Downloads continue to point to exact GitHub commits. No history is pruned and no game version or compiled payload changes.
 
+## Current build presentation
+
+A build can optionally commit `Published/presentation.json` to choose its current guide and screenshots without editing an older shared evidence folder:
+
+```json
+{
+  "guide": "Published/CombatReadability/Guide.md",
+  "screenshots": [
+    "Published/CombatReadability/01-phone.png",
+    "Published/CombatReadability/02-desktop.png"
+  ]
+}
+```
+
+The guide must be a Markdown file and the screenshot list must contain 1–32 distinct PNG paths, in display order. Every path must name an actual artifact in that channel's selected commit. Paths are limited to 512 characters and the manifest to 32,768 characters. The two documented fields are required; unknown fields, unsafe paths, missing files, wrong formats and malformed JSON stop assembly before evidence materialization. An explicitly invalid manifest never falls back to older screenshots.
+
+With no manifest, the existing NativeEvidence, FoundationEvidence and older screenshot selectors remain unchanged. With a manifest, its guide and gallery replace those current-page selections. Links still resolve through the storage plan, so promotions can share the complete new folder too. Keep the existing `NativeEvidence` tree unchanged when adding a new presentation folder; updating one old screenshot would make that whole folder distinct. The manifest does not alter archived players, runtime identity, downloads or the 950 MiB limit.
+
 ## Validation
 
 The Dev/Test assembly is 847.1 MiB, with 341 navigation checks across 54 library pages. A local four-channel fixture selects the same build for all channels and is 847.6 MiB, with 591 navigation checks across 86 pages. This fixture does not create or promote Release/Main branches. All 16 archived players remain; all 101 archived player files compare byte-for-byte with the previous assembler.
 
-The Git-backed storage suite passes 24 groups covering exact archive identity, shared/divergent evidence, query and fragment preservation, legacy fallback and unsafe paths. The existing build-history suite passes 13 checks and the materializer suite passes 16. The original Node regression passes 136/136; verify-shipped and buildversion pass. An initial workflow edit changed a self-test anchor; it was corrected by preserving the existing step and adding a separate storage step. The original failure and successful rerun are retained.
+The Git-backed storage suite passes 33 groups covering exact archive identity, shared/divergent evidence, query and fragment preservation, legacy fallback, unsafe paths and current-presentation validation. Its nine added presentation groups include actual page assembly with current and absent metadata, promoted-folder sharing, and explicit malformed-manifest refusal. These use small synthetic committed files; they are not new Unity gameplay evidence. The original 24-group receipt is preserved in `Checks/storage-unit.log`; the 33-group rerun is in `Checks/storage-presentation.log`.
+
+The existing build-history suite passes 13 checks and the materializer suite passes 16. The original Node regression passes 136/136; verify-shipped and buildversion pass. An initial workflow edit changed a self-test anchor; it was corrected by preserving the existing step and adding a separate storage step. The original failure and successful rerun are retained. The capacity, archive-byte and compiled-browser results below and above belong to the original build-12 assembly; the presentation extension does not claim a fresh runtime playtest.
 
 The actual compiled player passes 32 browser checks at a 390×844 phone viewport. A single browser profile starts Dev seed 1 and Test seed 2, enters combat in each, closes both documents and revisits each to resume its exact independent state. It also observes correct channel labels, unchanged document URLs, shared runtime URLs, matching source digests and zero browser/Unity errors. HTTP 304 is accepted only when that exact URL previously returned 200 in the same profile. Four screenshots accompany the state/network receipts. This is browser emulation, not physical-phone certification.
 

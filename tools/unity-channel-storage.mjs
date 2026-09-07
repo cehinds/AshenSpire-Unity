@@ -100,3 +100,29 @@ export function channelAssetUrl(plan, channel, publishedPath) {
   if (!url) throw new Error(`Artifact has no channel URL: ${channel}/${publishedPath}`);
   return url;
 }
+
+// Optional current-build guide/gallery selection. Missing metadata preserves the
+// historical selectors; an explicit malformed selection must never quietly show
+// old screenshots as current evidence. Paths are selected committed artifacts,
+// and their public URLs still follow the exact-folder sharing plan above.
+export function parseChannelPresentation(plan, channel, text) {
+  if (text === undefined) return null;
+  if (typeof text !== 'string' || text.length > 32768) throw new Error('Invalid presentation manifest text');
+  let value;
+  try { value = JSON.parse(text); } catch { throw new Error('Invalid presentation manifest JSON'); }
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      Object.keys(value).some(key => !['guide','screenshots'].includes(key)) ||
+      !Array.isArray(value.screenshots) || value.screenshots.length < 1 || value.screenshots.length > 32) {
+    throw new Error('Presentation requires a guide and 1 to 32 screenshots');
+  }
+  const requirePath = (path, extension) => {
+    if (typeof path !== 'string' || path.length > 512 || !path.toLowerCase().endsWith(extension))
+      throw new Error(`Presentation requires ${extension} artifact paths`);
+    channelAssetUrl(plan, channel, path); // Validates spelling, safety and selected-tree membership.
+    return path;
+  };
+  const guide = requirePath(value.guide, '.md');
+  const screenshots = value.screenshots.map(path => requirePath(path, '.png'));
+  if (new Set(screenshots).size !== screenshots.length) throw new Error('Duplicate presentation screenshot');
+  return {guide, screenshots};
+}

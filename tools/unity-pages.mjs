@@ -6,7 +6,7 @@ import {mkdirSync,writeFileSync,readFileSync,readdirSync,statSync} from 'node:fs
 import {resolve,join} from 'node:path';
 import {collectHistory,resolvePullRequests,materializeHistory,publicHistory} from './unity-build-history.mjs';
 import {materializePublished} from './unity-git-blobs.mjs';
-import {planChannelStorage,channelAssetUrl} from './unity-channel-storage.mjs';
+import {planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
 // Explicit local preview refs never move branches or alter the deployment defaults.
 const channelRefs=Object.fromEntries(channels.map(channel=>[channel,process.env[`UNITY_PAGES_${channel.toUpperCase()}_REF`]||`origin/${channel}`]));
@@ -30,6 +30,10 @@ for(const channel of channels){
  selectedChannels.push({channel,commit,manifest,files,paths:files.map(file=>file.path),html:git(['show',`${commit}:Published/Web/index.html`])});
 }
 const storage=planChannelStorage(selectedChannels,history.builds);
+for(const selected of selectedChannels){
+ const text=selected.paths.includes('Published/presentation.json') ? git(['show',`${selected.commit}:Published/presentation.json`]) : undefined;
+ selected.presentation=parseChannelPresentation(storage,selected.channel,text);
+}
 const selectedByChannel=new Map(selectedChannels.map(selected=>[selected.channel,selected]));
 await resolvePullRequests(history.builds,'cehinds/AshenSpire-Unity');
 materializeHistory(root,out,history);
@@ -71,12 +75,12 @@ for(const channel of channels){
   console.log(`Unity Pages ${channel}: ${copied.files} files copied in ${copied.batches} blob batches (${copied.gitProcesses} Git processes)`);
   let changes={Added:[],Changed:[],Fixed:[],KnownIssues:[],WhatToTest:[]};
   try{changes=JSON.parse(git(['show',`${ref}:Published/changelog.json`]));}catch{}
-  let screenshots=paths.filter(p=>/^Published\/MobileEvidence\/02-seed-(entered|committed)\.png$/.test(p)||/^Published\/SeedEvidence\/(03-draft-before|seed-01-first-campaign|seed-02-selected|seed-03-invalid|seed-05-landscape-unfocused|seed-07-landscape-selected|seed-09-portrait-return)\.png$/.test(p)||/^Published\/Screenshots\/.*\.png$/.test(p)||/^Published\/InterruptionEvidence\/(03-draft-returned|04-map-landscape-paused|05-selection-returned|06-inspection-returned|07-feedback-return|11-reloaded)\.png$/.test(p)||/^Published\/FeedbackEvidence\/(26-normal-impact|26-normal-impact-settled|28-reduced-impact|31-interrupted-menu)\.png$/.test(p));
-  if(paths.includes('Published/FoundationEvidence/gallery.json')){
+  let screenshots=selected.presentation?.screenshots ?? paths.filter(p=>/^Published\/MobileEvidence\/02-seed-(entered|committed)\.png$/.test(p)||/^Published\/SeedEvidence\/(03-draft-before|seed-01-first-campaign|seed-02-selected|seed-03-invalid|seed-05-landscape-unfocused|seed-07-landscape-selected|seed-09-portrait-return)\.png$/.test(p)||/^Published\/Screenshots\/.*\.png$/.test(p)||/^Published\/InterruptionEvidence\/(03-draft-returned|04-map-landscape-paused|05-selection-returned|06-inspection-returned|07-feedback-return|11-reloaded)\.png$/.test(p)||/^Published\/FeedbackEvidence\/(26-normal-impact|26-normal-impact-settled|28-reduced-impact|31-interrupted-menu)\.png$/.test(p));
+  if(!selected.presentation && paths.includes('Published/FoundationEvidence/gallery.json')){
    screenshots=JSON.parse(git(['show',`${ref}:Published/FoundationEvidence/gallery.json`]));
    if(!Array.isArray(screenshots)||screenshots.some(p=>typeof p!=='string'||!paths.includes(p)||!/^Published\/FoundationEvidence\/(Browser|Campaign)\/[^/]+\.png$/.test(p)))throw new Error('Invalid foundation screenshot manifest');
   }
-  if(paths.includes('Published/NativeEvidence/gallery.json')){
+  if(!selected.presentation && paths.includes('Published/NativeEvidence/gallery.json')){
    screenshots=JSON.parse(git(['show',`${ref}:Published/NativeEvidence/gallery.json`]));
    if(!Array.isArray(screenshots)||screenshots.some(path=>typeof path!=='string'||!paths.includes(path)||!/^Published\/NativeEvidence\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+\.png$/.test(path)))throw Error('Invalid native screenshot gallery');
   }
@@ -86,7 +90,8 @@ for(const channel of channels){
   if(paths.includes('Published/Companion.zip'))body+=`<a class="button secondary" href="${repo}/blob/${commit}/Published/Companion.zip?raw=true">Download co-op companion for Windows</a><p class="muted">For a shared climb, unzip the companion beside the downloaded Web folder and run Start-Companion.cmd. Open the local address it prints; invite players using its join code.</p>`;
   body+=`<p class="muted">Build ${escape(manifest.buildNumber ?? 'number not recorded in this legacy manifest')} · <a href="#history">Browse this channel's build history</a></p>`;
   if(paths.includes('Published/Android.apk'))body+=`<a class="button secondary" href="${repo}/blob/${commit}/Published/Android.apk?raw=true">Download Android test APK</a>`;
-  if(paths.includes('Published/NativeEvidence/Guide.md'))body+=`<section><h2>The original climb in Unity</h2><p>Four wanderers, three acts, weapon cards, custom climbs and local cooperative play. Explore the current screenshots and test notes before choosing a build.</p><nav><a href="${asset('Published/NativeEvidence/Guide.md')}">What to try in this build</a><a href="${repo}/blob/${commit}/docs/Unity-Owner-Guide.md">Game editing guide</a><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="validation.json">Validation evidence</a></nav></section>`;
+  const currentGuide=selected.presentation?.guide ?? (paths.includes('Published/NativeEvidence/Guide.md') ? 'Published/NativeEvidence/Guide.md' : null);
+  if(currentGuide)body+=`<section><h2>The original climb in Unity</h2><p>Four wanderers, three acts, weapon cards, custom climbs and local cooperative play. Explore the current screenshots and test notes before choosing a build.</p><nav><a href="${asset(currentGuide)}">What to try in this build</a><a href="${repo}/blob/${commit}/docs/Unity-Owner-Guide.md">Game editing guide</a><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="validation.json">Validation evidence</a></nav></section>`;
   else if(paths.includes('Published/FoundationEvidence/Guide.md'))body+=`<section><h2>Faithful Unity rebuild</h2><p>The original foundation preview is available from the title screen. Full original gameplay integration is in progress; the existing campaign remains playable.</p><nav><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="${asset('Published/FoundationEvidence/Original-Cards.csv')}" download>Original cards CSV</a><a href="${asset('Published/FoundationEvidence/Original-Cards.csv.receipt.json')}" download>CSV import receipt</a><a href="validation.json">Current validation evidence</a></nav></section>`;
   if(paths.includes('Published/InterruptionEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Interruption-Return-0.8.0.md">Interruption, return and phone testing guide</a></p>`;
   if(paths.includes('Published/SeedEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Seed-Entry-0.8.1.md">Seed entry colors and phone testing guide</a></p>`;
