@@ -58,7 +58,7 @@ namespace AshenSpire.Editor
             _ = new AshenSpire.Domain.Original.OriginalContentCatalog(originalJson);
             Directory.CreateDirectory(Root + "/Resources/Original");
             File.WriteAllText(Root + "/Resources/Original/content.json", originalJson);
-            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles" })
+            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles", "enemy-art" })
             {
                 var authored = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/Original/" + file + ".json"));
                 var parsed = Newtonsoft.Json.Linq.JObject.Parse(authored);
@@ -68,6 +68,21 @@ namespace AshenSpire.Editor
                     _ = new AshenSpire.Domain.Original.ResourceWallet(0, 0, 0, parsed);
                 }
                 if (file == "progression") _ = new AshenSpire.Domain.Original.AttributeProgression(parsed);
+                if (file == "enemy-art")
+                {
+                    var enemies = (Newtonsoft.Json.Linq.JArray)Newtonsoft.Json.Linq.JObject.Parse(originalJson)["enemies"];
+                    var paths = parsed["enemies"] as Newtonsoft.Json.Linq.JObject;
+                    if (paths == null || paths.Count != enemies.Count) throw new InvalidDataException("enemy-art.json must map every original enemy exactly once.");
+                    foreach (var enemy in enemies)
+                    {
+                        var id = (string)enemy["id"]; var resource = (string)paths[id]?["resource"];
+                        if (resource == null || !Regex.IsMatch(resource, @"^Art/(painted_[A-Za-z0-9]+|Enemies/Painted/[A-Za-z0-9]+)$") || !File.Exists(Root + "/Resources/" + resource + ".png"))
+                            throw new InvalidDataException("Missing or invalid painted enemy asset: " + id);
+                        var bounds = paths[id]?["bounds"] as Newtonsoft.Json.Linq.JArray;
+                        if (bounds == null || bounds.Count != 4 || bounds.Any(value => (double)value < 0 || (double)value > 1) || (double)bounds[2] <= 0 || (double)bounds[3] <= 0 || (double)bounds[0] + (double)bounds[2] > 1.00001 || (double)bounds[1] + (double)bounds[3] > 1.00001)
+                            throw new InvalidDataException("Invalid painted enemy registration: " + id);
+                    }
+                }
                 File.WriteAllText(Root + "/Resources/Original/" + file + ".json", authored);
             }
             File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);

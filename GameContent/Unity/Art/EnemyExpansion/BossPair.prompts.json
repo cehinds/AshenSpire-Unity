@@ -1,0 +1,90 @@
+{
+  "generator": "built-in image_gen",
+  "generatedAt": "2026-09-07T05:46:14.062Z",
+  "styleReference": "GameContent/Unity/Art/EnemyAtlas.png",
+  "styleReferenceRole": "Previously viewed painted atlas, visual style reference only; not an edit target.",
+  "assets": [
+    {
+      "id": "charredColossus",
+      "name": "Charred Colossus",
+      "file": "CharredColossus.png",
+      "original": "C:/Users/const/.codex/generated_images/01a07991-1732-7081-9fd5-3194520ec4ea/exec-db2f9373-2e32-46d3-bc59-aeb45bf1caea.png",
+      "prompt": "Use case: stylized-concept. Asset type: individual production 2D enemy sprite for Ashen Spire, matching the detailed hand-painted dark fantasy RPG enemy atlas visible in this conversation (reference for finish and restrained weathered materials only; do not recreate its grid or any of its figures). Generate ONE Charred Colossus: a massive hunched humanoid made entirely from charcoal-black burnt stone, jagged stone back and shoulders, immensely heavy bare stone fists, small dim ember cracks within stone and subdued ember eyes. No armor, no weapon. It must feel weighty, ancient and dangerous. Detailed hand-painted fantasy illustration, strong readable silhouette and intentional highlights suitable at 200px gameplay display; not low-poly, cartoon, vector, photograph or glossy 3D render. Palette charcoal, ash and bone edge-light with restrained ember-orange fissures; no flame cloud, smoke or floating sparks. Composition: square canvas, single centered full-body figure, grounded idle stance three-quarter facing LEFT, full head/back/fists/feet completely visible with generous empty margins, soles around94% canvas height. Backdrop must be GENUINELY TRANSPARENT RGBA with an alpha channel, including space between limbs. No scene, ground, base, cast shadow, background color, text, grid, border, watermark or additional figures. Keep painted antialiased cutout edges clean and preserve real transparency.",
+      "calls": 1
+    },
+    {
+      "id": "blightedValkyrie",
+      "name": "Blighted Valkyrie",
+      "file": "BlightedValkyrie.png",
+      "original": "C:/Users/const/.codex/generated_images/01a07991-1732-7081-9fd5-3194520ec4ea/exec-587b9938-764f-4872-a2cb-d95610f06857.png",
+      "prompt": "Use case: stylized-concept. Asset type: individual production 2D enemy sprite for Ashen Spire, matching the detailed hand-painted dark fantasy RPG EnemyAtlas visible earlier in this conversation (reference for brush finish, restrained weathered materials and silhouette readability only; do not recreate its grid or any existing figure). Generate ONE Blighted Valkyrie: an imposing dignified winged female warrior wearing tarnished antique bronze full plate with ragged ivory and muted dark-red cloth, holding one long lance. Broad folded ragged feather wings, restrained small scarlet rot flowers and subtle corruption growing at a few wing/armor joins. Dangerous solemn demeanor, mature armored warrior, no exposed flesh emphasis, no gore. Detailed hand-painted dark fantasy illustration with crisp controlled highlights, strong clean silhouette that reads at200px gameplay display; not low-poly, cartoon, vector, photograph or glossy3D render. Palette charcoal, bone ivory, tarnished gold and bronze with restrained crimson accents. Composition: squarecanvas, ONE centered full-body figure in grounded idle stance three-quarter facing LEFT. Entire head, wings, lance tip/shaft and feet must remain INSIDE the canvas with generous clear margin; position spear diagonally within frame rather than extending out. Soles around94% canvas height. Broad wings folded back, not fully outstretched; silhouette wider at shoulders and tapering toward boots. Backdrop must be GENUINELY TRANSPARENT RGBA with alpha channel, also between lance, wings and limbs. No scenery, background color, ground, base, cast shadow, fog, detached particles, text, grid, border, watermark or additional figures. Preserve painted antialiased cutout edges and actual transparency.",
+      "calls": 1
+    }
+  ],
+  "postProcessing": "None. Originals preserved; repository and deliverable PNGs are byte-identical copies.",
+  "inspectionNotes": [
+    "Both figures face left and include their feet and equipment.",
+    "Generated margins are tighter than requested, especially Valkyrie helmet near top edge; exact alpha bounds recorded separately. No padding or resizing applied.",
+    "Feet fall closer to99% than requested94%; alpha>=128 bounds show Colossus top15/bottom1238 and Valkyrie top4/bottom1245 on1254px canvases. These unmodified outputs need import framing assessment."
+  ],
+  "inspection": [
+    {
+      "file": "CharredColossus.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "alphaBounds": [
+        0,
+        10,
+        1230,
+        1254
+      ],
+      "transparentPixels": 785192,
+      "opaquePixels": 688,
+      "partialAlphaPixels": 786636,
+      "sha256": "bbfeb0293b91d83242e28597103e40a2579fa11d750494147fc391f05ba996eb",
+      "alphaBoundsAt128": [
+        125,
+        15,
+        1132,
+        1238
+      ],
+      "alphaAtLeast240": 746097,
+      "alphaAtLeast128": 752983,
+      "outputCopyMatches": true
+    },
+    {
+      "file": "BlightedValkyrie.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "alphaBounds": [
+        14,
+        0,
+        1233,
+        1254
+      ],
+      "transparentPixels": 801598,
+      "opaquePixels": 940,
+      "partialAlphaPixels": 769978,
+      "sha256": "ccb07016761947fe341c9ea5cc48055edd67e303d9a817fd6dbe6c87a556e01a",
+      "alphaBoundsAt128": [
+        18,
+        4,
+        1225,
+        1245
+      ],
+      "alphaAtLeast240": 663220,
+      "alphaAtLeast128": 686582,
+      "outputCopyMatches": true
+    }
+  ]
+}

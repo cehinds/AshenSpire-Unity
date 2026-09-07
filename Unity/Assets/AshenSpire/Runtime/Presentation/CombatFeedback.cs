@@ -53,7 +53,8 @@ namespace AshenSpire.Presentation
                     if (_enemy != null)
                     {
                         _enemy.style.translate = new Translate(arc * cue.Distance * (enemyTurn ? -1 : .35f), 0);
-                        _enemy.tintColor = Color.Lerp(Color.white, color, arc * (outcome.Damage > 0 || outcome.Poison > 0 ? .7f : 0));
+                        var enemyTint = Color.Lerp(Color.white, color, arc * (outcome.Damage > 0 || outcome.Poison > 0 ? .7f : 0));
+                        if (_enemy is OriginalEnemyFigure enemyFigure) enemyFigure.FeedbackTint(enemyTint); else _enemy.tintColor = enemyTint;
                     }
                     _label.style.translate = new Translate(0, -progress * 12);
                     _label.style.opacity = progress < .7f ? 1 : (1 - progress) / .3f;
@@ -72,7 +73,7 @@ namespace AshenSpire.Presentation
         {
             _timeline?.Pause(); _timeline = null;
             if (_player != null) { if (_player is OriginalPlayerFigure figure) figure.Settle(); else _player.image = _idle; _player.style.translate = new Translate(0, 0); _player.tintColor = Color.white; }
-            if (_enemy != null) { _enemy.style.translate = new Translate(0, 0); _enemy.tintColor = Color.white; }
+            if (_enemy != null) { _enemy.style.translate = new Translate(0, 0); if (_enemy is OriginalEnemyFigure enemyFigure) enemyFigure.FeedbackTint(Color.white); else _enemy.tintColor = Color.white; }
             _report?.Invoke(status); _report = null;
             _label?.RemoveFromHierarchy(); _label = null; _player = null; _enemy = null;
         }

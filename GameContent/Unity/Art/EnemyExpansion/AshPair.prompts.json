@@ -1,0 +1,68 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "generate",
+  "createdAt": "2026-09-07 05:46:13 UTC",
+  "reference": {
+    "path": "GameContent/Unity/Art/EnemyAtlas.png",
+    "role": "Viewed approved style reference; no reference pixels edited or supplied as an edit target."
+  },
+  "constraints": "Two separate calls, genuine transparent RGBA, fullbody three-quarter left idle. No post-generation pixel editing. Generated originals preserved.",
+  "assets": [
+    {
+      "id": "ashRevenant",
+      "name": "AshRevenant.png",
+      "original": "C:/Users/const/.codex/generated_images/01a07991-5a03-74a2-b441-5460acb8f58a/exec-b26b1f2e-90a1-4993-956f-456f1853d68f.png",
+      "prompt": "Use case: stylized-concept. Asset type: one production-ready transparent 2D enemy sprite for AshenSpire, a dark hand-painted RPG. Subject: ASH REVENANT, a charred skeletal warrior with ember fissures between scorched bone and battered charcoal iron armour, a battered straight sword held low, and an ashen shredded cloak. Three-quarter LEFT-facing idle stance: head, chest and weapon direction read toward the LEFT side of the image. Match a detailed painterly RPG bestiary cutout: worn scratched charcoal metal, muted bone, brown and grey ash fabrics, delicate restrained ember-orange fissures and warm gold/ember edge light; carefully painted surfaces and crisp, readable silhouette, not photorealism, not low-poly, not cartoon. One single full-body character, centered in a square canvas, whole silhouette including sword and every cloak tip completely inside the frame, generous transparent margins. Feet near 94 percent of canvas height, with clear space below. Designed to remain distinct and readable at 200 pixels tall. Genuinely transparent RGBA background, preserving alpha around fine fabric edges. No scenery, ground plane, cast shadow, pedestal, base, text, labels, logo, border, grid, other figures or repeated poses. Keep the rendering natural and richly hand-painted; small ember accents must not form a large fire or smoke cloud.",
+      "projectPath": "GameContent/Unity/Art/EnemyExpansion/AshRevenant.png",
+      "deliverablePath": "outputs/Native-Foundation/Enemy-Art/AshRevenant.png",
+      "inspection": {
+        "width": 1254,
+        "height": 1254,
+        "format": "png",
+        "hasAlpha": true,
+        "channels": 4,
+        "minAlpha": 0,
+        "maxAlpha": 255,
+        "transparentPixels": 1076496,
+        "nonTransparentBoundsAtAlphaGreaterThan8": [
+          50,
+          24,
+          1184,
+          1219
+        ],
+        "feetBaselineFraction": 0.9728867623604466,
+        "sha256": "e21962261705c1ef0189483c6f673a9cadaa4febb3458aaa6de14d42e3976259",
+        "originalPreserved": true,
+        "outputCopyIdentical": true
+      }
+    },
+    {
+      "id": "emberStarvedPilgrim",
+      "name": "EmberStarvedPilgrim.png",
+      "original": "C:/Users/const/.codex/generated_images/01a07991-5a03-74a2-b441-5460acb8f58a/exec-3dcd4aea-531c-48e0-83b5-63a5151f13d8.png",
+      "prompt": "Use case: stylized-concept. Asset type: one production-ready transparent 2D enemy sprite for AshenSpire, a dark hand-painted RPG. Subject: EMBER-STARVED PILGRIM, a small hunched gaunt hooded pilgrim, shrunken and stooped, wrapped in ragged ash-grey and faded brown robes. Skeletal thin forearms end in two desperate long claw-like empty hands reaching slightly forward; dim ember glow visible in a hollow chest opening beneath the robe. A shadowed gaunt humanlike face under the drooping hood, with a weak ember glimmer, no large flames. Three-quarter LEFT-facing idle stance: head, torso and reaching hands read toward the LEFT side of the image. Detailed painterly RPG bestiary cutout, worn charcoal fabric, muted bone, brown and grey ash textures, sparse frayed gold stitching and very restrained warm ember rim light. Rich carefully hand-painted surfaces and a crisp readable silhouette, not photorealism, not low-poly, not cartoon. The creature should feel fragile, lowly and desperate, distinctly smaller-bodied and less armoured than a warrior. One single full-body character centered in a square canvas. Whole hood, both hands, all robe tips and both feet completely inside the frame; generous transparent margins; feet near 94 percent canvas height with space below. Readable at 200 pixels tall. Genuinely transparent RGBA background and clean alpha around robe edges. No staff, stick, weapon, shield, lantern, scenery, ground plane, cast shadow, pedestal, base, text, labels, logo, border, grid, other figures or repeated poses. Preserve an anatomically coherent crouched stance with two arms and two legs.",
+      "projectPath": "GameContent/Unity/Art/EnemyExpansion/EmberStarvedPilgrim.png",
+      "deliverablePath": "outputs/Native-Foundation/Enemy-Art/EmberStarvedPilgrim.png",
+      "inspection": {
+        "width": 1254,
+        "height": 1254,
+        "format": "png",
+        "hasAlpha": true,
+        "channels": 4,
+        "minAlpha": 0,
+        "maxAlpha": 255,
+        "transparentPixels": 1095949,
+        "nonTransparentBoundsAtAlphaGreaterThan8": [
+          187,
+          52,
+          1027,
+          1200
+        ],
+        "feetBaselineFraction": 0.9577352472089314,
+        "sha256": "0859fbb96af961efb346aa14129cf2d5d5828c4e3b66f5c413cb4fa09bc139e5",
+        "originalPreserved": true,
+        "outputCopyIdentical": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-09-07T05:47:37Z",
+  "tool": "built-in image_gen.imagegen",
+  "generationCalls": 2,
+  "oneCallPerAsset": true,
+  "referenceRole": "Visual style reference inspected read-only; no pixels edited or composited.",
+  "reference": "GameContent/Unity/Art/EnemyAtlas.png",
+  "postProcessing": "None. Exact generated PNGs copied; generated originals retained. System.Drawing used read-only for dimensions, alpha counts and bounds.",
+  "assets": [
+    {
+      "id": "stitchedHound",
+      "name": "Stitched Hound",
+      "file": "StitchedHound.png",
+      "prompt": "Use case: stylized-concept. Asset type: one production-ready transparent 2D enemy sprite for Ashen Spire, a dark fantasy RPG. Create ONE Stitched Hound: a low, powerful, predatory canine assembled from patchwork hide, coarse visible stitching, dull bone plates and worn leather straps; long snarling muzzle, sturdy uneven shoulders, four distinctly readable paws and a contained tail. Muted flesh, weathered brown, charcoal and bone palette, one restrained dark red accent; no gore or wounds with exposed tissue. Dark, richly detailed HAND-PAINTED fantasy RPG sprite with nuanced brushed texture, layered material shading and restrained warm gold rim lighting, matching polished grim medieval painted game character cutouts. NOT low-poly, not geometric, not cartoon, not photorealistic. Full body, three-quarter view facing LEFT, compact combat idle pose, grounded believable anatomy. Exactly one centered isolated character on a square canvas with GENUINELY TRANSPARENT RGBA background, not a checkerboard drawing or black background. Entire figure, tail, paws and all gear completely inside frame, generous clear side/top margins; feet aligned near 94 percent of canvas height. Strong silhouette legible at 200px display size; keep fine details subordinate to the silhouette. No scenery, no text, no lettering, no sprite sheet, no grid, no other characters, no base, no floor, no cast ground shadow. Maintain fully transparent pixels surrounding the sprite.",
+      "generatedOriginal": "C:/Users/const/.codex/generated_images/01a07991-9f4d-7823-99c4-a4368ab3b83e/exec-f841bd27-beee-4c07-ad94-8450f2700497.png",
+      "sha256": "d6dc0281a361e880576fe22d6db45def2cff638f2c68ca4603fe26f93ab00395",
+      "width": 1254,
+      "height": 1254,
+      "pixelFormat": "Format32bppArgb",
+      "transparentPixels": 1054965,
+      "opaquePixels": 591,
+      "alphaNonzeroBounds": [
+        0,
+        47,
+        1236,
+        1236
+      ],
+      "framingNote": "Nonzero alpha reaches the left edge; fully transparent background confirmed. Preserve original; importer should normalize occupancy/baseline with padding."
+    },
+    {
+      "id": "courtMarionette",
+      "name": "Court Marionette",
+      "file": "CourtMarionette.png",
+      "prompt": "Use case: stylized-concept. Asset type: one production-ready transparent 2D enemy sprite for Ashen Spire, a dark fantasy RPG. Create ONE Court Marionette: a small sinister jointed wooden court puppet with a cracked porcelain mask, tarnished brass hinges at visible articulated joints, faded burgundy court finery with weathered brown and charcoal cloth, delicate restrained antique-gold trim. One slender dartblade held ready in one hand. A few dangling broken marionette strings must stay close to and entirely inside the overall character silhouette, no overhead rig. Its posture is unsettling but physically clear, poised in combat idle, full body in three-quarter view facing LEFT. Dark richly detailed HAND-PAINTED fantasy RPG sprite with nuanced brush texture, aged wood grain, subtle porcelain cracks, layered worn fabrics and metal highlights, restrained warm gold rim lighting; match polished grim medieval painted game character cutouts. Muted charcoal, bone, brown and faded burgundy palette. NOT low-poly, not geometric, not cartoon, not photorealistic. Exactly one isolated centered character on a square GENUINELY TRANSPARENT RGBA canvas, not a checkerboard drawing or a black backdrop. Whole puppet, blade, strings and both feet completely inside frame with generous top and side margins; feet near 94 percent canvas height, widest silhouette fits within middle 75 percent of canvas. Clear readable character silhouette at 200px display size. No scenery, no text, no lettering, no sprite sheet, no grid, no second character, no base, no floor, no cast ground shadow. Preserve fully transparent background pixels around the whole figure.",
+      "generatedOriginal": "C:/Users/const/.codex/generated_images/01a07991-9f4d-7823-99c4-a4368ab3b83e/exec-98a33fe1-36c0-43d3-b2d8-82f42bd0d053.png",
+      "sha256": "ad4c26f637e344d147fc28ad204e2e3f99ab56471282105a9fc7dfda2fd26c06",
+      "width": 1254,
+      "height": 1254,
+      "pixelFormat": "Format32bppArgb",
+      "transparentPixels": 1132723,
+      "opaquePixels": 531,
+      "alphaNonzeroBounds": [
+        41,
+        18,
+        1230,
+        1232
+      ],
+      "framingNote": "Complete silhouette within canvas but narrower margins than requested; importer should normalize occupancy/baseline with padding."
+    }
+  ]
+}

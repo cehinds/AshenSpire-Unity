@@ -83,6 +83,8 @@ row in the table below — no game-code changes.
 
 The Unity campaign reuses the original Reaver, Rogue, Herald and Starseer pose art and three act backgrounds. The twelve `painted_*` enemy sprites were generated for this adaptation using the built-in image-generation tool. Their original atlas, exact prompt, extraction manifest and source SHA-256 are preserved in `GameContent/Unity/Art`. `tools/import-enemy-atlas.py` normalizes the transparent sprites to one scale and foot anchor. Original enemy files remain intact.
 
+Native solo and co-op now reuse those twelve painted enemies at the owner's request. Seven additional enemies were generated individually with the built-in image-generation tool; their PNG masters and exact prompts are preserved in `GameContent/Unity/Art/EnemyExpansion`. `tools/import-painted-enemies.py` copies the bytes unchanged and records alpha bounds for runtime framing. `OriginalEnemyFigure` shares that framing across both modes. The original procedural enemy assets remain preserved.
+
 Combat feedback tones are synthesized by `GameAudio.cs` from the campaign Audio record; no external sound recordings are included.
 
 ## Non-affiliation

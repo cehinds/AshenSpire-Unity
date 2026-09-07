@@ -106,7 +106,7 @@ namespace AshenSpire.Presentation
             var enemies = _game.Enemies.Where(x => (bool?)x["alive"] == true).ToArray();
             if (!enemies.Any(x => (string)x["id"] == _target)) _target = (string)enemies.FirstOrDefault()?["id"];
             var selectedEnemy = enemies.FirstOrDefault(x => (string)x["id"] == _target);
-            if (selectedEnemy != null) { EnemyImage = Picture("Original/enemy_" + (string)selectedEnemy["enemyId"]); stage.Add(EnemyImage); }
+            if (selectedEnemy != null) { EnemyImage = OriginalEnemyFigure.Create((string)selectedEnemy["enemyId"]); stage.Add(EnemyImage); }
             _root.Add(stage);
             foreach (var enemy in enemies)
             {

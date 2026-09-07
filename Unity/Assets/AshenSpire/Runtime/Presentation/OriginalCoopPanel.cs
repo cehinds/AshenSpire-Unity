@@ -126,7 +126,7 @@ namespace AshenSpire.Presentation
             var legal = friendly ? selected["targets"]["legalIds"].Values<string>().ToArray() : enemies.Select(e => (string)e["id"]).ToArray();
             if (!legal.Contains(_target)) _target = legal.FirstOrDefault();
             var foe = enemies.FirstOrDefault(e => (string)e["id"] == _target) ?? enemies.FirstOrDefault();
-            if (foe != null) stage.Add(Picture("Original/enemy_" + (string)foe["enemyId"])); _body.Add(stage);
+            if (foe != null) stage.Add(OriginalEnemyFigure.Create((string)foe["enemyId"])); _body.Add(stage);
             foreach (var enemy in enemies)
             {
                 var id = (string)enemy["id"]; var intent = enemy["intent"];

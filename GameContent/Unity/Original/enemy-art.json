@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "style": "Painted",
+  "enemies": {
+    "wanderingSoldier": {
+      "resource": "Art/painted_wanderingSoldier",
+      "bounds": [
+        0.15364583333333334,
+        0.2838541666666667,
+        0.6875,
+        0.6640625
+      ]
+    },
+    "blightHound": {
+      "resource": "Art/painted_blightHound",
+      "bounds": [
+        0.15364583333333334,
+        0.421875,
+        0.6901041666666666,
+        0.5234375
+      ]
+    },
+    "graveWisp": {
+      "resource": "Art/painted_graveWisp",
+      "bounds": [
+        0.16145833333333334,
+        0.11979166666666667,
+        0.6744791666666666,
+        0.828125
+      ]
+    },
+    "wyrmAspirant": {
+      "resource": "Art/painted_wyrmAspirant",
+      "bounds": [
+        0.12760416666666666,
+        0.140625,
+        0.7447916666666666,
+        0.8072916666666666
+      ]
+    },
+    "fellWarden": {
+      "resource": "Art/painted_fellWarden",
+      "bounds": [
+        0.059895833333333336,
+        0.23697916666666666,
+        0.8776041666666666,
+        0.7109375
+      ]
+    },
+    "gildedKnight": {
+      "resource": "Art/painted_gildedKnight",
+      "bounds": [
+        0.08333333333333333,
+        0.2421875,
+        0.8307291666666666,
+        0.7057291666666666
+      ]
+    },
+    "courtSurgeon": {
+      "resource": "Art/painted_courtSurgeon",
+      "bounds": [
+        0.20052083333333334,
+        0.2682291666666667,
+        0.5963541666666666,
+        0.6796875
+      ]
+    },
+    "livingArmor": {
+      "resource": "Art/painted_livingArmor",
+      "bounds": [
+        0.203125,
+        0.2421875,
+        0.5911458333333334,
+        0.7057291666666666
+      ]
+    },
+    "courtDuelist": {
+      "resource": "Art/painted_courtDuelist",
+      "bounds": [
+        0.11458333333333333,
+        0.24479166666666666,
+        0.7682291666666666,
+        0.703125
+      ]
+    },
+    "stitchedKing": {
+      "resource": "Art/painted_stitchedKing",
+      "bounds": [
+        0.07291666666666667,
+        0.203125,
+        0.8541666666666666,
+        0.7447916666666666
+      ]
+    },
+    "valkyrieShade": {
+      "resource": "Art/painted_valkyrieShade",
+      "bounds": [
+        0.13541666666666666,
+        0.09375,
+        0.7291666666666666,
+        0.8489583333333334
+      ]
+    },
+    "wyrmLord": {
+      "resource": "Art/painted_wyrmLord",
+      "bounds": [
+        0.13020833333333334,
+        0.0625,
+        0.7369791666666666,
+        0.8854166666666666
+      ]
+    },
+    "huskBrute": {
+      "resource": "Art/Enemies/Painted/HuskBrute",
+      "bounds": [
+        0.051036682615629984,
+        0.03508771929824561,
+        0.8923444976076556,
+        0.9274322169059012
+      ]
+    },
+    "stitchedHound": {
+      "resource": "Art/Enemies/Painted/StitchedHound",
+      "bounds": [
+        0.027910685805422646,
+        0.13636363636363635,
+        0.9521531100478469,
+        0.7169059011164274
+      ]
+    },
+    "courtMarionette": {
+      "resource": "Art/Enemies/Painted/CourtMarionette",
+      "bounds": [
+        0.05661881977671451,
+        0.017543859649122806,
+        0.835725677830941,
+        0.9617224880382775
+      ]
+    },
+    "ashRevenant": {
+      "resource": "Art/Enemies/Painted/AshRevenant",
+      "bounds": [
+        0.03987240829346093,
+        0.019138755980861243,
+        0.9043062200956937,
+        0.9537480063795853
+      ]
+    },
+    "emberStarvedPilgrim": {
+      "resource": "Art/Enemies/Painted/EmberStarvedPilgrim",
+      "bounds": [
+        0.14912280701754385,
+        0.04146730462519936,
+        0.6698564593301436,
+        0.916267942583732
+      ]
+    },
+    "charredColossus": {
+      "resource": "Art/Enemies/Painted/CharredColossus",
+      "bounds": [
+        0.09968102073365231,
+        0.011164274322169059,
+        0.8038277511961722,
+        0.9760765550239234
+      ]
+    },
+    "blightedValkyrie": {
+      "resource": "Art/Enemies/Painted/BlightedValkyrie",
+      "bounds": [
+        0.012759170653907496,
+        0.001594896331738437,
+        0.9649122807017544,
+        0.9912280701754386
+      ]
+    }
+  }
+}
