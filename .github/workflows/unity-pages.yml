@@ -32,6 +32,7 @@ jobs:
           python3 UnityTests/Parity/authoring-checks.py
           dotnet run --project UnityTests/NativeFeedback
           dotnet run --project UnityTests/CardText
+          dotnet run --project UnityTests/CardCosts
           dotnet run --project UnityTests/SpriteStyles
           dotnet run --project UnityTests/MapShape
           dotnet run --project UnityTests/MapKnowledge
@@ -89,6 +90,8 @@ jobs:
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
       - name: Complete the native three-act climb with reloads
         run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+      - name: Verify card numbers and resource shortage feedback
+        run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
       - name: Exercise native draft, level-up, flask allocation and merchant transactions
         run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
       - name: Verify original sprite styles and saved appearance through actual controls
@@ -122,6 +125,7 @@ jobs:
             TestResults/NativeFeedback
             TestResults/CardText
             TestResults/NativeFeatures
+            TestResults/NativeCardCosts
             TestResults/NativeCoopBrowser
             TestResults/NativeAppearance
             TestResults/NativeEnemyArt

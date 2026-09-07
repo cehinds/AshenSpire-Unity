@@ -2,6 +2,7 @@
 // WIRING: CampaignView mounts this tree inside its existing safe-area scroll shell.
 // COMMANDS: delegate to OriginalGameSession; refresh/save are application-owned.
 // MODIFY: labels/layout here; original content and domain components own all rules.
+// COSTS: OriginalCardCostText formats authoritative costs and resource shortages.
 // MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
 // No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
 using System;
@@ -140,6 +141,8 @@ namespace AshenSpire.Presentation
                 control.AddToClassList("card"); if (_selected == id) control.AddToClassList("selected");
                 control.Add(Label((string)card["name"], "card-name"));
                 control.Add(Label(CostText(cost), "cost"));
+                var shortage = OriginalCardCostText.Shortage(cost, _game.Player);
+                if (shortage != null) { control.AddToClassList("unaffordable"); control.Add(Label(shortage, "card-shortage")); }
                 control.Add(Label(OriginalCardText.Describe(card, _game.Catalog), "card-description")); hand.Add(control);
             }
             if (pages > 1)
@@ -151,8 +154,12 @@ namespace AshenSpire.Presentation
             }
             var selected = _game.Hand.OfType<JObject>().FirstOrDefault(x => (string)x["instanceId"] == _selected);
             _actions = new VisualElement(); _actions.AddToClassList("actions"); _actions.AddToClassList("native-actions"); _actionHost.Add(_actions);
-            var play = Button("native-play", selected == null ? "Select a card" : "Play " + (string)_game.Resolve(selected)["name"], () => _game.Play(_selected, _target), _actions);
-            play.AddToClassList("primary"); play.SetEnabled(selected != null && CanPay(_game.Cost(selected)));
+            var selectedCard = selected == null ? null : _game.Resolve(selected);
+            var unplayable = selectedCard != null && CardMechanics.HasProperty(CardMechanics.FromDefinition(selectedCard), "internal.unplayable");
+            var selectedShortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
+            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : selectedShortage ?? "Play " + (string)selectedCard["name"];
+            var play = Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions);
+            play.AddToClassList("primary"); play.SetEnabled(selected != null && !unplayable && selectedShortage == null);
             Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath).SetEnabled((int)_game.Player["energy"] > 0 && (int)_game.Player["stamina"] < (int)_game.Player["maxStamina"]);
             Button("native-end-turn", "End turn", _game.EndTurn, _actions);
             var charges = _game.Player["flaskCharges"];
@@ -165,8 +172,7 @@ namespace AshenSpire.Presentation
             }
             foreach (var entry in _game.LastEvents.TakeLast(4)) Text(OriginalCardText.Humanize((string)entry["type"]), "caption");
         }
-        private bool CanPay(JObject cost) => ((bool?)cost["variable"] == true || (int)cost["action"] <= (int)_game.Player["energy"]) && (int)cost["mana"] <= (int)_game.Player["mana"] && (int)cost["stamina"] <= (int)_game.Player["stamina"];
-        private static string CostText(JObject cost) => ((bool?)cost["variable"] == true ? "X" : cost["action"].ToString()) + " actions · " + cost["mana"] + " MP · " + cost["stamina"] + " stamina";
+        private static string CostText(JObject cost) => OriginalCardCostText.Describe(cost);
         private void Rewards()
         {
             Text("Spoils of the climb", "node-title"); var room = _game.Room; var offers = room["rewards"];

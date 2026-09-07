@@ -4,6 +4,7 @@
 // COMMANDS: send receives an intent only; the application owns authentication, sequence,
 // transport, saving and rejoin. Call ShowError after a refused/failed send to unlock this view.
 // MODIFY: labels/layout here; all prices, legal targets and outcomes remain domain-owned.
+// COSTS: OriginalCardCostText reads the host-provided cost and local resource pools.
 // MAP: the shared board renders host-provided routes/votes and emits chooseNode intents.
 // No MonoBehaviour, global subscriptions, timers, simulation calls or persistent state.
 using System;
@@ -157,10 +158,16 @@ namespace AshenSpire.Presentation
                 var id = (string)row["instance"]["instanceId"]; var card = (JObject)row["card"]; var cost = row["cost"];
                 var control = new Button(() => { _selected = id == _selected ? null : id; _target = null; Render(); }) { name = "coop-card-" + id };
                 control.AddToClassList("card"); if (_selected == id) control.AddToClassList("selected");
-                control.Add(Label((string)card["name"], "card-name")); control.Add(Label(Cost(cost), "cost")); control.Add(Label(OriginalCardText.Describe(card, _catalog), "card-description")); cards.Add(control);
+                control.Add(Label((string)card["name"], "card-name")); control.Add(Label(Cost(cost), "cost"));
+                var shortage = OriginalCardCostText.Shortage((JObject)cost, Body);
+                if (shortage != null) { control.AddToClassList("unaffordable"); control.Add(Label(shortage, "card-shortage")); }
+                control.Add(Label(OriginalCardText.Describe(card, _catalog), "card-description")); cards.Add(control);
             }
             if (pages > 1) { Button("cards-prev", "‹ Previous cards", () => { _page--; Render(); }).SetEnabled(_page > 0); Text((_page + 1) + " / " + pages, "caption"); Button("cards-next", "More cards ›", () => { _page++; Render(); }).SetEnabled(_page + 1 < pages); }
-            Command("play", selected == null ? "Select a card" : "Play " + selected["card"]["name"] + (_target == null ? "" : " → " + (friendly ? MemberName(_target) : Name("enemies", (string)enemies.FirstOrDefault(e => (string)e["id"] == _target)?["enemyId"]))), new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target }, mayPlay && selected != null && !CardMechanics.HasProperty(CardMechanics.FromDefinition((JObject)selected["card"]), "internal.unplayable") && CanPay(selected["cost"]) && (!friendly || legal.Contains(_target)));
+            var unplayable = selected != null && CardMechanics.HasProperty(CardMechanics.FromDefinition((JObject)selected["card"]), "internal.unplayable");
+            var selectedShortage = selected == null ? null : OriginalCardCostText.Shortage((JObject)selected["cost"], Body);
+            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : selectedShortage ?? "Play " + selected["card"]["name"] + (_target == null ? "" : " → " + (friendly ? MemberName(_target) : Name("enemies", (string)enemies.FirstOrDefault(e => (string)e["id"] == _target)?["enemyId"])));
+            Command("play", playLabel, new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target }, mayPlay && selected != null && !unplayable && selectedShortage == null && (!friendly || legal.Contains(_target)));
             Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for the party" : "End turn", new JObject { ["type"] = "endTurn" }, mayPlay);
             Button("flasks", "Use or throw a flask", Flasks).SetEnabled(active);
             if (!alive) Text("You are downed. Living allies can finish the fight.", "notice");
@@ -379,8 +386,7 @@ namespace AshenSpire.Presentation
             }
         }
         private void EventHeader(string id) { var record = _catalog.Record("events", id); Text((string)record["name"], "node-title"); Text((string)record["text"], "lead"); }
-        private bool CanPay(JToken cost) => ((bool?)cost["variable"] == true || (int)cost["action"] <= (int)Body["energy"]) && (int)cost["mana"] <= (int)Body["mana"] && (int)cost["stamina"] <= (int)Body["stamina"];
-        private static string Cost(JToken cost) => ((bool?)cost["variable"] == true ? "X" : cost["action"].ToString()) + " actions · " + cost["mana"] + " MP · " + cost["stamina"] + " stamina";
+        private static string Cost(JToken cost) => OriginalCardCostText.Describe((JObject)cost);
         private static JObject AddType(JObject value, string type) { var result = (JObject)value.DeepClone(); result["type"] = type; return result; }
         private static JObject Service(string service, JObject request) => new JObject { ["type"] = "service", ["service"] = service, ["request"] = request };
         private static JObject CatchupIntent(string id, JObject pick) => new JObject { ["type"] = "resolveCatchup", ["entryId"] = id, ["pick"] = pick };

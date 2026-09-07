@@ -10,12 +10,18 @@ Reference: `cehinds/AshenSpire` dev at
 Unity starting point: dev `3838b896b4d160ba51c6c6e06d339ea946a3f35a`.
 Task: [#33](https://github.com/cehinds/AshenSpire-Unity/issues/33).
 
-## Current source: 0.0.11.0
+## Current source: 0.0.13.0
 
-The current source version is **0.0.11.0**, build number **11**, with stage
+The current source version is **0.0.13.0**, build number **13**, with stage
 **Foundation in progress**. This is a local implementation status, not a statement
 that a newly compiled player is published. Check the selected channel's build
 record for its actual version, source digest, date and verification evidence.
+
+Build 13 fixes whole-valued weapon damage labels and adds shared cost and shortage wording to solo/co-op. See [combat readability](Unity-Combat-Readability.md) for current checks and limitations; the [roadmap](Unity-Roadmap.md) lists remaining foundation acceptance.
+
+Build 12 restored the shared original branching map and camera controls; see [map foundation](Unity-Map-Foundation.md) for its historical evidence.
+
+## Earlier build evidence
 
 Build 11 integrates painted artwork for all 19 original enemies in solo and co-op.
 It preserves the earlier 12 paintings and adds seven individual transparent sprites.
@@ -26,7 +32,7 @@ Web was built at **2026-09-07 06:25:03.732683 UTC**. Explicit package verificati
 passed **436 companion, 160 target-file and 18 root-package checks**. These results
 do not establish publication or physical-device acceptance.
 
-The current source/art review passed 217 checks across all 19 mappings. Compiled
+The build 11 source/art review passed 217 checks across all 19 mappings. Compiled
 solo art passed 31 checks with nine screenshots and no errors; it exercised two
 Blight Hounds and one Grave Wisp at phone and desktop sizes, a real attack and exact
 reload. Co-op passed eight host and six guest checks through a fight, rewards and
