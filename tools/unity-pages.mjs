@@ -3,8 +3,9 @@
 // tree is copied: only Published/ and the inherited standalone reference player.
 import {execFileSync} from 'node:child_process';
 import {mkdirSync,writeFileSync,readFileSync,readdirSync,statSync} from 'node:fs';
-import {resolve,dirname,join} from 'node:path';
+import {resolve,join} from 'node:path';
 import {collectHistory,resolvePullRequests,materializeHistory,publicHistory} from './unity-build-history.mjs';
+import {materializePublished} from './unity-git-blobs.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
 // Explicit local preview refs never move branches or alter the deployment defaults.
 const channelRefs=Object.fromEntries(channels.map(channel=>[channel,process.env[`UNITY_PAGES_${channel.toUpperCase()}_REF`]||`origin/${channel}`]));
@@ -37,14 +38,15 @@ const summaries=[];
 for(const channel of channels){
  const dir=join(out,channel);mkdirSync(dir,{recursive:true});
  const ref=channelRefs[channel];let manifest,paths=[];
- try{manifest=JSON.parse(git(['show',`${ref}:Published/build.json`]));paths=git(['ls-tree','-r','--name-only',ref,'Published']).trim().split('\n').filter(Boolean);}catch{}
+ try{manifest=JSON.parse(git(['show',`${ref}:Published/build.json`]));paths=git(['ls-tree','-r','-z','--name-only',ref,'--','Published']).split('\0').filter(Boolean);}catch{}
  let body=`<nav><a href="../">All builds</a>${channels.filter(c=>c!==channel).map(c=>`<a href="../${c}/">${c}</a>`).join('')}</nav><p class="kicker">${channel} channel</p><h1>AshenSpire</h1>`;
  if(!manifest){body+='<p>No build has been selected for this channel yet.</p><p class="muted">Promotion is separate from publishing. The dev build is the current work in progress.</p>';summaries.push({channel,available:false});}
  else{
   // Downloads retain their exact committed bytes on GitHub. Pages keeps playable
   // runtimes and evidence without duplicating every large platform archive.
-  for(const path of paths){if(/\.(zip|apk)$/i.test(path))continue;const relative=path.slice('Published/'.length);if(relative.includes('..'))throw new Error('Unsafe artifact path');const target=join(dir,relative);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,git(['show',`${ref}:${path}`],null));}
   const commit=git(['rev-parse',ref]).trim();
+  const copied=materializePublished(root,commit,paths,dir);
+  console.log(`Unity Pages ${channel}: ${copied.files} files copied in ${copied.batches} blob batches (${copied.gitProcesses} Git processes)`);
   let changes={Added:[],Changed:[],Fixed:[],KnownIssues:[],WhatToTest:[]};
   try{changes=JSON.parse(git(['show',`${ref}:Published/changelog.json`]));}catch{}
   let screenshots=paths.filter(p=>/^Published\/MobileEvidence\/02-seed-(entered|committed)\.png$/.test(p)||/^Published\/SeedEvidence\/(03-draft-before|seed-01-first-campaign|seed-02-selected|seed-03-invalid|seed-05-landscape-unfocused|seed-07-landscape-selected|seed-09-portrait-return)\.png$/.test(p)||/^Published\/Screenshots\/.*\.png$/.test(p)||/^Published\/InterruptionEvidence\/(03-draft-returned|04-map-landscape-paused|05-selection-returned|06-inspection-returned|07-feedback-return|11-reloaded)\.png$/.test(p)||/^Published\/FeedbackEvidence\/(26-normal-impact|26-normal-impact-settled|28-reduced-impact|31-interrupted-menu)\.png$/.test(p));

@@ -273,8 +273,14 @@ artifact commit also includes derived Unity version fields.
   visibly shows a painted hound. This does not complete all multiplayer or enemy
   visual coverage.
 - The prepared gallery contains 21 images: nine solo, nine co-op and three art
-  galleries. A prepared gallery is not a live Pages deployment. Current Pages
-  assembly/link verification remains a separate delivery gate.
+  galleries. A prepared gallery is not a live Pages deployment. The local Pages
+  preview passed 242 navigation checks across 38 pages and 16 archived players.
+  The bounded Git copier preserved all 1,826 site files byte for byte; it uses
+  seven Git processes for 1,635 channel files. The preview selects candidate
+  `0546f0702ca9d9e1c8f3edbc4ce5cc22db65fe66` as Dev without moving a branch.
+  Its 943.373 MiB size leaves 6.627 MiB under the unchanged 950 MiB budget.
+  Additional archive hosting capacity is needed before another large native
+  build; owner promotion and live publication remain separate.
 
 **Historical build 10 baseline:**
 

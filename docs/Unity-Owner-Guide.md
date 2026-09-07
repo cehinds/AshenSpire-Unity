@@ -217,7 +217,11 @@ receipts were unavailable. Co-op passed eight host and six guest checks through
 a fight, rewards and rejoin, with nine non-lobby screenshots and no errors; the
 host combat image shows a painted hound. The prepared gallery has 21 images
 (nine solo, nine co-op, three art galleries). These are local, bounded results;
-current Pages assembly/link verification and publication remain separate.
+the local Pages preview passed 242 navigation checks across 38 pages and 16
+archived players. The bounded Git copier reproduced all 1,826 site files exactly,
+using seven Git processes for 1,635 channel files. Publication remains separate.
+The preview occupies 943.373 MiB of the unchanged 950 MiB budget; additional
+archive hosting capacity is required before another large native build is added.
 
 The prior **0.0.10.0 / build 10** local checkpoint uses source commit
 `890af027be07a5648119521165aaeadf2dc5e938` and source digest

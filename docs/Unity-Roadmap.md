@@ -149,8 +149,12 @@ non-lobby screenshots and a visibly painted hound. Both suites recorded zero
 errors; asset-path console receipts were unavailable in the solo art test.
 The 217 source/art checks cover all 19 mappings, not all 19 compiled encounters.
 The prepared 21-image gallery combines nine solo, nine co-op and three art images.
-Current Pages assembly/link verification and publication remain separate; no
-new full campaign or storage result is claimed for build 11.
+The local Pages preview passed 242 navigation checks across 38 pages and 16
+archives. Batched copying preserved all 1,826 site files exactly. Publication
+remains separate; no new full campaign or storage result is claimed for build 11.
+- [ ] Expand archive hosting capacity before another large native build: this
+  preview occupies 943.373 MiB of the unchanged 950 MiB limit. Preserve every
+  archived player and its evidence when changing storage.
 
 The normal solo policy receipt records 12 victories, 264 fights, 3,450 accepted
 commands and 858 save/resume comparisons in
