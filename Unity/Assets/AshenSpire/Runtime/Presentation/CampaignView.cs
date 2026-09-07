@@ -34,6 +34,7 @@ namespace AshenSpire.Presentation
         private Button _returnButton;
         private readonly List<VisualElement> _interruptionDisabled = new List<VisualElement>();
         public event Action ReturnRequested;
+        public event Action FoundationRequested;
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -67,6 +68,8 @@ namespace AshenSpire.Presentation
                 button.style.minHeight = Mathf.Max(button.ClassListContains("card") ? 132 : 50, minimum);
             foreach (var toggle in _root.Query<Toggle>().ToList())
                 toggle.style.minHeight = Mathf.Max(52, minimum);
+            foreach (var dropdown in _root.Query<DropdownField>().ToList())
+                dropdown.style.minHeight = Mathf.Max(52, minimum);
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
         }
@@ -124,9 +127,19 @@ namespace AshenSpire.Presentation
             if (_diagnostics)
                 AddButton("gallery", "Component gallery", () => Gallery(() => Title(content, canResume)));
             if (notice != null)
+            {
                 _body.Add(Text(notice, "notice"));
+            }
+            if (_diagnostics)
+                AddButton("foundation", "Original game foundation preview", () => FoundationRequested?.Invoke());
             _body.Add(Text("Nine encounters · four classes · seeded expeditions\nProgress saves after every command.", "caption"));
             Report();
+        }
+        public void Foundation(AshenSpire.Domain.Original.OriginalContentCatalog catalog)
+        {
+            if (!_diagnostics) return;
+            Shell("ASHEN SPIRE", "FAITHFUL UNITY REBUILD");
+            _ = new OriginalFoundationPanel(_body, catalog, () => Report(), () => MenuRequested?.Invoke());
         }
         private void Heroes(CampaignDefinition content)
         {
@@ -489,7 +502,7 @@ namespace AshenSpire.Presentation
         {
             var surface = _interruptionCover ?? _root;
             var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
-                .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList())
+                .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList()).Concat(surface.Query<DropdownField>().ToList())
                 .Where(x => !string.IsNullOrEmpty(x.name))
                 .Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y,
                     Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray();

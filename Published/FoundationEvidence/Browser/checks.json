@@ -1,0 +1,2338 @@
+{
+  "success": true,
+  "checks": [
+    "original tuned Reaver preset",
+    "native original base resources",
+    "attribute decrement returns a point",
+    "attribute allocation commits exact point",
+    "class selection recalculates original resources",
+    "built IL2CPP map equals original JavaScript graph",
+    "real route controls reach the original boss floor",
+    "full imported catalog searches exact original ID",
+    "original nested card record is inspectable",
+    "landscape controls retain 44 CSS-pixel height",
+    "preview returns to preserved playable campaign",
+    "no browser or Unity error logs"
+  ],
+  "screenshots": [
+    "01-phone-title",
+    "02-phone-creation",
+    "03-phone-attributes",
+    "04-phone-starseer",
+    "05-phone-routes",
+    "06-phone-boss-route",
+    "07-phone-card-detail",
+    "08-landscape-card-detail",
+    "09-desktop-creation"
+  ],
+  "errors": [],
+  "creations": [
+    {
+      "classId": "reaver",
+      "mode": "tuned",
+      "attributes": {
+        "strength": 13,
+        "dexterity": 11,
+        "constitution": 11,
+        "wisdom": 8,
+        "intelligence": 10
+      },
+      "resources": {
+        "energy": 3,
+        "draw": 5,
+        "hp": 52,
+        "stamina": 2,
+        "mana": 1
+      },
+      "remaining": 0
+    },
+    {
+      "classId": "reaver",
+      "mode": "tuned",
+      "attributes": {
+        "strength": 12,
+        "dexterity": 11,
+        "constitution": 11,
+        "wisdom": 8,
+        "intelligence": 10
+      },
+      "resources": {
+        "energy": 3,
+        "draw": 5,
+        "hp": 52,
+        "stamina": 2,
+        "mana": 1
+      },
+      "remaining": 1
+    },
+    {
+      "classId": "reaver",
+      "mode": "tuned",
+      "attributes": {
+        "strength": 13,
+        "dexterity": 11,
+        "constitution": 11,
+        "wisdom": 8,
+        "intelligence": 10
+      },
+      "resources": {
+        "energy": 3,
+        "draw": 5,
+        "hp": 52,
+        "stamina": 2,
+        "mana": 1
+      },
+      "remaining": 0
+    },
+    {
+      "classId": "starseer",
+      "mode": "tuned",
+      "attributes": {
+        "strength": 11,
+        "dexterity": 11,
+        "constitution": 8,
+        "wisdom": 13,
+        "intelligence": 10
+      },
+      "resources": {
+        "energy": 3,
+        "draw": 5,
+        "hp": 46,
+        "stamina": 1,
+        "mana": 2
+      },
+      "remaining": 0
+    },
+    {
+      "classId": "starseer",
+      "mode": "tuned",
+      "attributes": {
+        "strength": 11,
+        "dexterity": 11,
+        "constitution": 8,
+        "wisdom": 13,
+        "intelligence": 10
+      },
+      "resources": {
+        "energy": 3,
+        "draw": 5,
+        "hp": 46,
+        "stamina": 1,
+        "mana": 2
+      },
+      "remaining": 0
+    }
+  ],
+  "maps": [
+    {
+      "act": "1",
+      "seed": 16185213,
+      "graph": {
+        "nodes": {
+          "n1_1": {
+            "id": "n1_1",
+            "floor": 1,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n2_1",
+              "n2_0"
+            ]
+          },
+          "n2_1": {
+            "id": "n2_1",
+            "floor": 2,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n3_1"
+            ]
+          },
+          "n2_0": {
+            "id": "n2_0",
+            "floor": 2,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n3_0",
+              "n3_1"
+            ]
+          },
+          "n3_1": {
+            "id": "n3_1",
+            "floor": 3,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n4_2",
+              "n4_1"
+            ]
+          },
+          "n3_0": {
+            "id": "n3_0",
+            "floor": 3,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n4_1",
+              "n4_0"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n5_1"
+            ]
+          },
+          "n4_1": {
+            "id": "n4_1",
+            "floor": 4,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n5_1",
+              "n5_0"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n5_0"
+            ]
+          },
+          "n5_1": {
+            "id": "n5_1",
+            "floor": 5,
+            "col": 1,
+            "type": "shrine",
+            "next": [
+              "n6_2",
+              "n6_0",
+              "n6_1"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n6_0"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n7_1",
+              "n7_0"
+            ]
+          },
+          "n6_1": {
+            "id": "n6_1",
+            "floor": 6,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_1",
+              "n8_2"
+            ]
+          },
+          "n7_0": {
+            "id": "n7_0",
+            "floor": 7,
+            "col": 0,
+            "type": "treasure",
+            "next": [
+              "n8_0"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n8_0": {
+            "id": "n8_0",
+            "floor": 8,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n9_1",
+              "n9_2"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n10_2",
+              "n10_0",
+              "n10_1"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n11_1",
+              "n11_3"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_1"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n11_1"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_1"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    {
+      "act": "2",
+      "seed": 16185213,
+      "graph": {
+        "nodes": {
+          "n1_1": {
+            "id": "n1_1",
+            "floor": 1,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n2_0",
+              "n2_1",
+              "n2_2"
+            ]
+          },
+          "n2_0": {
+            "id": "n2_0",
+            "floor": 2,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n3_0"
+            ]
+          },
+          "n2_1": {
+            "id": "n2_1",
+            "floor": 2,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n3_0",
+              "n3_2"
+            ]
+          },
+          "n2_2": {
+            "id": "n2_2",
+            "floor": 2,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n3_2"
+            ]
+          },
+          "n3_0": {
+            "id": "n3_0",
+            "floor": 3,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n4_0"
+            ]
+          },
+          "n3_2": {
+            "id": "n3_2",
+            "floor": 3,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n4_2",
+              "n4_1",
+              "n4_3"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n5_1",
+              "n5_0"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n5_1",
+              "n5_3"
+            ]
+          },
+          "n4_1": {
+            "id": "n4_1",
+            "floor": 4,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n5_1"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "merchant",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n5_1": {
+            "id": "n5_1",
+            "floor": 5,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n6_1",
+              "n6_0"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n6_0"
+            ]
+          },
+          "n5_3": {
+            "id": "n5_3",
+            "floor": 5,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n6_5"
+            ]
+          },
+          "n6_1": {
+            "id": "n6_1",
+            "floor": 6,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n7_0",
+              "n7_1"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_5": {
+            "id": "n6_5",
+            "floor": 6,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n7_5"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_2"
+            ]
+          },
+          "n7_0": {
+            "id": "n7_0",
+            "floor": 7,
+            "col": 0,
+            "type": "treasure",
+            "next": [
+              "n8_0",
+              "n8_1"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "shrine",
+            "next": [
+              "n9_2",
+              "n9_1"
+            ]
+          },
+          "n8_0": {
+            "id": "n8_0",
+            "floor": 8,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n9_5"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n10_1",
+              "n10_0",
+              "n10_2"
+            ]
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "shrine",
+            "next": [
+              "n10_4"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "shrine",
+            "next": [
+              "n11_2",
+              "n11_3"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "merchant",
+            "next": [
+              "n11_1"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n11_5"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_1"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    {
+      "act": "3",
+      "seed": 16185213,
+      "graph": {
+        "nodes": {
+          "n1_0": {
+            "id": "n1_0",
+            "floor": 1,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n2_0"
+            ]
+          },
+          "n2_0": {
+            "id": "n2_0",
+            "floor": 2,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n3_0",
+              "n3_1"
+            ]
+          },
+          "n3_0": {
+            "id": "n3_0",
+            "floor": 3,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n4_0"
+            ]
+          },
+          "n3_1": {
+            "id": "n3_1",
+            "floor": 3,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n4_2",
+              "n4_0"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n5_0"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n5_2",
+              "n5_3"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n6_0",
+              "n6_1"
+            ]
+          },
+          "n5_2": {
+            "id": "n5_2",
+            "floor": 5,
+            "col": 2,
+            "type": "shrine",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n5_3": {
+            "id": "n5_3",
+            "floor": 5,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n6_3"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "elite",
+            "next": [
+              "n7_1",
+              "n7_0"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n7_4"
+            ]
+          },
+          "n6_1": {
+            "id": "n6_1",
+            "floor": 6,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_0",
+              "n8_2",
+              "n8_1"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_4"
+            ]
+          },
+          "n7_0": {
+            "id": "n7_0",
+            "floor": 7,
+            "col": 0,
+            "type": "treasure",
+            "next": [
+              "n8_0"
+            ]
+          },
+          "n8_0": {
+            "id": "n8_0",
+            "floor": 8,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n9_0",
+              "n9_1"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n9_3",
+              "n9_2"
+            ]
+          },
+          "n8_4": {
+            "id": "n8_4",
+            "floor": 8,
+            "col": 4,
+            "type": "merchant",
+            "next": [
+              "n9_4"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n9_2"
+            ]
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n9_3": {
+            "id": "n9_3",
+            "floor": 9,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n9_4": {
+            "id": "n9_4",
+            "floor": 9,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n10_3"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n10_1"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_1"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n11_1",
+              "n11_3",
+              "n11_2"
+            ]
+          },
+          "n10_3": {
+            "id": "n10_3",
+            "floor": 10,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n11_4"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n11_1"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_0"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    {
+      "act": "1",
+      "seed": 1,
+      "graph": {
+        "nodes": {
+          "n1_5": {
+            "id": "n1_5",
+            "floor": 1,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n2_4",
+              "n2_5",
+              "n2_6"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n3_3"
+            ]
+          },
+          "n2_5": {
+            "id": "n2_5",
+            "floor": 2,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n3_6",
+              "n3_5",
+              "n3_4"
+            ]
+          },
+          "n2_6": {
+            "id": "n2_6",
+            "floor": 2,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n3_6"
+            ]
+          },
+          "n3_3": {
+            "id": "n3_3",
+            "floor": 3,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n3_6": {
+            "id": "n3_6",
+            "floor": 3,
+            "col": 6,
+            "type": "shrine",
+            "next": [
+              "n4_6",
+              "n4_5"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n5_2"
+            ]
+          },
+          "n4_6": {
+            "id": "n4_6",
+            "floor": 4,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n5_5",
+              "n5_6"
+            ]
+          },
+          "n4_5": {
+            "id": "n4_5",
+            "floor": 4,
+            "col": 5,
+            "type": "merchant",
+            "next": [
+              "n5_5"
+            ]
+          },
+          "n5_2": {
+            "id": "n5_2",
+            "floor": 5,
+            "col": 2,
+            "type": "elite",
+            "next": [
+              "n6_2"
+            ]
+          },
+          "n5_5": {
+            "id": "n5_5",
+            "floor": 5,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n6_4",
+              "n6_6"
+            ]
+          },
+          "n5_6": {
+            "id": "n5_6",
+            "floor": 5,
+            "col": 6,
+            "type": "merchant",
+            "next": [
+              "n6_6"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_4": {
+            "id": "n6_4",
+            "floor": 6,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n7_4",
+              "n7_5"
+            ]
+          },
+          "n6_6": {
+            "id": "n6_6",
+            "floor": 6,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n7_6"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_6"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n9_0"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_5"
+            ]
+          },
+          "n8_6": {
+            "id": "n8_6",
+            "floor": 8,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n9_5",
+              "n9_6"
+            ]
+          },
+          "n9_0": {
+            "id": "n9_0",
+            "floor": 9,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n9_5": {
+            "id": "n9_5",
+            "floor": 9,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n10_4",
+              "n10_6",
+              "n10_5"
+            ]
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n10_6"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_4": {
+            "id": "n10_4",
+            "floor": 10,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n11_3",
+              "n11_4"
+            ]
+          },
+          "n10_6": {
+            "id": "n10_6",
+            "floor": 10,
+            "col": 6,
+            "type": "event",
+            "next": [
+              "n11_5",
+              "n11_6"
+            ]
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_5"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_5": {
+            "id": "n11_5",
+            "floor": 11,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_5"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    {
+      "act": "2",
+      "seed": 1,
+      "graph": {
+        "nodes": {
+          "n1_3": {
+            "id": "n1_3",
+            "floor": 1,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n2_4",
+              "n2_2",
+              "n2_3"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n3_4",
+              "n3_5",
+              "n3_3"
+            ]
+          },
+          "n2_2": {
+            "id": "n2_2",
+            "floor": 2,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n3_2",
+              "n3_1"
+            ]
+          },
+          "n2_3": {
+            "id": "n2_3",
+            "floor": 2,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n3_2"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "event",
+            "next": [
+              "n4_4"
+            ]
+          },
+          "n3_2": {
+            "id": "n3_2",
+            "floor": 3,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n4_3",
+              "n4_2"
+            ]
+          },
+          "n3_3": {
+            "id": "n3_3",
+            "floor": 3,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n3_1": {
+            "id": "n3_1",
+            "floor": 3,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n4_0"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n5_4",
+              "n5_3"
+            ]
+          },
+          "n4_4": {
+            "id": "n4_4",
+            "floor": 4,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n5_3"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "shrine",
+            "next": [
+              "n5_0"
+            ]
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n6_5"
+            ]
+          },
+          "n5_3": {
+            "id": "n5_3",
+            "floor": 5,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n6_2",
+              "n6_3"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n6_0"
+            ]
+          },
+          "n6_5": {
+            "id": "n6_5",
+            "floor": 6,
+            "col": 5,
+            "type": "elite",
+            "next": [
+              "n7_6",
+              "n7_4"
+            ]
+          },
+          "n6_2": {
+            "id": "n6_2",
+            "floor": 6,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n7_1",
+              "n7_2"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n7_2"
+            ]
+          },
+          "n6_0": {
+            "id": "n6_0",
+            "floor": 6,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n7_1"
+            ]
+          },
+          "n7_6": {
+            "id": "n7_6",
+            "floor": 7,
+            "col": 6,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_3"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_2": {
+            "id": "n7_2",
+            "floor": 7,
+            "col": 2,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_4"
+            ]
+          },
+          "n8_3": {
+            "id": "n8_3",
+            "floor": 8,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n9_2"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n9_1",
+              "n9_2"
+            ]
+          },
+          "n9_4": {
+            "id": "n9_4",
+            "floor": 9,
+            "col": 4,
+            "type": "merchant",
+            "next": [
+              "n10_3"
+            ]
+          },
+          "n9_2": {
+            "id": "n9_2",
+            "floor": 9,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n10_1"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n10_0"
+            ]
+          },
+          "n10_3": {
+            "id": "n10_3",
+            "floor": 10,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n11_3"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n11_0",
+              "n11_1",
+              "n11_2"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "merchant",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n11_3": {
+            "id": "n11_3",
+            "floor": 11,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "merchant",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_3"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    {
+      "act": "3",
+      "seed": 1,
+      "graph": {
+        "nodes": {
+          "n1_3": {
+            "id": "n1_3",
+            "floor": 1,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n2_4",
+              "n2_3",
+              "n2_2"
+            ]
+          },
+          "n2_4": {
+            "id": "n2_4",
+            "floor": 2,
+            "col": 4,
+            "type": "event",
+            "next": [
+              "n3_4",
+              "n3_5"
+            ]
+          },
+          "n2_3": {
+            "id": "n2_3",
+            "floor": 2,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n3_4"
+            ]
+          },
+          "n2_2": {
+            "id": "n2_2",
+            "floor": 2,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n3_2",
+              "n3_1"
+            ]
+          },
+          "n3_4": {
+            "id": "n3_4",
+            "floor": 3,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n4_5",
+              "n4_4"
+            ]
+          },
+          "n3_2": {
+            "id": "n3_2",
+            "floor": 3,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n4_3"
+            ]
+          },
+          "n3_1": {
+            "id": "n3_1",
+            "floor": 3,
+            "col": 1,
+            "type": "event",
+            "next": [
+              "n4_0",
+              "n4_2"
+            ]
+          },
+          "n3_5": {
+            "id": "n3_5",
+            "floor": 3,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n4_5"
+            ]
+          },
+          "n4_5": {
+            "id": "n4_5",
+            "floor": 4,
+            "col": 5,
+            "type": "event",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n4_4": {
+            "id": "n4_4",
+            "floor": 4,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n5_4"
+            ]
+          },
+          "n4_3": {
+            "id": "n4_3",
+            "floor": 4,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n5_3"
+            ]
+          },
+          "n4_0": {
+            "id": "n4_0",
+            "floor": 4,
+            "col": 0,
+            "type": "shrine",
+            "next": [
+              "n5_0"
+            ]
+          },
+          "n4_2": {
+            "id": "n4_2",
+            "floor": 4,
+            "col": 2,
+            "type": "shrine",
+            "next": [
+              "n5_1"
+            ]
+          },
+          "n5_4": {
+            "id": "n5_4",
+            "floor": 5,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n6_3",
+              "n6_4"
+            ]
+          },
+          "n5_3": {
+            "id": "n5_3",
+            "floor": 5,
+            "col": 3,
+            "type": "elite",
+            "next": [
+              "n6_3"
+            ]
+          },
+          "n5_0": {
+            "id": "n5_0",
+            "floor": 5,
+            "col": 0,
+            "type": "event",
+            "next": [
+              "n6_1"
+            ]
+          },
+          "n5_1": {
+            "id": "n5_1",
+            "floor": 5,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n6_1"
+            ]
+          },
+          "n6_3": {
+            "id": "n6_3",
+            "floor": 6,
+            "col": 3,
+            "type": "event",
+            "next": [
+              "n7_3"
+            ]
+          },
+          "n6_4": {
+            "id": "n6_4",
+            "floor": 6,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n7_4",
+              "n7_5"
+            ]
+          },
+          "n6_1": {
+            "id": "n6_1",
+            "floor": 6,
+            "col": 1,
+            "type": "merchant",
+            "next": [
+              "n7_0",
+              "n7_1"
+            ]
+          },
+          "n7_3": {
+            "id": "n7_3",
+            "floor": 7,
+            "col": 3,
+            "type": "treasure",
+            "next": [
+              "n8_2"
+            ]
+          },
+          "n7_4": {
+            "id": "n7_4",
+            "floor": 7,
+            "col": 4,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_0": {
+            "id": "n7_0",
+            "floor": 7,
+            "col": 0,
+            "type": "treasure",
+            "next": [
+              "n8_1"
+            ]
+          },
+          "n7_5": {
+            "id": "n7_5",
+            "floor": 7,
+            "col": 5,
+            "type": "treasure",
+            "next": [
+              "n8_5"
+            ]
+          },
+          "n7_1": {
+            "id": "n7_1",
+            "floor": 7,
+            "col": 1,
+            "type": "treasure",
+            "next": [
+              "n8_2"
+            ]
+          },
+          "n8_2": {
+            "id": "n8_2",
+            "floor": 8,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n9_1",
+              "n9_3"
+            ]
+          },
+          "n8_5": {
+            "id": "n8_5",
+            "floor": 8,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n9_6",
+              "n9_4"
+            ]
+          },
+          "n8_1": {
+            "id": "n8_1",
+            "floor": 8,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n9_1"
+            ]
+          },
+          "n9_1": {
+            "id": "n9_1",
+            "floor": 9,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n10_1",
+              "n10_0"
+            ]
+          },
+          "n9_6": {
+            "id": "n9_6",
+            "floor": 9,
+            "col": 6,
+            "type": "monster",
+            "next": [
+              "n10_5"
+            ]
+          },
+          "n9_4": {
+            "id": "n9_4",
+            "floor": 9,
+            "col": 4,
+            "type": "shrine",
+            "next": [
+              "n10_3"
+            ]
+          },
+          "n9_3": {
+            "id": "n9_3",
+            "floor": 9,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n10_2"
+            ]
+          },
+          "n10_1": {
+            "id": "n10_1",
+            "floor": 10,
+            "col": 1,
+            "type": "monster",
+            "next": [
+              "n11_1",
+              "n11_0"
+            ]
+          },
+          "n10_5": {
+            "id": "n10_5",
+            "floor": 10,
+            "col": 5,
+            "type": "monster",
+            "next": [
+              "n11_6"
+            ]
+          },
+          "n10_0": {
+            "id": "n10_0",
+            "floor": 10,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n11_0"
+            ]
+          },
+          "n10_3": {
+            "id": "n10_3",
+            "floor": 10,
+            "col": 3,
+            "type": "monster",
+            "next": [
+              "n11_4"
+            ]
+          },
+          "n10_2": {
+            "id": "n10_2",
+            "floor": 10,
+            "col": 2,
+            "type": "event",
+            "next": [
+              "n11_2"
+            ]
+          },
+          "n11_1": {
+            "id": "n11_1",
+            "floor": 11,
+            "col": 1,
+            "type": "elite",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_6": {
+            "id": "n11_6",
+            "floor": 11,
+            "col": 6,
+            "type": "merchant",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_0": {
+            "id": "n11_0",
+            "floor": 11,
+            "col": 0,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_4": {
+            "id": "n11_4",
+            "floor": 11,
+            "col": 4,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n11_2": {
+            "id": "n11_2",
+            "floor": 11,
+            "col": 2,
+            "type": "monster",
+            "next": [
+              "n12_3"
+            ]
+          },
+          "n12_3": {
+            "id": "n12_3",
+            "floor": 12,
+            "col": 3,
+            "type": "shrine",
+            "next": [
+              "n13_3"
+            ]
+          },
+          "n13_3": {
+            "id": "n13_3",
+            "floor": 13,
+            "col": 3,
+            "type": "boss",
+            "next": []
+          }
+        },
+        "startIds": [
+          "n1_3"
+        ],
+        "shrineId": "n12_3",
+        "bossId": "n13_3",
+        "floors": 12,
+        "columns": 7
+      }
+    }
+  ],
+  "controls": {
+    "Controls": [
+      {
+        "Id": "new",
+        "X": 333.3333435058594,
+        "Y": 418,
+        "Width": 614,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "settings",
+        "X": 333.3333435058594,
+        "Y": 478.6666564941406,
+        "Width": 614,
+        "Height": 50.000030517578125,
+        "Enabled": true
+      },
+      {
+        "Id": "gallery",
+        "X": 333.3333435058594,
+        "Y": 539.3333129882812,
+        "Width": 614,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "foundation",
+        "X": 333.3333435058594,
+        "Y": 600,
+        "Width": 614,
+        "Height": 50,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 1280,
+    "PanelHeight": 900,
+    "Labels": [
+      "ASHEN SPIRE",
+      "THREE ACTS · ONE EMBER · YOUR PATH",
+      "THE EMBER ENDURES",
+      "Read their intent. Shape your deck.\nReach the heart of the Spire.",
+      "Nine encounters · four classes · seeded expeditions\nProgress saves after every command."
+    ],
+    "LayoutAttempts": 1
+  },
+  "browserEmulation": true,
+  "physicalDevice": false
+}

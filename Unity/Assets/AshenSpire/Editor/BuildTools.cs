@@ -37,6 +37,10 @@ namespace AshenSpire.Editor
             var campaignJson = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/campaign.json"));
             var campaign = JsonUtility.FromJson<CampaignDefinition>(campaignJson);
             CampaignAuthoringValidation.Validate(campaign, Root + "/Resources/Art");
+            var originalJson = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/Original/content.json"));
+            _ = new AshenSpire.Domain.Original.OriginalContentCatalog(originalJson);
+            Directory.CreateDirectory(Root + "/Resources/Original");
+            File.WriteAllText(Root + "/Resources/Original/content.json", originalJson);
             File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);
             var target = Root + "/Resources/expedition.json";
             Directory.CreateDirectory(Path.GetDirectoryName(target));
@@ -90,7 +94,7 @@ namespace AshenSpire.Editor
             Prepare();
             PlayerSettings.companyName = "AshenSpire";
             PlayerSettings.productName = "AshenSpire Unity";
-            PlayerSettings.bundleVersion = "0.8.3";
+            PlayerSettings.bundleVersion = "0.9.0";
             PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.ashenspire.expedition");
             PlayerSettings.defaultScreenWidth = 430;
             PlayerSettings.defaultScreenHeight = 900;

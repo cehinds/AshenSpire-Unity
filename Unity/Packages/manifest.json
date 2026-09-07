@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.nuget.mono-cecil": "1.11.6",
     "com.unity.multiplayer.center": "2.0.1",
     "com.unity.modules.accessibility": "1.0.0",

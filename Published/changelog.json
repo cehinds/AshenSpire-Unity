@@ -1,29 +1,32 @@
 {
   "Added": [
-    "Verification of both the first typed seed and the corrected draft through actual campaign starts.",
-    "A Web renderer maintenance guide and reproducible build receipt."
+    "Native original foundations: seeded streams, structured formulas, tags, derived stats, character allocation, flasks, maps, statuses, damage and an explicit combat effect queue.",
+    "Original catalog with 182 cards, 55 relics, 50 statuses, 19 enemies, 22 events, four classes, equipment, upgrades and unlock definitions.",
+    "Original game foundation preview: edit attributes, inspect base resources, explore seeded routes and search original records.",
+    "CSV table export and validated atomic import with stale-file protection and backups.",
+    "7,356 comparisons and checks against the pinned original engine, eight CSV transaction checks and 12 compiled-player browser checks."
   ],
   "Changed": [
-    "Web builds reserve enough rendering buffer space after geometry ranges expand.",
-    "Control diagnostics now retry unsettled child geometry with a finite limit and stop after a valid report."
+    "The original game is the required parity target. The existing three-act adaptation remains playable while original systems are connected.",
+    "Web, Windows and Android players rebuilt as 0.9.0. This checkpoint includes 43 fresh screenshots and an explicit parity checklist.",
+    "Character and allocation choices use readable touch buttons; mobile landscape controls retain their minimum height."
   ],
   "Fixed": [
-    "Development browser checks no longer discard an unsettled tab-return measurement without retrying.",
-    "Rotating a second expedition draft no longer drops the beginning of the seed validation label in the reproduced scenario.",
-    "The same scenario completes without the previous rendering buffer errors."
+    "Combat event snapshots no longer expose mutable internal event records.",
+    "Foundation creation selectors remain readable against the dark mobile UI."
   ],
   "KnownIssues": [
-    "Web uses a workaround pinned to Unity 6000.6.0f1; review it before upgrading the Editor.",
-    "Physical Android/iOS and graphical Windows interaction remain unverified; no phone is connected.",
-    "Phone performance and audible sound quality still need device testing.",
-    "Unity compiles locally; GitHub validates and publishes prepared players.",
-    "Full original-game parity, additional art/music and store release remain unfinished.",
-    "Inherited browser CI inventory failures remain documented and waived for Unity checkpoint work."
+    "Full original gameplay parity is unfinished. Imported definitions are not equivalent to playable features.",
+    "The route explorer is a development tool; selecting an original map node does not start its encounter.",
+    "Original combat orchestration, equipment ownership and smithing, encounter services, progression and co-op still require integration.",
+    "Physical phones, graphical Windows interaction, iOS and audible sound quality remain unverified.",
+    "Web uses a version-pinned Unity 6000.6.0f1 renderer workaround; builds compile locally and GitHub validates and publishes prepared players."
   ],
   "WhatToTest": [
-    "Start an expedition, return to Menu, then choose another wanderer.",
-    "Enter an invalid seed, correct it using selection and Backspace, then switch tabs and explicitly return.",
-    "Rotate to landscape and back; check that the full validation label stays visible.",
-    "Start the second expedition, continue playing, then reload and resume."
+    "Open Original game foundation preview from the title screen. Try all four classes and the allocation modes.",
+    "Return an attribute point and spend it again; inspect the recalculated base resource values.",
+    "Enter a seed, explore routes through all three acts and search for an original card or equipment ID.",
+    "Return to the playable campaign, play cards, reload and resume, buy equipment and reach victory.",
+    "Use the parity checklist to see which original systems are verified foundations and which gameplay flows remain unfinished."
   ]
 }

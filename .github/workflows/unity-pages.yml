@@ -25,6 +25,10 @@ jobs:
           node-version: '22'
       - name: Test deterministic Unity rules
         run: dotnet run --project UnityTests/Domain
+      - name: Compare native foundations with the original engine
+        run: |
+          dotnet run --project UnityTests/Parity
+          python3 UnityTests/Parity/authoring-checks.py
       - name: Test authoring file transactions and asset validation
         run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
       - name: Test displayed viewport sizing
@@ -49,6 +53,8 @@ jobs:
         run: python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
       - name: Exercise feedback preferences and interruption
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
+      - name: Exercise original foundation controls and compiled map parity
+        run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
       - name: Exercise actual browser hiding and explicit return
         run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
       - name: Exercise seed editing and rotation at phone pixel density
@@ -70,6 +76,7 @@ jobs:
             TestResults/Mobile
             TestResults/Interruption
             TestResults/Seed
+            TestResults/Foundation
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'

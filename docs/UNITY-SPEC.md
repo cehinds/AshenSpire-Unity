@@ -1,8 +1,13 @@
-# Unity adaptation specification — campaign 0.2
+# Unity specification — faithful rebuild with preserved campaign checkpoints
 
 Upstream baseline: `cehinds/AshenSpire` `dev` at `d5c982e777df06221e181c437652b705d2f6abbc`.
 
-The original `SPEC.md` remains a migration reference. This document defines the Unity campaign as a deliberate adaptation; it does not claim mechanical parity.
+The target is now a faithful Unity rebuild of the original AshenSpire, preserving
+its mechanics, content and painterly identity with mobile-first polish. The original
+implemented baseline and current parity checklist are in [Unity-Parity.md](Unity-Parity.md).
+The campaign 0.2–0.8 entries below document the existing playable adaptation and
+remain its compatibility contract while original systems are integrated. They do
+not narrow the finished game's scope or establish original mechanical parity.
 
 Campaign: four authored hero loadouts, three acts with nine encounter stops, twelve foe definitions and three bosses. Each stop offers one or two authored foe choices. Victory requires clearing the final encounter and selecting its reward; defeat ends command acceptance. Starting resources, decks, enemy intents and reward pools come from campaign.json.
 

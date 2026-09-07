@@ -1,6 +1,6 @@
 {
   "name": "AshenSpire.Application",
   "rootNamespace": "AshenSpire.Application",
-  "references": ["AshenSpire.Domain", "AshenSpire.Presentation"],
+  "references": ["AshenSpire.Domain", "AshenSpire.Presentation", "AshenSpire.Original"],
   "autoReferenced": true
 }

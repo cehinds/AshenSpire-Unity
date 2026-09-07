@@ -1,0 +1,7 @@
+{
+  "name": "AshenSpire.Original",
+  "rootNamespace": "AshenSpire.Domain.Original",
+  "references": [],
+  "autoReferenced": true,
+  "noEngineReferences": true
+}
