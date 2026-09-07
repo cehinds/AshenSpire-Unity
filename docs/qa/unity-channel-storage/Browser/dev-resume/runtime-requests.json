@@ -1,0 +1,18 @@
+[
+  {
+    "url": "http://127.0.0.1:8804/builds/build-3926b9b755de3e4e003a/Web/Build/Web.loader.js?build=d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8804/builds/build-3926b9b755de3e4e003a/Web/Build/Web.framework.js?build=d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8804/builds/build-3926b9b755de3e4e003a/Web/Build/Web.wasm?build=d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8804/builds/build-3926b9b755de3e4e003a/Web/Build/Web.data?build=d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+    "status": 304
+  }
+]

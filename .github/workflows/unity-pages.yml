@@ -69,6 +69,8 @@ jobs:
         run: node tools/unity-package.mjs --check
       - name: Verify immutable build history and channel membership
         run: node tools/unity-build-history.test.mjs
+      - name: Verify shared channel runtime and evidence storage
+        run: node tools/unity-channel-storage.test.mjs
       - name: Verify bounded Pages artifact copying
         run: node tools/unity-git-blobs.test.mjs
       - name: Install browser test tooling

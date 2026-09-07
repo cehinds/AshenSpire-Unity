@@ -6,6 +6,7 @@ import {mkdirSync,writeFileSync,readFileSync,readdirSync,statSync} from 'node:fs
 import {resolve,join} from 'node:path';
 import {collectHistory,resolvePullRequests,materializeHistory,publicHistory} from './unity-build-history.mjs';
 import {materializePublished} from './unity-git-blobs.mjs';
+import {planChannelStorage,channelAssetUrl} from './unity-channel-storage.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
 // Explicit local preview refs never move branches or alter the deployment defaults.
 const channelRefs=Object.fromEntries(channels.map(channel=>[channel,process.env[`UNITY_PAGES_${channel.toUpperCase()}_REF`]||`origin/${channel}`]));
@@ -16,6 +17,20 @@ const style=`*{box-sizing:border-box}body{margin:0;background:#11171b;color:#e5e
 const page=(title,body)=>`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · AshenSpire Unity</title><style>${style}</style><main>${body}</main></html>`;
 mkdirSync(out,{recursive:true});writeFileSync(join(out,'.nojekyll'),'');
 const history=collectHistory(root,channelRefs);
+const selectedChannels=[];
+for(const channel of channels){
+ const ref=channelRefs[channel];let manifest;
+ try{manifest=JSON.parse(git(['show',`${ref}:Published/build.json`]));}catch{continue;}
+ const commit=git(['rev-parse',`${ref}^{commit}`]).trim();
+ const files=git(['ls-tree','-r','-z',commit,'--','Published']).split('\0').filter(Boolean).map(line=>{
+  const match=/^(\d+) blob ([a-f0-9]+)\t([\s\S]+)$/.exec(line);
+  if(!match)throw new Error(`Unsupported Published tree entry in ${channel}`);
+  return {mode:match[1],blob:match[2],path:match[3]};
+ });
+ selectedChannels.push({channel,commit,manifest,files,paths:files.map(file=>file.path),html:git(['show',`${commit}:Published/Web/index.html`])});
+}
+const storage=planChannelStorage(selectedChannels,history.builds);
+const selectedByChannel=new Map(selectedChannels.map(selected=>[selected.channel,selected]));
 await resolvePullRequests(history.builds,'cehinds/AshenSpire-Unity');
 materializeHistory(root,out,history);
 const buildById=new Map(history.builds.map(build=>[build.id,build]));
@@ -37,15 +52,22 @@ for(const channel of channels){
 const summaries=[];
 for(const channel of channels){
  const dir=join(out,channel);mkdirSync(dir,{recursive:true});
- const ref=channelRefs[channel];let manifest,paths=[];
- try{manifest=JSON.parse(git(['show',`${ref}:Published/build.json`]));paths=git(['ls-tree','-r','-z','--name-only',ref,'--','Published']).split('\0').filter(Boolean);}catch{}
+ const ref=channelRefs[channel],selected=selectedByChannel.get(channel),manifest=selected?.manifest,paths=selected?.paths??[];
  let body=`<nav><a href="../">All builds</a>${channels.filter(c=>c!==channel).map(c=>`<a href="../${c}/">${c}</a>`).join('')}</nav><p class="kicker">${channel} channel</p><h1>AshenSpire</h1>`;
  if(!manifest){body+='<p>No build has been selected for this channel yet.</p><p class="muted">Promotion is separate from publishing. The dev build is the current work in progress.</p>';summaries.push({channel,available:false});}
  else{
-  // Downloads retain their exact committed bytes on GitHub. Pages keeps playable
-  // runtimes and evidence without duplicating every large platform archive.
-  const commit=git(['rev-parse',ref]).trim();
-  const copied=materializePublished(root,commit,paths,dir);
+  // Keep each channel's document URL/save context. Only a recognized launch
+  // page changes: its four payload URLs use the byte-exact immutable archive.
+  // Identical complete evidence folders have one selected-channel owner.
+  const commit=selected.commit,plan=storage.channels[channel];
+  const asset=path=>escape(channelAssetUrl(storage,channel,path));
+  const copied=materializePublished(root,commit,plan.copyPaths,dir);
+  if(plan.player.rewritten){
+   mkdirSync(join(dir,'Web'),{recursive:true});writeFileSync(join(dir,'Web/index.html'),plan.player.html);
+   writeFileSync(join(dir,'Web/channel-launch.json'),JSON.stringify({schemaVersion:1,channel,commit,archiveId:plan.archiveId,
+    originalPlayer:`../../builds/${plan.archiveId}/Web/`,originalIndexSha256:plan.player.originalIndexSha256,
+    launchIndexSha256:plan.player.launchIndexSha256,reason:'Four runtime URLs use an immutable archive; document URL and player/save settings are unchanged.'},null,2));
+  }else console.log(`Unity Pages ${channel}: exact Web copy retained (${plan.player.reason})`);
   console.log(`Unity Pages ${channel}: ${copied.files} files copied in ${copied.batches} blob batches (${copied.gitProcesses} Git processes)`);
   let changes={Added:[],Changed:[],Fixed:[],KnownIssues:[],WhatToTest:[]};
   try{changes=JSON.parse(git(['show',`${ref}:Published/changelog.json`]));}catch{}
@@ -64,18 +86,18 @@ for(const channel of channels){
   if(paths.includes('Published/Companion.zip'))body+=`<a class="button secondary" href="${repo}/blob/${commit}/Published/Companion.zip?raw=true">Download co-op companion for Windows</a><p class="muted">For a shared climb, unzip the companion beside the downloaded Web folder and run Start-Companion.cmd. Open the local address it prints; invite players using its join code.</p>`;
   body+=`<p class="muted">Build ${escape(manifest.buildNumber ?? 'number not recorded in this legacy manifest')} · <a href="#history">Browse this channel's build history</a></p>`;
   if(paths.includes('Published/Android.apk'))body+=`<a class="button secondary" href="${repo}/blob/${commit}/Published/Android.apk?raw=true">Download Android test APK</a>`;
-  if(paths.includes('Published/NativeEvidence/Guide.md'))body+=`<section><h2>The original climb in Unity</h2><p>Four wanderers, three acts, weapon cards, custom climbs and local cooperative play. Explore the current screenshots and test notes before choosing a build.</p><nav><a href="NativeEvidence/Guide.md">What to try in this build</a><a href="${repo}/blob/${commit}/docs/Unity-Owner-Guide.md">Game editing guide</a><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="validation.json">Validation evidence</a></nav></section>`;
-  else if(paths.includes('Published/FoundationEvidence/Guide.md'))body+=`<section><h2>Faithful Unity rebuild</h2><p>The original foundation preview is available from the title screen. Full original gameplay integration is in progress; the existing campaign remains playable.</p><nav><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="FoundationEvidence/Original-Cards.csv" download>Original cards CSV</a><a href="FoundationEvidence/Original-Cards.csv.receipt.json" download>CSV import receipt</a><a href="validation.json">Current validation evidence</a></nav></section>`;
+  if(paths.includes('Published/NativeEvidence/Guide.md'))body+=`<section><h2>The original climb in Unity</h2><p>Four wanderers, three acts, weapon cards, custom climbs and local cooperative play. Explore the current screenshots and test notes before choosing a build.</p><nav><a href="${asset('Published/NativeEvidence/Guide.md')}">What to try in this build</a><a href="${repo}/blob/${commit}/docs/Unity-Owner-Guide.md">Game editing guide</a><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="validation.json">Validation evidence</a></nav></section>`;
+  else if(paths.includes('Published/FoundationEvidence/Guide.md'))body+=`<section><h2>Faithful Unity rebuild</h2><p>The original foundation preview is available from the title screen. Full original gameplay integration is in progress; the existing campaign remains playable.</p><nav><a href="${repo}/blob/${commit}/docs/Unity-Parity.md">Foundation and parity checklist</a><a href="${asset('Published/FoundationEvidence/Original-Cards.csv')}" download>Original cards CSV</a><a href="${asset('Published/FoundationEvidence/Original-Cards.csv.receipt.json')}" download>CSV import receipt</a><a href="validation.json">Current validation evidence</a></nav></section>`;
   if(paths.includes('Published/InterruptionEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Interruption-Return-0.8.0.md">Interruption, return and phone testing guide</a></p>`;
   if(paths.includes('Published/SeedEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Seed-Entry-0.8.1.md">Seed entry colors and phone testing guide</a></p>`;
   if(paths.includes('Published/RendererEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Web-Renderer-0.8.2.md">Web rotation fix and build maintenance guide</a></p>`;
   if(paths.includes('Published/ControlEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Control-Diagnostics-0.8.3.md">Tab-return diagnostics and test maintenance guide</a></p>`;
   if(paths.includes('Published/MobileEvidence/Guide.md'))body+=`<p><a href="${repo}/blob/${commit}/docs/Mobile-Viewport-0.7.0.md">Mobile viewport changes and testing guide</a></p>`;
-  if(paths.includes('Published/AuthoringEvidence/Content-Authoring.md'))body+=`<section><h2>Make it yours</h2><p>Edit cards, effects, rewards and feedback in Unity, or use CSV tables.</p><nav><a href="${repo}/blob/${commit}/docs/Content-Authoring-0.6.0.md">Content editing guide</a><a href="AuthoringEvidence/Cards.csv" download>Cards CSV</a><a href="AuthoringEvidence/FeedbackCues.csv" download>Feedback cues CSV</a></nav></section>`;
+  if(paths.includes('Published/AuthoringEvidence/Content-Authoring.md'))body+=`<section><h2>Make it yours</h2><p>Edit cards, effects, rewards and feedback in Unity, or use CSV tables.</p><nav><a href="${repo}/blob/${commit}/docs/Content-Authoring-0.6.0.md">Content editing guide</a><a href="${asset('Published/AuthoringEvidence/Cards.csv')}" download>Cards CSV</a><a href="${asset('Published/AuthoringEvidence/FeedbackCues.csv')}" download>Feedback cues CSV</a></nav></section>`;
   body+=`<section><h2>What changed</h2>${Object.entries(changes).map(([heading,items])=>`<h3>${escape(heading.replace(/([a-z])([A-Z])/g,'$1 $2'))}</h3><ul>${items.map(item=>`<li>${escape(item)}</li>`).join('')}</ul>`).join('')}</section>`;
-  if(screenshots.length)body+=`<section><h2>Captured from this checkpoint</h2><div class="shots">${screenshots.map(path=>`<a href="${path.slice(10)}"><img loading="lazy" alt="${escape(path.split('/').pop())}" src="${path.slice(10)}"></a>`).join('')}</div><p class="muted">Screenshots show pixels; test notes distinguish interaction and device verification.</p></section>`;
+  if(screenshots.length)body+=`<section><h2>Captured from this checkpoint</h2><div class="shots">${screenshots.map(path=>`<a href="${asset(path)}"><img loading="lazy" alt="${escape(path.split('/').pop())}" src="${asset(path)}"></a>`).join('')}</div><p class="muted">Screenshots show pixels; test notes distinguish interaction and device verification.</p></section>`;
   const audio=paths.filter(p=>/^Published\/AudioEvidence\/[a-z]+\.wav$/.test(p));
-  if(audio.length)body+=`<section><h2>Sound previews</h2><p class="muted">Reference cues before the game's master volume. Physical-device playback still needs testing.</p><div class="grid">${audio.map(path=>`<div class="card"><p>${escape(path.split('/').pop().replace('.wav',''))}</p><audio controls preload="none" style="width:100%" src="${path.slice(10)}"></audio></div>`).join('')}</div></section>`;
+  if(audio.length)body+=`<section><h2>Sound previews</h2><p class="muted">Reference cues before the game's master volume. Physical-device playback still needs testing.</p><div class="grid">${audio.map(path=>`<div class="card"><p>${escape(path.split('/').pop().replace('.wav',''))}</p><audio controls preload="none" style="width:100%" src="${asset(path)}"></audio></div>`).join('')}</div></section>`;
   summaries.push({channel,available:true,manifest,commit});
  }
  const channelBuilds=history.channels[channel].map(id=>buildById.get(id));

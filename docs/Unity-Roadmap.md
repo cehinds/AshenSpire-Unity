@@ -19,6 +19,12 @@ eight host/six guest co-op checks. Full-campaign, storage and other older counts
 below belong to build 10 at commit `890af027…` / digest `62aa53dc…`.
 Build 11's bounded results do not repeat that full baseline.
 
+
+Build 12 was merged into Dev through PR #39 and selected as the initial Test build at
+`4b4a28dfe9aecc1a3292b498cd6a9310a6aef2fc`. Live Pages is separate. Issue #40 prepares
+shared channel storage: 847.1 MiB for Dev/Test instead of 1,206.3 MiB, preserving
+all archived players and independently tested channel saves. See
+[Unity-Channel-Storage.md](Unity-Channel-Storage.md) for the candidate and evidence.
 ## Implemented foundation
 
 - [x] Pin original dev `b17a7f4543e1710f49fae8b58880121690a314de` and retain original import/oracle hashes.

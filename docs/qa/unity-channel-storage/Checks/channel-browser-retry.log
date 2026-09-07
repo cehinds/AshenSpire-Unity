@@ -1,0 +1,3 @@
+Error: runtime loads successfully from the immutable shared archive
+    at NativeUiDriver.check (C:\repos\AshenSpire-Unity-pages-channels\tools\native-ui-driver.cjs:11:37)
+    at C:\repos\AshenSpire-Unity-pages-channels\tools\unity-channel-playtest.cjs:25:10
