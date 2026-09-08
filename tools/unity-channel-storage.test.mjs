@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,dirname,resolve,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -27,13 +27,19 @@ createUnityInstance(canvas,{dataUrl:'Build/Web.data${suffix}',frameworkUrl:'Buil
 </script>`;
 const bytes=new Map();
 function put(path,value){const data=Buffer.isBuffer(value)?value:Buffer.from(value);bytes.set(path,data);mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
-function manifest(version,number){put('Published/build.json',JSON.stringify({version,buildNumber:number,sourceCommit:'a'.repeat(40),builtAt:'2026-09-07T00:00:00Z',files:Object.fromEntries([...bytes].filter(([path])=>path.startsWith('Published/Web/')).map(([path,data])=>[path.slice(10),hash(data)]))}));}
+function manifest(version,number){
+ const authored=folder=>readdirSync(join(root,folder),{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?authored(folder+'/'+entry.name):[folder+'/'+entry.name]);
+ put('Published/build.json',JSON.stringify({version,buildNumber:number,sourceCommit:'a'.repeat(40),builtAt:'2026-09-07T00:00:00Z',files:Object.fromEntries(authored('Published/Web').map(path=>[path.slice(10),hash(readFileSync(join(root,path)))]))}));
+}
 function commit(message){git(['add','Published']);git(['commit','-m',message]);return git(['rev-parse','HEAD']);}
 function selected(channel,commit){
  const files=git(['ls-tree','-r',commit,'--','Published']).split('\n').filter(Boolean).map(line=>{const m=/^(\d+) blob ([a-f0-9]+)\t(.+)$/.exec(line);assert(m);return {mode:m[1],blob:m[2],path:m[3]};});
  return {channel,commit,files,html:execFileSync('git',['show',commit+':Published/Web/index.html'],{cwd:root,encoding:'utf8',windowsHide:true})};
 }
-put('Published/Web/index.html','<!doctype html><p>Legacy player, original 0.9.0</p>');
+// Historical version labels can be old while the tiny export remains a complete
+// recognized player. Every required runtime file has a hash of its actual bytes.
+put('Published/Web/index.html',modern.replace("productVersion:'0.0.12.0'","productVersion:'0.9.0'"));
+for(const [index,name] of runtimeNames.entries())put('Published/Web/Build/'+name,Buffer.from([0,10,13,255,index]));
 put('Published/changelog.json',JSON.stringify({Added:['Original checkpoint'],Changed:[],Fixed:[]}));
 put('Published/NativeEvidence/Guide.md','![Exact screenshot](Shots/phone.png)\r\n');
 put('Published/NativeEvidence/Shots/phone.png',Buffer.from([137,80,78,71,0,255,10,13]));
@@ -52,6 +58,13 @@ put('Published/NativeEvidence/Shots/phone.png',Buffer.from([137,80,78,71,1,255,1
 manifest('0.0.12.0',12);const changedEvidence=commit('Different screenshot, same player');
 put('Published/Web/Build/Web.wasm',Buffer.from([0,10,13,255,99]));
 manifest('0.0.12.0',12);const changedRuntime=commit('Different player, same version');
+// Keep unsupported-template fallback as a genuine, separate Git fixture without
+// inserting an intentionally unsupported player into the full-site happy path.
+git(['checkout','-b','unsupported-template',legacy]);
+put('Published/Web/index.html','<!doctype html><p>Legacy player, original 0.9.0</p>');
+manifest('0.9.0');const unsupported=commit('Unrecognized historical template');
+const unsupportedHistory=collectHistory(root,{release:unsupported});
+git(['checkout','--detach',changedRuntime]);bytes.set('Published/Web/index.html',Buffer.from(modern));
 const history=collectHistory(root,{dev:changedRuntime,test:current,release:legacy,main:evidence});
 let checks=0;
 function check(name,action){action();checks++;console.log('PASS '+name);}
@@ -128,11 +141,11 @@ check('queryless runtime URLs also preserve unrelated text',()=>{
  let restored=result.html;for(const name of runtimeNames)restored=restored.replace('../../builds/'+channel('dev').archiveId+'/Web/Build/'+name,'Build/'+name);assert.equal(restored,original);
 });
 check('unknown loader shapes fall back to byte-identical local Web storage',()=>{
- const row=selected('dev',legacy),legacyPlan=planChannelStorage([row],history.builds),choice=legacyPlan.channels.dev;
+ const row=selected('dev',unsupported),legacyPlan=planChannelStorage([row],unsupportedHistory.builds),choice=legacyPlan.channels.dev;
  assert.equal(choice.player.rewritten,false);assert.equal(choice.player.html,row.html);
  for(const file of row.files.filter(file=>file.path.startsWith('Published/Web/')))assert(choice.copyPaths.includes(file.path));
  assert.equal(channelAssetUrl(legacyPlan,'dev','Published/Web/index.html'),'Web/index.html');
- assert.equal(choice.archiveId,history.channels.release[0]);
+ assert.equal(choice.archiveId,unsupportedHistory.channels.release.at(-1));
 });
 check('partial or duplicate loader patterns never get partly rewritten',()=>{
  const cases=[modern.replace("codeUrl:'Build/Web.wasm","codeUrl:'Other/Web.wasm"),modern.replace('<script src=', '<script src="Build/Web.loader.js'+suffix+'"></script><script src='),'<script>const dataUrl="Build/Web.data";</script>','<base href="/another/">'+modern,modern.replace("dataUrl:'Build/Web.data", "dataUrl:'https://example.invalid/Build/Web.data"),modern.replace("codeUrl:'Build/Web.wasm", "codeUrl:'../Build/Web.wasm")];
@@ -244,8 +257,9 @@ function assemble(name,dev,test){
  execFileSync(process.execPath,[assembler],{cwd:root,encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,GITHUB_TOKEN:'',UNITY_PAGES_OUT:out,UNITY_PAGES_DEV_REF:dev,UNITY_PAGES_TEST_REF:test,UNITY_PAGES_RELEASE_REF:'missing',UNITY_PAGES_MAIN_REF:'missing'}});
  return out;
 }
+let presentationOut;
 check('actual channel page uses current guide/gallery while missing metadata preserves fallback',()=>{
- const out=assemble('presentation-site',presentationCommit,fallbackCommit);
+ const out=presentationOut=assemble('presentation-site',presentationCommit,fallbackCommit);
  const currentHtml=readFileSync(join(out,'dev/index.html'),'utf8'),fallbackHtml=readFileSync(join(out,'test/index.html'),'utf8');
  assert(currentHtml.includes('href="CombatReadability/Guide.md">What to try in this build'));
  assert(!currentHtml.includes('href="NativeEvidence/Guide.md">What to try in this build'));
@@ -257,6 +271,33 @@ check('actual channel page uses current guide/gallery while missing metadata pre
  assert(!existsSync(join(out,'test/NativeEvidence')),'unchanged NativeEvidence folder duplicated');
  for(const file of ['Guide.md','01-phone.png','02-desktop.png'])assert.deepEqual(readFileSync(join(out,'dev/CombatReadability',file)),bytes.get('Published/CombatReadability/'+file));
  assert.equal(git(['rev-parse',fallbackCommit+':Published/NativeEvidence']),git(['rev-parse',presentationCommit+':Published/NativeEvidence']));
+});
+check('actual assembler keeps historical WASM local and omits only receipted data bytes',()=>{
+ const assembled=collectHistory(root,{dev:presentationCommit,test:fallbackCommit});
+ for(const build of assembled.builds){
+  const archive=join(presentationOut,'builds',build.id),original=execFileSync('git',['show',build.commit+':Published/Web/index.html'],{cwd:root,encoding:'utf8',windowsHide:true});
+  const hosted=readFileSync(join(archive,'Web/index.html'),'utf8'),receipt=JSON.parse(readFileSync(join(archive,'hosting.json'),'utf8'));
+  assert.equal(hosted,original.replace('Build/Web.data',`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${build.commit}/Published/Web/Build/Web.data`));
+  assert.equal(receipt.policy,'exact-commit-raw-data-v1');assert.equal(receipt.originalIndexSha256,hash(original));assert.equal(receipt.hostedIndexSha256,hash(hosted));
+  assert.deepEqual(receipt.runtime.map(file=>file.path),['Published/Web/Build/Web.data']);
+  assert.equal(receipt.runtime[0].sha256,build.manifest.files['Web/Build/Web.data']);
+  assert(!existsSync(join(archive,'Web/Build/Web.data')));
+  for(const name of ['Web.loader.js','Web.framework.js','Web.wasm']){
+   const actual=readFileSync(join(archive,'Web/Build',name)),expected=execFileSync('git',['show',build.commit+':Published/Web/Build/'+name],{cwd:root,windowsHide:true});
+   assert.deepEqual(actual,expected);assert.equal(hash(actual),build.manifest.files['Web/Build/'+name]);
+  }
+ }
+});
+check('actual channel launch preserves browser identity and resolves data to exact archive commit',()=>{
+ const assembled=collectHistory(root,{dev:presentationCommit,test:fallbackCommit});
+ for(const channel of ['dev','test']){
+  const html=readFileSync(join(presentationOut,channel,'Web/index.html'),'utf8');
+  const archive=assembled.builds.find(build=>build.id===assembled.channels[channel].at(-1));
+  assert(html.includes("const channel=location.pathname.split('/')"));assert(html.includes("streamingAssetsUrl:'StreamingAssets'"));
+  assert(html.includes(`dataUrl:'https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${archive.commit}/Published/Web/Build/Web.data${suffix}'`));
+  for(const name of ['Web.loader.js','Web.framework.js','Web.wasm'])assert(html.includes(`../../builds/${archive.id}/Web/Build/${name}${suffix}`));
+  assert(!existsSync(join(presentationOut,channel,'Web/Build/Web.data')));
+ }
 });
 check('promoted presentation resolves current guide/screenshots through shared folder ownership',()=>{
  const out=assemble('promoted-presentation-site',presentationCommit,presentationCommit);
