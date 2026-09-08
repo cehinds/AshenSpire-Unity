@@ -168,8 +168,12 @@ namespace AshenSpire.Application
             if (!_diagnosticsEnabled) return;
                 // Tokens and hello data never enter diagnostics. This is an observer
             // snapshot, not a browser command or a writable gameplay interface.
-            var json = _coopSnapshot.ToString(Formatting.None); var sequence = ++_coopDiagnostic; var count = (json.Length + 2999) / 3000;
-            for (var index = 0; index < count; index++) Debug.Log("ASHENSPIRE_COOP_STATE_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = index, ["count"] = count, ["text"] = json.Substring(index * 3000, Math.Min(3000, json.Length - index * 3000)) }.ToString(Formatting.None));
+            // Escape before chunking so names and glyphs cannot leave isolated
+            // UTF-16 surrogates in a Web console message. No network/save change.
+            var json = JsonConvert.SerializeObject(_coopSnapshot,
+                new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
+            var sequence = ++_coopDiagnostic; var count = (json.Length + 2499) / 2500;
+            for (var index = 0; index < count; index++) Debug.Log("ASHENSPIRE_COOP_STATE_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = index, ["count"] = count, ["text"] = json.Substring(index * 2500, Math.Min(2500, json.Length - index * 2500)) }.ToString(Formatting.None));
         }
         private void CoopDisconnected(string message)
         {

@@ -21,9 +21,8 @@ namespace AshenSpire.Presentation
         private readonly VisualElement _actionHost;
         private readonly bool _diagnostics;
         private readonly OriginalMapViewServices _mapView;
-        private VisualElement _actions;
+        private VisualElement _actions, _combatTools;
         private string _target, _selected;
-        private int _handPage;
         private Label _notice;
         private static int _diagnosticSequence;
         public Image PlayerImage { get; private set; }
@@ -34,11 +33,18 @@ namespace AshenSpire.Presentation
         private void Render()
         {
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
+            var combatSurface = _game.Phase == OriginalRunPhase.Combat;
+            if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
+            _combatTools = null;
             _root.Clear(); _root.AddToClassList("native-run"); _actions?.RemoveFromHierarchy(); var p = _game.Player; var run = _game.RunPlayer;
+            if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));
+            else
+            {
             Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading");
             _root.Add(OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject));
             Text("HP " + p["hp"] + "/" + p["maxHp"] + " · MP " + p["mana"] + "/" + p["maxMana"] + " · Stamina " + p["stamina"] + "/" + p["maxStamina"], "stat");
             Text(run["cinders"] + " cinders · " + ((int?)run["smithingStones"] ?? 0) + " Smithing Stones", "caption");
+            }
             _notice = Text("", "notice"); _notice.style.display = DisplayStyle.None;
             switch (_game.Phase)
             {
@@ -56,8 +62,8 @@ namespace AshenSpire.Presentation
                 case OriginalRunPhase.Defeat:
                     Text("ASH RETURNS TO ASH", "node-title"); Text("The climb ends here. Your run remains available to inspect.", "lead"); break;
             }
-            Button("native-deck", "Deck and equipment", Deck);
-            Button("native-menu", "Save and return to title", _menu);
+            Button("native-deck", "Deck and equipment", Deck, _combatTools);
+            Button("native-menu", "Save and return to title", _menu, _combatTools);
             if (_diagnostics) ReportNativeState();
             _report();
         }
@@ -76,10 +82,13 @@ namespace AshenSpire.Presentation
             var cards = new JArray(_game.Hand.OfType<JObject>().Select(card => new JObject { ["instance"] = card.DeepClone(), ["card"] = _game.Resolve(card), ["cost"] = _game.Cost(card) }));
             var map = _game.Map;
             var routes = new JArray(_game.LegalNodeIds.Select(id => { var node = (JObject)map["nodes"][id].DeepClone(); node.Remove("resolved"); return node; }));
-            var json = new JObject { ["phase"] = _game.Phase.ToString(), ["act"] = _game.ActNumber, ["turn"] = _game.Turn, ["player"] = summary, ["hand"] = _game.Hand, ["cards"] = cards, ["run"] = visibleRun, ["enemies"] = _game.Enemies, ["room"] = room, ["legalNodes"] = new JArray(_game.LegalNodeIds), ["routes"] = routes }.ToString(Newtonsoft.Json.Formatting.None);
-            var sequence = ++_diagnosticSequence; var count = (json.Length + 2999) / 3000;
+            // ASCII JSON remains safe when a chunk boundary bisects an escape;
+            // reassembly restores the original Unicode before parsing the report.
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(new JObject { ["phase"] = _game.Phase.ToString(), ["act"] = _game.ActNumber, ["turn"] = _game.Turn, ["player"] = summary, ["hand"] = _game.Hand, ["cards"] = cards, ["run"] = visibleRun, ["enemies"] = _game.Enemies, ["room"] = room, ["legalNodes"] = new JArray(_game.LegalNodeIds), ["routes"] = routes },
+                new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
+            var sequence = ++_diagnosticSequence; var count = (json.Length + 2499) / 2500;
             for (var index = 0; index < count; index++)
-                Debug.Log("ASHENSPIRE_NATIVE_STATE_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = index, ["count"] = count, ["text"] = json.Substring(index * 3000, Math.Min(3000, json.Length - index * 3000)) }.ToString(Newtonsoft.Json.Formatting.None));
+                Debug.Log("ASHENSPIRE_NATIVE_STATE_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = index, ["count"] = count, ["text"] = json.Substring(index * 2500, Math.Min(2500, json.Length - index * 2500)) }.ToString(Newtonsoft.Json.Formatting.None));
         }
         private void Routes()
         {
@@ -107,70 +116,56 @@ namespace AshenSpire.Presentation
         }
         private void Combat()
         {
-            Text("Turn " + _game.Turn + " · " + _game.Player["energy"] + " actions · " + _game.Player["block"] + " guard", "node-title");
-            var stage = new VisualElement(); Stage = stage; stage.AddToClassList("stage"); stage.AddToClassList("native-stage");
-            stage.style.backgroundImage = new StyleBackground(Resources.Load<Texture2D>("Art/background" + ContentAct));
-            var figure = new OriginalPlayerFigure(_game); figure.Configure((string)_game.RunPlayer["classId"], _game.RunPlayer["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(_game.RunPlayer["loadout"] as JObject)); figure.AddToClassList("fighter"); PlayerImage = figure; stage.Add(PlayerImage);
-            OriginalAppearance.Apply(PlayerImage, null, _game.RunPlayer["customization"] as JObject);
-            var enemies = _game.Enemies.Where(x => (bool?)x["alive"] == true).ToArray();
+            _combatTools = OriginalCombatLayout.Utilities("native-combat-tools", _report);
+            var stage = OriginalCombatLayout.Field(ContentAct); Stage = stage;
+            var run = _game.RunPlayer;
+            var figure = new OriginalPlayerFigure(_game);
+            figure.Configure((string)run["classId"], run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(run["loadout"] as JObject));
+            PlayerImage = figure; OriginalAppearance.Apply(figure, null, run["customization"] as JObject);
+            stage.Add(OriginalCombatLayout.Player(figure, _game.Player));
+            var enemies = _game.Enemies.OfType<JObject>().Where(x => (bool?)x["alive"] == true).ToArray();
             if (!enemies.Any(x => (string)x["id"] == _target)) _target = (string)enemies.FirstOrDefault()?["id"];
-            var selectedEnemy = enemies.FirstOrDefault(x => (string)x["id"] == _target);
-            if (selectedEnemy != null) { EnemyImage = OriginalEnemyFigure.Create((string)selectedEnemy["enemyId"]); stage.Add(EnemyImage); }
-            _root.Add(stage);
+            EnemyImage = null;
             foreach (var enemy in enemies)
             {
-                var id = (string)enemy["id"]; var def = _game.Catalog.Record("enemies", (string)enemy["enemyId"]);
-                var target = Button("native-target-" + id, (string)def["name"] + " · HP " + enemy["hp"] + "/" + enemy["maxHp"] + " · Guard " + enemy["block"], () => { _target = id; Render(); }); target.AddToClassList("native-target");
-                if (id == _target) target.AddToClassList("primary");
-                var intent = enemy["intent"] as JObject;
-                var intentText = OriginalCardText.Humanize((string)intent?["kind"] ?? "Preparing");
-                if (intent?["damage"] != null && intent["damage"].Type != JTokenType.Null) intentText += " " + intent["damage"] + ((int?)intent["hits"] > 1 ? " × " + intent["hits"] : "");
-                if ((bool?)intent?["pending"] == true) intentText += " · committed attack";
-                target.text += "\nIntent: " + intentText;
-                var statuses = enemy["statuses"] as JObject;
-                if (statuses != null && statuses.Count > 0) Text(string.Join(" · ", statuses.Properties().Select(x => OriginalCardText.Humanize(x.Name) + " " + (x.Value["stacks"] ?? x.Value["meter"]?["value"]))), "caption");
+                var id = (string)enemy["id"]; var definition = _game.Catalog.Record("enemies", (string)enemy["enemyId"]);
+                var target = OriginalCombatLayout.Enemy(enemy, (string)definition["name"], "native-target-" + id,
+                    () => { _target = id; Render(); }, id == _target, out var image);
+                if (id == _target) EnemyImage = image;
+                stage.Add(target);
             }
-            Text("Choose a card, then confirm its target", "caption");
-            var hand = new VisualElement(); hand.AddToClassList("hand"); hand.AddToClassList("native-hand"); _root.Add(hand);
-            var instances = _game.Hand.OfType<JObject>().ToArray();
-            var pages = Math.Max(1, (instances.Length + 3) / 4); _handPage = Math.Min(_handPage, pages - 1);
-            foreach (var instance in instances.Skip(_handPage * 4).Take(4))
+            _root.Add(stage);
+            var hand = OriginalCombatLayout.Hand(_game, (string)run["runId"] + "/" + run["mapNodeId"], "native-hand-rail", _report);
+            foreach (var instance in _game.Hand.OfType<JObject>())
             {
-                var id = (string)instance["instanceId"]; var card = _game.Resolve(instance); var cost = _game.Cost(instance);
-                var control = new Button(() => { _selected = _selected == id ? null : id; Render(); }) { name = "native-card-" + id };
-                control.AddToClassList("card"); if (_selected == id) control.AddToClassList("selected");
-                control.Add(Label((string)card["name"], "card-name"));
-                control.Add(Label(CostText(cost), "cost"));
-                var shortage = OriginalCardCostText.Shortage(cost, _game.Player);
-                if (shortage != null) { control.AddToClassList("unaffordable"); control.Add(Label(shortage, "card-shortage")); }
-                control.Add(Label(OriginalCardText.Describe(card, _game.Catalog), "card-description")); hand.Add(control);
+                var id = (string)instance["instanceId"];
+                hand.Add(new OriginalCardView(_game.Catalog, _game.Resolve(instance), _game.Cost(instance), _game.Player,
+                    _selected == id, () => { _selected = _selected == id ? null : id; Render(); }, "native-card-" + id));
             }
-            if (pages > 1)
-            {
-                var pager = new VisualElement(); pager.AddToClassList("inspection-row"); _root.Add(pager);
-                Button("native-hand-prev", "‹ Previous cards", () => { _handPage--; Render(); }, pager).SetEnabled(_handPage > 0);
-                var count = Label((_handPage + 1) + " / " + pages, "native-page-count"); pager.Add(count);
-                Button("native-hand-next", "More cards ›", () => { _handPage++; Render(); }, pager).SetEnabled(_handPage + 1 < pages);
-            }
+            _root.Add(hand);
+            _actions = OriginalCombatLayout.Actions(); _root.Add(_actions);
             var selected = _game.Hand.OfType<JObject>().FirstOrDefault(x => (string)x["instanceId"] == _selected);
-            _actions = new VisualElement(); _actions.AddToClassList("actions"); _actions.AddToClassList("native-actions"); _actionHost.Add(_actions);
             var selectedCard = selected == null ? null : _game.Resolve(selected);
             var unplayable = selectedCard != null && CardMechanics.HasProperty(CardMechanics.FromDefinition(selectedCard), "internal.unplayable");
-            var selectedShortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
-            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : selectedShortage ?? "Play " + (string)selectedCard["name"];
-            var play = Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions);
-            play.AddToClassList("primary"); play.SetEnabled(selected != null && !unplayable && selectedShortage == null);
-            Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath).SetEnabled((int)_game.Player["energy"] > 0 && (int)_game.Player["stamina"] < (int)_game.Player["maxStamina"]);
-            Button("native-end-turn", "End turn", _game.EndTurn, _actions);
+            var shortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
+            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selectedCard["name"];
+            Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
+            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), _game.EndTurn, _actions);
+            Button("native-hand-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report(); }, _combatTools);
+            Button("native-hand-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report(); }, _combatTools);
+            Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
+                .SetEnabled((int)_game.Player["energy"] > 0 && (int)_game.Player["stamina"] < (int)_game.Player["maxStamina"]);
             var charges = _game.Player["flaskCharges"];
-            Button("native-crimson", "Crimson Flask · " + charges["hpCurrent"] + " left", () => _game.DrinkCharge("hp")).SetEnabled((int)charges["hpCurrent"] > 0 && (int)_game.Player["hp"] < (int)_game.Player["maxHp"]);
-            Button("native-azure", "Azure Flask · " + charges["manaCurrent"] + " left", () => _game.DrinkCharge("mana")).SetEnabled((int)charges["manaCurrent"] > 0 && (int)_game.Player["mana"] < (int)_game.Player["maxMana"]);
+            Button("native-crimson", "Crimson · " + charges["hpCurrent"], () => _game.DrinkCharge("hp"), _combatTools)
+                .SetEnabled((int)charges["hpCurrent"] > 0 && (int)_game.Player["hp"] < (int)_game.Player["maxHp"]);
+            Button("native-azure", "Azure · " + charges["manaCurrent"], () => _game.DrinkCharge("mana"), _combatTools)
+                .SetEnabled((int)charges["manaCurrent"] > 0 && (int)_game.Player["mana"] < (int)_game.Player["maxMana"]);
             foreach (var flask in (_game.Player["flasks"] as JArray ?? new JArray()).Select((value,index) => (value,index)))
             {
                 var slot = flask.index; var definition = _game.Catalog.Record("flasks", (string)flask.value["flaskId"]);
-                Button("native-flask-" + slot, "Use " + (string)definition["name"], () => _game.DrinkFlask(slot, (bool?)definition["targeted"] == true ? _target : null));
+                Button("native-flask-" + slot, (string)definition["name"], () => _game.DrinkFlask(slot, (bool?)definition["targeted"] == true ? _target : null), _combatTools);
             }
-            foreach (var entry in _game.LastEvents.TakeLast(4)) Text(OriginalCardText.Humanize((string)entry["type"]), "caption");
+            _root.Add(_combatTools);
         }
         private static string CostText(JObject cost) => OriginalCardCostText.Describe(cost);
         private void Rewards()
@@ -272,6 +267,7 @@ namespace AshenSpire.Presentation
         private void Mounts()
         {
             _mapView?.SetMapSurface?.Invoke(false);
+            OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("WEAPON CARD MOUNTS", "heading"); _notice = Text("", "notice");
             var mounts = new CardMountService(_game.Catalog); var run = _game.RunPlayer;
             var services = _game.Room["smith"]["services"] as JArray ?? new JArray();
@@ -295,6 +291,7 @@ namespace AshenSpire.Presentation
         private void Deck()
         {
             _mapView?.SetMapSurface?.Invoke(false);
+            OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
             foreach (var item in new WeaponLoadout(_game.Catalog).Pieces((JObject)run["loadout"], (string)run["classId"])) Text((string)item["name"], "stat");
             if (_game.Phase != OriginalRunPhase.Victory && _game.Phase != OriginalRunPhase.Defeat) Button("native-equipment", _game.Phase == OriginalRunPhase.Combat ? "Switch prepared weapon sets" : "Change equipment and weapon sets", Equipment);
@@ -304,6 +301,7 @@ namespace AshenSpire.Presentation
         private void Equipment()
         {
             _mapView?.SetMapSurface?.Invoke(false);
+            OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("EQUIPMENT", "heading"); _notice = Text("", "notice");
             var run = _game.RunPlayer; var upgrades = new ItemUpgradeService(_game.Catalog);
             var owned = upgrades.OwnedRefs(run).Where(x => !x.StartsWith("relic/", StringComparison.Ordinal)).Select(upgrades.Definition).ToArray();

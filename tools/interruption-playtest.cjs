@@ -24,6 +24,7 @@ async function tap(p){
  await game('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});await inputFrames();
 }
 async function click(id,changesState=false){
+  if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
  await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled),'enabled '+id);
  for(let i=0;i<24;i++){
   const p=await point(id),box=await canvas();
@@ -104,7 +105,7 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
  if(process.argv.includes('--slow-input'))await game('Emulation.setCPUThrottlingRate',{rate:6});
  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
- await until(()=>controls?.Controls.some(x=>x.Id==='new'),'Unity ready',120000);
+ await until(()=>controls?.Controls.some(x=>x.Id==='native-new'),'Unity ready',120000);
  const other=(await send('Target.createTarget',{url:'about:blank',background:true})).targetId;
  async function hide(){await send('Target.activateTarget',{targetId:other});await until(async()=>await read('document.visibilityState')==='hidden','real hidden document');visibility.push('hidden');}
  async function foreground(){await send('Target.activateTarget',{targetId:target});await game('Page.bringToFront');await until(async()=>await read('document.visibilityState')==='visible','real visible document');visibility.push('visible');}

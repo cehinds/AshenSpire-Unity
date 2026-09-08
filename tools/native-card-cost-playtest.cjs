@@ -28,7 +28,7 @@ let browser,ui,observations=[];
    ui.check(ui.has(control),'card remains selectable: '+id);await ui.click(control);
   };
   const cleanCosts=()=>{
-   ui.check(labels().some(label=>label==='1 action'),'single-action cost uses singular wording');
+   ui.check(labels().some(label=>label==='1'),'single-action medallion displays its action count');
    ui.check(!labels().some(label=>/\b0 MP\b|\b0 stamina\b|\b1 actions\b/.test(label)),'visible cost labels omit zero MP/stamina and incorrect plural');
   };
   const matches=action=>ui.state.phase===action.phase&&ui.state.player.hp===action.hp&&ui.state.player.mana===action.mana&&ui.state.player.stamina===action.stamina&&ui.state.turn===action.turn;
@@ -69,26 +69,8 @@ let browser,ui,observations=[];
   await ui.command('native-end-turn');ui.check(matches(opening[4]),'enemy turn matches committed HP/resources');ui.check(ui.state.player.energy>0,'next turn restores actions');
   const recovered=ui.state.cards.find(row=>payable(row)&&row.cost.action===1&&!['curse','status'].includes(row.card.type));ui.check(!!recovered,'next hand has a normally payable card');
   await select(recovered.instance.instanceId);ui.check(ui.has('native-play'),'valid card enables Play again after resource recovery');cleanCosts();capture('next-turn-recovery');await ui.shot('03-next-turn-recovery');
-  // The generic driver reserves 120 CSS pixels for combat controls. At 320px
-  // the menu is visible above the real footer but inside that conservative
-  // margin. Measure the actual footer and click only a fully exposed menu.
-  const saved=state();let menuClicked=false;
-  for(let attempt=0;attempt<16&&!menuClicked;attempt++){
-   const box=await page.locator('#unity-canvas').boundingBox(),report=ui.controls;
-   const menu=report.Controls.find(control=>control.Id==='native-menu'&&control.Enabled);
-   ui.check(!!menu,'save menu remains enabled');
-   const scaleX=box.width/report.PanelWidth,scaleY=box.height/report.PanelHeight;
-   const footer=report.Controls.filter(control=>['native-play','native-end-turn'].includes(control.Id));
-   const footerTop=box.y+Math.min(...footer.map(control=>control.Y))*scaleY;
-   const left=box.x+menu.X*scaleX,top=box.y+menu.Y*scaleY,right=left+menu.Width*scaleX,bottom=top+menu.Height*scaleY;
-   if(footer.length&&left>=box.x&&right<=box.x+box.width+0.1&&top>=box.y&&bottom<=Math.min(footerTop,box.y+box.height)){
-    ui.check(menu.Width*scaleX>=43.9&&menu.Height*scaleY>=43.9,'save menu has a fully exposed 44 CSS pixel target above actual footer (0.1px float tolerance)');
-    await page.mouse.move((left+right)/2,(top+bottom)/2);await ui.frames();await page.mouse.down();await page.waitForTimeout(140);await page.mouse.up();await ui.frames();menuClicked=true;
-   }else{
-    await page.mouse.move(box.x+box.width*.92,box.y+box.height*.5);await page.mouse.wheel(0,top<box.y?-260:260);await page.waitForTimeout(350);
-   }
-  }
-  ui.check(menuClicked,'save menu is reachable above measured combat footer');await ui.until(()=>ui.has('native-continue'),'save menu returns to title');
+  // Reach the save menu through the measured utility rail with real input.
+  const saved=state();await ui.click("native-menu");await ui.until(()=>ui.has("native-continue"),"save menu returns to title");
   ui.controls=null;ui.state=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await ui.until(()=>ui.has('native-continue'),'Continue after reload');await ui.command('native-continue');
   ui.check(state()===saved,'menu and reload restore exact combat state and resource costs');await select(recovered.instance.instanceId);ui.check(ui.has('native-play'),'restored valid card remains playable');cleanCosts();capture('restored-costs');await ui.shot('04-restored-costs');
   const latest=await page.request.get(new URL('build-source.json',url).href);ui.check(latest.ok()&&(await latest.body()).equals(initial),'served build stayed source-matched');

@@ -1,0 +1,37 @@
+/* OriginalTheme.uss — colours and title composition from styles/base.css and
+   styles/kit.css in the pinned HTML reference. Edit these shared tokens/rules
+   before adding screen-specific overrides. Gameplay remains presenter-owned. */
+.app { background-color: #0d0b08; color: #e8dcc0; }
+.body { max-width: 1000px; }
+.button { background-color: #171310; border-color: #544632; color: #e8dcc0; border-radius: 3px; }
+.button:hover { background-color: #241d15; border-color: #c9a227; }
+.button:focus { border-color: #c9a227; }
+.primary { background-color: #302716; border-color: #c9a227; color: #ead287; }
+.primary:hover { background-color: #40351c; }
+.panel { background-color: #171310; border-color: #544632; border-radius: 3px; }
+.heading, .node-title, .title { -unity-font: resource("Fonts/Cinzel-Regular"); color: #e8dcc0; }
+.eyebrow, .stat { color: #b59a5c; }
+.subtitle, .caption { color: #a29376; }
+.lead, .detail-copy { color: #c5b99f; }
+.actions { background-color: #0d0b08; border-radius: 0; border-top-width: 1px; border-top-color: #544632; }
+.actions > .button:disabled { background-color: #171310; color: #9a907b; border-color: #544632; }
+.original-title-background { position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0.4; }
+.body.title-screen { max-width: 600px; padding: 35px 22px; flex-grow: 1; justify-content: center; }
+.original-title { width: 100%; padding: 12px 0; }
+.original-wordmark { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; -unity-text-align: middle-center; color: #f4ebd5; letter-spacing: 2px; white-space: nowrap; margin: 0; }
+.original-subtitle { -unity-text-align: middle-center; color: #b49a61; letter-spacing: 3px; font-size: 10px; margin: 12px 0 4px; }
+.original-menu-entry { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 23px; letter-spacing: 2px; background-color: rgba(0,0,0,0); border-width: 0; border-bottom-width: 1px; border-bottom-color: rgba(130,106,57,0.3); border-radius: 0; padding: 9px 0; margin: 0; color: #e8dcc0; }
+.original-menu-entry:hover, .original-menu-entry:focus { color: #e5be44; background-color: rgba(35,29,15,0.7); border-color: #c9a227; }
+.original-menu-entry:disabled { color: #8b7953; opacity: 1; }
+.original-ornament { flex-direction: row; align-items: center; margin: 22px 0 12px; }
+.original-rule { height: 1px; background-color: #67532a; flex-grow: 1; }
+.original-gem { color: #c9a227; margin: 0 12px; font-size: 10px; }
+.original-tagline { color: #b49a61; -unity-text-align: middle-center; font-size: 10px; letter-spacing: 2px; margin-top: 9px; }
+.native-run > .heading { border-bottom-width: 1px; border-bottom-color: #544632; padding-bottom: 8px; }
+.native-stage { height: 220px; border-radius: 0; background-color: #171310; border-width: 1px; border-color: #544632; }
+.native-stage > .fighter { height: 210px; }
+.native-target { background-color: #171310; border-radius: 2px; }
+.map-viewport { background-color: #171310; border-radius: 3px; }
+
+.original-gem { width: 6px; height: 6px; flex-shrink: 0; background-color: #c9a227; rotate: 45deg; }
+

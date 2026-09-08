@@ -10,12 +10,14 @@ Reference: `cehinds/AshenSpire` dev at
 Unity starting point: dev `3838b896b4d160ba51c6c6e06d339ea946a3f35a`.
 Task: [#33](https://github.com/cehinds/AshenSpire-Unity/issues/33).
 
-## Current source: 0.0.13.0
+## Current source: 0.0.14.0
 
-The current source version is **0.0.13.0**, build number **13**, with stage
+The current source version is **0.0.14.0**, build number **14**, with stage
 **Foundation in progress**. This is a local implementation status, not a statement
 that a newly compiled player is published. Check the selected channel's build
 record for its actual version, source digest, date and verification evidence.
+
+Build 14 corrects the visual direction toward the original HTML reference. Its rendered acceptance is documented in [visual parity](Unity-Visual-Parity.md); mechanics tests alone do not establish that it looks or feels faithful.
 
 Build 13 fixes whole-valued weapon damage labels and adds shared cost and shortage wording to solo/co-op. See [combat readability](Unity-Combat-Readability.md) for current checks and limitations; the [roadmap](Unity-Roadmap.md) lists remaining foundation acceptance.
 

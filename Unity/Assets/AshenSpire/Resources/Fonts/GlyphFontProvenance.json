@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "coverage": {
+    "uniqueCardIcons": 110,
+    "uniqueTagGlyphs": 25,
+    "uniqueMappedStrings": 120,
+    "uncovered": 0,
+    "scope": "TrueType cmap coverage, not compiled glyph rendering proof"
+  },
+  "contentSha256": "cdf43e9c375869e8a42855421894c039de25f9a85071229797dd9ac30456d9fb",
+  "emoji": {
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoemoji/NotoEmoji%5Bwght%5D.ttf",
+    "sourceGitBlob": "c2c26ab612a88a8610ff9cfbb89299bf2aea6c7a",
+    "sourceSha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+    "operation": "fontTools.varLib.instancer.instantiateVariableFont at wght=400; recalcTimestamp=False; static TrueType glyf output; no color tables",
+    "fontToolsVersion": "4.64.0",
+    "outputSha256": "1ada997ccb67bf2404828e25528e5257d6db10c80287e77684abf6737a5d198f"
+  },
+  "staticSources": [
+    {
+      "file": "NotoSans-Regular.ttf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSans/NotoSans-Regular.ttf",
+      "gitBlob": "d55220958aa51eeeb85048d746eabe43d2cd9f14",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "modified": false
+    },
+    {
+      "file": "NotoSansMono-Regular.ttf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansMono/NotoSansMono-Regular.ttf",
+      "gitBlob": "541efd808dfb0b88972ab8390cb1328e4bbd9a06",
+      "sha256": "d9e2b23d19f8230be7146f409a52b1d23117e635e28f2e2892cf91b7382f325b",
+      "modified": false
+    }
+  ]
+}

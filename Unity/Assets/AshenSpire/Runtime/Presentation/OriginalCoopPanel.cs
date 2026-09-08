@@ -25,7 +25,7 @@ namespace AshenSpire.Presentation
         private readonly Action _report, _menu;
         private readonly OriginalMapViewServices _mapView;
         private readonly bool _diagnostics;
-        private VisualElement _body;
+        private VisualElement _body, _combatTools;
         private Label _notice;
         private readonly CoopPanelState _ui;
         private string _selected { get => _ui.SelectedCard; set => _ui.SelectedCard = value; }
@@ -61,9 +61,23 @@ namespace AshenSpire.Presentation
         private void Render()
         {
             _mapView?.SetMapSurface?.Invoke(false);
+            var combatSurface = (string)Scene["kind"] == "combat" && _ui.Surface == "main" && ((Local?["catchup"] as JArray)?.Count ?? 0) == 0;
+            OriginalCombatLayout.SetSurface(_root, combatSurface); _combatTools = null;
             _root.Clear(); _root.AddToClassList("native-run");
             _notice = new Label { name = "coop-notice" }; _notice.AddToClassList("notice"); _notice.style.display = DisplayStyle.None; _root.Add(_notice);
-            _body = new VisualElement(); _root.Add(_body);
+            _body = new VisualElement(); _body.AddToClassList("original-combat-body"); _root.Add(_body);
+            if (Local == null) { Text("Waiting for your player snapshot…", "lead"); Footer(); return; }
+            if (combatSurface)
+            {
+                _body.Add(OriginalCombatLayout.Hud(Body, Run, (int)_view["actNumber"], (int?)Scene["turn"] ?? 0, Name("classes", (string)Run["classId"])));
+                Text(string.Join(" · ", Party.Select(m =>
+                {
+                    var member = (Scene["players"] as JArray)?.FirstOrDefault(p => (string)p["id"] == (string)m["id"]);
+                    return (string)m["name"] + " " + (member?["entity"]?["hp"] ?? m["hp"]) + "/" + (member?["entity"]?["maxHp"] ?? m["maxHp"]) + ((bool?)m["connected"] == true ? "" : " (offline)") + ((bool?)member?["ended"] == true ? " (ended)" : "");
+                })), "original-combat-party");
+            }
+            else
+            {
             Text("ACT " + _view["actNumber"] + " · " + Human((string)Scene["kind"]) + " · Seed " + _view["seedString"], "heading");
             if (Local == null) { Text("Waiting for your player snapshot…", "lead"); Footer(); return; }
             Text("HP " + Body["hp"] + "/" + Body["maxHp"] + " · MP " + Body["mana"] + "/" + Body["maxMana"] + " · Stamina " + Body["stamina"] + "/" + Body["maxStamina"], "stat");
@@ -73,6 +87,7 @@ namespace AshenSpire.Presentation
                 var seat = (Scene["players"] as JArray)?.FirstOrDefault(p => (string)p["id"] == (string)member["id"]);
                 var hp = seat?["entity"]?["hp"] ?? member["hp"]; var max = seat?["entity"]?["maxHp"] ?? member["maxHp"];
                 Text((string)member["name"] + ((string)member["id"] == Id ? " · You" : "") + " · HP " + hp + "/" + max + ((bool?)member["connected"] == true ? "" : " · Disconnected") + ((bool?)seat?["ended"] == true ? " · Turn ended" : "") + ((int?)hp <= 0 ? " · Downed" : ""), "caption");
+            }
             }
             if (Local["catchup"] is JArray queue && queue.Count > 0) Catchup((JObject)queue[0]);
             else switch ((string)Scene["kind"])
@@ -99,9 +114,10 @@ namespace AshenSpire.Presentation
         private void Main() { _ui.Surface = "main"; Render(); }
         private void Footer()
         {
-            if (Local != null) Button("deck", "Deck and equipment", Deck);
+            if (Local != null) { var deck = Button("deck", "Deck and equipment", Deck); if (_combatTools != null) _combatTools.Add(deck); }
             _body.SetEnabled(!_pending);
-            var leave = new Button(() => _menu?.Invoke()) { text = "Disconnect and return to title", name = "coop-menu" }; leave.AddToClassList("button"); _root.Add(leave); _report?.Invoke();
+            var leave = new Button(() => _menu?.Invoke()) { text = "Disconnect and return to title", name = "coop-menu" }; leave.AddToClassList("button"); // Keep the escape outside pending-disabled gameplay and subpage content.
+            _root.Add(leave); _report?.Invoke();
         }
         private void Routes()
         {
@@ -120,58 +136,62 @@ namespace AshenSpire.Presentation
         private void SetMapSurface(bool visible)
         {
             _mapView?.SetMapSurface?.Invoke(visible);
+            if (!visible) OriginalCombatLayout.SetSurface(_root, false);
             _body.style.flexGrow = visible ? 1 : 0; _body.style.minHeight = 0;
         }
         private void Combat()
         {
             var seat = Local["combat"] as JObject;
             if (seat == null) { Text("Waiting to enter the shared fight.", "lead"); return; }
-            var alive = (bool?)seat["entity"]?["alive"] == true; var active = (string)Scene["phase"] == "player" && alive && (bool?)seat["connected"] == true;
+            var alive = (bool?)seat["entity"]?["alive"] == true;
+            var active = (string)Scene["phase"] == "player" && alive && (bool?)seat["connected"] == true;
             var mayPlay = active && (bool?)seat["ended"] != true;
-            Text("Turn " + Scene["turn"] + " · " + Body["energy"] + " actions · " + Body["block"] + " guard", "node-title");
-            var stage = new VisualElement(); stage.AddToClassList("stage"); stage.AddToClassList("native-stage");
             var acts = (int?)_balance["endless"]?["actsPerCycle"] ?? 3;
-            stage.style.backgroundImage = new StyleBackground(Resources.Load<Texture2D>("Art/background" + (((int)_view["actNumber"] - 1) % acts + 1)));
-            var figure = new OriginalPlayerFigure(Run); figure.Configure((string)Run["classId"], Run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(Run["loadout"] as JObject)); figure.AddToClassList("fighter"); stage.Add(figure);
-            var enemies = (Scene["enemies"] as JArray ?? new JArray()).Where(e => (bool?)e["alive"] == true).ToArray();
-            var hand = (Local["hand"] as JArray ?? new JArray()).OfType<JObject>().ToArray();
-            var selected = hand.FirstOrDefault(c => (string)c["instance"]?["instanceId"] == _selected);
+            var stage = OriginalCombatLayout.Field(((int)_view["actNumber"] - 1) % acts + 1);
+            var figure = new OriginalPlayerFigure(Run);
+            figure.Configure((string)Run["classId"], Run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(Run["loadout"] as JObject));
+            stage.Add(OriginalCombatLayout.Player(figure, Body));
+            var enemies = (Scene["enemies"] as JArray ?? new JArray()).OfType<JObject>().Where(e => (bool?)e["alive"] == true).ToArray();
+            var handRows = (Local["hand"] as JArray ?? new JArray()).OfType<JObject>().ToArray();
+            var selected = handRows.FirstOrDefault(c => (string)c["instance"]?["instanceId"] == _selected);
             var friendly = (bool?)selected?["targets"]?["active"] == true;
             var legal = friendly ? selected["targets"]["legalIds"].Values<string>().ToArray() : enemies.Select(e => (string)e["id"]).ToArray();
             if (!legal.Contains(_target)) _target = legal.FirstOrDefault();
-            var foe = enemies.FirstOrDefault(e => (string)e["id"] == _target) ?? enemies.FirstOrDefault();
-            if (foe != null) stage.Add(OriginalEnemyFigure.Create((string)foe["enemyId"])); _body.Add(stage);
             foreach (var enemy in enemies)
             {
-                var id = (string)enemy["id"]; var intent = enemy["intent"];
-                var label = Name("enemies", (string)enemy["enemyId"]) + " · HP " + enemy["hp"] + "/" + enemy["maxHp"] + " · Guard " + enemy["block"] + "\nIntent: " + Human((string)intent?["kind"]);
-                if (intent?["damage"]?.Type != JTokenType.Null && intent?["damage"] != null) label += " " + intent["damage"] + ((int?)intent["hits"] > 1 ? " × " + intent["hits"] : "");
-                var target = Button("target-" + id, label, () => { _target = id; Render(); }); target.SetEnabled(!friendly); if (_target == id) target.AddToClassList("primary");
-                Statuses(enemy["statuses"] as JObject);
+                var id = (string)enemy["id"];
+                var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
+                    () => { _target = id; Render(); }, id == _target, out _);
+                target.SetEnabled(!friendly); stage.Add(target);
             }
+            _body.Add(stage);
+            _combatTools = OriginalCombatLayout.Utilities("coop-combat-tools", _report);
             if (friendly) foreach (var id in legal)
-            { var targetId = id; var target = Button("ally-" + id, "Target " + MemberName(id), () => { _target = targetId; Render(); }); if (_target == id) target.AddToClassList("primary"); }
-            var cards = new VisualElement(); cards.AddToClassList("hand"); cards.AddToClassList("native-hand"); _body.Add(cards);
-            var pages = Math.Max(1, (hand.Length + 3) / 4); _page = Math.Max(0, Math.Min(_page, pages - 1));
-            foreach (var row in hand.Skip(_page * 4).Take(4))
             {
-                var id = (string)row["instance"]["instanceId"]; var card = (JObject)row["card"]; var cost = row["cost"];
-                var control = new Button(() => { _selected = id == _selected ? null : id; _target = null; Render(); }) { name = "coop-card-" + id };
-                control.AddToClassList("card"); if (_selected == id) control.AddToClassList("selected");
-                control.Add(Label((string)card["name"], "card-name")); control.Add(Label(Cost(cost), "cost"));
-                var shortage = OriginalCardCostText.Shortage((JObject)cost, Body);
-                if (shortage != null) { control.AddToClassList("unaffordable"); control.Add(Label(shortage, "card-shortage")); }
-                control.Add(Label(OriginalCardText.Describe(card, _catalog), "card-description")); cards.Add(control);
+                var targetId = id; var target = Button("ally-" + id, "Target " + MemberName(id), () => { _target = targetId; Render(); });
+                _combatTools.Add(target); if (_target == id) target.AddToClassList("primary");
             }
-            if (pages > 1) { Button("cards-prev", "‹ Previous cards", () => { _page--; Render(); }).SetEnabled(_page > 0); Text((_page + 1) + " / " + pages, "caption"); Button("cards-next", "More cards ›", () => { _page++; Render(); }).SetEnabled(_page + 1 < pages); }
+            var hand = OriginalCombatLayout.Hand(_ui, (string)Run["runId"] + "/" + _view["cursorId"], "coop-hand-rail", _report);
+            foreach (var row in handRows)
+            {
+                var id = (string)row["instance"]["instanceId"];
+                hand.Add(new OriginalCardView(_catalog, (JObject)row["card"], (JObject)row["cost"], Body, _selected == id,
+                    () => { _selected = id == _selected ? null : id; _target = null; Render(); }, "coop-card-" + id));
+            }
+            _body.Add(hand);
+            var actions = OriginalCombatLayout.Actions(); _body.Add(actions);
             var unplayable = selected != null && CardMechanics.HasProperty(CardMechanics.FromDefinition((JObject)selected["card"]), "internal.unplayable");
-            var selectedShortage = selected == null ? null : OriginalCardCostText.Shortage((JObject)selected["cost"], Body);
-            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : selectedShortage ?? "Play " + selected["card"]["name"] + (_target == null ? "" : " → " + (friendly ? MemberName(_target) : Name("enemies", (string)enemies.FirstOrDefault(e => (string)e["id"] == _target)?["enemyId"])));
-            Command("play", playLabel, new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target }, mayPlay && selected != null && !unplayable && selectedShortage == null && (!friendly || legal.Contains(_target)));
-            Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for the party" : "End turn", new JObject { ["type"] = "endTurn" }, mayPlay);
-            Button("flasks", "Use or throw a flask", Flasks).SetEnabled(active);
+            var shortage = selected == null ? null : OriginalCardCostText.Shortage((JObject)selected["cost"], Body);
+            var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selected["card"]["name"];
+            actions.Add(Command("play", playLabel, new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target },
+                mayPlay && selected != null && !unplayable && shortage == null && (!friendly || legal.Contains(_target))));
+            actions.Add(Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for party" : "End turn · " + Body["energy"] + ((int)Body["energy"] == 1 ? " action" : " actions"),
+                new JObject { ["type"] = "endTurn" }, mayPlay));
+            _combatTools.Add(Button("cards-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report?.Invoke(); }));
+            _combatTools.Add(Button("cards-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report?.Invoke(); }));
+            var flasks = Button("flasks", "Flasks", Flasks); flasks.SetEnabled(active); _combatTools.Add(flasks);
             if (!alive) Text("You are downed. Living allies can finish the fight.", "notice");
-            Statuses(Body["statuses"] as JObject);
+            _body.Add(_combatTools);
         }
         private void Flasks()
         {
