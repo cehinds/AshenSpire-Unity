@@ -1,26 +1,31 @@
 {
   "Added": [
-    "Shared card-cost labels and exact resource-shortage explanations in solo and co-op.",
-    "Current-build guide and screenshot selection through presentation metadata; prior evidence remains intact."
+    "Original-style serif title and gold ornaments.",
+    "Authored card faces with licensed symbol fonts and resource medallions.",
+    "Shared simultaneous-enemy battlefield and responsive class preview."
   ],
   "Changed": [
-    "Version 0.0.13.0, build 13. Web, Windows, Android and portable companion use the recorded source.",
-    "Single-hit whole-valued equipment damage includes its existing attribute contribution in the displayed total; an Includes sentence identifies that contribution.",
-    "Costs use 1 action, plural actions, Free or X actions, with positive MP/stamina costs only."
+    "Version 0.0.14.0, build 14; matching Web, Windows, Android and companion packages.",
+    "Warm brown/gold presentation and centered desktop or horizontally scrollable phone hands.",
+    "Long descriptions scroll within the hand; Play and End turn remain available."
   ],
   "Fixed": [
-    "Cards with insufficient resources remain inspectable; Play explains the deficit and stays disabled until requirements are met.",
-    "Whole-valued JSON floating numbers display the same damage total as equivalent integer amounts."
+    "Missing authored symbols including crossed swords.",
+    "Unicode diagnostic chunks breaking on supplementary glyph boundaries.",
+    "Windows verifier path sorting disagreed with Unity export hashes.",
+    "Co-op escape remains outside command-disabled gameplay content."
   ],
   "KnownIssues": [
-    "This readability checkpoint does not establish original HTML visual parity. Faithful layout and aesthetics remain the next priority.",
-    "Foundation acceptance remains open; broader graphics/audio polish and human balance testing remain.",
-    "Physical Android and graphical Windows interaction are unverified; iOS is not built. Original JavaScript saves remain separate."
+    "Foundation and complete HTML visual parity remain open.",
+    "Inventory, rewards, HUD arrangement and fanned-card motion need further reference matching.",
+    "Long card descriptions require vertical scrolling inside the hand.",
+    "Physical Android and graphical Windows play unverified; iOS not built.",
+    "Archive capacity must expand before publishing both retained builds 13 and 14."
   ],
   "WhatToTest": [
-    "Start a Standard Reaver with seed 1. Inspect the starting weapon card and its included Strength contribution.",
-    "Spend the three actions, select an unaffordable card, and check its shortage plus disabled Play.",
-    "End the turn, inspect restored affordability, then save/reload and confirm the same combat state.",
-    "Try a shared climb with the matching companion and check each player uses their own resource pools."
+    "Compare title, creator and combat against the original reference.",
+    "Create Standard Reaver, seed 1; spend actions and inspect card shortages.",
+    "Scroll to the last card and read its full description; save/reload.",
+    "Use the matching companion for a shared fight and reconnect."
   ]
 }

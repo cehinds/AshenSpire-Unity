@@ -39,7 +39,33 @@ glyph has been rendered in Unity; compiled screenshots are separate evidence.
 
 ## Validation status
 
-Runtime compilation, rendered comparisons and gameplay regression checks for
-build 14 are pending. Do not reuse build 13's green receipts as build 14 proof.
-Full screenshot equality, human balance acceptance and physical-device testing
-remain outside the current evidence.
+Build 14 has matching Web, Windows and Android exports, plus the portable companion.
+Runtime source: `ddc9656ef01f9adf47e80f5787f6ebeec4a174cd`.
+Build digest: `2ac07c417b88e2adb899c532940736059d9c2769ee5870879fba91a608c5d2d5`.
+Web compiled 2026-09-08 00:08:20 UTC (September 7 locally).
+
+- Actual visual flow: 148 checks across 320x640, 390x844 and 1440x900, 21 screenshots.
+- Card readability: 146 checks across those three viewports, 12 screenshots.
+- Long-card reading: 30 checks at 320x640 and 1440x900. Real vertical scrolling
+  exposes the last description line above Play, without changing gameplay state.
+- Full climb: 657 checks, 280 commands, three-act victory and exact reloads.
+- Co-op: eight host and six guest checks for combat, rewards, selection and rejoin.
+- Portable companion: 22 actual restart/recovery checks.
+- Package verification: 442 companion, 160 target-file and 18 package checks.
+- Unicode diagnostics: 4,434 C# boundary checks; all final browser error gates passed.
+- Source digest: 10 regression tests for canonical path order, text and binary bytes.
+
+Pure domain, original parity, card-text (1,499), card-cost (2,133), map knowledge
+(13,948), map camera (74,628) and original Node (136) checks also passed.
+See [retained evidence](qa/unity-visual-parity-0.0.14.0/README.md), including
+earlier failures and their explanations. These counts belong to this build.
+
+Inventory/rewards, the exact HUD arrangement, fanned-card motion and other screens
+still need reference matching. Long descriptions require scrolling inside the
+hand. Human balance acceptance, physical Android and graphical Windows play
+remain open; iOS is not built. Foundation acceptance is not complete.
+
+Dev and Test remain on build 12 until owner review/promotion. Retaining both
+builds 13 and 14 exceeds the current Pages archive capacity even after PR #41's
+channel/evidence deduplication. Preserve historical players when expanding hosting;
+do not remove builds or increase the existing size gate to claim publication.

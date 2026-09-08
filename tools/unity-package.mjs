@@ -5,16 +5,11 @@ import {readFileSync,writeFileSync,readdirSync,statSync,mkdirSync,cpSync,existsS
 import {resolve,join,relative} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {unitySourceDigest} from './unity-source-digest.mjs';
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 function files(dir){return readdirSync(dir).sort().flatMap(n=>{const p=join(dir,n);return statSync(p).isDirectory()?files(p):[p];});}
-const sourceFiles=['Unity/Assets','Unity/Packages','Unity/ProjectSettings','GameContent/Unity'].flatMap(p=>files(join(root,p))).sort();
-const hash=createHash('sha256');
-for(const p of sourceFiles){
- hash.update(relative(root,p).replaceAll('\\','/'));
- const bytes=readFileSync(p);
- hash.update(/\.(png|jpg|webp|ttf|otf)$/i.test(p)?bytes:bytes.toString('utf8').replaceAll('\r\n','\n'));
-}
-const digest=hash.digest('hex');
+const sourceFiles=['Unity/Assets','Unity/Packages','Unity/ProjectSettings','GameContent/Unity'].flatMap(p=>files(join(root,p))).map(path=>relative(root,path));
+const digest=unitySourceDigest(sourceFiles,path=>readFileSync(join(root,path)));
 const version=JSON.parse(readFileSync(join(root,'GameContent/Unity/version.json'),'utf8'));
 if(!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version.Version)||!Number.isSafeInteger(version.BuildNumber)||version.BuildNumber<1||!version.Stage)throw Error('Invalid four-part version/build metadata');
 const destination=join(root,'Published');

@@ -1,13 +1,19 @@
 {
-  "guide": "Published/CombatReadability/Guide.md",
+  "guide": "Published/OriginalVisuals/Guide.md",
   "screenshots": [
-    "Published/CombatReadability/01-phone-weapon.png",
-    "Published/CombatReadability/02-small-phone-shortage.png",
-    "Published/CombatReadability/03-phone-recovery.png",
-    "Published/CombatReadability/04-desktop-shortage.png",
-    "Published/CombatReadability/05-desktop-restored.png",
-    "Published/CombatReadability/06-coop-selection.png",
-    "Published/CombatReadability/07-victory.png",
-    "Published/CombatReadability/08-chronicle.png"
+    "Published/OriginalVisuals/01-phone-title.png",
+    "Published/OriginalVisuals/02-desktop-title.png",
+    "Published/OriginalVisuals/03-phone-creation.png",
+    "Published/OriginalVisuals/04-desktop-creation.png",
+    "Published/OriginalVisuals/05-phone-map.png",
+    "Published/OriginalVisuals/06-phone-combat.png",
+    "Published/OriginalVisuals/07-desktop-combat.png",
+    "Published/OriginalVisuals/08-phone-last-card.png",
+    "Published/OriginalVisuals/09-phone-shortage.png",
+    "Published/OriginalVisuals/10-small-phone-full-card.png",
+    "Published/OriginalVisuals/11-victory.png",
+    "Published/OriginalVisuals/12-chronicle.png",
+    "Published/OriginalVisuals/13-coop-selection.png",
+    "Published/OriginalVisuals/14-desktop-full-card.png"
   ]
 }

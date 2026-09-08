@@ -1,0 +1,147 @@
+{
+  "version": "0.0.14.0",
+  "buildNumber": 14,
+  "stage": "Foundation in progress",
+  "unityVersion": "6000.6.0f1",
+  "sourceCommit": "ddc9656ef01f9adf47e80f5787f6ebeec4a174cd",
+  "sourceDigest": "2ac07c417b88e2adb899c532940736059d9c2769ee5870879fba91a608c5d2d5",
+  "builtAt": "2026-09-08T00:08:20.1920373Z",
+  "compiledTargets": [
+    "Web",
+    "Windows",
+    "Android"
+  ],
+  "companionPackaged": true,
+  "currentPlayerSuites": [
+    {
+      "suite": "VisualFlow",
+      "checks": 148,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "checks": 49,
+          "screenshots": 7
+        },
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": 49,
+          "screenshots": 7
+        },
+        {
+          "viewport": {
+            "width": 320,
+            "height": 640
+          },
+          "checks": 50,
+          "screenshots": 7
+        }
+      ]
+    },
+    {
+      "suite": "CardReadability",
+      "checks": 146,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 320,
+            "height": 640
+          },
+          "checks": 48,
+          "physicalDevice": false,
+          "screenshots": 4
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "checks": 49,
+          "physicalDevice": false,
+          "screenshots": 4
+        },
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": 49,
+          "physicalDevice": false,
+          "screenshots": 4
+        }
+      ]
+    },
+    {
+      "suite": "LongCardReading",
+      "checks": 30,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 320,
+            "height": 640
+          },
+          "checks": 15,
+          "scrollAttempts": 2,
+          "cardBottom": 526,
+          "playTop": 528,
+          "screenshots": 2
+        },
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": 15,
+          "scrollAttempts": 1,
+          "cardBottom": 750,
+          "playTop": 754,
+          "screenshots": 2
+        }
+      ]
+    },
+    {
+      "suite": "FullClimb",
+      "checks": 657,
+      "commands": 280,
+      "acts": 3
+    },
+    {
+      "suite": "CoopHost",
+      "checks": 8
+    },
+    {
+      "suite": "CoopGuest",
+      "checks": 6
+    }
+  ],
+  "companionRestartChecks": 22,
+  "unicodeTransportChecks": 4434,
+  "sourceDigestRegressionTests": 10,
+  "packageChecks": {
+    "companion": 442,
+    "exportedFiles": 160,
+    "package": 18
+  },
+  "cardTextChecks": 1499,
+  "cardCostChecks": 2133,
+  "fontCoverage": {
+    "cardIcons": 110,
+    "tagGlyphs": 25,
+    "uncovered": 0,
+    "allGlyphsRendered": false
+  },
+  "physicalDevice": false,
+  "publishedToGitHubPages": false,
+  "limitations": [
+    "Foundation and complete HTML visual parity remain open.",
+    "Inventory, rewards, HUD arrangement and fanned-card motion need further reference matching.",
+    "Long card descriptions require vertical scrolling inside the hand.",
+    "Physical Android and graphical Windows play unverified; iOS not built.",
+    "Archive capacity must expand before publishing both retained builds 13 and 14."
+  ]
+}

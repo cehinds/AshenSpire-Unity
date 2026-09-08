@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": 4434,
+  "payloads": 883,
+  "oldSplitRefusals": 16,
+  "maximumEnvelopeBytes": 3547,
+  "scope": "C# serializer/UTF8 boundary regression plus emitter source guards; compiled browser verification still required"
+}

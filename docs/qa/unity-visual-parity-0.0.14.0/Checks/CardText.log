@@ -1,0 +1,48 @@
+{
+  "checks": 1499,
+  "authoredDefinitions": 364,
+  "fixtures": 366,
+  "realCombatCommands": 10,
+  "bonusReceipts": [
+    {
+      "hits": 1,
+      "text": "Deal 14 damage 1 times. Includes +8 total damage from Strength.",
+      "baseActualDamage": 6,
+      "improvedActualDamage": 14
+    },
+    {
+      "hits": 2,
+      "text": "Deal 6 damage 2 times. +8 total damage from Strength.",
+      "baseActualDamage": 12,
+      "improvedActualDamage": 20
+    },
+    {
+      "hits": 3,
+      "text": "Deal 6 damage 3 times. +8 total damage from Strength.",
+      "baseActualDamage": 18,
+      "improvedActualDamage": 26
+    },
+    {
+      "hits": 5,
+      "text": "Deal 6 damage 5 times. +8 total damage from Strength.",
+      "baseActualDamage": 30,
+      "improvedActualDamage": 38
+    }
+  ],
+  "weaponReceipts": [
+    {
+      "smithingLevel": 0,
+      "text": "Deal 14 damage. Includes +8 total damage from Strength.",
+      "actualDamage": 14
+    },
+    {
+      "smithingLevel": 1,
+      "text": "Deal 17 damage. Includes +8 total damage from Strength.",
+      "actualDamage": 17
+    }
+  ],
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "fixtureSha256": "053deda107bfa5f36df46e3e0cb8cfac91811c06b6baa99b597a2a0acfcf3ee3",
+  "status": "PASS"
+}
+PASS - 1499/1499 checks passed
