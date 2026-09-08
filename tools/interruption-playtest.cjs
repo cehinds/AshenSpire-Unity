@@ -186,7 +186,11 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
  await interrupt('08-repeat');await interrupt('09-repeat');
  await click('menu');await click('settings');await click('mute-sound');
  await interrupt('10-muted');record('temporary suspension preserves mute',interruptions.at(-1).Muted);
- const saved=JSON.stringify(state);controls=null;await game('Page.reload',{ignoreCache:true});await until(()=>controls?.Controls.some(x=>x.Id==='continue'),'reload with save',120000);
+ const saved=JSON.stringify(state);controls=null;await game('Page.reload',{ignoreCache:true});
+ // The native title keeps the legacy campaign under Extras; open it before checking its save.
+ await until(()=>controls?.Controls.some(x=>(x.Id==='title-extras'||x.Id==='continue')&&x.Enabled),'reloaded title',120000);
+ if(controls.Controls.some(x=>x.Id==='title-extras'))await click('title-extras');
+ await until(()=>controls?.Controls.some(x=>x.Id==='continue'&&x.Enabled),'reload with save');
  await click('continue',true);record('reload resumes identical saved campaign',JSON.stringify(state)===saved);await shot('11-reloaded');
  record('no browser or Unity errors',errors.length===0);
  fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));console.log('Interruption browser: '+checks.length+' checks passed; '+screenshots.length+' screenshots');
