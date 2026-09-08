@@ -66,6 +66,8 @@ jobs:
         run: |
           mkdir -p TestResults/Balance
           dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
+      - name: Test cross-platform Unity source digest ordering
+        run: node --test tools/unity-source-digest.test.mjs
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
       - name: Verify immutable build history and channel membership
