@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "sources": {
+    "src/model/mapview.js": "81c70896e2093a52023f3eff4ee353c5884d82b884b218583b5c56fe3745d338",
+    "src/ui/components/mapboard.js": "9bfe7a91d7a6b2e18b1e43e3cffd4620d6f3f6b845e060ab64d42cba3f8b116b",
+    "src/model/mapknowledge.js": "1c334b218d11a4e5019bc451d996819c7a01b8f839d9612d0e954c97b1d9bc83",
+    "src/content/balance.js": "8247896b8f54f99a6477398cb4786501121a10581bb37fbf78f294b1d10c847e",
+    "src/engine/actmap.js": "008a7cd145c69630973cb1eaf92ce5e3966d7db5e34c28e3bc009841eb39a467",
+    "src/engine/rng.js": "e4b2312c06d2cc4630b4e344ec94a153fbf3280f795e3d6e36a43e31bfbac553"
+  },
+  "outputSha256": "525276aa24d844a70422d059ce3027cdf9b8eb1c47fe3d0ac9fed0e50d51fcb0",
+  "maps": 27,
+  "cameraFixtures": 3024,
+  "helpers": 120,
+  "layoutAdapter": "Numeric viewport, title band and content extent; no browser/font/scrollbar rounding claimed"
+}

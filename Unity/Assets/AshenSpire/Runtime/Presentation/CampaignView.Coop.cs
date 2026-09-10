@@ -63,7 +63,7 @@ namespace AshenSpire.Presentation
         public void CoopGame(JObject snapshot, OriginalContentCatalog catalog, JObject supplement, Action<JObject> send, Action back)
         {
             Shell("ASHEN SPIRE", "THE SHARED CLIMB");
-            _coopPanel = new OriginalCoopPanel(_body, snapshot, catalog, supplement, send, () => Report(), back, _coopPanelState);
+            _coopPanel = new OriginalCoopPanel(_body, snapshot, catalog, supplement, send, () => Report(), back, _coopPanelState, MapView, _diagnostics);
         }
         public void CoopError(string message) { _coopPanel?.ShowError(message); }
     }

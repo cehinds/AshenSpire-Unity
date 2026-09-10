@@ -1,14 +1,19 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.11.0 · build 11 ·
+content while improving phone play. Current source: **0.0.12.0 · build 12 ·
 Foundation in progress**. Published channels may still carry earlier checkpoints.
 
 Checked items describe implemented functionality with focused evidence. Unchecked
 items are acceptance work, limitations or remaining scope; checkmarks do not certify
 every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receipts.
 
-Build 11 integrates the painted enemy expansion and has matching Web, Windows,
+Build 12 restores the shared branching map, solo fog/Sealstone knowledge, shrine
+guidance, local camera preferences and touch navigation. Its Web map suite passed
+558 checks across four sizes and an earned Sealstone case, plus a focused minimum-zoom rerun (133 overlapping checks). Matching Web, Windows and Android exports are complete. The current player passed a three-act climb (657 checks, 280 commands) and co-op fight/reward/rejoin checks (eight host, six guest).
+See [Unity-Map-Foundation.md](Unity-Map-Foundation.md) for editing and test boundaries.
+
+Build 11 integrated the painted enemy expansion and has matching Web, Windows,
 Android and companion exports, package verification, 31 solo art checks and
 eight host/six guest co-op checks. Full-campaign, storage and other older counts
 below belong to build 10 at commit `890af027…` / digest `62aa53dc…`.
@@ -23,6 +28,12 @@ Build 11's bounded results do not repeat that full baseline.
 - [x] Support original JSON/CSV tables with reference validation, stale-edit
   refusal, atomic replacement and exact source backups.
 - [x] Implement original RNG, formulas, derived stats, statuses and seeded maps.
+- [x] Render the original branching graph in the same solo/co-op component, with
+  authoritative routes, visited/current markers, party votes and a named route list.
+- [x] Restore original solo fog, Sealstone room readings and nearest-shrine guidance;
+  preserve co-op's original full-path visibility. Keep knowledge derived from the trail.
+- [x] Restore local Fit/manual camera state, vertical pan, zoom steps, recenter,
+  touch cancellation and profile persistence; test real multi-choice layouts.
 - [x] Default to Assign points: five attributes at 5, 60 total, 35 unspent;
   retain Standard and remove Tuned from the fork's available modes.
 - [x] Make every attribute point useful and author five-point mechanical thresholds.
@@ -114,9 +125,8 @@ Build 11's bounded results do not repeat that full baseline.
 ## Polish and completed-game readiness
 
 - [ ] Compare original and Unity screens side by side and retain the original aesthetic.
-  The native map exposes reachable route buttons; full original branching-map
-  presentation, solo fog and Sealstone Key reveal remain parity work despite
-  working shape/generation controls.
+  The native map now restores branching presentation, solo fog and Sealstone reveal.
+  Broader screen-by-screen visual acceptance and map styling refinement remain.
 - [ ] Finish sprite animation, transitions, status feedback, sound/music and settings.
 - [ ] Make every required original flow comfortable on touch with consistent UI.
 - [ ] Test physical Android hardware and graphical Windows play; establish the iOS

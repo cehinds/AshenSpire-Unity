@@ -58,7 +58,7 @@ namespace AshenSpire.Editor
             _ = new AshenSpire.Domain.Original.OriginalContentCatalog(originalJson);
             Directory.CreateDirectory(Root + "/Resources/Original");
             File.WriteAllText(Root + "/Resources/Original/content.json", originalJson);
-            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles", "enemy-art" })
+            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles", "enemy-art", "map-presentation" })
             {
                 var authored = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/Original/" + file + ".json"));
                 var parsed = Newtonsoft.Json.Linq.JObject.Parse(authored);
@@ -68,6 +68,18 @@ namespace AshenSpire.Editor
                     _ = new AshenSpire.Domain.Original.ResourceWallet(0, 0, 0, parsed);
                 }
                 if (file == "progression") _ = new AshenSpire.Domain.Original.AttributeProgression(parsed);
+                if (file == "map-presentation")
+                {
+                    if ((int?)parsed["schemaVersion"] != 1 || (double?)parsed["tapPixels"] < 51 || (double?)parsed["tapPixels"] > 80 || parsed["tapPixels"] == null)
+                        throw new InvalidDataException("map-presentation.json requires schema 1 and tapPixels between 51 and 80.");
+                    var icons = new[] { "swords", "skull", "eye", "flame", "scales", "chest", "question" };
+                    foreach (var kind in new[] { "monster", "fight", "elite", "boss", "shrine", "merchant", "treasure", "event", "unknown" })
+                    {
+                        var row = parsed["rooms"]?[kind];
+                        if (string.IsNullOrWhiteSpace((string)row?["name"]) || string.IsNullOrWhiteSpace((string)row?["description"]) || !icons.Contains((string)row?["icon"]) || !ColorUtility.TryParseHtmlString((string)row?["color"], out _))
+                            throw new InvalidDataException("Invalid map presentation for " + kind);
+                    }
+                }
                 if (file == "enemy-art")
                 {
                     var enemies = (Newtonsoft.Json.Linq.JArray)Newtonsoft.Json.Linq.JObject.Parse(originalJson)["enemies"];

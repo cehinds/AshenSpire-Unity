@@ -19,6 +19,13 @@ async function key(value) {
   await page.keyboard.down(value); await frames(); await page.waitForTimeout(100); await page.keyboard.up(value); await frames();
 }
 async function click(id, change = true, fraction = .5) {
+  // The bounded map can clip a route's canvas coordinates. Use its real Routes
+  // list for this full-climb replay; direct map taps have separate acceptance.
+  const route = /^(native|coop)-route-(.+)$/.exec(id);
+  if (route && controls?.Controls.some(c => c.Id === route[1] + '-map-routes')) {
+    await click(route[1] + '-map-routes');
+    return click(route[1] + '-map-choice-' + route[2], change, fraction);
+  }
   await until(() => controls?.Controls.some(x => x.Id === id && x.Enabled), 'control ' + id);
   for (let step = 0; step < 30; step++) {
     const canvas = await page.locator('#unity-canvas').boundingBox();

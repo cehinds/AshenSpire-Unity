@@ -77,6 +77,7 @@ namespace AshenSpire.Application
                 _originalSaves = new OriginalSaveJournal("AshenSpire.Unity.Original.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
+                _view.MapView.Read = ReadMapView; _view.MapView.Write = WriteMapView;
                 _view.SetDisplayHeight(DisplayViewport.Height);
                 _view.StartRequested += StartRun;
                 _view.ContinueRequested += Resume;
@@ -264,6 +265,7 @@ namespace AshenSpire.Application
         }
         private void Save()
         {
+            FlushMapView();
             if (_session != null && _saves != null)
                 _saves.Save(_session.State);
             if (_originalGame != null && _originalSaves != null)
@@ -354,6 +356,7 @@ namespace AshenSpire.Application
             if (_view == null)
                 return;
             _view.Dispose();
+            FlushMapView(); // Detaching the map freezes its final camera before shutdown.
             _view.ReturnRequested -= ReturnFromInterruption;
             _view.FoundationRequested -= OpenFoundation;
             _view.NativeRequested -= CreateOriginal;

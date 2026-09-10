@@ -34,6 +34,8 @@ jobs:
           dotnet run --project UnityTests/CardText
           dotnet run --project UnityTests/SpriteStyles
           dotnet run --project UnityTests/MapShape
+          dotnet run --project UnityTests/MapKnowledge
+          dotnet run --project UnityTests/MapViewport
           dotnet run --project UnityTests/CoopRun
           dotnet run --project UnityTests/CoopRun -- --policy
           dotnet run --project UnityTests/Playthrough -- 3 TestResults/NativePolicy
@@ -96,6 +98,8 @@ jobs:
         run: node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
       - name: Exercise custom map caps and weights through actual controls
         run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
+      - name: Exercise branching maps, fog, camera restoration and touch navigation
+        run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
       - name: Complete an actual two-player Unity fight and rejoin
         run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
       - name: Exercise the packaged game with real pointer input
@@ -123,6 +127,7 @@ jobs:
             TestResults/NativeAppearance
             TestResults/NativeEnemyArt
             TestResults/NativeMapShape
+            TestResults/NativeMap
       - name: Refresh channel refs
         if: github.event_name != 'pull_request'
         run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'

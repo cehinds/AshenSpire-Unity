@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "selection": "desktop-only",
+  "viewports": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sealstone": false,
+      "checks": 133,
+      "touchCancel": false,
+      "physicalDevice": false
+    }
+  ],
+  "checks": 133,
+  "physicalDevice": false,
+  "cooperativeBrowserProof": false
+}

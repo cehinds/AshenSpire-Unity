@@ -1,24 +1,25 @@
 {
-  "Added": [
-    "Seven painted enemy sprites: Husk Brute, Stitched Hound, Court Marionette, Ash Revenant, Ember-Starved Pilgrim, Charred Colossus and Blighted Valkyrie.",
-    "Editable 19-enemy art catalog, transparent PNG masters, exact generation prompts and registration receipts."
-  ],
-  "Changed": [
-    "Native solo and co-op now share the earlier painted enemy set the owner preferred, extended to cover every original enemy.",
-    "Version 0.0.11.0, build 11. New enemy textures import at 512 pixels; high-resolution masters remain available."
-  ],
-  "Fixed": [
-    "Native combat no longer selects the old procedural enemy models.",
-    "Visible alpha bounds align sprite scale and feet despite inconsistent generated margins. Hit-flash tint resets on completion or cancellation."
-  ],
   "KnownIssues": [
-    "Foundation acceptance remains open: original branching-map presentation, co-op animation, broader visual/audio polish and human balance testing remain.",
+    "Foundation acceptance remains open: co-op animation, broader visual/audio polish and human balance testing remain.",
     "Physical Android and graphical Windows interaction are unverified; iOS is not built. Original JavaScript saves remain separate from native saves."
   ],
+  "Fixed": [
+    "Map gestures cancel safely across interruptions and overlays; direct taps issue one legal command.",
+    "Minimum-zoom targets retain at least 44 CSS pixels after same-aspect desktop resize.",
+    "Routes remain accessible through a named choice list when a wide decision cannot fit."
+  ],
+  "Changed": [
+    "Version 0.0.12.0, build 12. Web, Windows, Android and the portable companion share current source.",
+    "Map camera preferences stay local and survive save/reload; Fit, zoom, recenter and touch navigation use original camera rules."
+  ],
+  "Added": [
+    "Original branching map shared by solo and co-op, with legal routes, visited markers and party votes.",
+    "Solo fog, earned Sealstone room readings and optional nearest-shrine guidance.",
+    "Editable map presentation table plus original-oracle and real-input browser coverage."
+  ],
   "WhatToTest": [
-    "Start a native climb and select each enemy to inspect the painted art.",
-    "Play an attack and check movement, hit flash and return to idle; reload and continue.",
-    "Try a local co-op fight with the matching companion.",
-    "Inspect the 19-enemy gallery and the JSON catalog when replacing art."
+    "Switch Fog/Paths and shrine guidance, open the key and route list, pan/zoom, then reload.",
+    "Finish the opening fight and choose the next branch directly on the map.",
+    "Play a shared climb with the matching companion and check independent camera preferences."
   ]
 }

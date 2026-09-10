@@ -31,13 +31,21 @@ class NativeUiDriver {
   throw Error('Unstable control geometry: '+id);
  }
  async click(id,change=true,fraction=.5){
+  // Legacy journey tests select named routes through the board's actual list.
+  // These two physical clicks remain one caller-owned gameplay command; neither
+  // toolbar nor choice IDs match this route pattern, so redirection cannot loop.
+  const route=/^(native|coop)-route-(.+)$/.exec(id);
+  if(route&&this.controls?.Controls.some(c=>c.Id===route[1]+'-map-routes')){
+   await this.click(route[1]+'-map-routes');
+   return this.click(route[1]+'-map-choice-'+route[2],change,fraction);
+  }
   await this.until(()=>this.has(id),'control '+id);
   for(let step=0;step<40;step++){
    const point=await this.stablePoint(id,fraction),{canvas,x,y}=point;
    const bottom=this.state?.phase==='Combat'&&!id.startsWith('coop-')&&!['native-play','native-end-turn'].includes(id)?120:25;
    if(y<canvas.y+30||y>canvas.y+canvas.height-bottom){
     const old=this.layout;await this.page.mouse.move(canvas.x+canvas.width*.92,canvas.y+canvas.height*.5);
-    await this.page.mouse.wheel(0,y<canvas.y+30?-320:320);await this.until(()=>this.layout>old,'scroll '+id);continue;
+    await this.page.mouse.wheel(0,y<canvas.y+30?-320:320);await this.until(()=>this.layout>old,'scroll '+id);await this.page.waitForTimeout(220);continue;
    }
    await this.page.mouse.move(x,y);await this.frames();
    if(!this.samePoint(point,await this.point(id,fraction)))continue;
