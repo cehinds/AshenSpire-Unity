@@ -15,6 +15,22 @@ class NativeUiDriver {
  async open(url){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.controls?.Controls.length,'title');}
  async frames(){await this.page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
  async key(value){if(value.includes('+')){const [mod,key]=value.split('+');await this.page.keyboard.down(mod);try{await this.key(key);}finally{await this.page.keyboard.up(mod);}return;}await this.page.keyboard.down(value);await this.frames();await this.page.waitForTimeout(100);await this.page.keyboard.up(value);await this.frames();}
+ async point(id,fraction){
+  const canvas=await this.page.locator('#unity-canvas').boundingBox(),c=this.controls?.Controls.find(x=>x.Id===id&&x.Enabled);
+  if(!canvas||!c)return null;
+  return {canvas,x:canvas.x+(c.X+c.Width*fraction)*canvas.width/this.controls.PanelWidth,y:canvas.y+(c.Y+c.Height/2)*canvas.height/this.controls.PanelHeight};
+ }
+ samePoint(a,b){return !!a&&!!b&&Math.abs(a.x-b.x)<.5&&Math.abs(a.y-b.y)<.5;}
+ async stablePoint(id,fraction){
+  let previous=null,stable=0;
+  for(let sample=0;sample<100;sample++){
+   const point=await this.point(id,fraction);
+   stable=this.samePoint(previous,point)?stable+1:0;previous=point;
+   if(stable>=3)return point;
+   await this.page.waitForTimeout(80);
+  }
+  throw Error('Unstable control geometry: '+id);
+ }
  async click(id,change=true,fraction=.5){
   const route=/^(native|coop)-route-(.+)$/.exec(id);
   if(route&&this.controls?.Controls.some(c=>c.Id===route[1]+'-map-routes')){
@@ -24,11 +40,18 @@ class NativeUiDriver {
   await this.until(()=>this.has(id),'control '+id);
   // Bounds are observations, not gameplay state. A tall card may be clipped by
   // its rail; click an exposed interior patch, never its off-screen centre.
+  // Geometry must also have SETTLED before it is trusted (stablePoint), and it is
+  // re-read after the pointer moves and again during the press: a peer redraw
+  // that moves the target cancels the gesture outside the canvas instead of
+  // hitting a neighbour, and a released game command is never replayed merely
+  // because its response is late.
   let stagnant=0,lastGeometry='',lastReason='';
   for(let step=0;step<36;step++){
-   const canvas=await this.page.locator('#unity-canvas').boundingBox(),report=this.controls;
+   if(!this.has(id)){await this.until(()=>this.has(id),'remounted control '+id);continue;}
+   const point=await this.stablePoint(id,fraction);
+   const canvas=point.canvas,report=this.controls;
    const c=report.Controls.find(control=>control.Id===id&&control.Enabled);
-   if(!c){await this.until(()=>this.has(id),'remounted control '+id);continue;}
+   if(!c)continue;
    const sx=canvas.width/report.PanelWidth,sy=canvas.height/report.PanelHeight;
    const rect={left:canvas.x+c.X*sx,top:canvas.y+c.Y*sy,width:c.Width*sx,height:c.Height*sy};
    rect.right=rect.left+rect.width;rect.bottom=rect.top+rect.height;
@@ -47,8 +70,13 @@ class NativeUiDriver {
     const x=Math.max(exposed.left+2,Math.min(exposed.right-2,rect.left+rect.width*fraction));
     const preferredY=card?rect.top+Math.min(50,rect.height*.3):rect.top+rect.height/2;
     const y=Math.max(exposed.top+Math.min(wantH/2,12),Math.min(exposed.bottom-Math.min(wantH/2,12),preferredY));
-    const old=this.layout;await this.page.mouse.move(x,y);await this.frames();
-    await this.page.mouse.down();await this.page.waitForTimeout(140);await this.page.mouse.up();await this.frames();
+    await this.page.mouse.move(x,y);await this.frames();
+    if(!this.samePoint(point,await this.point(id,fraction)))continue;
+    const old=this.layout;await this.page.mouse.down();await this.page.waitForTimeout(140);await this.frames();
+    // Release outside the canvas to cancel a gesture displaced by a peer redraw.
+    // Never replay a released game command merely because its response is late.
+    if(!this.samePoint(point,await this.point(id,fraction))){await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();continue;}
+    await this.page.mouse.up();await this.frames();
     if(change)await this.until(()=>this.layout>old,'response '+id);
     await this.page.waitForTimeout(250);return;
    }

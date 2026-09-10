@@ -62,6 +62,7 @@ jobs:
           dotnet run --project UnityTests/Interruption
           node tools/browser-visibility.test.cjs
           node tools/control-report.test.cjs
+          node --test tools/native-ui-driver.test.cjs
       - name: Exercise fixed campaign policies
         run: |
           mkdir -p TestResults/Balance
