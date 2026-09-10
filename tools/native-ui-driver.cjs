@@ -14,6 +14,22 @@ class NativeUiDriver {
  async open(url){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.controls?.Controls.length,'title');}
  async frames(){await this.page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
  async key(value){if(value.includes('+')){const [mod,key]=value.split('+');await this.page.keyboard.down(mod);try{await this.key(key);}finally{await this.page.keyboard.up(mod);}return;}await this.page.keyboard.down(value);await this.frames();await this.page.waitForTimeout(100);await this.page.keyboard.up(value);await this.frames();}
+ async point(id,fraction){
+  const canvas=await this.page.locator('#unity-canvas').boundingBox(),c=this.controls?.Controls.find(x=>x.Id===id&&x.Enabled);
+  if(!canvas||!c)return null;
+  return {canvas,x:canvas.x+(c.X+c.Width*fraction)*canvas.width/this.controls.PanelWidth,y:canvas.y+(c.Y+c.Height/2)*canvas.height/this.controls.PanelHeight};
+ }
+ samePoint(a,b){return !!a&&!!b&&Math.abs(a.x-b.x)<.5&&Math.abs(a.y-b.y)<.5;}
+ async stablePoint(id,fraction){
+  let previous=null,stable=0;
+  for(let sample=0;sample<100;sample++){
+   const point=await this.point(id,fraction);
+   stable=this.samePoint(previous,point)?stable+1:0;previous=point;
+   if(stable>=3)return point;
+   await this.page.waitForTimeout(80);
+  }
+  throw Error('Unstable control geometry: '+id);
+ }
  async click(id,change=true,fraction=.5){
   // Legacy journey tests select named routes through the board's actual list.
   // These two physical clicks remain one caller-owned gameplay command; neither
@@ -23,7 +39,26 @@ class NativeUiDriver {
    await this.click(route[1]+'-map-routes');
    return this.click(route[1]+'-map-choice-'+route[2],change,fraction);
   }
-  await this.until(()=>this.has(id),'control '+id);for(let step=0;step<40;step++){const canvas=await this.page.locator('#unity-canvas').boundingBox(),c=this.controls.Controls.find(x=>x.Id===id);const x=canvas.x+(c.X+c.Width*fraction)*canvas.width/this.controls.PanelWidth,y=canvas.y+(c.Y+c.Height/2)*canvas.height/this.controls.PanelHeight;const bottom=this.state?.phase==='Combat'&&!id.startsWith('coop-')&&!['native-play','native-end-turn'].includes(id)?120:25;if(y<canvas.y+30||y>canvas.y+canvas.height-bottom){const old=this.layout;await this.page.mouse.move(canvas.x+canvas.width*.92,canvas.y+canvas.height*.5);await this.page.mouse.wheel(0,y<canvas.y+30?-320:320);await this.until(()=>this.layout>old,'scroll '+id);await this.page.waitForTimeout(220);continue;}const old=this.layout;await this.page.mouse.move(x,y);await this.frames();await this.page.mouse.down();await this.page.waitForTimeout(140);await this.page.mouse.up();await this.frames();if(change)await this.until(()=>this.layout>old,'response '+id);await this.page.waitForTimeout(250);return;}throw Error('Cannot reach '+id);}
+  await this.until(()=>this.has(id),'control '+id);
+  for(let step=0;step<40;step++){
+   const point=await this.stablePoint(id,fraction),{canvas,x,y}=point;
+   const bottom=this.state?.phase==='Combat'&&!id.startsWith('coop-')&&!['native-play','native-end-turn'].includes(id)?120:25;
+   if(y<canvas.y+30||y>canvas.y+canvas.height-bottom){
+    const old=this.layout;await this.page.mouse.move(canvas.x+canvas.width*.92,canvas.y+canvas.height*.5);
+    await this.page.mouse.wheel(0,y<canvas.y+30?-320:320);await this.until(()=>this.layout>old,'scroll '+id);await this.page.waitForTimeout(220);continue;
+   }
+   await this.page.mouse.move(x,y);await this.frames();
+   if(!this.samePoint(point,await this.point(id,fraction)))continue;
+   const old=this.layout;await this.page.mouse.down();await this.page.waitForTimeout(140);await this.frames();
+   // Release outside the canvas to cancel a gesture displaced by a peer redraw.
+   // Never replay a released game command merely because its response is late.
+   if(!this.samePoint(point,await this.point(id,fraction))){await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();continue;}
+   await this.page.mouse.up();await this.frames();
+   if(change)await this.until(()=>this.layout>old,'response '+id);
+   await this.page.waitForTimeout(250);return;
+  }
+  throw Error('Cannot reach '+id);
+ }
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
  async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
