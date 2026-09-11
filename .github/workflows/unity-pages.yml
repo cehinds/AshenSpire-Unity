@@ -14,6 +14,9 @@ concurrency:
 jobs:
   validate-and-assemble:
     runs-on: ubuntu-latest
+    # A stalled browser playtest must not bill the default six hours; a green run
+    # finishes well inside this.
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
         with:

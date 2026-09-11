@@ -26,7 +26,7 @@ let browser,ui;
    if(s.player.hp<s.player.maxHp*.45&&s.player.flaskCharges.hpCurrent>0){await ui.command('native-crimson');continue;}
    const score=row=>row.card.effects.reduce((n,e)=>n+(e.op==='damage'?(typeof e.amount==='number'?e.amount:5)*(e.hits||1)+(e.attributeBonus||0):e.op==='applyStatus'?5:e.op==='block'?2:e.op==='draw'?3:e.op==='heal'?3:1),0);
    const playable=s.cards.filter(r=>(r.cost.variable||r.cost.action<=s.player.energy)&&r.cost.mana<=s.player.mana&&r.cost.stamina<=s.player.stamina&&!['status','curse'].includes(r.card.type)).sort((a,b)=>score(b)-score(a));
-   if(playable.length){const row=playable[0],id='native-card-'+row.instance.instanceId;await ui.click('native-target-'+target.id);while(!ui.has(id)&&ui.has('native-hand-next'))await ui.click('native-hand-next');await ui.click(id);await ui.command('native-play');}
+   if(playable.length){const row=playable[0],id='native-card-'+row.instance.instanceId;await ui.click('native-target-'+target.id);for(let page=0;page<8&&!ui.has(id)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');await ui.click(id);await ui.command('native-play');}
    else if(s.cards.some(r=>r.cost.mana>s.player.mana)&&s.player.flaskCharges.manaCurrent>0&&s.player.energy>0)await ui.command('native-azure');
    else await ui.command('native-end-turn');
   }else if(s.phase==='Rewards'){

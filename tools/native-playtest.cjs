@@ -47,7 +47,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
   if(kind==='play'){
    const instance=state.hand.find(c=>c.instanceId===action.instanceId);check(!!instance,'replay instance '+action.instanceId);
    await click('native-target-'+action.targetId);
-   while(!controls.Controls.some(c=>c.Id==='native-card-'+action.instanceId)&&controls.Controls.some(c=>c.Id==='native-hand-next'&&c.Enabled))await click('native-hand-next');
+   for(let page=0;page<8&&!controls.Controls.some(c=>c.Id==='native-card-'+action.instanceId)&&controls.Controls.some(c=>c.Id==='native-hand-next'&&c.Enabled);page++)await click('native-hand-next');
    await click('native-card-'+action.instanceId);await command('native-play');
   }else if(kind==='enter')await command('native-route-'+value);
   else if(kind==='charge')await command(value==='hp'?'native-crimson':'native-azure');
