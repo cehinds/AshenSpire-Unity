@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "checks": 49,
+      "screenshots": 7
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "checks": 49,
+      "screenshots": 7
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "checks": 50,
+      "screenshots": 7
+    }
+  ],
+  "checks": 148,
+  "physicalDevice": false,
+  "visualInspectionRequired": [
+    "serif title font and settled wordmark",
+    "warm palette and brass panel framing",
+    "actual painted enemies, individual health bars and intent markers",
+    "card medallion, glyph, type strip, tags and readable text",
+    "phone horizontal hand and utility accessibility"
+  ],
+  "scope": "Solo presentation and bounded actual first combat; not full visual parity or full campaign acceptance"
+}

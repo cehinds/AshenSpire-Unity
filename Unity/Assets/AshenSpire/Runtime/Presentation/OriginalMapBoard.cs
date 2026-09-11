@@ -291,11 +291,13 @@ namespace AshenSpire.Presentation
                 var nodes = new JArray(_knowledge.Nodes.Select(node => { var b = _content.Q<Button>(_prefix + "-route-" + node.Id).worldBound;
                     return new JObject { ["id"] = node.Id, ["type"] = node.ShownType, ["current"] = node.Current, ["visited"] = node.Visited, ["revealed"] = node.Revealed, ["legal"] = _legal.Contains(node.Id), ["x"] = b.x, ["y"] = b.y, ["width"] = b.width, ["height"] = b.height }; }));
                 var rect = _viewport.worldBound;
-                var json = new JObject { ["scope"] = _scope, ["mode"] = _mode, ["shrineGlow"] = _glow, ["camera"] = _saved.ToJson(), ["decisionFits"] = DecisionFits, ["displayScale"] = _scale,
+                // Keep fixed chunks ASCII-safe even when future labels use emoji.
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new JObject { ["scope"] = _scope, ["mode"] = _mode, ["shrineGlow"] = _glow, ["camera"] = _saved.ToJson(), ["decisionFits"] = DecisionFits, ["displayScale"] = _scale,
                     ["viewport"] = new JObject { ["x"] = rect.x, ["y"] = rect.y, ["width"] = rect.width, ["height"] = rect.height }, ["nodes"] = nodes,
-                    ["edges"] = new JArray(_knowledge.Edges.Select(e => new JObject { ["from"] = e.From, ["to"] = e.To, ["traveled"] = e.Traveled, ["shrine"] = e.ShrineLane })) }.ToString(Newtonsoft.Json.Formatting.None);
-                var sequence = ++_diagnosticSequence; var count = (json.Length + 2999) / 3000;
-                for (var i = 0; i < count; i++) Debug.Log("ASHENSPIRE_MAP_VIEW_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = i, ["count"] = count, ["text"] = json.Substring(i * 3000, Math.Min(3000, json.Length - i * 3000)) }.ToString(Newtonsoft.Json.Formatting.None));
+                    ["edges"] = new JArray(_knowledge.Edges.Select(e => new JObject { ["from"] = e.From, ["to"] = e.To, ["traveled"] = e.Traveled, ["shrine"] = e.ShrineLane })) },
+                    new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
+                var sequence = ++_diagnosticSequence; var count = (json.Length + 2499) / 2500;
+                for (var i = 0; i < count; i++) Debug.Log("ASHENSPIRE_MAP_VIEW_CHUNK " + new JObject { ["sequence"] = sequence, ["index"] = i, ["count"] = count, ["text"] = json.Substring(i * 2500, Math.Min(2500, json.Length - i * 2500)) }.ToString(Newtonsoft.Json.Formatting.None));
             }).StartingIn(100);
         }
         // Small deterministic map glyphs avoid platform-dependent emoji/font fallback.

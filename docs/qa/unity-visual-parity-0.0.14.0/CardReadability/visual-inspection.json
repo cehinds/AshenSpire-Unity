@@ -1,0 +1,28 @@
+{
+  "sourceDigest": "2ac07c417b88e2adb899c532940736059d9c2769ee5870879fba91a608c5d2d5",
+  "version": "0.0.14.0",
+  "buildNumber": 14,
+  "passed": true,
+  "automatedChecks": 146,
+  "browserErrors": 0,
+  "physicalDevice": false,
+  "screenshots": 12,
+  "inspectedScreenshots": [
+    "320x640/01-weapon-total-and-cost.png",
+    "320x640/02-selectable-shortage.png",
+    "390x844/03-next-turn-recovery.png",
+    "1440x900/02-selectable-shortage.png"
+  ],
+  "observations": [
+    "Crossed-swords, weapon-technique star and shield card symbols visibly render without tofu.",
+    "Blade, Flourish and Guard symbol/name chips are readable in inspected captures.",
+    "Unaffordable cards remain selectable and show shortage; disabled Play reason is visible.",
+    "Desktop reduced hand is centred; phone hand deliberately exposes partial next card and remains horizontally reachable."
+  ],
+  "limits": [
+    "Opening Reaver card set only; this is not rendered coverage of all 110 authored icons.",
+    "Long card content uses vertical hand scrolling; full-content scroll behavior is not independently measured by this screenshot inspection.",
+    "Not co-op, full campaign, physical-device or full visual parity proof."
+  ],
+  "process": "Suite exited 0 and closed its browser; no runtime or test source edits."
+}

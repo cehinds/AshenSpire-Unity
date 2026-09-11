@@ -93,6 +93,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   viewportEvidence.push({width,height,canvas,panelWidth:controls.PanelWidth,panelHeight:controls.PanelHeight,layout});
  }
  async function click(id,changesState=false,playEnabled=true){
+  if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
   for(let attempt=0;attempt<24;attempt++){
    const canvas=await page.locator('#unity-canvas').boundingBox();

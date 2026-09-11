@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "checks": 56,
+      "physicalDevice": false,
+      "screenshots": 4
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "checks": 56,
+      "physicalDevice": false,
+      "screenshots": 4
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "checks": 56,
+      "physicalDevice": false,
+      "screenshots": 4
+    }
+  ],
+  "checks": 168,
+  "physicalDevice": false,
+  "cooperativeBrowserProof": false,
+  "buttonLabelEvidence": "Disabled Play label is captured in screenshots; the read-only control report exposes enabled state and Label text, not Button.text."
+}

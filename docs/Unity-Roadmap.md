@@ -1,12 +1,16 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.12.0 · build 12 ·
+content while improving phone play. Current source: **0.0.14.0 · build 14 ·
 Foundation in progress**. Published channels may still carry earlier checkpoints.
 
 Checked items describe implemented functionality with focused evidence. Unchecked
 items are acceptance work, limitations or remaining scope; checkmarks do not certify
 every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receipts.
+
+Build 14 prioritizes matching the HTML reference visually: title composition, serif display type, warm palette, class preview, compact combat HUD, simultaneous enemies and framed horizontal cards. See [visual parity](Unity-Visual-Parity.md) for evidence and remaining gaps.
+
+Build 13 improves whole-valued weapon damage text and shares concise card costs and resource-shortage hints between solo and co-op. Cards remain selectable when resources are insufficient; Play explains the shortage. See [Unity-Combat-Readability.md](Unity-Combat-Readability.md) for editing and verification.
 
 Build 12 restores the shared branching map, solo fog/Sealstone knowledge, shrine
 guidance, local camera preferences and touch navigation. Its Web map suite passed

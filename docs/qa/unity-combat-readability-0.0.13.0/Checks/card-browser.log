@@ -1,0 +1,4 @@
+Error: Timed out: scroll native-menu
+    at NativeUiDriver.until (C:\repos\AshenSpire-Unity-map-33\tools\native-ui-driver.cjs:13:150)
+    at async NativeUiDriver.click (C:\repos\AshenSpire-Unity-map-33\tools\native-ui-driver.cjs:26:671)
+    at async C:\repos\AshenSpire-Unity-map-33\tools\native-card-cost-playtest.cjs:72:23

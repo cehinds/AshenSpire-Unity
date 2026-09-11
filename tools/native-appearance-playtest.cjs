@@ -30,7 +30,7 @@ let browser,ui;
   const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];await ui.command('native-route-'+route.id);ui.check(ui.state.phase==='Combat','seed 1 opening route enters real combat');
   await ui.shot('02-combat-idle-'+styles[index]);
   const row=ui.state.cards.find(row=>row.card.type==='attack'&&row.cost.action<=ui.state.player.energy&&row.cost.mana<=ui.state.player.mana&&row.cost.stamina<=ui.state.player.stamina);ui.check(!!row,'opening hand has a legal attack');
-  const target=ui.state.enemies.find(enemy=>enemy.alive);await ui.click('native-target-'+target.id);const id='native-card-'+row.instance.instanceId;while(!ui.has(id)&&ui.has('native-hand-next'))await ui.click('native-hand-next');await ui.click(id);feedback.length=0;await Promise.all(pendingShots);pendingShots.length=0;await ui.command('native-play');
+  const target=ui.state.enemies.find(enemy=>enemy.alive);await ui.click('native-target-'+target.id);const id='native-card-'+row.instance.instanceId;for(let page=0;page<8&&!ui.has(id)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');await ui.click(id);feedback.length=0;await Promise.all(pendingShots);pendingShots.length=0;await ui.command('native-play');
   await ui.until(()=>feedback.some(row=>row.Status==='completed'),'appearance feedback completion');
   const impact=feedback.find(row=>row.Status==='impact');ui.check(impact?.SpriteStyle===styles[index],'combat feedback preserves selected renderer');
   ui.check(styles[index]==='animated'?/^attack[1-4]$/.test(impact.Pose):impact.Pose==='idle','only Animated swaps to an original attack pose');

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "checks": [
+    "different authenticated seats",
+    "one vote waits for other connected player",
+    "both actual hands contain an affordable card after reconnect",
+    "host selected card is playable before peer action",
+    "peer action preserves host selected card and its hand page",
+    "two Unity clients defeat actual encounter",
+    "real fight counted once",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "physicalDevice": false
+}

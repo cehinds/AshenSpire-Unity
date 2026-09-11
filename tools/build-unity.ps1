@@ -17,6 +17,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Domain tests failed.' }
     dotnet run --project UnityTests/Parity
     if ($LASTEXITCODE -ne 0) { throw 'Original parity tests failed.' }
+    dotnet run --project UnityTests/CardText
+    if ($LASTEXITCODE -ne 0) { throw 'Original card text tests failed.' }
+    dotnet run --project UnityTests/CardCosts
+    if ($LASTEXITCODE -ne 0) { throw 'Card cost presentation tests failed.' }
     dotnet run --project UnityTests/MapKnowledge
     if ($LASTEXITCODE -ne 0) { throw 'Original map knowledge tests failed.' }
     dotnet run --project UnityTests/MapViewport

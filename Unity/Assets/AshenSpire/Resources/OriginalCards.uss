@@ -1,0 +1,63 @@
+/* OriginalCards.uss — pinned original card anatomy (kit.css 648–762).
+   Load after Expedition.uss. Every selector is scoped to the new component.
+   The rail owns spacing/scrolling. Padding above its cards must admit medallions.
+   Names, tags and text may grow: no touch-only information is clipped away. */
+.original-card.card {
+    position: relative; width: 140px; min-width: 140px; min-height: 203px;
+    flex-shrink: 0; flex-grow: 0; flex-direction: column; align-items: stretch;
+    margin: 12px 8px 8px 12px; padding: 20px 8px 8px;
+    border-width: 1px; border-color: rgb(74,64,52); border-radius: 8px;
+    background-color: rgb(23,19,16); color: rgb(232,220,192);
+    white-space: normal; overflow: visible;
+}
+.original-card.card:hover { border-color: rgb(201,162,39); background-color: rgb(23,19,16); }
+.original-card.card.rarity-uncommon { border-color: rgb(127,168,201); }
+.original-card.card.rarity-rare { border-color: rgb(201,162,39); }
+.original-card.card.rarity-special { border-color: rgb(106,58,122); }
+.original-card.card.selected { border-width: 1px; border-color: rgb(201,162,39); background-color: rgb(23,19,16); }
+.original-card.card:focus { border-color: rgb(232,220,192); }
+.original-card.card.unaffordable { opacity: 0.7; }
+.original-card .original-card-name {
+    min-height: 26px; margin: 0 0 4px; padding: 0; font-size: 12px;
+    -unity-font-style: bold; -unity-text-align: middle-center;
+    color: rgb(232,220,192); white-space: normal;
+}
+.original-card.upgraded .original-card-name { color: rgb(127,217,127); }
+.original-card .original-card-action {
+    position: absolute; top: -10px; left: -10px; width: 30px; height: 30px;
+    margin: 0; padding: 0; border-width: 2px; border-color: rgb(201,162,39);
+    border-radius: 30px; background-color: rgb(13,11,8); color: rgb(232,220,192);
+    font-size: 14px; -unity-font-style: bold; -unity-text-align: middle-center;
+}
+.original-card .original-card-mana, .original-card .original-card-stamina {
+    position: absolute; right: -7px; min-width: 32px; height: 24px;
+    margin: 0; padding: 0 6px; border-width: 2px; border-radius: 24px;
+    font-size: 10px; -unity-font-style: bold; -unity-text-align: middle-center;
+}
+.original-card .original-card-mana { top: -7px; background-color: rgb(17,27,53); border-color: rgb(79,130,216); color: rgb(207,225,255); }
+.original-card .original-card-stamina { top: 19px; background-color: rgb(20,32,22); border-color: rgb(95,146,93); color: rgb(232,220,192); }
+.original-card .original-card-art {
+    height: 60px; min-height: 60px; flex-shrink: 0; margin: 0 0 4px; padding: 0;
+    border-width: 1px; border-color: rgb(58,50,38); border-radius: 3px;
+    background-color: rgb(15,12,9); color: rgb(232,220,192);
+    font-size: 29px; -unity-text-align: middle-center;
+}
+.original-card .original-card-type {
+    min-height: 17px; margin: 0 0 4px; padding: 1px; border-radius: 2px;
+    font-size: 10px; letter-spacing: 2px; -unity-text-align: middle-center;
+    color: rgb(201,162,39); background-color: rgb(55,47,30);
+}
+.original-card .original-card-tags { flex-direction: row; flex-wrap: wrap; justify-content: center; margin: 0 0 3px; }
+.original-card .original-card-tag {
+    margin: 1px; padding: 1px 4px; border-width: 1px; border-radius: 2px;
+    font-size: 9px; white-space: normal; color: rgb(122,111,90);
+}
+.original-card .original-card-description {
+    min-height: 30px; margin: 0; padding: 0; font-size: 11px;
+    color: rgb(185,172,145); -unity-text-align: middle-center; white-space: normal;
+}
+.original-card .original-card-shortage { margin: 4px 0 0; font-size: 11px; color: rgb(224,133,133); white-space: normal; }
+
+.original-card .original-card-name { -unity-font: resource("Fonts/Cinzel-Regular"); }
+.original-card .original-card-art { -unity-font: resource("Fonts/NotoSansSymbols2-Regular"); }
+

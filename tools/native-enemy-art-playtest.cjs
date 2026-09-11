@@ -91,8 +91,10 @@ let captureImpact=false;
  ui.check(!!attack,'real hand supplies an affordable damage card');
  const target=ui.state.enemies.filter(enemy=>enemy.alive).sort((a,b)=>b.hp-a.hp)[0];await ui.click('native-target-'+target.id);
  const cardId='native-card-'+attack.instance.instanceId;
- while(ui.has('native-hand-prev'))await ui.click('native-hand-prev');
- while(!ui.has(cardId)&&ui.has('native-hand-next'))await ui.click('native-hand-next');
+ // Build 14 renders the whole hand in one scrolling rail whose pager buttons
+ // stay enabled, so paging is bounded and stops once the card is reported;
+ // click() itself scrolls a rail-clipped card into view.
+ for(let page=0;page<8&&!ui.has(cardId)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
  await ui.click(cardId);ui.check(ui.has('native-play'),'selected legal attack enables Play');await top();
  const beforeAttack=JSON.parse(JSON.stringify(ui.state)),firstFeedback=feedback.length;captureImpact=true;
  await ui.command('native-play');

@@ -14,6 +14,9 @@ concurrency:
 jobs:
   validate-and-assemble:
     runs-on: ubuntu-latest
+    # A stalled browser playtest must not bill the default six hours; a green run
+    # finishes well inside this.
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,6 +35,7 @@ jobs:
           python3 UnityTests/Parity/authoring-checks.py
           dotnet run --project UnityTests/NativeFeedback
           dotnet run --project UnityTests/CardText
+          dotnet run --project UnityTests/CardCosts
           dotnet run --project UnityTests/SpriteStyles
           dotnet run --project UnityTests/MapShape
           dotnet run --project UnityTests/MapKnowledge
@@ -66,6 +70,8 @@ jobs:
         run: |
           mkdir -p TestResults/Balance
           dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
+      - name: Test cross-platform Unity source digest ordering
+        run: node --test tools/unity-source-digest.test.mjs
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
       - name: Verify immutable build history and channel membership
@@ -90,6 +96,8 @@ jobs:
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
       - name: Complete the native three-act climb with reloads
         run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+      - name: Verify card numbers and resource shortage feedback
+        run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
       - name: Exercise native draft, level-up, flask allocation and merchant transactions
         run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
       - name: Verify original sprite styles and saved appearance through actual controls
@@ -123,6 +131,7 @@ jobs:
             TestResults/NativeFeedback
             TestResults/CardText
             TestResults/NativeFeatures
+            TestResults/NativeCardCosts
             TestResults/NativeCoopBrowser
             TestResults/NativeAppearance
             TestResults/NativeEnemyArt

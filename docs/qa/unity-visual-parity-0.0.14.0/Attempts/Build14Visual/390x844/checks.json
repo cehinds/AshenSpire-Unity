@@ -1,0 +1,12 @@
+{
+  "success": false,
+  "checks": [],
+  "errors": [
+    "ArgumentNullException: Value cannot be null.\nParameter name: styleSheet\n  at UnityEngine.UIElements.VisualElementStyleSheetSet.Insert (System.Int32 index, UnityEngine.UIElements.StyleSheet styleSheet) [0x00000] in <00000000000000000000000000000000>:0 \n\n",
+    "Error: Timed out: title\n    at NativeUiDriver.until (C:\\repos\\AshenSpire-Unity-map-33\\tools\\native-ui-driver.cjs:14:150)\n    at async NativeUiDriver.open (C:\\repos\\AshenSpire-Unity-map-33\\tools\\native-ui-driver.cjs:15:344)\n    at async C:\\repos\\AshenSpire-Unity-map-33\\tools\\native-visual-parity-playtest.cjs:41:3"
+  ],
+  "state": null,
+  "coop": null,
+  "controls": null,
+  "physicalDevice": false
+}
