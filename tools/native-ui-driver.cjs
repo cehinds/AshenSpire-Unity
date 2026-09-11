@@ -3,6 +3,27 @@
 const fs=require('node:fs'),path=require('node:path');
 const controlsModule=fs.existsSync(path.join(__dirname,'control-report.cjs'))?path.join(__dirname,'control-report.cjs'):path.join(process.env.ASHENSPIRE_REPO_ROOT||process.cwd(),'tools/control-report.cjs');
 const {controlReportsForPage}=require(controlsModule);
+// Geometry helpers live outside the class on purpose: the playtest harnesses
+// borrow click() onto a plain object (NativeUiDriver.prototype.click.call(ui, ...))
+// whose `this` carries page, controls, has, until and frames but none of the
+// driver's other methods. Everything click() needs is reached through these
+// functions, never through `this.method`.
+async function pointOf(ui,id,fraction){
+ const canvas=await ui.page.locator('#unity-canvas').boundingBox(),c=ui.controls?.Controls.find(x=>x.Id===id&&x.Enabled);
+ if(!canvas||!c)return null;
+ return {canvas,x:canvas.x+(c.X+c.Width*fraction)*canvas.width/ui.controls.PanelWidth,y:canvas.y+(c.Y+c.Height/2)*canvas.height/ui.controls.PanelHeight};
+}
+function samePoint(a,b){return !!a&&!!b&&Math.abs(a.x-b.x)<.5&&Math.abs(a.y-b.y)<.5;}
+async function stablePointOf(ui,id,fraction){
+ let previous=null,stable=0;
+ for(let sample=0;sample<100;sample++){
+  const point=await pointOf(ui,id,fraction);
+  stable=samePoint(previous,point)?stable+1:0;previous=point;
+  if(stable>=3)return point;
+  await ui.page.waitForTimeout(80);
+ }
+ throw Error('Unstable control geometry: '+id);
+}
 class NativeUiDriver {
  constructor(page,output){this.page=page;this.output=output;this.controls=null;this.state=null;this.coop=null;this.layout=0;this.revision=0;this.coopRevision=0;this.errors=[];this.checks=[];this.chunks=new Map();fs.mkdirSync(output,{recursive:true});
   const normalizeControls=controlReportsForPage(page,e=>this.errors.push(e));
@@ -15,22 +36,9 @@ class NativeUiDriver {
  async open(url){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.controls?.Controls.length,'title');}
  async frames(){await this.page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
  async key(value){if(value.includes('+')){const [mod,key]=value.split('+');await this.page.keyboard.down(mod);try{await this.key(key);}finally{await this.page.keyboard.up(mod);}return;}await this.page.keyboard.down(value);await this.frames();await this.page.waitForTimeout(100);await this.page.keyboard.up(value);await this.frames();}
- async point(id,fraction){
-  const canvas=await this.page.locator('#unity-canvas').boundingBox(),c=this.controls?.Controls.find(x=>x.Id===id&&x.Enabled);
-  if(!canvas||!c)return null;
-  return {canvas,x:canvas.x+(c.X+c.Width*fraction)*canvas.width/this.controls.PanelWidth,y:canvas.y+(c.Y+c.Height/2)*canvas.height/this.controls.PanelHeight};
- }
- samePoint(a,b){return !!a&&!!b&&Math.abs(a.x-b.x)<.5&&Math.abs(a.y-b.y)<.5;}
- async stablePoint(id,fraction){
-  let previous=null,stable=0;
-  for(let sample=0;sample<100;sample++){
-   const point=await this.point(id,fraction);
-   stable=this.samePoint(previous,point)?stable+1:0;previous=point;
-   if(stable>=3)return point;
-   await this.page.waitForTimeout(80);
-  }
-  throw Error('Unstable control geometry: '+id);
- }
+ point(id,fraction){return pointOf(this,id,fraction);}
+ samePoint(a,b){return samePoint(a,b);}
+ stablePoint(id,fraction){return stablePointOf(this,id,fraction);}
  async click(id,change=true,fraction=.5){
   const route=/^(native|coop)-route-(.+)$/.exec(id);
   if(route&&this.controls?.Controls.some(c=>c.Id===route[1]+'-map-routes')){
@@ -48,7 +56,7 @@ class NativeUiDriver {
   let stagnant=0,lastGeometry='',lastReason='';
   for(let step=0;step<36;step++){
    if(!this.has(id)){await this.until(()=>this.has(id),'remounted control '+id);continue;}
-   const point=await this.stablePoint(id,fraction);
+   const point=await stablePointOf(this,id,fraction);
    const canvas=point.canvas,report=this.controls;
    const c=report.Controls.find(control=>control.Id===id&&control.Enabled);
    if(!c)continue;
@@ -71,11 +79,11 @@ class NativeUiDriver {
     const preferredY=card?rect.top+Math.min(50,rect.height*.3):rect.top+rect.height/2;
     const y=Math.max(exposed.top+Math.min(wantH/2,12),Math.min(exposed.bottom-Math.min(wantH/2,12),preferredY));
     await this.page.mouse.move(x,y);await this.frames();
-    if(!this.samePoint(point,await this.point(id,fraction)))continue;
+    if(!samePoint(point,await pointOf(this,id,fraction)))continue;
     const old=this.layout;await this.page.mouse.down();await this.page.waitForTimeout(140);await this.frames();
     // Release outside the canvas to cancel a gesture displaced by a peer redraw.
     // Never replay a released game command merely because its response is late.
-    if(!this.samePoint(point,await this.point(id,fraction))){await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();continue;}
+    if(!samePoint(point,await pointOf(this,id,fraction))){await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();continue;}
     await this.page.mouse.up();await this.frames();
     if(change)await this.until(()=>this.layout>old,'response '+id);
     await this.page.waitForTimeout(250);return;
