@@ -1,0 +1,18 @@
+Original Unity parity: 7356 checks passed
+Owner creation defaults: 214 checks passed
+Original resources and card lifecycle: 4220 checks passed
+Owner attribute progression: 1468 checks passed
+Weapon deck checks passed: 4621
+Weapon, player and nativeProfile checks passed: 5021
+Final native equipment/player/profile assertions: 5027
+Standalone profile wrapper checks: 406
+WeaponChecks: 5027 checks passed
+4538 checks passed
+NativeRunChecks: 4538 checks passed
+Equipment transactions: 139 checks passed
+CombatSessionChecks: 6994 checks passed
+915 checks passed
+PASS 2124 custom configuration, original-rule, draft, keepsake and save checks.
+Paid swaps: 2063 checks passed
+Starting choices: 788 checks passed
+Co-op combat: 6587 checks passed

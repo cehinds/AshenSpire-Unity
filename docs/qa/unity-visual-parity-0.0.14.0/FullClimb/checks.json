@@ -1,0 +1,2765 @@
+{
+  "success": true,
+  "checks": [
+    "35 points initially unspent",
+    "native three-act run starts",
+    "before command 0 enter:n1_5",
+    "IL2CPP state agrees with domain after 0 enter:n1_5",
+    "before command 1 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 1 play:gorefireSlash",
+    "before command 2 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 2 play:strike",
+    "persistent page reload resumes exact native state at 2",
+    "before command 3 play:strike",
+    "replay instance starting:2",
+    "IL2CPP state agrees with domain after 3 play:strike",
+    "before command 4 endTurn",
+    "IL2CPP state agrees with domain after 4 endTurn",
+    "before command 5 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 5 play:strike",
+    "before command 6 play:defend",
+    "replay instance starting:6",
+    "IL2CPP state agrees with domain after 6 play:defend",
+    "before command 7 play:defend",
+    "replay instance starting:7",
+    "IL2CPP state agrees with domain after 7 play:defend",
+    "before command 8 endTurn",
+    "IL2CPP state agrees with domain after 8 endTurn",
+    "before command 9 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 9 play:gorefireSlash",
+    "before command 10 reward:cinders",
+    "IL2CPP state agrees with domain after 10 reward:cinders",
+    "before command 11 reward:flask",
+    "IL2CPP state agrees with domain after 11 reward:flask",
+    "before command 12 reward:card",
+    "IL2CPP state agrees with domain after 12 reward:card",
+    "before command 13 continueRewards",
+    "IL2CPP state agrees with domain after 13 continueRewards",
+    "before command 14 enter:n2_4",
+    "IL2CPP state agrees with domain after 14 enter:n2_4",
+    "before command 15 flask:blightCoating",
+    "IL2CPP state agrees with domain after 15 flask:blightCoating",
+    "before command 16 play:crimsonCleave",
+    "replay instance nativeRun1",
+    "IL2CPP state agrees with domain after 16 play:crimsonCleave",
+    "before command 17 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 17 play:strike",
+    "before command 18 reward:cinders",
+    "IL2CPP state agrees with domain after 18 reward:cinders",
+    "before command 19 reward:card",
+    "IL2CPP state agrees with domain after 19 reward:card",
+    "before command 20 continueRewards",
+    "IL2CPP state agrees with domain after 20 continueRewards",
+    "before command 21 enter:n3_3",
+    "IL2CPP state agrees with domain after 21 enter:n3_3",
+    "before command 22 event:leave",
+    "IL2CPP state agrees with domain after 22 event:leave",
+    "before command 23 leaveEvent",
+    "IL2CPP state agrees with domain after 23 leaveEvent",
+    "before command 24 enter:n4_3",
+    "IL2CPP state agrees with domain after 24 enter:n4_3",
+    "before command 25 rest",
+    "IL2CPP state agrees with domain after 25 rest",
+    "before command 26 enter:n5_2",
+    "IL2CPP state agrees with domain after 26 enter:n5_2",
+    "before command 27 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 27 play:gorefireSlash",
+    "before command 28 play:technique",
+    "replay instance starting:8",
+    "IL2CPP state agrees with domain after 28 play:technique",
+    "before command 29 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 29 play:strike",
+    "before command 30 endTurn",
+    "IL2CPP state agrees with domain after 30 endTurn",
+    "before command 31 play:serratedBlade",
+    "replay instance nativeRun2",
+    "IL2CPP state agrees with domain after 31 play:serratedBlade",
+    "before command 32 play:strike",
+    "replay instance starting:1",
+    "IL2CPP state agrees with domain after 32 play:strike",
+    "before command 33 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 33 play:strike",
+    "before command 34 reward:cinders",
+    "IL2CPP state agrees with domain after 34 reward:cinders",
+    "before command 35 reward:relic",
+    "IL2CPP state agrees with domain after 35 reward:relic",
+    "before command 36 reward:card",
+    "IL2CPP state agrees with domain after 36 reward:card",
+    "before command 37 continueRewards",
+    "IL2CPP state agrees with domain after 37 continueRewards",
+    "before command 38 enter:n6_2",
+    "IL2CPP state agrees with domain after 38 enter:n6_2",
+    "before command 39 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 39 play:strike",
+    "before command 40 play:strike",
+    "replay instance starting:1",
+    "IL2CPP state agrees with domain after 40 play:strike",
+    "before command 41 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 41 play:strike",
+    "before command 42 reward:cinders",
+    "IL2CPP state agrees with domain after 42 reward:cinders",
+    "before command 43 reward:flask",
+    "IL2CPP state agrees with domain after 43 reward:flask",
+    "before command 44 reward:card",
+    "IL2CPP state agrees with domain after 44 reward:card",
+    "before command 45 continueRewards",
+    "IL2CPP state agrees with domain after 45 continueRewards",
+    "before command 46 enter:n7_2",
+    "IL2CPP state agrees with domain after 46 enter:n7_2",
+    "before command 47 reward:relic",
+    "IL2CPP state agrees with domain after 47 reward:relic",
+    "before command 48 continueRewards",
+    "IL2CPP state agrees with domain after 48 continueRewards",
+    "before command 49 enter:n8_1",
+    "IL2CPP state agrees with domain after 49 enter:n8_1",
+    "before command 50 flask:wondrousDraught",
+    "IL2CPP state agrees with domain after 50 flask:wondrousDraught",
+    "before command 51 play:crimsonCleave",
+    "replay instance nativeRun1",
+    "IL2CPP state agrees with domain after 51 play:crimsonCleave",
+    "before command 52 play:technique",
+    "replay instance starting:8",
+    "IL2CPP state agrees with domain after 52 play:technique",
+    "before command 53 endTurn",
+    "IL2CPP state agrees with domain after 53 endTurn",
+    "before command 54 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 54 play:gorefireSlash",
+    "before command 55 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 55 play:strike",
+    "before command 56 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 56 play:strike",
+    "before command 57 endTurn",
+    "IL2CPP state agrees with domain after 57 endTurn",
+    "before command 58 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 58 play:flameToBlade",
+    "before command 59 reward:cinders",
+    "IL2CPP state agrees with domain after 59 reward:cinders",
+    "before command 60 reward:relic",
+    "IL2CPP state agrees with domain after 60 reward:relic",
+    "before command 61 reward:armament",
+    "IL2CPP state agrees with domain after 61 reward:armament",
+    "before command 62 reward:card",
+    "IL2CPP state agrees with domain after 62 reward:card",
+    "before command 63 continueRewards",
+    "IL2CPP state agrees with domain after 63 continueRewards",
+    "before command 64 enter:n9_0",
+    "IL2CPP state agrees with domain after 64 enter:n9_0",
+    "before command 65 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 65 play:strike",
+    "before command 66 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 66 play:strike",
+    "before command 67 play:strike",
+    "replay instance starting:2",
+    "IL2CPP state agrees with domain after 67 play:strike",
+    "before command 68 play:strike",
+    "replay instance starting:1",
+    "IL2CPP state agrees with domain after 68 play:strike",
+    "before command 69 reward:cinders",
+    "IL2CPP state agrees with domain after 69 reward:cinders",
+    "before command 70 reward:card",
+    "IL2CPP state agrees with domain after 70 reward:card",
+    "persistent page reload resumes exact native state at 70",
+    "before command 71 continueRewards",
+    "IL2CPP state agrees with domain after 71 continueRewards",
+    "before command 72 enter:n10_0",
+    "IL2CPP state agrees with domain after 72 enter:n10_0",
+    "before command 73 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 73 play:flameToBlade",
+    "before command 74 charge:hp",
+    "IL2CPP state agrees with domain after 74 charge:hp",
+    "before command 75 play:serratedBlade",
+    "replay instance nativeRun2",
+    "IL2CPP state agrees with domain after 75 play:serratedBlade",
+    "before command 76 play:strike",
+    "replay instance starting:2",
+    "IL2CPP state agrees with domain after 76 play:strike",
+    "before command 77 play:defend",
+    "replay instance starting:6",
+    "IL2CPP state agrees with domain after 77 play:defend",
+    "before command 78 endTurn",
+    "IL2CPP state agrees with domain after 78 endTurn",
+    "before command 79 charge:mana",
+    "IL2CPP state agrees with domain after 79 charge:mana",
+    "before command 80 play:flameToBlade",
+    "replay instance nativeRun6",
+    "IL2CPP state agrees with domain after 80 play:flameToBlade",
+    "before command 81 reward:cinders",
+    "IL2CPP state agrees with domain after 81 reward:cinders",
+    "before command 82 reward:card",
+    "IL2CPP state agrees with domain after 82 reward:card",
+    "before command 83 continueRewards",
+    "IL2CPP state agrees with domain after 83 continueRewards",
+    "before command 84 enter:n11_0",
+    "IL2CPP state agrees with domain after 84 enter:n11_0",
+    "before command 85 play:flameToBlade",
+    "replay instance nativeRun6",
+    "IL2CPP state agrees with domain after 85 play:flameToBlade",
+    "before command 86 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 86 play:flameToBlade",
+    "before command 87 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 87 play:gorefireSlash",
+    "before command 88 reward:cinders",
+    "IL2CPP state agrees with domain after 88 reward:cinders",
+    "before command 89 reward:card",
+    "IL2CPP state agrees with domain after 89 reward:card",
+    "before command 90 continueRewards",
+    "IL2CPP state agrees with domain after 90 continueRewards",
+    "before command 91 enter:n12_3",
+    "IL2CPP state agrees with domain after 91 enter:n12_3",
+    "before command 92 service:upgrade",
+    "IL2CPP state agrees with domain after 92 service:upgrade",
+    "before command 93 enter:n13_3",
+    "IL2CPP state agrees with domain after 93 enter:n13_3",
+    "before command 94 play:flameToBlade",
+    "replay instance nativeRun6",
+    "IL2CPP state agrees with domain after 94 play:flameToBlade",
+    "before command 95 play:strike",
+    "replay instance starting:1",
+    "IL2CPP state agrees with domain after 95 play:strike",
+    "before command 96 play:strike",
+    "replay instance starting:2",
+    "IL2CPP state agrees with domain after 96 play:strike",
+    "before command 97 play:technique",
+    "replay instance starting:8",
+    "IL2CPP state agrees with domain after 97 play:technique",
+    "before command 98 endTurn",
+    "IL2CPP state agrees with domain after 98 endTurn",
+    "before command 99 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 99 play:stitchedArms",
+    "before command 100 play:kickOff",
+    "replay instance nativeRun4",
+    "IL2CPP state agrees with domain after 100 play:kickOff",
+    "before command 101 endTurn",
+    "IL2CPP state agrees with domain after 101 endTurn",
+    "before command 102 charge:hp",
+    "IL2CPP state agrees with domain after 102 charge:hp",
+    "before command 103 charge:mana",
+    "IL2CPP state agrees with domain after 103 charge:mana",
+    "before command 104 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 104 play:strike",
+    "before command 105 reward:cinders",
+    "IL2CPP state agrees with domain after 105 reward:cinders",
+    "before command 106 reward:relic",
+    "IL2CPP state agrees with domain after 106 reward:relic",
+    "before command 107 reward:armament",
+    "IL2CPP state agrees with domain after 107 reward:armament",
+    "before command 108 reward:card",
+    "IL2CPP state agrees with domain after 108 reward:card",
+    "before command 109 continueRewards",
+    "IL2CPP state agrees with domain after 109 continueRewards",
+    "before command 110 enter:n1_3",
+    "IL2CPP state agrees with domain after 110 enter:n1_3",
+    "before command 111 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 111 play:stitchedArms",
+    "before command 112 endTurn",
+    "IL2CPP state agrees with domain after 112 endTurn",
+    "before command 113 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 113 play:flameToBlade",
+    "before command 114 play:strike",
+    "replay instance starting:2",
+    "IL2CPP state agrees with domain after 114 play:strike",
+    "before command 115 reward:cinders",
+    "IL2CPP state agrees with domain after 115 reward:cinders",
+    "before command 116 reward:flask",
+    "IL2CPP state agrees with domain after 116 reward:flask",
+    "before command 117 reward:card",
+    "IL2CPP state agrees with domain after 117 reward:card",
+    "before command 118 continueRewards",
+    "IL2CPP state agrees with domain after 118 continueRewards",
+    "before command 119 enter:n2_2",
+    "IL2CPP state agrees with domain after 119 enter:n2_2",
+    "before command 120 charge:hp",
+    "IL2CPP state agrees with domain after 120 charge:hp",
+    "before command 121 flask:wondrousDraught",
+    "IL2CPP state agrees with domain after 121 flask:wondrousDraught",
+    "before command 122 play:stomp",
+    "replay instance nativeRun7",
+    "IL2CPP state agrees with domain after 122 play:stomp",
+    "before command 123 play:crimsonCleave",
+    "replay instance nativeRun8",
+    "IL2CPP state agrees with domain after 123 play:crimsonCleave",
+    "before command 124 play:kickOff",
+    "replay instance nativeRun9",
+    "IL2CPP state agrees with domain after 124 play:kickOff",
+    "before command 125 reward:cinders",
+    "IL2CPP state agrees with domain after 125 reward:cinders",
+    "before command 126 reward:flask",
+    "IL2CPP state agrees with domain after 126 reward:flask",
+    "before command 127 reward:card",
+    "IL2CPP state agrees with domain after 127 reward:card",
+    "before command 128 continueRewards",
+    "IL2CPP state agrees with domain after 128 continueRewards",
+    "before command 129 enter:n3_1",
+    "IL2CPP state agrees with domain after 129 enter:n3_1",
+    "before command 130 event:keepVigil",
+    "IL2CPP state agrees with domain after 130 event:keepVigil",
+    "before command 131 leaveEvent",
+    "IL2CPP state agrees with domain after 131 leaveEvent",
+    "before command 132 enter:n4_0",
+    "IL2CPP state agrees with domain after 132 enter:n4_0",
+    "before command 133 service:upgrade",
+    "IL2CPP state agrees with domain after 133 service:upgrade",
+    "before command 134 enter:n5_0",
+    "IL2CPP state agrees with domain after 134 enter:n5_0",
+    "before command 135 flask:wondrousDraught",
+    "IL2CPP state agrees with domain after 135 flask:wondrousDraught",
+    "before command 136 play:crimsonCleave",
+    "replay instance nativeRun8",
+    "IL2CPP state agrees with domain after 136 play:crimsonCleave",
+    "before command 137 play:stomp",
+    "replay instance nativeRun7",
+    "IL2CPP state agrees with domain after 137 play:stomp",
+    "before command 138 play:kickOff",
+    "replay instance nativeRun4",
+    "IL2CPP state agrees with domain after 138 play:kickOff",
+    "before command 139 endTurn",
+    "IL2CPP state agrees with domain after 139 endTurn",
+    "before command 140 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 140 play:flameToBlade",
+    "before command 141 reward:cinders",
+    "IL2CPP state agrees with domain after 141 reward:cinders",
+    "before command 142 reward:flask",
+    "IL2CPP state agrees with domain after 142 reward:flask",
+    "before command 143 reward:card",
+    "IL2CPP state agrees with domain after 143 reward:card",
+    "before command 144 continueRewards",
+    "IL2CPP state agrees with domain after 144 continueRewards",
+    "before command 145 enter:n6_0",
+    "IL2CPP state agrees with domain after 145 enter:n6_0",
+    "before command 146 buy:relic",
+    "IL2CPP state agrees with domain after 146 buy:relic",
+    "before command 147 buy:relic",
+    "IL2CPP state agrees with domain after 147 buy:relic",
+    "before command 148 leaveShop",
+    "IL2CPP state agrees with domain after 148 leaveShop",
+    "before command 149 enter:n7_1",
+    "IL2CPP state agrees with domain after 149 enter:n7_1",
+    "before command 150 reward:relic",
+    "IL2CPP state agrees with domain after 150 reward:relic",
+    "before command 151 reward:armament",
+    "IL2CPP state agrees with domain after 151 reward:armament",
+    "before command 152 continueRewards",
+    "IL2CPP state agrees with domain after 152 continueRewards",
+    "before command 153 enter:n8_1",
+    "IL2CPP state agrees with domain after 153 enter:n8_1",
+    "before command 154 flask:bloodUnction",
+    "IL2CPP state agrees with domain after 154 flask:bloodUnction",
+    "before command 155 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 155 play:strike",
+    "before command 156 play:goreslash",
+    "replay instance nativeRun12",
+    "IL2CPP state agrees with domain after 156 play:goreslash",
+    "before command 157 play:strike",
+    "replay instance starting:0",
+    "IL2CPP state agrees with domain after 157 play:strike",
+    "before command 158 play:riposte",
+    "replay instance nativeRun10",
+    "IL2CPP state agrees with domain after 158 play:riposte",
+    "before command 159 reward:cinders",
+    "IL2CPP state agrees with domain after 159 reward:cinders",
+    "before command 160 reward:card",
+    "IL2CPP state agrees with domain after 160 reward:card",
+    "before command 161 continueRewards",
+    "IL2CPP state agrees with domain after 161 continueRewards",
+    "before command 162 enter:n9_1",
+    "IL2CPP state agrees with domain after 162 enter:n9_1",
+    "before command 163 event:leave",
+    "IL2CPP state agrees with domain after 163 event:leave",
+    "before command 164 leaveEvent",
+    "IL2CPP state agrees with domain after 164 leaveEvent",
+    "before command 165 enter:n10_0",
+    "IL2CPP state agrees with domain after 165 enter:n10_0",
+    "before command 166 buy:relic",
+    "IL2CPP state agrees with domain after 166 buy:relic",
+    "before command 167 buy:relic",
+    "IL2CPP state agrees with domain after 167 buy:relic",
+    "before command 168 leaveShop",
+    "IL2CPP state agrees with domain after 168 leaveShop",
+    "before command 169 enter:n11_0",
+    "IL2CPP state agrees with domain after 169 enter:n11_0",
+    "before command 170 charge:hp",
+    "IL2CPP state agrees with domain after 170 charge:hp",
+    "before command 171 play:ruinousBlow",
+    "replay instance nativeRun13",
+    "IL2CPP state agrees with domain after 171 play:ruinousBlow",
+    "before command 172 play:riposte",
+    "replay instance nativeRun10",
+    "IL2CPP state agrees with domain after 172 play:riposte",
+    "before command 173 play:kickOff",
+    "replay instance nativeRun9",
+    "IL2CPP state agrees with domain after 173 play:kickOff",
+    "before command 174 endTurn",
+    "IL2CPP state agrees with domain after 174 endTurn",
+    "before command 175 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 175 play:stitchedArms",
+    "before command 176 reward:cinders",
+    "IL2CPP state agrees with domain after 176 reward:cinders",
+    "before command 177 reward:relic",
+    "IL2CPP state agrees with domain after 177 reward:relic",
+    "before command 178 reward:armament",
+    "IL2CPP state agrees with domain after 178 reward:armament",
+    "before command 179 reward:flask",
+    "IL2CPP state agrees with domain after 179 reward:flask",
+    "before command 180 reward:card",
+    "IL2CPP state agrees with domain after 180 reward:card",
+    "before command 181 continueRewards",
+    "IL2CPP state agrees with domain after 181 continueRewards",
+    "before command 182 enter:n12_3",
+    "IL2CPP state agrees with domain after 182 enter:n12_3",
+    "before command 183 service:upgrade",
+    "IL2CPP state agrees with domain after 183 service:upgrade",
+    "before command 184 enter:n13_3",
+    "IL2CPP state agrees with domain after 184 enter:n13_3",
+    "before command 185 flask:blightCoating",
+    "IL2CPP state agrees with domain after 185 flask:blightCoating",
+    "before command 186 play:stomp",
+    "replay instance nativeRun7",
+    "IL2CPP state agrees with domain after 186 play:stomp",
+    "before command 187 play:crimsonCleave",
+    "replay instance nativeRun14",
+    "IL2CPP state agrees with domain after 187 play:crimsonCleave",
+    "before command 188 endTurn",
+    "IL2CPP state agrees with domain after 188 endTurn",
+    "before command 189 play:flameToBlade",
+    "replay instance nativeRun6",
+    "IL2CPP state agrees with domain after 189 play:flameToBlade",
+    "before command 190 play:serratedBlade",
+    "replay instance nativeRun2",
+    "IL2CPP state agrees with domain after 190 play:serratedBlade",
+    "before command 191 play:kickOff",
+    "replay instance nativeRun9",
+    "IL2CPP state agrees with domain after 191 play:kickOff",
+    "before command 192 endTurn",
+    "IL2CPP state agrees with domain after 192 endTurn",
+    "before command 193 charge:hp",
+    "IL2CPP state agrees with domain after 193 charge:hp",
+    "before command 194 charge:hp",
+    "IL2CPP state agrees with domain after 194 charge:hp",
+    "before command 195 play:ruinousBlow",
+    "replay instance nativeRun13",
+    "IL2CPP state agrees with domain after 195 play:ruinousBlow",
+    "before command 196 play:strike",
+    "replay instance starting:3",
+    "IL2CPP state agrees with domain after 196 play:strike",
+    "before command 197 reward:cinders",
+    "IL2CPP state agrees with domain after 197 reward:cinders",
+    "before command 198 reward:relic",
+    "IL2CPP state agrees with domain after 198 reward:relic",
+    "before command 199 reward:armament",
+    "IL2CPP state agrees with domain after 199 reward:armament",
+    "before command 200 reward:card",
+    "IL2CPP state agrees with domain after 200 reward:card",
+    "before command 201 continueRewards",
+    "IL2CPP state agrees with domain after 201 continueRewards",
+    "before command 202 enter:n1_3",
+    "IL2CPP state agrees with domain after 202 enter:n1_3",
+    "before command 203 play:crimsonCleave",
+    "replay instance nativeRun8",
+    "IL2CPP state agrees with domain after 203 play:crimsonCleave",
+    "before command 204 play:flameToBlade",
+    "replay instance nativeRun3",
+    "IL2CPP state agrees with domain after 204 play:flameToBlade",
+    "before command 205 endTurn",
+    "IL2CPP state agrees with domain after 205 endTurn",
+    "before command 206 charge:hp",
+    "IL2CPP state agrees with domain after 206 charge:hp",
+    "before command 207 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 207 play:stitchedArms",
+    "before command 208 reward:cinders",
+    "IL2CPP state agrees with domain after 208 reward:cinders",
+    "before command 209 reward:card",
+    "IL2CPP state agrees with domain after 209 reward:card",
+    "before command 210 continueRewards",
+    "IL2CPP state agrees with domain after 210 continueRewards",
+    "before command 211 enter:n2_4",
+    "IL2CPP state agrees with domain after 211 enter:n2_4",
+    "before command 212 event:stealRelic",
+    "IL2CPP state agrees with domain after 212 event:stealRelic",
+    "before command 213 leaveEvent",
+    "IL2CPP state agrees with domain after 213 leaveEvent",
+    "before command 214 enter:n3_4",
+    "IL2CPP state agrees with domain after 214 enter:n3_4",
+    "before command 215 play:crimsonCleave",
+    "replay instance nativeRun14",
+    "IL2CPP state agrees with domain after 215 play:crimsonCleave",
+    "before command 216 play:guardCounter",
+    "replay instance nativeRun11",
+    "IL2CPP state agrees with domain after 216 play:guardCounter",
+    "before command 217 play:goreslash",
+    "replay instance nativeRun12",
+    "IL2CPP state agrees with domain after 217 play:goreslash",
+    "before command 218 reward:cinders",
+    "IL2CPP state agrees with domain after 218 reward:cinders",
+    "before command 219 reward:card",
+    "IL2CPP state agrees with domain after 219 reward:card",
+    "before command 220 continueRewards",
+    "IL2CPP state agrees with domain after 220 continueRewards",
+    "before command 221 enter:n4_5",
+    "IL2CPP state agrees with domain after 221 enter:n4_5",
+    "before command 222 service:upgrade",
+    "IL2CPP state agrees with domain after 222 service:upgrade",
+    "before command 223 enter:n5_4",
+    "IL2CPP state agrees with domain after 223 enter:n5_4",
+    "before command 224 play:crimsonCleave",
+    "replay instance nativeRun1",
+    "IL2CPP state agrees with domain after 224 play:crimsonCleave",
+    "before command 225 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 225 play:stitchedArms",
+    "before command 226 play:kickOff",
+    "replay instance nativeRun4",
+    "IL2CPP state agrees with domain after 226 play:kickOff",
+    "before command 227 reward:cinders",
+    "IL2CPP state agrees with domain after 227 reward:cinders",
+    "before command 228 reward:flask",
+    "IL2CPP state agrees with domain after 228 reward:flask",
+    "before command 229 reward:card",
+    "IL2CPP state agrees with domain after 229 reward:card",
+    "before command 230 continueRewards",
+    "IL2CPP state agrees with domain after 230 continueRewards",
+    "before command 231 enter:n6_3",
+    "IL2CPP state agrees with domain after 231 enter:n6_3",
+    "before command 232 event:backAway",
+    "IL2CPP state agrees with domain after 232 event:backAway",
+    "before command 233 leaveEvent",
+    "IL2CPP state agrees with domain after 233 leaveEvent",
+    "before command 234 enter:n7_3",
+    "IL2CPP state agrees with domain after 234 enter:n7_3",
+    "before command 235 reward:relic",
+    "IL2CPP state agrees with domain after 235 reward:relic",
+    "before command 236 reward:armament",
+    "IL2CPP state agrees with domain after 236 reward:armament",
+    "before command 237 continueRewards",
+    "IL2CPP state agrees with domain after 237 continueRewards",
+    "before command 238 enter:n8_2",
+    "IL2CPP state agrees with domain after 238 enter:n8_2",
+    "before command 239 event:leave",
+    "IL2CPP state agrees with domain after 239 event:leave",
+    "before command 240 leaveEvent",
+    "IL2CPP state agrees with domain after 240 leaveEvent",
+    "before command 241 enter:n9_1",
+    "IL2CPP state agrees with domain after 241 enter:n9_1",
+    "before command 242 charge:hp",
+    "IL2CPP state agrees with domain after 242 charge:hp",
+    "before command 243 flask:blightCoating",
+    "IL2CPP state agrees with domain after 243 flask:blightCoating",
+    "before command 244 play:ruinousBlow",
+    "replay instance nativeRun13",
+    "IL2CPP state agrees with domain after 244 play:ruinousBlow",
+    "before command 245 reward:cinders",
+    "IL2CPP state agrees with domain after 245 reward:cinders",
+    "before command 246 reward:card",
+    "IL2CPP state agrees with domain after 246 reward:card",
+    "before command 247 continueRewards",
+    "IL2CPP state agrees with domain after 247 continueRewards",
+    "before command 248 enter:n10_0",
+    "IL2CPP state agrees with domain after 248 enter:n10_0",
+    "before command 249 play:stitchedArms",
+    "replay instance nativeRun5",
+    "IL2CPP state agrees with domain after 249 play:stitchedArms",
+    "before command 250 reward:cinders",
+    "IL2CPP state agrees with domain after 250 reward:cinders",
+    "before command 251 reward:flask",
+    "IL2CPP state agrees with domain after 251 reward:flask",
+    "before command 252 reward:card",
+    "IL2CPP state agrees with domain after 252 reward:card",
+    "before command 253 continueRewards",
+    "IL2CPP state agrees with domain after 253 continueRewards",
+    "before command 254 enter:n11_0",
+    "IL2CPP state agrees with domain after 254 enter:n11_0",
+    "before command 255 flask:wondrousDraught",
+    "IL2CPP state agrees with domain after 255 flask:wondrousDraught",
+    "before command 256 play:crimsonCleave",
+    "replay instance nativeRun16",
+    "IL2CPP state agrees with domain after 256 play:crimsonCleave",
+    "before command 257 play:crimsonCleave",
+    "replay instance nativeRun8",
+    "IL2CPP state agrees with domain after 257 play:crimsonCleave",
+    "before command 258 reward:cinders",
+    "IL2CPP state agrees with domain after 258 reward:cinders",
+    "before command 259 reward:flask",
+    "IL2CPP state agrees with domain after 259 reward:flask",
+    "before command 260 reward:card",
+    "IL2CPP state agrees with domain after 260 reward:card",
+    "before command 261 continueRewards",
+    "IL2CPP state agrees with domain after 261 continueRewards",
+    "before command 262 enter:n12_3",
+    "IL2CPP state agrees with domain after 262 enter:n12_3",
+    "before command 263 service:upgrade",
+    "IL2CPP state agrees with domain after 263 service:upgrade",
+    "before command 264 enter:n13_3",
+    "IL2CPP state agrees with domain after 264 enter:n13_3",
+    "before command 265 charge:hp",
+    "IL2CPP state agrees with domain after 265 charge:hp",
+    "before command 266 flask:wondrousDraught",
+    "IL2CPP state agrees with domain after 266 flask:wondrousDraught",
+    "before command 267 play:stomp",
+    "replay instance nativeRun7",
+    "IL2CPP state agrees with domain after 267 play:stomp",
+    "before command 268 play:goreslash",
+    "replay instance nativeRun18",
+    "IL2CPP state agrees with domain after 268 play:goreslash",
+    "before command 269 play:goreslash",
+    "replay instance nativeRun15",
+    "IL2CPP state agrees with domain after 269 play:goreslash",
+    "before command 270 play:kickOff",
+    "replay instance nativeRun21",
+    "IL2CPP state agrees with domain after 270 play:kickOff",
+    "before command 271 endTurn",
+    "IL2CPP state agrees with domain after 271 endTurn",
+    "before command 272 play:flameToBlade",
+    "replay instance nativeRun6",
+    "IL2CPP state agrees with domain after 272 play:flameToBlade",
+    "before command 273 play:guardCounter",
+    "replay instance nativeRun11",
+    "IL2CPP state agrees with domain after 273 play:guardCounter",
+    "before command 274 play:gorefireSlash",
+    "replay instance starting:9",
+    "IL2CPP state agrees with domain after 274 play:gorefireSlash",
+    "before command 275 endTurn",
+    "IL2CPP state agrees with domain after 275 endTurn",
+    "before command 276 charge:hp",
+    "IL2CPP state agrees with domain after 276 charge:hp",
+    "before command 277 play:ruinousBlow",
+    "replay instance nativeRun13",
+    "IL2CPP state agrees with domain after 277 play:ruinousBlow",
+    "before command 278 endTurn",
+    "IL2CPP state agrees with domain after 278 endTurn",
+    "before command 279 play:rend",
+    "replay instance nativeRun20",
+    "IL2CPP state agrees with domain after 279 play:rend",
+    "three-act victory through actual player controls",
+    "completed climb recorded in chronicle",
+    "no browser or Unity error logs"
+  ],
+  "screenshots": [
+    "00-phone-title",
+    "01-phone-assign-points",
+    "02-phone-standard-creation",
+    "04-phone-act1-Map",
+    "05-phone-act1-Combat",
+    "06-phone-act1-Rewards",
+    "07-phone-act1-Event",
+    "08-phone-act1-EventResult",
+    "09-phone-act1-Shrine",
+    "10-phone-act2-Map",
+    "11-phone-act2-Combat",
+    "12-phone-act2-Rewards",
+    "13-phone-act2-Event",
+    "14-phone-act2-EventResult",
+    "15-phone-act2-Shrine",
+    "16-phone-act2-Shop",
+    "17-phone-act3-Map",
+    "18-phone-act3-Combat",
+    "19-phone-act3-Rewards",
+    "20-phone-act3-Event",
+    "21-phone-act3-EventResult",
+    "22-phone-act3-Shrine",
+    "23-phone-act3-Victory",
+    "99-phone-chronicle",
+    "100-desktop-chronicle"
+  ],
+  "errors": [],
+  "commands": [
+    {
+      "index": 0,
+      "command": "enter:n1_5",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 1,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 2,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 3,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 4,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 5,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 6,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 7,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 8,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 9,
+      "command": "play:gorefireSlash",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 10,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 11,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 12,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 13,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 58
+    },
+    {
+      "index": 14,
+      "command": "enter:n2_4",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 15,
+      "command": "flask:blightCoating",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 16,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 17,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 18,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 19,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 58
+    },
+    {
+      "index": 20,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 58
+    },
+    {
+      "index": 21,
+      "command": "enter:n3_3",
+      "phase": "Event",
+      "hp": 58
+    },
+    {
+      "index": 22,
+      "command": "event:leave",
+      "phase": "EventResult",
+      "hp": 58
+    },
+    {
+      "index": 23,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 58
+    },
+    {
+      "index": 24,
+      "command": "enter:n4_3",
+      "phase": "Shrine",
+      "hp": 58
+    },
+    {
+      "index": 25,
+      "command": "rest",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 26,
+      "command": "enter:n5_2",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 27,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 28,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 29,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 30,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 31,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 32,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 33,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 34,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 35,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 36,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 37,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 38,
+      "command": "enter:n6_2",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 39,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 40,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 41,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 42,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 43,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 44,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 45,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 46,
+      "command": "enter:n7_2",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 47,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 48,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 49,
+      "command": "enter:n8_1",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 50,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 51,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 52,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 53,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 54,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 55,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 56,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 57,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 58,
+      "command": "play:flameToBlade",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 59,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 60,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 61,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 62,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 63,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 64,
+      "command": "enter:n9_0",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 65,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 66,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 67,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 68,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 69,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 70,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 71,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 72,
+      "command": "enter:n10_0",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 73,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 74,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 75,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 76,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 77,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 78,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 79,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 80,
+      "command": "play:flameToBlade",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 81,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 82,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 83,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 62
+    },
+    {
+      "index": 84,
+      "command": "enter:n11_0",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 85,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 60
+    },
+    {
+      "index": 86,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 60
+    },
+    {
+      "index": 87,
+      "command": "play:gorefireSlash",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 88,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 89,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 90,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 60
+    },
+    {
+      "index": 91,
+      "command": "enter:n12_3",
+      "phase": "Shrine",
+      "hp": 60
+    },
+    {
+      "index": 92,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 60
+    },
+    {
+      "index": 93,
+      "command": "enter:n13_3",
+      "phase": "Combat",
+      "hp": 60
+    },
+    {
+      "index": 94,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 95,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 96,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 97,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 58
+    },
+    {
+      "index": 98,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 99,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 100,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 101,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 102,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 61
+    },
+    {
+      "index": 103,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 61
+    },
+    {
+      "index": 104,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 61
+    },
+    {
+      "index": 105,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 61
+    },
+    {
+      "index": 106,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 61
+    },
+    {
+      "index": 107,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 61
+    },
+    {
+      "index": 108,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 61
+    },
+    {
+      "index": 109,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 110,
+      "command": "enter:n1_3",
+      "phase": "Combat",
+      "hp": 59
+    },
+    {
+      "index": 111,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 59
+    },
+    {
+      "index": 112,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 54
+    },
+    {
+      "index": 113,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 52
+    },
+    {
+      "index": 114,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 52
+    },
+    {
+      "index": 115,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 52
+    },
+    {
+      "index": 116,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 52
+    },
+    {
+      "index": 117,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 52
+    },
+    {
+      "index": 118,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 52
+    },
+    {
+      "index": 119,
+      "command": "enter:n2_2",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 120,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 63
+    },
+    {
+      "index": 121,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 122,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 123,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 124,
+      "command": "play:kickOff",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 125,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 126,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 127,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 128,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 129,
+      "command": "enter:n3_1",
+      "phase": "Event",
+      "hp": 64
+    },
+    {
+      "index": 130,
+      "command": "event:keepVigil",
+      "phase": "EventResult",
+      "hp": 64
+    },
+    {
+      "index": 131,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 132,
+      "command": "enter:n4_0",
+      "phase": "Shrine",
+      "hp": 64
+    },
+    {
+      "index": 133,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 134,
+      "command": "enter:n5_0",
+      "phase": "Combat",
+      "hp": 59
+    },
+    {
+      "index": 135,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 136,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 137,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 138,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 139,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 56
+    },
+    {
+      "index": 140,
+      "command": "play:flameToBlade",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 141,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 142,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 143,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 144,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 56
+    },
+    {
+      "index": 145,
+      "command": "enter:n6_0",
+      "phase": "Shop",
+      "hp": 56
+    },
+    {
+      "index": 146,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 56
+    },
+    {
+      "index": 147,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 56
+    },
+    {
+      "index": 148,
+      "command": "leaveShop",
+      "phase": "Map",
+      "hp": 56
+    },
+    {
+      "index": 149,
+      "command": "enter:n7_1",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 150,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 151,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 56
+    },
+    {
+      "index": 152,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 56
+    },
+    {
+      "index": 153,
+      "command": "enter:n8_1",
+      "phase": "Combat",
+      "hp": 51
+    },
+    {
+      "index": 154,
+      "command": "flask:bloodUnction",
+      "phase": "Combat",
+      "hp": 51
+    },
+    {
+      "index": 155,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 51
+    },
+    {
+      "index": 156,
+      "command": "play:goreslash",
+      "phase": "Combat",
+      "hp": 51
+    },
+    {
+      "index": 157,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 51
+    },
+    {
+      "index": 158,
+      "command": "play:riposte",
+      "phase": "Rewards",
+      "hp": 51
+    },
+    {
+      "index": 159,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 51
+    },
+    {
+      "index": 160,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 51
+    },
+    {
+      "index": 161,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 51
+    },
+    {
+      "index": 162,
+      "command": "enter:n9_1",
+      "phase": "Event",
+      "hp": 51
+    },
+    {
+      "index": 163,
+      "command": "event:leave",
+      "phase": "EventResult",
+      "hp": 51
+    },
+    {
+      "index": 164,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 51
+    },
+    {
+      "index": 165,
+      "command": "enter:n10_0",
+      "phase": "Shop",
+      "hp": 51
+    },
+    {
+      "index": 166,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 51
+    },
+    {
+      "index": 167,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 51
+    },
+    {
+      "index": 168,
+      "command": "leaveShop",
+      "phase": "Map",
+      "hp": 51
+    },
+    {
+      "index": 169,
+      "command": "enter:n11_0",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 170,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 171,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 172,
+      "command": "play:riposte",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 173,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 174,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 175,
+      "command": "play:stitchedArms",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 176,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 177,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 178,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 179,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 180,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 62
+    },
+    {
+      "index": 181,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 62
+    },
+    {
+      "index": 182,
+      "command": "enter:n12_3",
+      "phase": "Shrine",
+      "hp": 62
+    },
+    {
+      "index": 183,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 62
+    },
+    {
+      "index": 184,
+      "command": "enter:n13_3",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 185,
+      "command": "flask:blightCoating",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 186,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 187,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 188,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 189,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 190,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 191,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 55
+    },
+    {
+      "index": 192,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 28
+    },
+    {
+      "index": 193,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 194,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 60
+    },
+    {
+      "index": 195,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 60
+    },
+    {
+      "index": 196,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 197,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 198,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 199,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 200,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 60
+    },
+    {
+      "index": 201,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 202,
+      "command": "enter:n1_3",
+      "phase": "Combat",
+      "hp": 59
+    },
+    {
+      "index": 203,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 59
+    },
+    {
+      "index": 204,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 205,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 206,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 207,
+      "command": "play:stitchedArms",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 208,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 209,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 210,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 211,
+      "command": "enter:n2_4",
+      "phase": "Event",
+      "hp": 64
+    },
+    {
+      "index": 212,
+      "command": "event:stealRelic",
+      "phase": "EventResult",
+      "hp": 64
+    },
+    {
+      "index": 213,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 214,
+      "command": "enter:n3_4",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 215,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 216,
+      "command": "play:guardCounter",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 217,
+      "command": "play:goreslash",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 218,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 219,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 220,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 57
+    },
+    {
+      "index": 221,
+      "command": "enter:n4_5",
+      "phase": "Shrine",
+      "hp": 57
+    },
+    {
+      "index": 222,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 57
+    },
+    {
+      "index": 223,
+      "command": "enter:n5_4",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 224,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 225,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 226,
+      "command": "play:kickOff",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 227,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 228,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 229,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 230,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 231,
+      "command": "enter:n6_3",
+      "phase": "Event",
+      "hp": 50
+    },
+    {
+      "index": 232,
+      "command": "event:backAway",
+      "phase": "EventResult",
+      "hp": 50
+    },
+    {
+      "index": 233,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 234,
+      "command": "enter:n7_3",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 235,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 236,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 237,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 238,
+      "command": "enter:n8_2",
+      "phase": "Event",
+      "hp": 50
+    },
+    {
+      "index": 239,
+      "command": "event:leave",
+      "phase": "EventResult",
+      "hp": 50
+    },
+    {
+      "index": 240,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 241,
+      "command": "enter:n9_1",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 242,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 243,
+      "command": "flask:blightCoating",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 244,
+      "command": "play:ruinousBlow",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 245,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 246,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 64
+    },
+    {
+      "index": 247,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 64
+    },
+    {
+      "index": 248,
+      "command": "enter:n10_0",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 249,
+      "command": "play:stitchedArms",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 250,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 251,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 252,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 57
+    },
+    {
+      "index": 253,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 57
+    },
+    {
+      "index": 254,
+      "command": "enter:n11_0",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 255,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 256,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 50
+    },
+    {
+      "index": 257,
+      "command": "play:crimsonCleave",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 258,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 259,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 260,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 50
+    },
+    {
+      "index": 261,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 262,
+      "command": "enter:n12_3",
+      "phase": "Shrine",
+      "hp": 50
+    },
+    {
+      "index": 263,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 50
+    },
+    {
+      "index": 264,
+      "command": "enter:n13_3",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 265,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 266,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 267,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 268,
+      "command": "play:goreslash",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 269,
+      "command": "play:goreslash",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 270,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 271,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 272,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 273,
+      "command": "play:guardCounter",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 274,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 62
+    },
+    {
+      "index": 275,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 276,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 277,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 64
+    },
+    {
+      "index": 278,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 57
+    },
+    {
+      "index": 279,
+      "command": "play:rend",
+      "phase": "Victory",
+      "hp": 57
+    }
+  ],
+  "lastState": {
+    "phase": "Victory",
+    "act": 3,
+    "turn": 0,
+    "player": {
+      "classId": "reaver",
+      "hp": 57,
+      "maxHp": 64,
+      "mana": 1,
+      "maxMana": 2,
+      "stamina": 2,
+      "maxStamina": 2,
+      "energy": 3,
+      "block": 0,
+      "statuses": {},
+      "flaskCharges": {
+        "capacity": 4,
+        "base": 4,
+        "hp": 3,
+        "mana": 1,
+        "hpCurrent": 1,
+        "manaCurrent": 1,
+        "grown": {
+          "hp": 0,
+          "mana": 0
+        },
+        "granted": 0
+      },
+      "flasks": []
+    },
+    "hand": [],
+    "cards": [],
+    "run": {
+      "attributes": {
+        "strength": 13,
+        "dexterity": 10,
+        "constitution": 12,
+        "wisdom": 10,
+        "intelligence": 10
+      },
+      "cinders": 1415,
+      "smithingStones": 1,
+      "loadout": {
+        "sets": {
+          "rightHand": [
+            "straightSword",
+            null,
+            null
+          ],
+          "leftHand": [
+            "roundShield",
+            null,
+            null
+          ],
+          "armor": [
+            "default"
+          ],
+          "talisman": [
+            null,
+            null,
+            null
+          ]
+        },
+        "active": {
+          "rightHand": 0,
+          "leftHand": 0,
+          "armor": 0,
+          "talisman": 0
+        },
+        "storage": [
+          "parryDagger",
+          "warhammer",
+          "shortbow",
+          "twinblade",
+          "greatsword",
+          "lantern"
+        ],
+        "creationArmourGrant": {
+          "classId": "reaver",
+          "id": "default"
+        }
+      },
+      "deck": [
+        {
+          "cardId": "technique",
+          "equipmentRole": "technique",
+          "profileId": "weaponTechnique",
+          "grantSource": "from:weapon",
+          "instanceId": "starting:8",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 1
+        },
+        {
+          "cardId": "gorefireSlash",
+          "grantSource": "from:class",
+          "instanceId": "starting:9",
+          "upgraded": false
+        },
+        {
+          "equipmentAttackSlotId": "attack:0",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:0",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 1
+        },
+        {
+          "equipmentAttackSlotId": "attack:1",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:1",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 1
+        },
+        {
+          "equipmentAttackSlotId": "attack:2",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:2",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 1
+        },
+        {
+          "equipmentAttackSlotId": "attack:3",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "cardId": "strike",
+          "profileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "instanceId": "starting:3",
+          "upgraded": false,
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 1
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:4",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 1
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:5",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 1
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:6",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 1
+        },
+        {
+          "cardId": "defend",
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "instanceId": "starting:7",
+          "upgraded": false,
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 1
+        },
+        {
+          "instanceId": "nativeRun1",
+          "cardId": "crimsonCleave",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun2",
+          "cardId": "serratedBlade",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun3",
+          "cardId": "flameToBlade",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun4",
+          "cardId": "kickOff",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun5",
+          "cardId": "stitchedArms",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun6",
+          "cardId": "flameToBlade",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun7",
+          "cardId": "stomp",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun8",
+          "cardId": "crimsonCleave",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun9",
+          "cardId": "kickOff",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun10",
+          "cardId": "riposte",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun11",
+          "cardId": "guardCounter",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun12",
+          "cardId": "goreslash",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun13",
+          "cardId": "ruinousBlow",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun14",
+          "cardId": "crimsonCleave",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun15",
+          "cardId": "goreslash",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun16",
+          "cardId": "crimsonCleave",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun17",
+          "cardId": "guilt",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun18",
+          "cardId": "goreslash",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun19",
+          "cardId": "twinbladeFlurry",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun20",
+          "cardId": "rend",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun21",
+          "cardId": "kickOff",
+          "upgraded": false
+        },
+        {
+          "instanceId": "nativeRun22",
+          "cardId": "serratedBlade",
+          "upgraded": false
+        }
+      ],
+      "custom": {
+        "ascension": 0,
+        "mods": {},
+        "deckMode": "standard"
+      },
+      "keepsakeId": "none",
+      "customization": {
+        "name": "Forsaken",
+        "glyph": "⚔",
+        "tint": "gold"
+      },
+      "startingKitId": "reaverBaseline",
+      "startingKitSnapshot": {
+        "id": "reaverBaseline",
+        "classId": "reaver",
+        "rightHand": "straightSword",
+        "leftHand": "roundShield"
+      },
+      "path": [
+        "n1_3",
+        "n2_4",
+        "n3_4",
+        "n4_5",
+        "n5_4",
+        "n6_3",
+        "n7_3",
+        "n8_2",
+        "n9_1",
+        "n10_0",
+        "n11_0",
+        "n12_3",
+        "n13_3"
+      ],
+      "mapNodeId": "n13_3",
+      "runId": "624c37dd549249d0bf5bcf47a63b8b5d",
+      "seed": 1,
+      "mapDimensions": {
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    "enemies": [],
+    "room": {
+      "encounterId": "a3_bossRotValkyrie",
+      "pool": "boss",
+      "nodeId": "n13_3"
+    },
+    "legalNodes": [],
+    "routes": []
+  },
+  "controls": {
+    "Controls": [
+      {
+        "Id": "native-profile-back",
+        "X": 158,
+        "Y": 988.6667,
+        "Width": 964,
+        "Height": 49.99994,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 1280,
+    "PanelHeight": 900,
+    "Labels": [
+      "CHRONICLE",
+      "YOUR WANDERERS AND DISCOVERIES",
+      "1 climbs · 1 victories · Act 3 reached",
+      "Unlocked · Gilded Oathsworn\n",
+      "Locked · Eclipse Habit\nWin a run as the Starseer.",
+      "Unlocked · Ashen Vigil\n",
+      "Unlocked · Ossuary Weave\n",
+      "Locked · The Grave Warden\nWin three runs.",
+      "Unlocked · The Ash Child\n",
+      "Unlocked · Warden Mail\n",
+      "Unlocked · Starlit Silks\n",
+      "Locked · Astral Vestment\nWin two runs.",
+      "Unlocked · Emberlight Habit\n",
+      "Unlocked · Pilgrim Wrap\n",
+      "Unlocked · Second Main-hand Slot\n",
+      "Unlocked · Third Main-hand Slot\n",
+      "Unlocked · Second Off-hand Slot\n",
+      "Locked · Third Off-hand Slot\nWin two runs.",
+      "Locked · Duelist Jerkin\nWin a run as the Rogue.",
+      "Unlocked · Nightveil Coat\n",
+      "Unlocked · Shadow Mantle\n",
+      "Recent climbs",
+      "Reaver · Victory · Act 3, floor 13\n22 fights · 1622 damage dealt · Seed 1"
+    ],
+    "LayoutAttempts": 1
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "physicalDevice": false
+}

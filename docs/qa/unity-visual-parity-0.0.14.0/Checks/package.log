@@ -1,0 +1,14 @@
+Companion package: 442 source and binary checks passed
+Native download receipts: 160 exported-file checks passed
+file:///C:/repos/AshenSpire-Unity-map-33/tools/unity-package.mjs:26
+ if(stamp.sourceDigest!==digest||stamp.version!==version.Version||stamp.buildNumber!==version.BuildNumber||stamp.target!==platform)throw Error(`${platform} was built from different source/version. Rebuild all targets before packaging.`);
+                                                                                                                                         ^
+
+Error: Windows was built from different source/version. Rebuild all targets before packaging.
+    at platformStamp (file:///C:/repos/AshenSpire-Unity-map-33/tools/unity-package.mjs:26:138)
+    at file:///C:/repos/AshenSpire-Unity-map-33/tools/unity-package.mjs:37:33
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:633:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.16.0
