@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {mkdirSync, writeFileSync, existsSync, readFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
+import {planArchiveHosting} from './unity-archive-hosting.mjs';
 
 export const historyChannels = ['dev', 'test', 'release', 'main'];
 const hash = data => createHash('sha256').update(data).digest('hex');
@@ -22,8 +23,10 @@ function changesAt(root, commit) {
   return Object.fromEntries(['Added','Changed','Fixed'].map(key => [key, Array.isArray(changes[key]) ? changes[key].filter(v => typeof v === 'string') : []]));
 }
 export function collectHistory(root, refs = Object.fromEntries(historyChannels.map(c => [c, `origin/${c}`]))) {
-  const builds = new Map(), channels = {};
-  for (const channel of historyChannels) {
+  const builds = new Map(), channels = Object.create(null);
+  // Default channels stay present; named preview refs add membership without
+  // changing promotion or deduplicating away their own history list.
+  for (const channel of new Set([...historyChannels,...Object.keys(refs)])) {
     const ref = refs[channel];
     if (!ref) { channels[channel] = []; continue; }
     let tip;
@@ -63,7 +66,8 @@ export async function resolvePullRequests(builds, repository, token = process.en
     const declared = build.manifest.pullRequest;
     const number = typeof declared === 'number' ? declared : declared?.number;
     if (Number.isSafeInteger(number) && number > 0) {
-      build.pullRequests = [{number, url:`https://github.com/${repository}/pull/${number}`, provenance:'build manifest'}];
+      build.pullRequests = [{number, url:`https://github.com/${repository}/pull/${number}`, state:'unknown',draft:null,merged:null,provenance:'build manifest'}];
+      build.pullRequestStatus = 'declared: PR state not verified';
       continue;
     }
     if (!token) { build.pullRequestStatus = 'unknown: no GitHub API credential supplied'; continue; }
@@ -74,8 +78,11 @@ export async function resolvePullRequests(builds, repository, token = process.en
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
       if (!Array.isArray(result)) throw new Error('Malformed associated PR response');
-      build.pullRequests = result.filter(pr => pr.merged_at && pr.base?.repo?.full_name?.toLowerCase() === repository.toLowerCase()).map(pr => ({number:pr.number,url:`https://github.com/${repository}/pull/${pr.number}`,provenance:'GitHub commit associated pull requests'}));
-      build.pullRequestStatus = build.pullRequests.length ? 'verified' : 'unknown: no merged associated PR found';
+      build.pullRequests = result.filter(pr => Number.isSafeInteger(pr.number) && pr.number > 0 && pr.base?.repo?.full_name?.toLowerCase() === repository.toLowerCase()).map(pr => ({
+        number:pr.number,url:`https://github.com/${repository}/pull/${pr.number}`,
+        state:pr.merged_at?'merged':['open','closed'].includes(pr.state)?pr.state:'unknown',
+        draft:typeof pr.draft==='boolean'?pr.draft:null,merged:Boolean(pr.merged_at),provenance:'GitHub commit associated pull requests'}));
+      build.pullRequestStatus = build.pullRequests.length ? 'verified' : 'unknown: no associated PR found';
     } catch (error) { build.pullRequestStatus = `unknown: GitHub lookup failed (${error.message})`; }
   }
 }
@@ -87,16 +94,35 @@ function writeImmutable(path, bytes) {
   }
   mkdirSync(dirname(path), {recursive:true}); writeFileSync(path, bytes);
 }
-export function materializeHistory(root, out, history) {
+export function materializeHistory(root, out, history, {remoteRuntime=false} = {}) {
   let bytes = 0;
   for (const build of history.builds) {
+    let hosting;
+    if (remoteRuntime) {
+      if (!/^build-[a-f0-9]{20}$/.test(build.id)) throw new Error('Unsafe archive ID');
+      const originalIndex = git(root,['show',`${build.commit}:Published/Web/index.html`],null);
+      hosting = planArchiveHosting(originalIndex.toString('utf8'),build);
+    }
+    const omitted = new Set(hosting?.omittedPaths ?? []);
+    const tree = new Map(build.tree.map(file => [file.path,file.blob]));
     const files = [...build.tree.map(f => f.path), ...['build.json','changelog.json','validation.json'].map(f => `Published/${f}`).filter(p => build.paths.includes(p))];
     for (const path of files) {
       const relative = safeArtifactPath(path);
       const content = git(root, ['show',`${build.commit}:${path}`], null);
+      if (remoteRuntime && tree.has(path)) {
+        const blob = tree.get(path);
+        const actual = createHash(blob.length === 64 ? 'sha256' : 'sha1').update(`blob ${content.length}\0`).update(content).digest('hex');
+        if (actual !== blob) throw new Error(`Archived Git blob mismatch: ${build.commit}/${relative}`);
+      }
       const expected = build.manifest.files?.[relative];
       if (expected && hash(content) !== expected) throw new Error(`Archived artifact hash mismatch: ${build.commit}/${relative}`);
-      writeImmutable(join(out,'builds',build.id,relative), content); bytes += content.length;
+      if (omitted.has(path)) continue; // Omission happens only AFTER exact-byte validation.
+      const hosted = hosting && path === 'Published/Web/index.html' ? Buffer.from(hosting.html,'utf8') : content;
+      writeImmutable(join(out,'builds',build.id,relative), hosted); bytes += hosted.length;
+    }
+    if (hosting) {
+      const receipt = Buffer.from(JSON.stringify(hosting.receipt,null,2)+'\n','utf8');
+      writeImmutable(join(out,'builds',build.id,'hosting.json'),receipt); bytes += receipt.length;
     }
   }
   return bytes;

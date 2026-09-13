@@ -1,0 +1,314 @@
+// Git-backed channel storage checks: promotion must save bytes without changing
+// channel identity, history, evidence or runtime URL queries. Fixtures are tiny
+// synthetic files, not a Unity gameplay or browser acceptance claim.
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,readdirSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,dirname,resolve,relative} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {rewriteChannelPlayer,planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
+import {collectHistory,materializeHistory} from './unity-build-history.mjs';
+import {materializePublished} from './unity-git-blobs.mjs';
+
+const fixture=mkdtempSync(join(tmpdir(),'ashenspire-channel-storage-'));
+const root=join(fixture,'repo');mkdirSync(root);
+const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','pipe']}).trim();
+git(['init']);git(['config','user.name','Channel fixture']);git(['config','user.email','channel@example.invalid']);git(['config','core.autocrlf','false']);
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const runtimeNames=['Web.loader.js','Web.data','Web.framework.js','Web.wasm'];
+const suffix='?build='+ 'd'.repeat(64)+'&quality=high#keep';
+const modern=`<!doctype html>\r\n<meta charset="utf-8"><title>灰 · unchanged channel</title>
+<script src="Build/Web.loader.js${suffix}"></script>
+<script>
+const channel=location.pathname.split('/').find(p=>['dev','test','release','main'].includes(p))||'local';
+createUnityInstance(canvas,{dataUrl:'Build/Web.data${suffix}',frameworkUrl:'Build/Web.framework.js${suffix}',codeUrl:'Build/Web.wasm${suffix}',streamingAssetsUrl:'StreamingAssets',productVersion:'0.0.12.0'});
+</script>`;
+const bytes=new Map();
+function put(path,value){const data=Buffer.isBuffer(value)?value:Buffer.from(value);bytes.set(path,data);mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
+function manifest(version,number){
+ const authored=folder=>readdirSync(join(root,folder),{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?authored(folder+'/'+entry.name):[folder+'/'+entry.name]);
+ put('Published/build.json',JSON.stringify({version,buildNumber:number,sourceCommit:'a'.repeat(40),builtAt:'2026-09-07T00:00:00Z',files:Object.fromEntries(authored('Published/Web').map(path=>[path.slice(10),hash(readFileSync(join(root,path)))]))}));
+}
+function commit(message){git(['add','Published']);git(['commit','-m',message]);return git(['rev-parse','HEAD']);}
+function selected(channel,commit){
+ const files=git(['ls-tree','-r',commit,'--','Published']).split('\n').filter(Boolean).map(line=>{const m=/^(\d+) blob ([a-f0-9]+)\t(.+)$/.exec(line);assert(m);return {mode:m[1],blob:m[2],path:m[3]};});
+ return {channel,commit,files,html:execFileSync('git',['show',commit+':Published/Web/index.html'],{cwd:root,encoding:'utf8',windowsHide:true})};
+}
+// Historical version labels can be old while the tiny export remains a complete
+// recognized player. Every required runtime file has a hash of its actual bytes.
+put('Published/Web/index.html',modern.replace("productVersion:'0.0.12.0'","productVersion:'0.9.0'"));
+for(const [index,name] of runtimeNames.entries())put('Published/Web/Build/'+name,Buffer.from([0,10,13,255,index]));
+put('Published/changelog.json',JSON.stringify({Added:['Original checkpoint'],Changed:[],Fixed:[]}));
+put('Published/NativeEvidence/Guide.md','![Exact screenshot](Shots/phone.png)\r\n');
+put('Published/NativeEvidence/Shots/phone.png',Buffer.from([137,80,78,71,0,255,10,13]));
+put('Published/AudioEvidence/hit.wav',Buffer.from([82,73,70,70,0,128,255]));
+put('Published/validation.json','{"passed":true,"origin":"legacy"}');
+put('Published/Web.zip',Buffer.from([80,75,0,255]));
+manifest('0.9.0');const legacy=commit('Legacy');
+put('Published/Web/index.html',modern);
+for(const [index,name] of runtimeNames.entries())put('Published/Web/Build/'+name,Buffer.from([0,10,13,255,index]));
+put('Published/Web/build-source.json','{"sourceDigest":"'+ 'd'.repeat(64)+'"}');
+put('Published/Web/renderer-workaround.json','{"algorithm":"fixture"}');
+manifest('0.0.12.0',12);const current=commit('Current player');
+put('Published/validation.json','{"passed":true,"origin":"test promotion"}');
+manifest('0.0.12.0',12);const evidence=commit('Same player, new validation');
+put('Published/NativeEvidence/Shots/phone.png',Buffer.from([137,80,78,71,1,255,10,13]));
+manifest('0.0.12.0',12);const changedEvidence=commit('Different screenshot, same player');
+put('Published/Web/Build/Web.wasm',Buffer.from([0,10,13,255,99]));
+manifest('0.0.12.0',12);const changedRuntime=commit('Different player, same version');
+// Keep unsupported-template fallback as a genuine, separate Git fixture without
+// inserting an intentionally unsupported player into the full-site happy path.
+git(['checkout','-b','unsupported-template',legacy]);
+put('Published/Web/index.html','<!doctype html><p>Legacy player, original 0.9.0</p>');
+manifest('0.9.0');const unsupported=commit('Unrecognized historical template');
+const unsupportedHistory=collectHistory(root,{release:unsupported});
+git(['checkout','--detach',changedRuntime]);bytes.set('Published/Web/index.html',Buffer.from(modern));
+const history=collectHistory(root,{dev:changedRuntime,test:current,release:legacy,main:evidence});
+let checks=0;
+function check(name,action){action();checks++;console.log('PASS '+name);}
+const clone=value=>structuredClone(value);
+const rows=[selected('dev',current),selected('test',evidence),selected('release',changedEvidence),selected('main',changedRuntime)];
+const before=JSON.stringify({rows,history});
+const plan=planChannelStorage(rows,history.builds);
+const channel=name=>plan.channels[name];
+const webPath='Published/Web/Build/Web.wasm';
+check('promotion and evidence changes retain actual Web archive identity',()=>{
+ assert.equal(history.builds.length,3);
+ assert.equal(channel('dev').archiveId,channel('test').archiveId);
+ assert.equal(channel('dev').archiveId,channel('release').archiveId);
+ assert.notEqual(channel('dev').archiveId,channel('main').archiveId);
+ assert(history.builds.some(build=>build.id===channel('dev').archiveId));
+});
+check('planning does not mutate channel or immutable history inputs',()=>assert.equal(JSON.stringify({rows,history}),before));
+check('tree enumeration order cannot change immutable identity or evidence reuse',()=>{
+ const shuffled=clone(rows);for(const row of shuffled)row.files.reverse();
+ const archives=clone(history.builds);for(const build of archives)build.tree.reverse();
+ const result=planChannelStorage(shuffled,archives);
+ for(const row of rows){assert.equal(result.channels[row.channel].archiveId,channel(row.channel).archiveId);assert.deepEqual(result.channels[row.channel].sharedFolders,channel(row.channel).sharedFolders);}
+});
+check('identical evidence folders share their complete original tree',()=>{
+ assert.equal(channelAssetUrl(plan,'dev','Published/NativeEvidence/Guide.md'),'NativeEvidence/Guide.md');
+ assert.equal(channelAssetUrl(plan,'test','Published/NativeEvidence/Guide.md'),'../dev/NativeEvidence/Guide.md');
+ assert(!channel('test').copyPaths.some(path=>path.startsWith('Published/NativeEvidence/')));
+});
+check('one changed screenshot retains the whole differing evidence folder',()=>{
+ for(const path of ['Published/NativeEvidence/Guide.md','Published/NativeEvidence/Shots/phone.png'])assert(channel('release').copyPaths.includes(path));
+ assert.equal(channelAssetUrl(plan,'release','Published/NativeEvidence/Guide.md'),'NativeEvidence/Guide.md');
+ assert.equal(channelAssetUrl(plan,'release','Published/AudioEvidence/hit.wav'),'../dev/AudioEvidence/hit.wav');
+});
+check('folder membership and excluded downloads still prevent false evidence sharing',()=>{
+ for(const mutation of ['added','removed','download']){
+  const selectedRows=clone(rows.slice(0,2));const changed=selectedRows[1];
+  if(mutation==='removed')changed.files=changed.files.filter(file=>file.path!=='Published/NativeEvidence/Shots/phone.png');
+  else changed.files.push({path:'Published/NativeEvidence/'+(mutation==='download'?'archive.zip':'extra.json'),blob:'c'.repeat(40),mode:'100644'});
+  const result=planChannelStorage(selectedRows,history.builds);assert.equal(channelAssetUrl(result,'test','Published/NativeEvidence/Guide.md'),'NativeEvidence/Guide.md');assert(result.channels.test.copyPaths.includes('Published/NativeEvidence/Guide.md'));
+ }
+});
+check('sharing works in any channel order and never depends on dev being selected',()=>{
+ const selectedRows=[selected('test',current),selected('release',current),selected('main',current)];const result=planChannelStorage(selectedRows,history.builds);
+ assert.equal(result.channels.dev,undefined);assert.equal(channelAssetUrl(result,'main','Published/NativeEvidence/Guide.md'),'../test/NativeEvidence/Guide.md');
+ assert(result.channels.test.copyPaths.includes('Published/NativeEvidence/Guide.md'));
+});
+check('URL encoding preserves spaces, Unicode and literal percent signs in evidence names',()=>{
+ const selectedRows=clone(rows.slice(0,2)),path='Published/NativeEvidence/灰 100% #?.png';
+ for(const row of selectedRows)row.files.push({path,blob:'c'.repeat(40),mode:'100644'});
+ const result=planChannelStorage(selectedRows,history.builds),url=new URL(channelAssetUrl(result,'test',path),'https://example.invalid/game/test/');
+ assert.equal(url.search,'');assert.equal(url.hash,'');assert.equal(decodeURIComponent(url.pathname),'/game/dev/NativeEvidence/灰 100% #?.png');
+});
+check('per-channel validation and manifests remain local even when equal',()=>{
+ for(const row of rows)for(const path of ['Published/build.json','Published/validation.json','Published/changelog.json']){
+  assert(channel(row.channel).copyPaths.includes(path));assert.equal(channelAssetUrl(plan,row.channel,path),path.slice(10));
+ }
+});
+check('same version with changed runtime bytes selects a distinct archived payload',()=>{
+ assert.notEqual(channelAssetUrl(plan,'dev',webPath),channelAssetUrl(plan,'main',webPath));
+ assert(!channel('dev').copyPaths.includes(webPath));
+});
+check('modern channels keep loader HTML at their own browser location',()=>{
+ for(const row of rows){assert.equal(channel(row.channel).player.rewritten,true);assert.equal(channelAssetUrl(plan,row.channel,'Published/Web/index.html'),'Web/index.html');
+  const html=channel(row.channel).player.html;assert(html.includes("const channel=location.pathname.split('/')"));assert(!html.includes('<base'));assert(!html.includes('location.replace'));assert(!html.includes('http-equiv="refresh"'));
+ }
+});
+check('exactly the four runtime URL paths change and every query fragment is retained',()=>{
+ const id=channel('dev').archiveId,result=rewriteChannelPlayer(modern,id);assert(result.rewritten);
+ let restored=result.html;for(const name of runtimeNames){const original='Build/'+name+suffix,shared='../../builds/'+id+'/Web/Build/'+name+suffix;assert(result.html.includes(shared),name);restored=restored.replace(shared,original);}
+ assert.equal(restored,modern);assert.equal(result.html.match(/quality=high#keep/g).length,4);
+});
+check('queryless runtime URLs also preserve unrelated text',()=>{
+ const original=modern.split(suffix).join(''),result=rewriteChannelPlayer(original,channel('dev').archiveId);assert(result.rewritten);
+ let restored=result.html;for(const name of runtimeNames)restored=restored.replace('../../builds/'+channel('dev').archiveId+'/Web/Build/'+name,'Build/'+name);assert.equal(restored,original);
+});
+check('unknown loader shapes fall back to byte-identical local Web storage',()=>{
+ const row=selected('dev',unsupported),legacyPlan=planChannelStorage([row],unsupportedHistory.builds),choice=legacyPlan.channels.dev;
+ assert.equal(choice.player.rewritten,false);assert.equal(choice.player.html,row.html);
+ for(const file of row.files.filter(file=>file.path.startsWith('Published/Web/')))assert(choice.copyPaths.includes(file.path));
+ assert.equal(channelAssetUrl(legacyPlan,'dev','Published/Web/index.html'),'Web/index.html');
+ assert.equal(choice.archiveId,unsupportedHistory.channels.release.at(-1));
+});
+check('partial or duplicate loader patterns never get partly rewritten',()=>{
+ const cases=[modern.replace("codeUrl:'Build/Web.wasm","codeUrl:'Other/Web.wasm"),modern.replace('<script src=', '<script src="Build/Web.loader.js'+suffix+'"></script><script src='),'<script>const dataUrl="Build/Web.data";</script>','<base href="/another/">'+modern,modern.replace("dataUrl:'Build/Web.data", "dataUrl:'https://example.invalid/Build/Web.data"),modern.replace("codeUrl:'Build/Web.wasm", "codeUrl:'../Build/Web.wasm")];
+ for(const html of cases){const result=rewriteChannelPlayer(html,channel('dev').archiveId);assert.equal(result.rewritten,false);assert.equal(result.html,html);}
+});
+check('SHA-256 Git object identities are accepted without conflating different blobs',()=>{
+ const row=clone(rows[0]);row.commit='a'.repeat(64);for(const file of row.files)file.blob=hash(file.blob);
+ const archive={id:'build-'+ 'b'.repeat(20),tree:row.files.filter(file=>file.path.startsWith('Published/Web/')).map(({path,blob})=>({path,blob}))};
+ assert.equal(planChannelStorage([row],[archive]).channels.dev.archiveId,archive.id);
+ row.files.find(file=>file.path===webPath).blob='e'.repeat(64);assert.throws(()=>planChannelStorage([row],[archive]),/exact immutable archive/);
+});
+check('non-text templates and unresolved channel commits are refused',()=>{
+ for(const html of [null,{},Buffer.from(modern)])assert.throws(()=>rewriteChannelPlayer(html,channel('dev').archiveId));
+ for(const commit of ['HEAD','origin/dev','abc','']){const row=clone(rows[0]);row.commit=commit;assert.throws(()=>planChannelStorage([row],history.builds));}
+});
+check('unsafe archive destinations are refused',()=>{
+ for(const id of ['../dev','build-'+ 'a'.repeat(19),'build-'+ 'a'.repeat(21),'build-'+ 'A'.repeat(20),'build-'+ 'a'.repeat(20)+'/../escape','https://outside.invalid','',null])assert.throws(()=>rewriteChannelPlayer(modern,id));
+});
+check('unknown channel or unplanned artifact cannot invent a public URL',()=>{
+ for(const name of ['unknown','../dev','DEV',''])assert.throws(()=>channelAssetUrl(plan,name,'Published/build.json'));
+ for(const path of ['Published/missing.txt','Published/../escape','Web/index.html'])assert.throws(()=>channelAssetUrl(plan,'dev',path));
+});
+check('unsafe paths, special file modes, invalid blobs and collisions refuse planning',()=>{
+ const base=selected('dev',current);
+ for(const path of ['Published/../escape','Published//bad','Published/./bad','Published/Web\\bad','Published/x\ny','Published/C:/bad','Published/NUL.txt']){
+  const row=clone(base);row.files.push({path,blob:'a'.repeat(40),mode:'100644'});assert.throws(()=>planChannelStorage([row],history.builds),path);
+ }
+ for(const patch of [{blob:'not-a-blob'},{mode:'120000'},{mode:'040000'}]){const row=clone(base);Object.assign(row.files[0],patch);assert.throws(()=>planChannelStorage([row],history.builds));}
+ const duplicate=clone(base);duplicate.files.push(clone(duplicate.files[0]));assert.throws(()=>planChannelStorage([duplicate],history.builds));
+ const alias=clone(base);alias.files.push({path:'Published/nativeevidence/other.txt',blob:'a'.repeat(40),mode:'100644'});assert.throws(()=>planChannelStorage([alias],history.builds));
+});
+check('unselected, duplicate and unsafe channel identities are refused',()=>{
+ for(const name of ['other','DEV','../dev','']){const row=clone(rows[0]);row.channel=name;assert.throws(()=>planChannelStorage([row],history.builds));}
+ assert.throws(()=>planChannelStorage([rows[0],clone(rows[0])],history.builds));
+});
+check('an unmatched full Web tree is refused rather than trusting version or digest',()=>{
+ const altered=clone(rows[0]);altered.files.find(file=>file.path===webPath).blob='f'.repeat(40);
+ assert.throws(()=>planChannelStorage([altered],history.builds),/exact immutable archive/);
+});
+check('missing and additional Web artifacts invalidate archive reuse',()=>{
+ for(const mutation of ['missing','extra']){const row=clone(rows[0]);if(mutation==='missing')row.files=row.files.filter(file=>file.path!==webPath);else row.files.push({path:'Published/Web/extra.bin',blob:'a'.repeat(40),mode:'100644'});
+  assert.throws(()=>planChannelStorage([row],history.builds),/exact immutable archive/);
+ }
+});
+check('public channel URLs resolve to exact committed bytes after materialization',()=>{
+ const out=join(fixture,'site');materializeHistory(root,out,history);
+ for(const row of rows){materializePublished(root,row.commit,channel(row.channel).copyPaths,join(out,row.channel));mkdirSync(join(out,row.channel,'Web'),{recursive:true});writeFileSync(join(out,row.channel,'Web/index.html'),channel(row.channel).player.html);}
+ for(const row of rows){
+  for(const file of row.files.filter(file=>!(/\.(zip|apk)$/i.test(file.path))&&file.path!=='Published/Web/index.html')){
+   const url=new URL(channelAssetUrl(plan,row.channel,file.path),'https://example.invalid/AshenSpire-Unity/'+row.channel+'/');assert.equal(url.origin,'https://example.invalid');assert(url.pathname.startsWith('/AshenSpire-Unity/'));
+   const target=resolve(out,decodeURIComponent(url.pathname.slice('/AshenSpire-Unity/'.length)));assert(!relative(out,target).startsWith('..'));assert(existsSync(target),file.path);
+   const expected=execFileSync('git',['show',row.commit+':'+file.path],{cwd:root,windowsHide:true,maxBuffer:1024*1024});assert.deepEqual(readFileSync(target),expected,file.path+' for '+row.channel);
+  }
+  const html=readFileSync(join(out,row.channel,'Web/index.html'),'utf8');
+  for(const name of runtimeNames){const match=html.match(new RegExp("(?:src=\"|(?:dataUrl|frameworkUrl|codeUrl):')([^\"']*"+name.replaceAll('.','\\.')+"[^\"']*)"));assert(match,name);
+   const url=new URL(match[1],'https://example.invalid/AshenSpire-Unity/'+row.channel+'/Web/?channelQuery=retained');assert.equal(url.search,'?build='+ 'd'.repeat(64)+'&quality=high');assert.equal(url.hash,'#keep');
+   const target=join(out,decodeURIComponent(url.pathname.slice('/AshenSpire-Unity/'.length)));const expected=execFileSync('git',['show',row.commit+':Published/Web/Build/'+name],{cwd:root,windowsHide:true});assert.deepEqual(readFileSync(target),expected);
+  }
+ }
+ // Sharing an entire evidence folder keeps its own relative image links valid.
+ const guide=new URL(channelAssetUrl(plan,'test','Published/NativeEvidence/Guide.md'),'https://example.invalid/AshenSpire-Unity/test/');const image=new URL('Shots/phone.png',guide);
+ assert.deepEqual(readFileSync(join(out,image.pathname.slice('/AshenSpire-Unity/'.length))),execFileSync('git',['show',evidence+':Published/NativeEvidence/Shots/phone.png'],{cwd:root,windowsHide:true}));
+});
+const presentation={guide:'Published/NativeEvidence/Guide.md',screenshots:['Published/NativeEvidence/Shots/phone.png']};
+check('missing presentation metadata leaves historical selection in charge',()=>{
+ assert.equal(parseChannelPresentation(plan,'dev',undefined),null);
+});
+check('current presentation validates against exact selected artifacts and shared URLs',()=>{
+ const text=JSON.stringify(presentation),result=parseChannelPresentation(plan,'test',text);
+ assert.deepEqual(result,presentation);assert.equal(JSON.stringify(presentation),text);
+ assert.equal(channelAssetUrl(plan,'test',result.guide),'../dev/NativeEvidence/Guide.md');
+ assert.equal(channelAssetUrl(plan,'test',result.screenshots[0]),'../dev/NativeEvidence/Shots/phone.png');
+});
+check('explicit malformed presentation never silently falls back',()=>{
+ for(const text of ['{','null','[]','true','1','"string"','{}',null,{},JSON.stringify({guide:presentation.guide}),
+  JSON.stringify({...presentation,extra:'ignored'}),JSON.stringify({...presentation,screenshots:[]}),
+  JSON.stringify({...presentation,screenshots:'not an array'}),JSON.stringify({...presentation,screenshots:Array(33).fill(presentation.screenshots[0])}),
+  JSON.stringify({...presentation,screenshots:[...presentation.screenshots,...presentation.screenshots]}),' '.repeat(32769)])assert.throws(()=>parseChannelPresentation(plan,'dev',text));
+});
+check('presentation guide and screenshot formats cannot select executable or wrong media',()=>{
+ for(const guide of [null,{},123,'Published/validation.json','Published/Web/index.html'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,guide})));
+ for(const image of [null,{},123,presentation.guide,'Published/AudioEvidence/hit.wav'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,screenshots:[image]})));
+});
+check('presentation paths cannot escape or refer to unselected/misspelled files',()=>{
+ for(const guide of ['Published/../Guide.md','Published//Guide.md','Published/NativeEvidence\\Guide.md','https://outside.invalid/Guide.md','Published/missing.md','Published/nativeevidence/Guide.md'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,guide})));
+ for(const image of ['Published/../shot.png','Published/NativeEvidence/../../shot.png','Published/NUL.png','Published/missing.png','Published/NativeEvidence/Shots/Phone.png'])assert.throws(()=>parseChannelPresentation(plan,'dev',JSON.stringify({...presentation,screenshots:[image]})));
+});
+check('presentation screenshot order is preserved with the bounded maximum',()=>{
+ const selectedRows=clone(rows.slice(0,1));const paths=Array.from({length:32},(_,index)=>`Published/Current/shot-${index}.png`);
+ for(const path of paths)selectedRows[0].files.push({path,blob:'c'.repeat(40),mode:'100644'});
+ const result=planChannelStorage(selectedRows,history.builds),screenshots=[...paths].reverse();
+ assert.deepEqual(parseChannelPresentation(result,'dev',JSON.stringify({...presentation,screenshots})).screenshots,screenshots);
+});
+
+// Assemble the actual page generator against tiny committed inputs. This catches
+// a correct validator that is accidentally ignored by the rendered guide/gallery.
+put('Published/NativeEvidence/gallery.json',JSON.stringify(presentation.screenshots));
+const fallbackCommit=commit('Native gallery fallback');
+put('Published/CombatReadability/Guide.md','# Current guide\n![Phone](01-phone.png)\n');
+put('Published/CombatReadability/01-phone.png',Buffer.from([137,80,78,71,42]));
+put('Published/CombatReadability/02-desktop.png',Buffer.from([137,80,78,71,43]));
+const currentPresentation={guide:'Published/CombatReadability/Guide.md',screenshots:['Published/CombatReadability/02-desktop.png','Published/CombatReadability/01-phone.png']};
+put('Published/presentation.json',JSON.stringify(currentPresentation));
+const presentationCommit=commit('Select current presentation without changing existing evidence');
+writeFileSync(join(root,'AshenSpire.html'),'<!doctype html><title>Original fixture</title>');
+const assembler=fileURLToPath(new URL('./unity-pages.mjs',import.meta.url));
+function assemble(name,dev,test){
+ const out=join(fixture,name);
+ execFileSync(process.execPath,[assembler],{cwd:root,encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,GITHUB_TOKEN:'',UNITY_PAGES_OUT:out,UNITY_PAGES_DEV_REF:dev,UNITY_PAGES_TEST_REF:test,UNITY_PAGES_RELEASE_REF:'missing',UNITY_PAGES_MAIN_REF:'missing'}});
+ return out;
+}
+let presentationOut;
+check('actual channel page uses current guide/gallery while missing metadata preserves fallback',()=>{
+ const out=presentationOut=assemble('presentation-site',presentationCommit,fallbackCommit);
+ const currentHtml=readFileSync(join(out,'dev/index.html'),'utf8'),fallbackHtml=readFileSync(join(out,'test/index.html'),'utf8');
+ assert(currentHtml.includes('href="CombatReadability/Guide.md">What to try in this build'));
+ assert(!currentHtml.includes('href="NativeEvidence/Guide.md">What to try in this build'));
+ const currentImages=[...currentHtml.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]);
+ assert.deepEqual(currentImages,['CombatReadability/02-desktop.png','CombatReadability/01-phone.png']);
+ const fallbackImages=[...fallbackHtml.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]);
+ assert.deepEqual(fallbackImages,['../dev/NativeEvidence/Shots/phone.png']);
+ assert(fallbackHtml.includes('href="../dev/NativeEvidence/Guide.md">What to try in this build'));
+ assert(!existsSync(join(out,'test/NativeEvidence')),'unchanged NativeEvidence folder duplicated');
+ for(const file of ['Guide.md','01-phone.png','02-desktop.png'])assert.deepEqual(readFileSync(join(out,'dev/CombatReadability',file)),bytes.get('Published/CombatReadability/'+file));
+ assert.equal(git(['rev-parse',fallbackCommit+':Published/NativeEvidence']),git(['rev-parse',presentationCommit+':Published/NativeEvidence']));
+});
+check('actual assembler keeps historical WASM local and omits only receipted data bytes',()=>{
+ const assembled=collectHistory(root,{dev:presentationCommit,test:fallbackCommit});
+ for(const build of assembled.builds){
+  const archive=join(presentationOut,'builds',build.id),original=execFileSync('git',['show',build.commit+':Published/Web/index.html'],{cwd:root,encoding:'utf8',windowsHide:true});
+  const hosted=readFileSync(join(archive,'Web/index.html'),'utf8'),receipt=JSON.parse(readFileSync(join(archive,'hosting.json'),'utf8'));
+  assert.equal(hosted,original.replace('Build/Web.data',`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${build.commit}/Published/Web/Build/Web.data`));
+  assert.equal(receipt.policy,'exact-commit-raw-data-v1');assert.equal(receipt.originalIndexSha256,hash(original));assert.equal(receipt.hostedIndexSha256,hash(hosted));
+  assert.deepEqual(receipt.runtime.map(file=>file.path),['Published/Web/Build/Web.data']);
+  assert.equal(receipt.runtime[0].sha256,build.manifest.files['Web/Build/Web.data']);
+  assert(!existsSync(join(archive,'Web/Build/Web.data')));
+  for(const name of ['Web.loader.js','Web.framework.js','Web.wasm']){
+   const actual=readFileSync(join(archive,'Web/Build',name)),expected=execFileSync('git',['show',build.commit+':Published/Web/Build/'+name],{cwd:root,windowsHide:true});
+   assert.deepEqual(actual,expected);assert.equal(hash(actual),build.manifest.files['Web/Build/'+name]);
+  }
+ }
+});
+check('actual channel launch preserves browser identity and resolves data to exact archive commit',()=>{
+ const assembled=collectHistory(root,{dev:presentationCommit,test:fallbackCommit});
+ for(const channel of ['dev','test']){
+  const html=readFileSync(join(presentationOut,channel,'Web/index.html'),'utf8');
+  const archive=assembled.builds.find(build=>build.id===assembled.channels[channel].at(-1));
+  assert(html.includes("const channel=location.pathname.split('/')"));assert(html.includes("streamingAssetsUrl:'StreamingAssets'"));
+  assert(html.includes(`dataUrl:'https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${archive.commit}/Published/Web/Build/Web.data${suffix}'`));
+  for(const name of ['Web.loader.js','Web.framework.js','Web.wasm'])assert(html.includes(`../../builds/${archive.id}/Web/Build/${name}${suffix}`));
+  assert(!existsSync(join(presentationOut,channel,'Web/Build/Web.data')));
+ }
+});
+check('promoted presentation resolves current guide/screenshots through shared folder ownership',()=>{
+ const out=assemble('promoted-presentation-site',presentationCommit,presentationCommit);
+ const html=readFileSync(join(out,'test/index.html'),'utf8');
+ assert(html.includes('href="../dev/CombatReadability/Guide.md">What to try in this build'));
+ assert.deepEqual([...html.matchAll(/<img[^>]*src="([^"]+)"/g)].map(match=>match[1]),['../dev/CombatReadability/02-desktop.png','../dev/CombatReadability/01-phone.png']);
+ assert(!existsSync(join(out,'test/CombatReadability')));
+});
+put('Published/presentation.json','{malformed');const malformedPresentation=commit('Malformed explicit selection');
+check('actual assembler refuses malformed explicit metadata instead of showing old evidence',()=>{
+ assert.throws(()=>assemble('malformed-presentation-site',malformedPresentation,fallbackCommit),error=>/Invalid presentation manifest JSON/.test(String(error.stderr)));
+ assert(!existsSync(join(fixture,'malformed-presentation-site/dev/index.html')));
+});
+console.log(`${checks} checks passed; fixture preserved at ${fixture}`);

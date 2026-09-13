@@ -1,0 +1,26 @@
+gatelist.mjs --selftest — same-door known-bad corpus (10 plant(s))
+DOOR: each plant enters as FILE BYTES in a copied real tree at the file(s) named below —
+      the same file the real defect would ship in. The tool then runs WHOLE from that
+      copy (cwd = copy root): readFileSync, the import graph, serve.mjs and any browser
+      boot all read the planted bytes. Nothing is handed to an inner function directly.
+      A plant carrying `prep` runs that command in the copy first, so a two-stage
+      content door (spreadsheet -> content-build -> generated module) is travelled whole.
+      Revert = the copy is discarded; the real tree is never edited.
+      VERDICTS: CAUGHT = failed by its own named red · UNCAUGHT = tool stayed green
+                (blind check, or the plant's premise moved) · RED-FOR-WRONG-REASON =
+                failed by some OTHER red · RED-NOT-EXIT = red printed, exit still 0 ·
+                DRIFTED = the find-string is gone, so the plant never armed at all.
+  CAUGHT  "every invocation of a tool is moved into an echo, so it is prose wearing coverage" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G1 — 1 step(s) NAME a tool in executed output that the SAME step does not invoke, and state no cost — a step that has quietly stopped r
+  CAUGHT  "a listed invocation has its exit status swallowed by `|| true`" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G4 — 1 invocation(s) in a SHELL gate list run with their exit status DISCARDED — listed, and silent: tools/unity-build-history.test.mjs
+  CAUGHT  "a listed invocation is silenced by continue-on-error instead of by the shell" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G4 — 1 invocation(s) in a SHELL gate list run with their exit status DISCARDED — listed, and silent: tools/unity-package.mjs in .github
+  CAUGHT  "an exclusion declaration keeps the tool name and states no cost" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G1 — 1 step(s) NAME a tool in executed output that the SAME step does not invoke, and state no cost — a step that has quietly stopped r
+  CAUGHT  "a JS list drops an invocation while its printed command-form hint survives" -> tests/run-node.mjs — exit 1; red named: BAD  G1 — 1 step(s) NAME a tool in executed output that the SAME step does not invoke, and state no cost — a step that has quietly stopped r
+  CAUGHT  "ONE step is emptied into an echo while a sibling step keeps the tool listed" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G1 — 1 step(s) NAME a tool in executed output that the SAME step does not invoke, and state no cost — a step that has quietly stopped r
+  CAUGHT  "a declared gate list stops being recognisable and the census may not shrink quietly" -> .github/workflows/unity-pages.yml — exit 2; red named: BAD  G3 — .github/workflows/unity-pages.yml: no `run:` payloads were read — the workflow reader did not recognise this file's shape, so abse
+  CAUGHT  "the census cannot be taken, and the refusal must still reach the reader" -> .github/workflows/unity-pages.yml — exit 2; red named: ⚠ G4 IS NOT AUDITED IN JAVASCRIPT GATE LISTS: tests/run-node.mjs — the count there is UNKNOWN — no census was taken
+  CAUGHT  "a WRAPPED invocation is swallowed, and the red must name the tool the wrapper fronts" -> .github/workflows/unity-pages.yml — exit 1; red named: BAD  G4 — 2 invocation(s) in a SHELL gate list run with their exit status DISCARDED — listed, and silent: tools/verdict.mjs in .github/workf
+  CAUGHT  "the recognition is replaced by an inert WRAPPERS.add(), and a wrapped step becomes a false orphan" -> tools/gatelist.mjs + .github/workflows/unity-pages.yml — exit 1; red named: BAD  G1 — 1 step(s) NAME a tool in executed output that the SAME step does not invoke, and state no cost — a step that has quietly stopped r
+  CLEAN  unplanted copy runs green (exit 0) — the reds above were the plants, not the harness.
+SELFTEST GREEN — every plant went red by the same door the real input enters, and the clean copy is green
+
+RESULT: known-bad recall 10/10 — 10 plants + 1 clean baseline, each entering as file bytes in a copied real tree, tool run whole from that copy.
