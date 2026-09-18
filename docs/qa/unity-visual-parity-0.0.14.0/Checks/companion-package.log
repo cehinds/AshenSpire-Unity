@@ -1,0 +1,15 @@
+  Determining projects to restore...
+  Restored C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Domain\AshenSpire.NativeDomain.csproj (in 308 ms).
+  Restored C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Companion\AshenSpire.Companion.csproj (in 308 ms).
+  Restored C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Transport\AshenSpire.Transport.csproj (in 308 ms).
+  AshenSpire.Transport -> C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Transport\bin\Release\net8.0\AshenSpire.Transport.dll
+  AshenSpire.NativeDomain -> C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Domain\bin\Release\net8.0\AshenSpire.NativeDomain.dll
+  AshenSpire.Companion -> C:\repos\AshenSpire-Unity-map-33\tools\NativeLan\Companion\bin\Release\net8.0\win-x64\AshenSpire.Companion.dll
+  AshenSpire.Companion -> C:\repos\AshenSpire-Unity-map-33\Builds\Companion\Build14-20260908\AshenSpire-Companion-0.0.14.0-build14-Windows\
+{
+  "version": "0.0.14.0",
+  "sha256": "fa5044dc2d3d068211673c9e0ac8e4f55a680ad508f8974d136d832098878706",
+  "path": "C:\\repos\\AshenSpire-Unity-map-33\\Builds\\Companion\\Build14-20260908\\AshenSpire-Companion-0.0.14.0-build14-Windows.zip",
+  "buildNumber": 14,
+  "bytes": 47407093
+}

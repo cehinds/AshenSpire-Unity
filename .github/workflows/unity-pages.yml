@@ -3,17 +3,26 @@ on:
   pull_request:
     branches: [dev]
   push:
-    branches: [dev, test, release, main]
+    branches: [dev, test, release, main, "codex/**"]
   workflow_dispatch:
+    inputs:
+      publish_library_only:
+        description: Publish committed build history with archive integrity checks (does not assert game CI passed)
+        type: boolean
+        default: false
 permissions:
   contents: read
   pull-requests: read
 concurrency:
-  group: unity-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'channels' }}
+  group: unity-checkpoint-${{ github.event_name }}-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   validate-and-assemble:
+    if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
+    # A stalled browser playtest must not bill the default six hours; a green run
+    # finishes well inside this.
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,6 +41,7 @@ jobs:
           python3 UnityTests/Parity/authoring-checks.py
           dotnet run --project UnityTests/NativeFeedback
           dotnet run --project UnityTests/CardText
+          dotnet run --project UnityTests/CardCosts
           dotnet run --project UnityTests/SpriteStyles
           dotnet run --project UnityTests/MapShape
           dotnet run --project UnityTests/MapKnowledge
@@ -66,10 +76,16 @@ jobs:
         run: |
           mkdir -p TestResults/Balance
           dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
+      - name: Test cross-platform Unity source digest ordering
+        run: node --test tools/unity-source-digest.test.mjs
       - name: Verify packaged player matches its source
         run: node tools/unity-package.mjs --check
       - name: Verify immutable build history and channel membership
         run: node tools/unity-build-history.test.mjs
+      - name: Verify shared channel runtime and evidence storage
+        run: node tools/unity-channel-storage.test.mjs
+      - name: Verify immutable archive hosting
+        run: node tools/unity-archive-hosting.test.mjs
       - name: Verify bounded Pages artifact copying
         run: node tools/unity-git-blobs.test.mjs
       - name: Install browser test tooling
@@ -90,6 +106,8 @@ jobs:
         run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
       - name: Complete the native three-act climb with reloads
         run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+      - name: Verify card numbers and resource shortage feedback
+        run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
       - name: Exercise native draft, level-up, flask allocation and merchant transactions
         run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
       - name: Verify original sprite styles and saved appearance through actual controls
@@ -123,37 +141,17 @@ jobs:
             TestResults/NativeFeedback
             TestResults/CardText
             TestResults/NativeFeatures
+            TestResults/NativeCardCosts
             TestResults/NativeCoopBrowser
             TestResults/NativeAppearance
             TestResults/NativeEnemyArt
             TestResults/NativeMapShape
             TestResults/NativeMap
-      - name: Refresh channel refs
-        if: github.event_name != 'pull_request'
-        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
-      - name: Assemble all channels together
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          node tools/unity-pages.mjs
-          node tools/unity-pages-links.test.mjs
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
-        with:
-          path: _site
-  deploy:
-    if: github.event_name != 'pull_request'
-    needs: validate-and-assemble
-    runs-on: ubuntu-latest
+  publish-library:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_library_only }}
     permissions:
+      contents: read
+      pull-requests: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/configure-pages@v5
-      - name: Publish all four channel pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    uses: ./.github/workflows/unity-build-library.yml

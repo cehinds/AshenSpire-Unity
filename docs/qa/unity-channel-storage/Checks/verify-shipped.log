@@ -1,0 +1,31 @@
+  artifact       : dist\AshenSpire.html sha256 54be77170c44 (22475543 bytes)
+  provenance     : measured dist\AshenSpire.html@016fa90 2026-09-05 while HEAD is 4b4a28d — 83 commit(s) since this file was last written.
+                   NOT A VERDICT AND NOT A FAILURE: those commits may not touch anything
+                   this artifact contains. It is the question a reader must answer before
+                   quoting the result below. Rebuild to remove the question.
+  artifact       : AshenSpire.html sha256 54be77170c44 (22475543 bytes)
+  provenance     : measured AshenSpire.html@016fa90 2026-09-05 while HEAD is 4b4a28d — 83 commit(s) since this file was last written.
+                   NOT A VERDICT AND NOT A FAILURE: those commits may not touch anything
+                   this artifact contains. It is the question a reader must answer before
+                   quoting the result below. Rebuild to remove the question.
+verify-shipped: checking the file a player is handed.
+
+  PASS  [NO_ART] build/AshenSpire.html: ASSET_MAP present, 727 entries (floor 64), 733 inlined images
+  PASS  [NO_ART] dist/AshenSpire.html: ASSET_MAP present, 727 entries (floor 64), 733 inlined images
+  PASS  [DRIFT] dist/AshenSpire.html is byte-identical to build/AshenSpire.html (22475543 bytes)
+  PASS  [NO_ART] AshenSpire.html: ASSET_MAP present, 727 entries (floor 64), 733 inlined images
+  PASS  [DRIFT] AshenSpire.html is byte-identical to build/AshenSpire.html (22475543 bytes)
+  PASS  [STAMPED_TWIN] dist/ tracks only the allowlist [AshenSpire.html, README.md] — no twin, stamped or otherwise
+
+BOUNDARY — what a green from this tool does NOT mean:
+  · nothing rendered it. ASSET_MAP present and 101 data: URIs is not "the art appears"
+    — that needs a browser and a seeing seat, and this tool has neither
+  · nothing played it. This says the shipped file IS this source, never that this
+    source is a good game, balanced, or even winnable
+  · no statement about the tutorial lockout either way. This tool compares bytes, so
+    it cannot tell a bundle whose coach marks are reachable from one whose are not —
+    that is tools/tutorial-reach.mjs, and it needs a browser at a real --ui-zoom
+  · reproducibility across machines is not checked here — that is the git-diff step
+    in .github/workflows/ci.yml running on three runners
+
+verify-shipped: OK — 6 checks passed.

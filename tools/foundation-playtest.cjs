@@ -19,6 +19,7 @@ async function key(value) {
   await page.keyboard.down(value); await frames(); await page.waitForTimeout(100); await page.keyboard.up(value); await frames();
 }
 async function click(id, change = true, fraction = .5) {
+  if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
   await until(() => controls?.Controls.some(x => x.Id === id && x.Enabled), 'control ' + id);
   for (let step = 0; step < 30; step++) {
     const canvas = await page.locator('#unity-canvas').boundingBox();
@@ -99,7 +100,7 @@ function result(success) { return { success, checks, screenshots, errors, creati
   check(controls.Controls.filter(x => x.Width > 0 && x.Height > 0).every(x => x.Height * canvas.height / controls.PanelHeight >= 43.99), 'landscape controls retain 44 CSS-pixel height');
   await page.setViewportSize({ width: 1280, height: 900 }); await page.waitForTimeout(1500);
   await click('foundation-creation'); await shot('09-desktop-creation');
-  await click('foundation-back'); check(controls.Controls.some(x => x.Id === 'new'), 'preview returns to preserved playable campaign');
+  await click('foundation-back'); check(controls.Controls.some(x => x.Id === 'native-new'), 'preview returns to preserved playable campaign');
   check(errors.length === 0, 'no browser or Unity error logs');
   fs.writeFileSync(path.join(output, 'checks.json'), JSON.stringify(result(true), null, 2));
   console.log(`Unity foundation browser: ${checks.length} checks passed`);

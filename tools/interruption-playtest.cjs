@@ -24,6 +24,7 @@ async function tap(p){
  await game('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});await inputFrames();
 }
 async function click(id,changesState=false){
+  if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
  await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled),'enabled '+id);
  for(let i=0;i<24;i++){
   const p=await point(id),box=await canvas();
@@ -104,7 +105,7 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
  if(process.argv.includes('--slow-input'))await game('Emulation.setCPUThrottlingRate',{rate:6});
  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
- await until(()=>controls?.Controls.some(x=>x.Id==='new'),'Unity ready',120000);
+ await until(()=>controls?.Controls.some(x=>x.Id==='native-new'),'Unity ready',120000);
  const other=(await send('Target.createTarget',{url:'about:blank',background:true})).targetId;
  async function hide(){await send('Target.activateTarget',{targetId:other});await until(async()=>await read('document.visibilityState')==='hidden','real hidden document');visibility.push('hidden');}
  async function foreground(){await send('Target.activateTarget',{targetId:target});await game('Page.bringToFront');await until(async()=>await read('document.visibilityState')==='visible','real visible document');visibility.push('visible');}
@@ -185,7 +186,11 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
  await interrupt('08-repeat');await interrupt('09-repeat');
  await click('menu');await click('settings');await click('mute-sound');
  await interrupt('10-muted');record('temporary suspension preserves mute',interruptions.at(-1).Muted);
- const saved=JSON.stringify(state);controls=null;await game('Page.reload',{ignoreCache:true});await until(()=>controls?.Controls.some(x=>x.Id==='continue'),'reload with save',120000);
+ const saved=JSON.stringify(state);controls=null;await game('Page.reload',{ignoreCache:true});
+ // The native title keeps the legacy campaign under Extras; open it before checking its save.
+ await until(()=>controls?.Controls.some(x=>(x.Id==='title-extras'||x.Id==='continue')&&x.Enabled),'reloaded title',120000);
+ if(controls.Controls.some(x=>x.Id==='title-extras'))await click('title-extras');
+ await until(()=>controls?.Controls.some(x=>x.Id==='continue'&&x.Enabled),'reload with save');
  await click('continue',true);record('reload resumes identical saved campaign',JSON.stringify(state)===saved);await shot('11-reloaded');
  record('no browser or Unity errors',errors.length===0);
  fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(evidence(true),null,2));console.log('Interruption browser: '+checks.length+' checks passed; '+screenshots.length+' screenshots');

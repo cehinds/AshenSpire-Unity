@@ -1,12 +1,16 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.12.0 · build 12 ·
+content while improving phone play. Current source: **0.0.14.0 · build 14 ·
 Foundation in progress**. Published channels may still carry earlier checkpoints.
 
 Checked items describe implemented functionality with focused evidence. Unchecked
 items are acceptance work, limitations or remaining scope; checkmarks do not certify
 every interaction or platform. See [Unity-Parity.md](Unity-Parity.md) for receipts.
+
+Build 14 prioritizes matching the HTML reference visually: title composition, serif display type, warm palette, class preview, compact combat HUD, simultaneous enemies and framed horizontal cards. See [visual parity](Unity-Visual-Parity.md) for evidence and remaining gaps.
+
+Build 13 improves whole-valued weapon damage text and shares concise card costs and resource-shortage hints between solo and co-op. Cards remain selectable when resources are insufficient; Play explains the shortage. See [Unity-Combat-Readability.md](Unity-Combat-Readability.md) for editing and verification.
 
 Build 12 restores the shared branching map, solo fog/Sealstone knowledge, shrine
 guidance, local camera preferences and touch navigation. Its Web map suite passed
@@ -19,6 +23,12 @@ eight host/six guest co-op checks. Full-campaign, storage and other older counts
 below belong to build 10 at commit `890af027…` / digest `62aa53dc…`.
 Build 11's bounded results do not repeat that full baseline.
 
+
+Build 12 was merged into Dev through PR #39 and selected as the initial Test build at
+`4b4a28dfe9aecc1a3292b498cd6a9310a6aef2fc`. Live Pages is separate. Issue #40 prepares
+shared channel storage: 847.1 MiB for Dev/Test instead of 1,206.3 MiB, preserving
+all archived players and independently tested channel saves. See
+[Unity-Channel-Storage.md](Unity-Channel-Storage.md) for the candidate and evidence.
 ## Implemented foundation
 
 - [x] Pin original dev `b17a7f4543e1710f49fae8b58880121690a314de` and retain original import/oracle hashes.

@@ -93,7 +93,7 @@ let browser,ui,map;
    await inspectTargets('sealstone-entrance');await control('native-route-n1_3');await ui.until(()=>ui.state.phase==='Combat','Sealstone opening fight');
    for(const [instance,target,phase] of[['starting:0','e2','Combat'],['starting:3','e1','Combat'],['starting:2','e1','Rewards']]){
     ui.check(ui.state.hand.some(card=>card.instanceId===instance),'Sealstone trace card is in actual hand: '+instance);
-    await ui.click('native-target-'+target);while(!ui.has('native-card-'+instance)&&ui.has('native-hand-next'))await ui.click('native-hand-next');
+    await ui.click('native-target-'+target);for(let page=0;page<8&&!ui.has('native-card-'+instance)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
     await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===64,'verified Sealstone fight command: '+instance+' to '+target);
    }
    await ui.command('native-reward-cinders');ui.check(ui.state.room.states.cinders==='taken','opening cinders are actually claimed');await ui.command('native-rewards-continue');
@@ -191,7 +191,7 @@ let browser,ui,map;
    if(kind==='play'){
     ui.check(ui.state.hand.some(card=>card.instanceId===action.instanceId),'authored replay card is actually in hand: '+action.instanceId);
     await ui.click('native-target-'+action.targetId);
-    while(!ui.has('native-card-'+action.instanceId)&&ui.has('native-hand-next'))await ui.click('native-hand-next');
+    for(let page=0;page<8&&!ui.has('native-card-'+action.instanceId)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
     await ui.click('native-card-'+action.instanceId);await ui.command('native-play');
    }else if(kind==='endTurn')await ui.command('native-end-turn');
    else if(kind==='reward')await ui.command('native-reward-'+value+(value==='card'?'-'+action.cardId:''));

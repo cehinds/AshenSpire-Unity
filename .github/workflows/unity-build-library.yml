@@ -1,0 +1,62 @@
+name: Publish playable build library
+on:
+  workflow_run:
+    workflows: [Unity checkpoint and Pages]
+    types: [completed]
+  push:
+    branches: [dev]
+    paths:
+      - 'tools/unity-*'
+      - '.github/workflows/unity-build-library.yml'
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: unity-pages-channels
+  cancel-in-progress: false
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      # workflow_run executes trusted default-branch tooling, never PR code.
+      # Build artifacts are read as Git objects from same-repository refs.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify archive, URL, integrity and storage contracts
+        run: |
+          node tools/unity-build-history.test.mjs
+          node tools/unity-archive-hosting.test.mjs
+          node tools/unity-channel-storage.test.mjs
+          node tools/unity-git-blobs.test.mjs
+      - name: Refresh all completed build refs
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Assemble playable channels and development batches
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node tools/unity-pages.mjs
+          node tools/unity-pages-links.test.mjs
+          node tools/unity-pages-runtime.test.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: assemble
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish playable library
+        id: deployment
+        uses: actions/deploy-pages@v4

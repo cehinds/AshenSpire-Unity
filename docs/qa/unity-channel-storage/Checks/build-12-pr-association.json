@@ -1,0 +1,13 @@
+{
+  "id": "build-3926b9b755de3e4e003a",
+  "commit": "4b4a28dfe9aecc1a3292b498cd6a9310a6aef2fc",
+  "buildNumber": 12,
+  "builtAt": "2026-09-07T20:33:55.3519929Z",
+  "pullRequests": [
+    {
+      "number": 39,
+      "url": "https://github.com/cehinds/AshenSpire-Unity/pull/39",
+      "provenance": "GitHub commit associated pull requests"
+    }
+  ]
+}

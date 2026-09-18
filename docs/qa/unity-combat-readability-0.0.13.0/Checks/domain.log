@@ -1,0 +1,229 @@
+PASS: commands cannot affect a map screen
+PASS: same seed produces same hand
+PASS: encounter cannot restart mid-combat
+PASS: play a guard card
+PASS: block absorbs damage and resets next turn
+PASS: next turn resources reset
+PASS: resume preserves next draw and RNG
+PASS: unknown tags name a validation error
+PASS: dangling card references rejected
+PASS: unsupported behavior rejected
+PASS: unsupported saves rejected
+PASS: enemy defeat grants reward exactly once
+PASS: combat cannot continue after victory
+PASS: reward changes persistent deck and advances map
+PASS: reward cannot be claimed twice
+PASS: defeat terminates turn loop
+PASS: seed 1: full run terminates
+PASS: seed 2: full run terminates
+PASS: seed 3: full run terminates
+PASS: seed 4: full run terminates
+PASS: seed 5: full run terminates
+PASS: seed 6: full run terminates
+PASS: seed 7: full run terminates
+PASS: seed 8: full run terminates
+PASS: seed 9: full run terminates
+PASS: seed 10: full run terminates
+PASS: seed 11: full run terminates
+PASS: seed 12: full run terminates
+PASS: seed 13: full run terminates
+PASS: seed 14: full run terminates
+PASS: seed 15: full run terminates
+PASS: seed 16: full run terminates
+PASS: seed 17: full run terminates
+PASS: seed 18: full run terminates
+PASS: seed 19: full run terminates
+PASS: seed 20: full run terminates
+PASS: seed 21: full run terminates
+PASS: seed 22: full run terminates
+PASS: seed 23: full run terminates
+PASS: seed 24: full run terminates
+PASS: seed 25: full run terminates
+PASS: seed 26: full run terminates
+PASS: seed 27: full run terminates
+PASS: seed 28: full run terminates
+PASS: seed 29: full run terminates
+PASS: seed 30: full run terminates
+PASS: full expedition victory is reachable
+Simulation: 30/30 simple-policy wins; not a fun or balance assessment.
+Domain: 47 checks passed
+PASS: card feedback reports absorbed and actual damage separately
+PASS: flask feedback reports capped healing
+PASS: intent explanation includes strength weakness and current block
+PASS: status explanation identifies the weak target and decay timing
+PASS: inspection leaves all saved fields RNG and command events unchanged
+PASS: end-turn feedback distinguishes both poison ticks from enemy action
+PASS: history is bounded and keeps the latest outcome
+PASS: rejected commands do not add feedback
+PASS: feedback history remains transient without a save schema change
+PASS: guard explanation agrees with amount, immediate effect and non-attack weak decay
+PASS: charge explanation agrees with amount, immediate effect and non-attack weak decay
+PASS: poison explanation agrees with amount, immediate effect and non-attack weak decay
+PASS: energy reward trades a card in hand for energy without free replacement cycling
+PASS: campaign commands require the correct phase
+PASS: route chooses the authored foe
+PASS: campaign resume preserves intent, piles, RNG and next turn
+PASS: block absorbs direct damage while poison is applied
+PASS: lethal poison prevents the enemy action
+PASS: unoffered rewards are rejected
+PASS: reward claimed once and added to deck
+PASS: equipment costs forty cinders once and cannot be duplicated
+PASS: map card text includes equipment and excludes expired combat strength
+PASS: equipment composes damage by attack tag
+PASS: map services cannot be used during combat
+PASS: flask heals and consumes a charge
+PASS: defeat closes combat commands
+PASS: dangling encounter references rejected
+PASS: unknown equipment queries rejected
+PASS: invalid saved route rejected
+PASS: Reaver seed 1 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 2 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 3 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 4 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 5 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 6 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 7 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 8 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 9 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 10 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 11 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver seed 12 terminates
+PASS: victory requires all nine encounters
+PASS: Reaver can complete all three acts
+PASS: Rogue seed 1 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 2 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 3 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 4 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 5 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 6 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 7 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 8 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 9 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 10 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 11 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue seed 12 terminates
+PASS: victory requires all nine encounters
+PASS: Rogue can complete all three acts
+PASS: Herald seed 1 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 2 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 3 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 4 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 5 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 6 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 7 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 8 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 9 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 10 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 11 terminates
+PASS: victory requires all nine encounters
+PASS: Herald seed 12 terminates
+PASS: victory requires all nine encounters
+PASS: Herald can complete all three acts
+PASS: Starseer seed 1 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 2 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 3 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 4 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 5 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 6 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 7 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 8 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 9 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 10 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 11 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer seed 12 terminates
+PASS: victory requires all nine encounters
+PASS: Starseer can complete all three acts
+Campaign: 129 checks passed; 48/48 policy runs won. Not a human fun assessment.
+PASS: reaver starts with at least four affinity cards
+PASS: reaver gets two affinity and one shared offer deterministically over sixteen seeds
+PASS: rogue starts with at least four affinity cards
+PASS: rogue gets two affinity and one shared offer deterministically over sixteen seeds
+PASS: herald starts with at least four affinity cards
+PASS: herald gets two affinity and one shared offer deterministically over sixteen seeds
+PASS: starseer starts with at least four affinity cards
+PASS: starseer gets two affinity and one shared offer deterministically over sixteen seeds
+PASS: saved decks and pre-affinity pending rewards are not replaced
+PASS: a saved cross-class reward remains claimable after the update
+PASS: poison gear identifies matching poison effects in the starter deck
+PASS: poison card description includes its equipment bonus
+PASS: poison equipment and actual feedback agree
+PASS: poison gear cannot add poison to an unrelated damage card
+PASS: faith healing description includes equipment
+PASS: faith healing bonus resolves once per matching effect
+PASS: faith equipment does not modify flasks
+PASS: magic equipment contributes to each of two damage effects
+PASS: free Quickstep spends hand space without replacing itself
+PASS: forge relevance excludes cards without matching tagged effects
+PASS: unknown affinity tag rejected
+PASS: undersized affinity pool rejected
+PASS: shared and affinity overlap rejected
+PASS: empty shared reward pool rejected
+PASS: definitions without affinity retain the legacy reward mode
+Class identity: 25 checks passed
+PASS: poison tag takes precedence over attack presentation
+PASS: magic cards select authored cue
+PASS: plain strike selects attack cue
+PASS: unknown feedback tag rejected
+PASS: unknown sprite pose rejected
+PASS: duplicate cue ID rejected
+PASS: required cue omission rejected
+PASS: zero timeline rejected
+PASS: invalid effect color rejected
+PASS: nonfinite audio duration rejected
+PASS: out of range sound mix rejected
+PASS: impact label reports health damage after block
+PASS: guard label reports actual block gained
+PASS: healing label respects maximum health
+PASS: poison sound is deterministic, bounded and fades to silence
+PASS: magic sound is deterministic, bounded and fades to silence
+PASS: faith sound is deterministic, bounded and fades to silence
+PASS: attack sound is deterministic, bounded and fades to silence
+PASS: guard sound is deterministic, bounded and fades to silence
+PASS: hit sound is deterministic, bounded and fades to silence
+PASS: heal sound is deterministic, bounded and fades to silence
+PASS: reward sound is deterministic, bounded and fades to silence
+PASS: feedback and synthesis leave model state and RNG unchanged
+Feedback: 23 checks passed

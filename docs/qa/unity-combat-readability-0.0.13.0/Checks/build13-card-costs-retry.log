@@ -1,0 +1,3 @@
+Error: save menu has a fully exposed 44 CSS pixel target above actual footer
+    at NativeUiDriver.check (C:\repos\AshenSpire-Unity-map-33\tools\native-ui-driver.cjs:11:37)
+    at C:\repos\AshenSpire-Unity-map-33\tools\native-card-cost-playtest.cjs:85:8

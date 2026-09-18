@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "checks": [
+    "page reload rejoins same exact hand without extra draw",
+    "original disconnect semantics end this turn until the next player phase",
+    "rejoined guest becomes active on exactly the next player turn",
+    "rejoined guest plays an accepted card on the next turn",
+    "real fight counted once",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "physicalDevice": false
+}

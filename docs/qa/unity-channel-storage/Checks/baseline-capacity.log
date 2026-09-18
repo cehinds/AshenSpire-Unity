@@ -1,0 +1,10 @@
+Unity Pages dev: 1646 files copied in 6 blob batches (7 Git processes)
+Unity Pages test: 1646 files copied in 6 blob batches (7 Git processes)
+file:///C:/repos/AshenSpire-Unity-map-33/tools/unity-pages.mjs:94
+if(bytes>budget)throw new Error(`Pages build library is ${(bytes/1024/1024).toFixed(1)} MiB, over the 950 MiB publication budget. Move historical runtime hosting before adding more builds; history was not silently pruned.`);
+                      ^
+
+Error: Pages build library is 1206.3 MiB, over the 950 MiB publication budget. Move historical runtime hosting before adding more builds; history was not silently pruned.
+    at file:///C:/repos/AshenSpire-Unity-map-33/tools/unity-pages.mjs:94:23
+
+Node.js v24.16.0

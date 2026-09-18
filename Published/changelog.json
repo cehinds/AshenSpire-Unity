@@ -1,25 +1,31 @@
 {
-  "KnownIssues": [
-    "Foundation acceptance remains open: co-op animation, broader visual/audio polish and human balance testing remain.",
-    "Physical Android and graphical Windows interaction are unverified; iOS is not built. Original JavaScript saves remain separate from native saves."
-  ],
-  "Fixed": [
-    "Map gestures cancel safely across interruptions and overlays; direct taps issue one legal command.",
-    "Minimum-zoom targets retain at least 44 CSS pixels after same-aspect desktop resize.",
-    "Routes remain accessible through a named choice list when a wide decision cannot fit."
+  "Added": [
+    "Original-style serif title and gold ornaments.",
+    "Authored card faces with licensed symbol fonts and resource medallions.",
+    "Shared simultaneous-enemy battlefield and responsive class preview."
   ],
   "Changed": [
-    "Version 0.0.12.0, build 12. Web, Windows, Android and the portable companion share current source.",
-    "Map camera preferences stay local and survive save/reload; Fit, zoom, recenter and touch navigation use original camera rules."
+    "Version 0.0.14.0, build 14; matching Web, Windows, Android and companion packages.",
+    "Warm brown/gold presentation and centered desktop or horizontally scrollable phone hands.",
+    "Long descriptions scroll within the hand; Play and End turn remain available."
   ],
-  "Added": [
-    "Original branching map shared by solo and co-op, with legal routes, visited markers and party votes.",
-    "Solo fog, earned Sealstone room readings and optional nearest-shrine guidance.",
-    "Editable map presentation table plus original-oracle and real-input browser coverage."
+  "Fixed": [
+    "Missing authored symbols including crossed swords.",
+    "Unicode diagnostic chunks breaking on supplementary glyph boundaries.",
+    "Windows verifier path sorting disagreed with Unity export hashes.",
+    "Co-op escape remains outside command-disabled gameplay content."
+  ],
+  "KnownIssues": [
+    "Foundation and complete HTML visual parity remain open.",
+    "Inventory, rewards, HUD arrangement and fanned-card motion need further reference matching.",
+    "Long card descriptions require vertical scrolling inside the hand.",
+    "Physical Android and graphical Windows play unverified; iOS not built.",
+    "Archive capacity must expand before publishing both retained builds 13 and 14."
   ],
   "WhatToTest": [
-    "Switch Fog/Paths and shrine guidance, open the key and route list, pan/zoom, then reload.",
-    "Finish the opening fight and choose the next branch directly on the map.",
-    "Play a shared climb with the matching companion and check independent camera preferences."
+    "Compare title, creator and combat against the original reference.",
+    "Create Standard Reaver, seed 1; spend actions and inspect card shortages.",
+    "Scroll to the last card and read its full description; save/reload.",
+    "Use the matching companion for a shared fight and reconnect."
   ]
 }

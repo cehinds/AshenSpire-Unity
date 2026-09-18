@@ -1,0 +1,14 @@
+PASS distinct players deduplicate metadata and evidence edits
+PASS channel histories use first-parent reachability and no inferred promotion
+PASS legacy version and its first manifest remain exact
+PASS new build number and build date survive
+PASS promotion shares immutable archive identity
+PASS unavailable PR attribution stays unknown
+PASS declared PR uses repository-scoped URL
+PASS materialized archive preserves exact old player bytes
+PASS archive rebuild is idempotent
+PASS machine-readable index omits internal tree records
+PASS traversal and Windows path escapes rejected
+PASS corrupt manifest digest refuses archive
+PASS existing archive bytes cannot be silently overwritten
+13 checks passed
