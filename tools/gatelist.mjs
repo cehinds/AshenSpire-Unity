@@ -208,6 +208,7 @@ const SINCE = (() => { const i = process.argv.indexOf('--since'); return i >= 0 
 // be read is exit 2, never a smaller census reported as a verdict.
 const GATE_LISTS = [
   { path: '.github/workflows/unity-pages.yml', kind: 'workflow' },
+  { path: '.github/workflows/unity-build-library.yml', kind: 'workflow' },
   { path: 'tests/run-node.mjs', kind: 'js' },
 ];
 
@@ -644,7 +645,7 @@ if (args.includes('--selftest')) {
       // G1/G2: a bare exclusion name is insufficient; no unwatched cost is stated.
       name: 'an exclusion declaration keeps the tool name and states no cost',
       edits: [{
-        file: workflow,
+        file: '.github/workflows/unity-build-library.yml',
         find: '          node tools/unity-pages.mjs',
         replace: '          echo "tools/unity-pages.mjs"',
       }],

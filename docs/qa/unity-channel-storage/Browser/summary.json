@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "visits": [
+    {
+      "visit": "dev-new",
+      "checks": 9,
+      "sourceDigest": "d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+      "physicalDevice": false
+    },
+    {
+      "visit": "test-new",
+      "checks": 9,
+      "sourceDigest": "d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+      "physicalDevice": false
+    },
+    {
+      "visit": "dev-resume",
+      "checks": 7,
+      "sourceDigest": "d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+      "physicalDevice": false
+    },
+    {
+      "visit": "test-resume",
+      "checks": 7,
+      "sourceDigest": "d58bf5ccee7e45bd2afc94de693aad5ca872d41cdbfb754de8cf3c9f6637c772",
+      "physicalDevice": false
+    }
+  ]
+}

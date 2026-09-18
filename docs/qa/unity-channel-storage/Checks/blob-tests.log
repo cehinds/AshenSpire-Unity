@@ -1,0 +1,17 @@
+PASS many files need one size pass and one payload batch
+PASS every text, Unicode, empty and binary blob retains exact bytes
+PASS ZIP and APK are excluded regardless of extension case
+PASS bounded payload batches retain exact contents including a larger single blob
+PASS oversized blobs fail before creating output
+PASS missing blobs fail before earlier valid files are written
+PASS tree objects cannot masquerade as files
+PASS path traversal, control characters and Windows aliases fail before writes
+PASS unsafe excluded paths are still rejected
+PASS nonresolved refs and duplicate paths are rejected
+PASS case-colliding filenames and directory prefixes fail portably before writes
+PASS existing output directory links cannot redirect writes
+PASS empty selections require no Git invocation
+PASS binary record parser treats embedded newlines as payload
+PASS truncated payload, wrong OID/type/size and trailing protocol bytes fail
+PASS repeated materialization remains byte-identical
+16 checks passed; fixture preserved at C:\Users\const\AppData\Local\Temp\ashenspire-git-batch-pBWCov

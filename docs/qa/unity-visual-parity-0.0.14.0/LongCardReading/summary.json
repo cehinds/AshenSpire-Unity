@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "checks": 15,
+      "scrollAttempts": 2,
+      "cardBottom": 526,
+      "playTop": 528,
+      "screenshots": 2
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "checks": 15,
+      "scrollAttempts": 1,
+      "cardBottom": 750,
+      "playTop": 754,
+      "screenshots": 2
+    }
+  ],
+  "checks": 30,
+  "physicalDevice": false,
+  "visualInspectionRequired": "Inspect02 screenshots for complete final line above Play",
+  "sourceDigest": "2ac07c417b88e2adb899c532940736059d9c2769ee5870879fba91a608c5d2d5",
+  "executedScript": "C:/Users/const/Documents/Codex/2026-09-05/prior-conversation-with-codex-conversation-role/work/VisualParityDraft/long-card-reading.cjs",
+  "executedCommand": "node work/VisualParityDraft/long-card-reading.cjs",
+  "portableScript": "tools/native-long-card-playtest.cjs",
+  "reproductionCommand": "node tools/native-long-card-playtest.cjs \"http://127.0.0.1:8793/?build=2ac07c417b88e2adb899c532940736059d9c2769ee5870879fba91a608c5d2d5\" TestResults/LongCardReading",
+  "visualReview": {
+    "passed": true,
+    "viewports": [
+      320,
+      1440
+    ],
+    "finding": "Final Strength line visibly above Play after scrolling; upper card content can scroll out of view, while actions remain stationary. No runtime fix required for this reading behavior."
+  }
+}

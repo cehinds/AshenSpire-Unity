@@ -39,7 +39,7 @@ let browser,ui;
   await ui.command('native-route-'+ui.state.routes[0].id);ui.check(ui.state.phase==='Combat','shaped original first floor executes combat');
   const attack=ui.state.cards.find(row=>row.card.type==='attack'&&row.cost.action<=ui.state.player.energy&&row.cost.mana<=ui.state.player.mana&&row.cost.stamina<=ui.state.player.stamina);ui.check(!!attack,'normal starting character has playable attack');
   const enemy=ui.state.enemies.find(e=>e.alive);await ui.click('native-target-'+enemy.id);const cardId='native-card-'+attack.instance.instanceId;
-  while(!ui.has(cardId)&&ui.has('native-hand-next'))await ui.click('native-hand-next');await ui.click(cardId);await ui.command('native-play');
+  for(let page=0;page<8&&!ui.has(cardId)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');await ui.click(cardId);await ui.command('native-play');
   ui.check(matches(),'actual combat command preserves selected map configuration');
   const snapshot=JSON.stringify(ui.state);await ui.click('native-menu');await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await ui.command('native-continue');
   ui.check(JSON.stringify(ui.state)===snapshot,'reload restores exact native combat and shaped run');ui.check(matches(),'resumed graph remains shaped');await ui.shot('04-restored-combat');

@@ -18,31 +18,12 @@ async function key(value) {
   if (value.includes('+')) { const [modifier, character] = value.split('+'); await page.keyboard.down(modifier); try { await key(character); } finally { await page.keyboard.up(modifier); } return; }
   await page.keyboard.down(value); await frames(); await page.waitForTimeout(100); await page.keyboard.up(value); await frames();
 }
-async function click(id, change = true, fraction = .5) {
-  // The bounded map can clip a route's canvas coordinates. Use its real Routes
-  // list for this full-climb replay; direct map taps have separate acceptance.
-  const route = /^(native|coop)-route-(.+)$/.exec(id);
-  if (route && controls?.Controls.some(c => c.Id === route[1] + '-map-routes')) {
-    await click(route[1] + '-map-routes');
-    return click(route[1] + '-map-choice-' + route[2], change, fraction);
-  }
-  await until(() => controls?.Controls.some(x => x.Id === id && x.Enabled), 'control ' + id);
-  for (let step = 0; step < 30; step++) {
-    const canvas = await page.locator('#unity-canvas').boundingBox();
-    const c = controls.Controls.find(x => x.Id === id);
-    const x = canvas.x + (c.X + c.Width * fraction) * canvas.width / controls.PanelWidth;
-    const y = canvas.y + (c.Y + c.Height / 2) * canvas.height / controls.PanelHeight;
-    if (y < canvas.y + 30 || y > canvas.y + canvas.height - (state?.phase === 'Combat' && !['native-play','native-end-turn'].includes(id) ? 120 : 25)) {
-      const old = layout; await page.mouse.move(canvas.x + canvas.width * .9, canvas.y + canvas.height * .5);
-      await page.mouse.wheel(0, y < canvas.y + 30 ? -320 : 320);
-      await until(() => layout > old, 'scroll ' + id); await page.waitForTimeout(300); continue;
-    }
-    const old = layout; await page.mouse.move(x, y); await frames(); await page.mouse.down(); await page.waitForTimeout(140); await frames(); await page.mouse.up(); await frames();
-    if (change) await until(() => layout > old, 'response ' + id);
-    await page.waitForTimeout(250); return;
-  }
-  throw Error('Cannot reach ' + id);
-}
+// Reuse the measured real-input driver so horizontal hands and utility strips
+// are tested through their visible controls as well as older scrolling screens.
+const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const pointerDriver={get page(){return page;},get controls(){return controls;},get state(){return state;},get layout(){return layout;},
+ has:id=>controls?.Controls.some(c=>c.Id===id&&c.Enabled),until,frames,click:(...args)=>click(...args)};
+async function click(id,change=true,fraction=.5){return NativeUiDriver.prototype.click.call(pointerDriver,id,change,fraction);}
 async function shot(name) { await page.waitForTimeout(300); await page.screenshot({ path: path.join(output, name + '.png') }); screenshots.push(name); }
 
 async function command(id){const previous=revision;await click(id);await until(()=>revision>previous,'native state '+id);}
@@ -66,7 +47,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
   if(kind==='play'){
    const instance=state.hand.find(c=>c.instanceId===action.instanceId);check(!!instance,'replay instance '+action.instanceId);
    await click('native-target-'+action.targetId);
-   while(!controls.Controls.some(c=>c.Id==='native-card-'+action.instanceId)&&controls.Controls.some(c=>c.Id==='native-hand-next'&&c.Enabled))await click('native-hand-next');
+   for(let page=0;page<8&&!controls.Controls.some(c=>c.Id==='native-card-'+action.instanceId)&&controls.Controls.some(c=>c.Id==='native-hand-next'&&c.Enabled);page++)await click('native-hand-next');
    await click('native-card-'+action.instanceId);await command('native-play');
   }else if(kind==='enter')await command('native-route-'+value);
   else if(kind==='charge')await command(value==='hp'?'native-crimson':'native-azure');

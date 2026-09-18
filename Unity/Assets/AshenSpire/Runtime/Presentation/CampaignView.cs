@@ -1,5 +1,7 @@
 // CampaignView.cs — reusable touch controls render campaign snapshots and emit commands.
-// No game rules or save writes belong here. Content uses Resources/Art and Expedition.uss.
+// WIRING: native screens compose OriginalTitlePanel, OriginalCardView and OriginalCombatLayout.
+// MODIFY: native visuals in OriginalTheme/OriginalCards/OriginalCombat/OriginalCreation.uss.
+// Art lives in Resources/Art; legacy styles remain in Expedition.uss. No game rules or save writes.
 // Named buttons emit read-only geometry in development, allowing real pointer tests.
 using System;
 using System.Collections.Generic;
@@ -59,6 +61,9 @@ namespace AshenSpire.Presentation
             MapView.Report = () => Report();
             root.AddToClassList("app");
             root.styleSheets.Add(Resources.Load<StyleSheet>("Expedition"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalTheme"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCards"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCombat"));
             root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
@@ -129,26 +134,29 @@ namespace AshenSpire.Presentation
         }
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
-            Shell("ASHEN SPIRE", "THREE ACTS · ONE EMBER · YOUR PATH");
+            Shell("", ""); _body.Clear(); _body.AddToClassList("title-screen");
+            _scroll.contentContainer.style.flexGrow = 1;
+            var backdrop = new Image { image = Resources.Load<Texture2D>("Art/background1"), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
+            backdrop.AddToClassList("original-title-background"); _root.Insert(0, backdrop);
             if (notice != null) _body.Add(Text(notice, "notice"));
-            var art = Picture("reaver_idle", "campaign-title-art");
-            _body.Add(art);
-            _body.Add(Text("THE EMBER ENDURES", "title"));
-            _body.Add(Text("Read their intent. Shape your deck.\nReach the heart of the Spire.", "lead"));
-            AddButton("native-new", "Begin the climb", () => NativeRequested?.Invoke(), "primary");
-            if (NativeSaveAvailable) AddButton("native-continue", "Continue your climb", () => NativeContinueRequested?.Invoke(), "primary");
-            AddButton("native-profile", "Chronicle & unlocks", () => ProfileRequested?.Invoke());
-            AddButton("native-coop", "Climb together", () => CoopRequested?.Invoke());
-            if (canResume)
-                AddButton("continue", "Continue earlier campaign", () => ContinueRequested?.Invoke());
-            AddButton("new", "Play earlier campaign", () => Heroes(content));
-            AddButton("settings", "Settings & how to play", () => Settings(() => Title(content, canResume)));
-            if (_diagnostics)
-                AddButton("gallery", "Component gallery", () => Gallery(() => Title(content, canResume)));
-            if (_diagnostics)
-                AddButton("foundation", "Original game foundation preview", () => FoundationRequested?.Invoke());
-            _body.Add(Text("Four wanderers · three acts · seeded routes\nProgress saves after every command.", "caption"));
+            _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
+                () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
+                () => TitleExtras(content, canResume)));
             Report();
+        }
+        // Keep earlier playable checkpoints and developer tools accessible without
+        // putting implementation navigation in the reference game's main menu.
+        private void TitleExtras(CampaignDefinition content, bool canResume)
+        {
+            Shell("ASHEN SPIRE", "EXTRAS");
+            if (canResume) AddButton("continue", "Continue earlier campaign", () => ContinueRequested?.Invoke());
+            AddButton("new", "Play earlier campaign", () => Heroes(content));
+            if (_diagnostics)
+            {
+                AddButton("gallery", "Component gallery", () => Gallery(() => Title(content, canResume)));
+                AddButton("foundation", "Original game foundation preview", () => FoundationRequested?.Invoke());
+            }
+            AddButton("extras-back", "Back", () => Title(content, canResume)); Report();
         }
         public void Foundation(AshenSpire.Domain.Original.OriginalContentCatalog catalog, AshenSpire.Domain.Original.AttributeProgression progression, Newtonsoft.Json.Linq.JObject mechanics)
         {
@@ -562,10 +570,13 @@ namespace AshenSpire.Presentation
             // export those bounds; the pending report will measure the next layout.
             if (!Finite(width) || !Finite(height) || controls.Any(x =>
                 !Finite(x.X) || !Finite(x.Y) || !Finite(x.Width) || !Finite(x.Height))) return false;
-            var report = JsonUtility.ToJson(new ControlList {
+            // Escape the whole report before fixed UTF-16 chunking. Otherwise a
+            // supplementary glyph can be split into invalid UTF-8 log envelopes.
+            var report = Newtonsoft.Json.JsonConvert.SerializeObject(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
                 LayoutAttempts = _controlReportAttempts + 1,
-                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() });
+                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() },
+                new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
             // Web console messages have a finite byte limit. Expanded creators
             // and inventories must keep their complete read-only report rather
             // than silently truncating controls or labels used by pointer tests.

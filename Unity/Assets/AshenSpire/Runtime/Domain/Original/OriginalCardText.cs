@@ -79,10 +79,10 @@ namespace AshenSpire.Domain.Original
                 // integer, single-hit/single-repeat amount is unambiguous to fold.
                 var bonus = (int?)effect["attributeBonus"] ?? 0;
                 if (field == "amount" && (op == "damage" || op == "heal") && bonus > 0 &&
-                    effect["amount"]?.Type == JTokenType.Integer && One(effect["repeat"]) &&
+                    WholeAmount(effect["amount"], out var amount) && One(effect["repeat"]) &&
                     (op != "damage" || One(effect["hits"])))
                 {
-                    values[token] = checked((int)effect["amount"] + bonus);
+                    values[token] = checked(amount + bonus);
                     included.Add(op);
                 }
             }
@@ -102,6 +102,19 @@ namespace AshenSpire.Domain.Original
         }
 
         private static bool One(JToken value) => value == null || (IsNumber(value) && (double)value == 1);
+        // Equipment modifiers and smithing preserve numbers as doubles. A 6.0
+        // profile has the same combat amount as authored integer 6; JSON storage
+        // type must not change whether its displayed damage includes the bonus.
+        private static bool WholeAmount(JToken value, out int amount)
+        {
+            amount = 0;
+            if (!IsNumber(value)) return false;
+            var number = (double)value;
+            if (double.IsNaN(number) || double.IsInfinity(number) || number < int.MinValue ||
+                number > int.MaxValue || number != Math.Truncate(number)) return false;
+            amount = (int)number;
+            return true;
+        }
         private static bool IsNumber(JToken value) => value?.Type == JTokenType.Integer || value?.Type == JTokenType.Float;
 
         // Humanize is for labels only. It must never resolve an unknown template token.

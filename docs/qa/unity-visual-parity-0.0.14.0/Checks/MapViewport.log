@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "checks": 74628,
+  "cameraFixtures": 3024,
+  "maps": 27,
+  "sourceCommit": "b17a7f4543e1710f49fae8b58880121690a314de",
+  "browserProof": false
+}
