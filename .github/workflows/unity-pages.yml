@@ -193,7 +193,9 @@ jobs:
 
   validate-and-assemble:
     needs: [parity, checks, playtests]
-    if: ${{ always() && !inputs.publish_library_only }}
+    # !cancelled(): a run superseded by a newer push reports nothing rather
+    # than a red check; a failed part still reaches this job and fails it.
+    if: ${{ !cancelled() && !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     steps:
       - name: Every part passed
