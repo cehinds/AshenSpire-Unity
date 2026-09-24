@@ -39,7 +39,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  await page.goto(process.argv[2]);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await until(()=>controls?.Controls.length,'title');await shot('00-phone-title');
  await click('native-new');await shot('01-phone-assign-points');
  check(controls.Labels.some(t=>t.includes('35')),'35 points initially unspent');
- await click('foundation-mode-standard');await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-standard-creation');await command('native-begin');
+ await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-assigned-creation');await command('native-begin');
  check(state.phase==='Map','native three-act run starts');
  for(let index=0;index<replay.length;index++){
   const action=replay[index];await capture();check(state.phase===action.beforePhase&&state.player.hp===action.beforeHp,'before command '+index+' '+action.command);

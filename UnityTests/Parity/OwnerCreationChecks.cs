@@ -12,8 +12,14 @@ internal static class OwnerCreationChecks
         void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
         var data = catalog.Data();
         var mode = (string)data["attributeRules"]!["defaultMode"]!;
-        Check(mode == "pointbuy", "Assign points must be the default");
+        Check(mode == "pointbuy", "Assigned (pointbuy) must be the default");
         Check(catalog.Table("creationModes").All(row => (string)row["id"]! != "tuned"), "Tuned is still available");
+        // Owner, 2026-09-24: "Standard isn't an option for stats and tuned should say assigned".
+        // Standard stays in the table (saves resolve it) but is no longer offered.
+        var visible = CreationModel.VisibleModes(catalog);
+        Check(visible.Count == 1 && (string)visible[0]["id"]! == mode, "Only the default mode is offered at creation");
+        Check((string)visible[0]["label"]! == "Assigned", "The offered mode is labelled Assigned");
+        Check(catalog.Table("creationModes").Any(row => (string)row["id"]! == "standard"), "Standard must stay resolvable for existing saves");
         foreach (var hero in catalog.Table("classes"))
         {
             var creation = new CreationModel(catalog, (string)hero["id"]!, mode);
@@ -37,7 +43,7 @@ internal static class OwnerCreationChecks
             creation.Select((string)hero["id"]!, "standard");
             Check(creation.Remaining == 0 && creation.CanBegin && creation.TotalPoints == 55, "Standard presets changed");
             creation.Select((string)hero["id"]!, mode);
-            Check(creation.Remaining == 35 && creation.Attributes().Properties().All(row => (int)row.Value == 5), "Returning to Assign points did not reset to minimum");
+            Check(creation.Remaining == 35 && creation.Attributes().Properties().All(row => (int)row.Value == 5), "Returning to Assigned did not reset to minimum");
             var before = creation.Attributes();
             try { creation.Select((string)hero["id"]!, "tuned"); throw new Exception("Removed Tuned mode accepted"); }
             catch (ArgumentException) { Check(JToken.DeepEquals(before, creation.Attributes()) && creation.ModeId == mode, "Rejected mode changed creation"); }

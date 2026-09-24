@@ -8,7 +8,7 @@ let browser,ui;
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2});
  ui=new NativeUiDriver(page,path.resolve(process.argv[3]||'TestResults/NativeFeatures'));
  await ui.open(process.argv[2]);await ui.click('native-new');ui.check(!ui.has('native-begin'),'unspent points cannot start a run');
- ui.check(!ui.controls.Controls.some(c=>c.Id.includes('tuned')),'Tuned is absent');await ui.click('foundation-mode-standard');
+ ui.check(!ui.controls.Controls.some(c=>c.Id.includes('tuned')),'Tuned is absent');ui.check(!ui.controls.Controls.some(c=>c.Id==='foundation-mode-standard'),'Standard is not offered');await ui.assignPoints();
  await ui.fill('native-seed','1');await ui.click('native-custom-toggle');await ui.choose('native-deck-mode',2);await ui.click('native-mod-hoarder');await ui.shot('01-custom-draft-setup');
  await ui.command('native-begin');ui.check(ui.state.phase==='Draft','Draft starts before the map');ui.check(ui.state.run.custom.deckMode==='draft','chosen deck mode retained');
  const pickDraft=async()=>{let choice;await ui.until(()=>{choice=ui.controls?.Controls.find(c=>c.Id.startsWith('native-draft-')&&c.Enabled);return !!choice;},'rendered draft offers');await ui.command(choice.Id);};

@@ -20948,7 +20948,7 @@
     },
     {
       "id": "pointbuy",
-      "label": "Assign points",
+      "label": "Assigned",
       "baseline": 5,
       "bonusPool": 35,
       "minimum": 5,
@@ -21103,7 +21103,6 @@
   "characterCreation": {
     "spritePreviewSide": "right",
     "visibleModeIds": [
-      "standard",
       "pointbuy"
     ],
     "layout": {

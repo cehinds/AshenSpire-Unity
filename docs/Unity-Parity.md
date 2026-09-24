@@ -150,7 +150,7 @@ identified otherwise. They are regression baselines, not build 11 test results.
 | Content | Full original JSON, IDs, tag joins, source receipts and native table consumers | Complete reachable interaction coverage and full original schema parity |
 | Randomness | Original streams/counters, map/offers, custom starts and resume comparisons | Broader adversarial and multiplayer command traces |
 | Maps and rooms | Seeded graph, original run-shape caps/weights, encounters, unknown/history gates, all 62 event choices, services and act cycles; 60 phone/desktop map-shape controls/combat/reload checks passed | Full original branching-map presentation, including solo fog and Sealstone Key reveal, plus player-driven coverage of every room/service branch |
-| Character creation | Four classes, Assign/Standard, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Broader discovery-to-unlock-to-new-character coverage and owner visual acceptance |
+| Character creation | Four classes, Assigned points, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Broader discovery-to-unlock-to-new-character coverage and owner visual acceptance |
 | Formulas, tags and statuses | Native consumers and original differential formula/damage/status/command fixtures | All-content interactions, malformed-content and authoring coverage |
 | Flasks | Charges/utility commands, shrine split/refill, growth and cooperative friendly targets | Complete browser interaction, audible feedback and physical-device regression |
 | Equipment | Owned/unlocked sets, stable cards, tiers, mounts, smithing and paid solo combat swaps; pinned original co-op has no paid combat swap command | Broader touch interaction coverage; adding co-op combat swaps would be future design, not original parity |
@@ -178,9 +178,11 @@ Inspect all four classes, change allocation modes and points, generate seeded ma
 walk routes to the boss, and search the content tables. These are development tools;
 the route explorer does not execute battles or alter a campaign save.
 
-Owner-requested defaults in the current four-part-version branch: **Assign points** starts every attribute at 5.
+Owner-requested defaults in the current four-part-version branch: **Assigned** (formerly
+"Assign points") starts every attribute at 5.
 Five attributes consume 25 of the 60 total points, leaving **35 unspent**. The
-maximum remains 15. **Standard** keeps its presets; **Tuned** is removed from the
+maximum remains 15. **Standard** is no longer offered at creation (owner,
+2026-09-24) but keeps its presets in the table for existing saves; **Tuned** is removed from the
 fork. The original oracle still contains all original modes, so these intentional
 fork settings are checked separately from upstream parity. Removing Tuned does
 not delete its historical fixtures or rewrite the original import receipt.

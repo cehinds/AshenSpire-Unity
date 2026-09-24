@@ -100,7 +100,7 @@ namespace AshenSpire.Presentation
                 classChoices.Add(chooseClass);
             }
             _target = Section("native-creation-character-section", "CHARACTER · Attributes");
-            Choices("foundation-mode", "Allocation", _catalog.Table("creationModes"), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
+            Choices("foundation-mode", "Allocation", CreationModel.VisibleModes(_catalog), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
             Label("Unspent points: " + _creation.Remaining, "creation-unspent");
             Label(_creation.TotalPoints + " total points · " + _creation.Minimum + " minimum per attribute", "caption");
             var attributes = new VisualElement(); attributes.AddToClassList("creation-attributes"); _target.Add(attributes);

@@ -11,7 +11,7 @@ let browser,players=[];
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
   const ui=new NativeUiDriver(await context.newPage(),path.join(output,seat?'Guest':'Host'));players.push(ui);
   const wire=[];ui.page.on('websocket',socket=>{socket.on('framesent',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'sent',type:message.type,hello:message.type==='hello'?{inviteMatches:message.payload.joinToken===credentials.joinToken,hostMatches:message.payload.hostToken===credentials.hostToken,setup:message.payload.setup}:undefined});}catch{}});socket.on('framereceived',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'received',type:message.type,error:message.type==='error'?message.payload:undefined});}catch{}});socket.on('close',()=>fs.writeFileSync(path.join(ui.output,'wire-summary.json'),JSON.stringify(wire,null,2)));});
-  await ui.open(process.argv[2]);await ui.click('native-coop');await ui.click('coop-create');await ui.click('foundation-mode-standard');await ui.fill('native-name',seat?'Guest':'Host');await ui.click('native-begin');
+  await ui.open(process.argv[2]);await ui.click('native-coop');await ui.click('coop-create');await ui.assignPoints();await ui.fill('native-name',seat?'Guest':'Host');await ui.click('native-begin');
   await ui.fill('coop-endpoint',credentials.endpoint);await ui.fill('coop-invite',credentials.joinToken);if(!seat)await ui.fill('coop-host-key',credentials.hostToken);
   await ui.click('coop-connect');await ui.until(()=>ui.coop?.lobby?.seats?.length>=seat+1,'joined host');await ui.coopCommand('coop-ready');await ui.shot('01-lobby');
  }

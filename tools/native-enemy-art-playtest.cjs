@@ -59,8 +59,8 @@ let captureImpact=false;
  const stamp=JSON.parse(initialBuild);
  ui.check(typeof stamp.version==='string'&&/^\d+\.\d+\.\d+\.\d+$/.test(stamp.version),'served build has a four-part version: '+stamp.version);
  ui.check(Number.isInteger(stamp.buildNumber)&&stamp.buildNumber>=11,'testing an enemy-art-capable build: '+stamp.buildNumber+' / version '+stamp.version);
- await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');await ui.command('native-begin');
- ui.check(ui.state.phase==='Map','Standard seed 1 starts on the native map');
+ await ui.click('native-new');await ui.assignPoints();await ui.fill('native-seed','1');await ui.command('native-begin');
+ ui.check(ui.state.phase==='Map','Assigned seed 1 starts on the native map');
  for(let n=0;n<12&&ui.state.phase!=='Combat';n++){
   if(ui.state.phase==='Map'){
    const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];

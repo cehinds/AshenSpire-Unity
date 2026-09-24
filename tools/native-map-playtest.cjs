@@ -82,7 +82,7 @@ let browser,ui,map;
    ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify(map.receipts,null,2));
    summaries.push({viewport,sealstone,checks:ui.checks.length,touchCancel:phone&&!sealstone,physicalDevice:false});console.log('Map viewport passed: '+viewport.width+'x'+viewport.height+(sealstone?' Sealstone':'')+' ('+ui.checks.length+' checks)');await context.close();
   };
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
+  await ui.click('native-new');await ui.assignPoints();await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
   await ui.until(()=>map.value?.scope==='solo','initial map observer');await settled();
   ui.check(ui.state.phase==='Map'&&map.value.mode==='fog','new profile defaults to solo fog');
   if(sealstone){

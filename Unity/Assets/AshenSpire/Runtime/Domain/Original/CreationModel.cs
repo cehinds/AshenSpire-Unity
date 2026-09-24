@@ -2,6 +2,7 @@
 // Edit presets/modes/derivedStatRules in content. UI requests a delta; this model
 // enforces bounds and allocation budget. Previewing never mutates a saved run.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -25,6 +26,17 @@ namespace AshenSpire.Domain.Original
             if (!_content["classes"].Any(x => (string)x["id"] == classId) || !_content["creationModes"].Any(x => (string)x["id"] == modeId)) throw new ArgumentException("Unknown class or creation mode.");
             var preset = _content["attributeRules"]["presets"]?[modeId]?[classId] as JObject ?? throw new ArgumentException("Missing creation preset.");
             ClassId = classId; ModeId = modeId; _attributes = (JObject)preset.DeepClone(); Changed?.Invoke();
+        }
+        // Modes offered at creation: characterCreation.visibleModeIds, in order, with the
+        // default mode always present (mirrors web creationModeViews). Hidden modes stay
+        // in creationModes so existing saves and Select() still resolve them.
+        public static JArray VisibleModes(OriginalContentCatalog catalog)
+        {
+            var data = catalog.Data(); var modes = (JArray)data["creationModes"];
+            var ids = (data["characterCreation"]?["visibleModeIds"] as JArray)?.Select(x => (string)x).ToList() ?? modes.Select(x => (string)x["id"]).ToList();
+            var fallback = (string)data["attributeRules"]["defaultMode"];
+            if (!ids.Contains(fallback)) ids.Insert(0, fallback);
+            return new JArray(ids.Distinct().Select(id => modes.FirstOrDefault(x => (string)x["id"] == id) ?? throw new ArgumentException("characterCreation.visibleModeIds: creation mode '" + id + "' does not resolve.")));
         }
         private JObject Mode => (JObject)_content["creationModes"].First(x => (string)x["id"] == ModeId);
         public JObject Attributes() => (JObject)_attributes.DeepClone();

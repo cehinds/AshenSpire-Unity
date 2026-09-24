@@ -15,7 +15,7 @@ let browser,ui;
   const ctx=await browser.newContext({viewport,deviceScaleFactor:1}),page=await ctx.newPage();ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));
   const consolePath=path.join(ui.output,'console.ndjson');page.on('console',m=>fs.appendFileSync(consolePath,JSON.stringify({type:m.type(),text:m.text()})+'\n'));
   await ui.open(url);const stamp=JSON.parse(fs.readFileSync(path.join(ui.output,'build-source.json')));ui.check(stamp.sourceDigest===expectedDigest,'source matches designated compiled build');
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
+  await ui.click('native-new');await ui.assignPoints();await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
   const card=ui.state.cards.find(row=>row.card.id==='gorefireSlash'||row.card.name==='Gorefire Slash');ui.check(!!card,'authored Gorefire Slash is in starting hand');
   const id='native-card-'+card.instance.instanceId;await ui.click(id);ui.check(ui.has('native-play'),'selected Gorefire Slash is affordable');
   const initialState=JSON.stringify(ui.state),snapshots=[];

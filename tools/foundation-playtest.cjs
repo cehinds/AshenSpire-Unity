@@ -57,7 +57,7 @@ function result(success) { return { success, checks, screenshots, errors, creati
   await page.waitForFunction(() => !!window.unityInstance, null, { timeout: 120000 });
   await until(() => controls?.Controls.length, 'Unity controls');
   await shot('01-phone-title'); await click('foundation'); await until(() => creations.length > 0, 'original creation');
-  check(creations.at(-1).classId === 'reaver' && creations.at(-1).mode === 'pointbuy', 'Assign points is the default');
+  check(creations.at(-1).classId === 'reaver' && creations.at(-1).mode === 'pointbuy', 'Assigned is the default');
   check(Object.values(creations.at(-1).attributes).every(value => value === 5) && creations.at(-1).remaining === 35, 'five minimum attributes leave 35 of 60 points unspent');
   check(!controls.Controls.some(x => x.Id === 'foundation-mode-tuned'), 'Tuned is removed');
   check(creations.at(-1).resources.hp === 40 && creations.at(-1).resources.energy === 2, 'minimum attributes use original resource rules');
@@ -70,10 +70,8 @@ function result(success) { return { success, checks, screenshots, errors, creati
   await click('foundation-class-starseer');
   await until(() => creations.at(-1).classId === 'starseer', 'Starseer selection');
   check(creations.at(-1).remaining === 35 && Object.values(creations.at(-1).attributes).every(value => value === 5), 'class selection retains minimum allocation defaults');
-  await click('foundation-mode-standard');
-  check(creations.at(-1).remaining === 0 && creations.at(-1).attributes.intelligence === 14, 'Standard preserves its class preset');
-  await click('foundation-mode-pointbuy');
-  check(creations.at(-1).remaining === 35 && creations.at(-1).attributes.intelligence === 5, 'Assign points resets to minimum after Standard');
+  const modes = controls.Controls.filter(x => x.Id.startsWith('foundation-mode-'));
+  check(modes.length === 1 && modes[0].Id === 'foundation-mode-pointbuy', 'Standard is not offered; only Assigned remains');
   await shot('04-phone-starseer');
   await click('foundation-map'); await until(() => maps.length >= 3, 'three original act maps');
   await click('foundation-seed', false, .8); await key('Control+a'); await key('Backspace'); await key('1'); await key('Tab');

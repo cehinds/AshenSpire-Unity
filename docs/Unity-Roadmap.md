@@ -45,7 +45,9 @@ all archived players and independently tested channel saves. See
 - [x] Restore local Fit/manual camera state, vertical pan, zoom steps, recenter,
   touch cancellation and profile persistence; test real multi-choice layouts.
 - [x] Default to Assign points: five attributes at 5, 60 total, 35 unspent;
-  retain Standard and remove Tuned from the fork's available modes.
+  remove Tuned from the fork's available modes.
+- [x] Offer only Assigned at creation (relabelled from "Assign points"); Standard
+  stays in the table for saves but is hidden via `visibleModeIds` (2026-09-24).
 - [x] Make every attribute point useful and author five-point mechanical thresholds.
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and
   saved kit identity; retain the uncustomized baseline kit's creation-only waiver.

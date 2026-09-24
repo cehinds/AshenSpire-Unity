@@ -52,7 +52,7 @@ let browser,ui,records=[];
   ui.check(Math.abs(newBox.x+newBox.width/2-(newBox.canvas.x+newBox.canvas.width/2))<25,'title menu is centred in the canvas');
   record('title');await ui.shot('01-title');
   await ui.click('native-new');ui.check(labels().includes('Prepare your Forsaken'),'original-style creator heading is present');record('creator');await ui.shot('02-creation');
-  await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');await ui.command('native-begin');ui.check(ui.state.phase==='Map','real Standard Reaver creation enters map');record('map');await ui.shot('03-map');
+  await ui.assignPoints();await ui.fill('native-seed','1');await ui.command('native-begin');ui.check(ui.state.phase==='Map','real Assigned Reaver creation enters map');record('map');await ui.shot('03-map');
   await ui.command('native-route-'+oracle[0].command.slice('enter:'.length));ui.check(match(oracle[0]),'first encounter matches committed seed1 resources');
   await checkArena();
   ui.check(ui.state.cards.every(row=>controls().some(c=>c.Id==='native-card-'+row.instance.instanceId)),'entire hand has real controls in one horizontal rail');

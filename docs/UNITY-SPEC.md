@@ -2,11 +2,18 @@
 
 ## Owner-requested creation defaults (four-part versioning)
 
-Assign points is the default creation mode. Tuned is removed from the fork's
-available modes. All five attributes start at the minimum value of 5 for every
-class. The total budget is 60, so the initial unspent pool is 60 - (5 × 5) = 35.
-The per-attribute maximum remains 15. Standard remains available with its existing
-presets. Plus/minus controls reflect the current bounds and remaining budget.
+Assigned (mode id `pointbuy`, formerly labelled "Assign points") is the default
+and only offered creation mode. Tuned is removed from the fork's available modes.
+All five attributes start at the minimum value of 5 for every class. The total
+budget is 60, so the initial unspent pool is 60 - (5 × 5) = 35. The per-attribute
+maximum remains 15. Plus/minus controls reflect the current bounds and remaining
+budget.
+
+Owner, 2026-09-24: "Standard isn't an option for stats and tuned should say
+assigned." Creation offers only `characterCreation.visibleModeIds` (now
+`["pointbuy"]`), with the default mode always included. Standard stays in
+`creationModes` with its presets so existing saves and exported configurations
+still resolve; it is simply no longer offered.
 These are Constantine's explicit fork settings; the pinned original-engine
 fixtures remain unchanged as historical parity evidence.
 

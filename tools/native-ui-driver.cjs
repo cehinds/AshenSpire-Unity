@@ -107,6 +107,10 @@ class NativeUiDriver {
   }
   throw Error('Cannot reach '+id+' after bounded measured scrolling');
  }
+ // Spend every unspent creation point round-robin through the visible +attribute
+ // controls. Standard is no longer offered (owner, 2026-09-24), so a climb can only
+ // begin once the Assigned pool is empty.
+ async assignPoints(){for(let n=0;n<100;n++){const ups=(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled);if(!ups.length)return;await this.click(ups[n%ups.length].Id);}throw Error('Creation points never ran out');}
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
  async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
