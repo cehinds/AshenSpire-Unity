@@ -113,6 +113,7 @@ namespace AshenSpire.Presentation
                 (tagNames.Count == 0 ? "" : string.Join(", ", tagNames) + ". ") + description +
                 (shortage == null ? "" : " " + shortage);
             tooltip = FullText;
+            FeelDriver.HandCardHover(this); // card.hover lift/scale, only while inside a hand rail
         }
 
         private static void ApplyGlyphFont(Label label, string glyph)

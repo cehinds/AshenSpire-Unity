@@ -6,10 +6,44 @@ boss intro, reward and effect pops, idle bob, hold and drag thresholds) is
 now data. The Unity port reads the numbers from that data and no longer
 guesses them.
 
-**Integration status: data + curves ready, tween wiring pending (needs Unity editor).**
-The profile, the model and the curve maths are finished and tested. Nothing in
-`Runtime/Presentation` reads them yet. That step has to be played and judged in
-the Unity editor, which this change did not have.
+**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
+`Runtime/Presentation` now reads every combat motion from the profile. The code
+compiles against Unity's reference assemblies (`node tools/unity-runtime-check.mjs`)
+and the beat plan is checked by `UnityTests/Feel`, but nobody has yet played it
+in the Unity editor or a player build. Use the feel checklist at the end of this
+page for that play test.
+
+### What Unity element uses which profile key
+
+| Unity element | Profile key(s) | Code |
+|---|---|---|
+| Profile load at startup | `Resources/Feel/feel-profile.json`, validated | `FeelDriver.Load()` from the `CampaignView` constructor |
+| Reduced motion / Quick animations toggles | `FeelSettings.FromToggles` (Quick = `Speeds[fast]`) | `FeelDriver.Configure`, `CombatFeedback.Play` |
+| Hand card (`OriginalCardView` inside a hand rail, solo and co-op) on pointer hover | `card.hover` (140 ms `ease`, y −56, scale 1.32, bottom-centre origin) | `FeelDriver.HandCardHover` |
+| Acting player figure (player turn) | `actor.lunge` for an `attack` cue, else `actor.step`; `Pace.WindupMs` | `CombatFeedback` via `FeelBeat.Plan` |
+| Acting enemy figure (enemy turn) | `actor.lunge` mirrored (`side = -1`) after `Pace.BannerBeatMs` | `CombatFeedback` via `FeelBeat.Plan` |
+| Damaged enemy / player figure | `hit.recoil`, or `hit.recoilHeavy` at `Thresholds.HeavyHitDamage`; `brightness` → cue-colour flash | `CombatFeedback` |
+| Player figure on heal/guard, enemy figure on poison (no damage) | `hit.flash` `brightness` track only (colour flash) | `CombatFeedback` |
+| Combat stage (`OriginalRunPanel.Stage`, or the legacy stage) | `screen.shake`, heavy hits only | `CombatFeedback` |
+| `combat-feedback` label, enemy turn | `banner.turn` (text `ENEMY TURN`, letter spacing and fade) | `CombatFeedback` |
+| `combat-feedback` label, result numbers | `damageNumber.pop` (`damageNumber.reduced` under Reduced motion); font × `DamageNumbers.FontScale(Tier)` | `CombatFeedback` |
+| Timeline length and cancel | `LifetimeMs` of every part; a click or navigation still cancels at once | `FeelBeat.TotalMs`, `FeelTween` |
+
+Geometry is unchanged. Feel transforms are visual only: `FeelDriver.SettledBound`
+reports every control's bounds with feel transforms removed, and every motion
+returns to rest (no inline translate, scale or rotate) when it ends. Pointer
+playtests therefore click the same settled geometry as before.
+
+Not wired, because Unity has no matching element yet: `card.rewardHover`,
+`card.play`, `enemy.death`, `fx.*`, `stagger.wobble`, `relic.proc`,
+`stance.flare`, `boss.*`, `reward.taken`, `screen.enter`, the co-op banners,
+HUD bar fills, tooltips and idle bob. `ExpeditionView` (not constructed
+anywhere) keeps its old 220 ms pose swap.
+
+Known limits to judge in the editor: the hand rail is a clipping `ScrollView`,
+so the hovered card's lifted top can be cut off, and a hovered card is drawn
+under the cards to its right (UI Toolkit draws in hierarchy order, and
+reordering would change layout).
 
 | File | What it is |
 |---|---|
@@ -44,8 +78,8 @@ These rules come from SPEC §7.4 and `src/ui/fx.js`.
   Damage numbers are never turned off.
 - **Unity's toggles.** `CampaignView` has "Reduced motion" and "Quick
   animations". `FeelSettings.FromToggles(reduced, quick)` maps Quick to the
-  HTML `fast` speed. Today `CombatFeedback` halves durations instead. The HTML
-  model replaces that, and a four-way speed choice is F15's job.
+  HTML `fast` speed. `CombatFeedback` used to halve durations. It now uses this
+  model instead. A four-way speed choice is F15's job.
 
 ## How Presentation should consume it
 
@@ -93,8 +127,8 @@ if (hit.Play)
 - **Easing.** A `FeelPlayback` carries `Curve`, and `Sample` eases each
   keyframe interval separately, exactly as CSS does. Do not ease the whole
   motion and then interpolate the keys.
-- **Replace, don't duplicate.** `CombatFeedback.Play` hard-codes a sine arc,
-  a 12 px label rise and a ×0.5 "fast" factor. When it is wired, those become
+- **Replace, don't duplicate.** `CombatFeedback.Play` used to hard-code a sine
+  arc, a 12 px label rise and a ×0.5 "fast" factor. These are now
   `actor.lunge` + `hit.recoil` + `damageNumber.pop`. `campaign.json/Feedback`
   keeps its poses, colours and sounds. `NativeFeedbackProjection` does not
   change.

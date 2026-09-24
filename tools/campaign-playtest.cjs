@@ -175,7 +175,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
    const events=feedbackEvents.slice(before),start=events.find(e=>e.Status==='started'),impact=events.find(e=>e.Status==='impact'),end=events.find(e=>e.Status==='completed');
    assert(start&&impact&&end&&start.Reduced===reduced&&start.Fast===fast,'feedback preferences differ');
    assert(end.PlayerX===0,'feedback did not reset translation');
-   assert(reduced?impact.PlayerX===0:Math.abs(impact.PlayerX)>0,'motion mode did not control translation');
+   assert(reduced?impact.PlayerX===0&&impact.EnemyX===0:Math.abs(impact.PlayerX)+Math.abs(impact.EnemyX)>0,'motion mode did not control translation');
    assert(muted?soundEvents.length===sounds:soundEvents.length>sounds,'mute did not control sound dispatch');
    await shot(name+'-settled');return start;
   }
@@ -183,8 +183,8 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   const firstAttack=state.Hand.findIndex(id=>authoredContent.Cards.find(c=>c.Id===id).Tags.includes('attack'));assert(firstAttack>=0,'attack required');await click('card-'+firstAttack);
   const normal=await probe('play','26-normal-impact',false,false,false);
   await settings(['fast-motion']);const fast=await probe('end-turn','27-fast-impact',false,true,false);
-  const normalCue=authoredContent.Feedback.Cues.find(c=>c.Id===normal.Cue),fastCue=authoredContent.Feedback.Cues.find(c=>c.Id===fast.Cue);
-  assert(Math.abs(normal.Duration-normalCue.Milliseconds/1000)<.001&&Math.abs(fast.Duration-fastCue.Milliseconds/2000)<.001,'fast duration differs from authored half duration');
+  // Timing is the F07 feel profile (docs/Unity-Feel.md): Quick animations = the HTML fast pacing.
+  assert(normal.Speed==='normal'&&fast.Speed==='fast'&&normal.Duration>0&&fast.Duration>0,'feel profile speed differs from the Quick animations toggle');
   await settings(['fast-motion','reduced-motion','mute-sound']);await probe('end-turn','28-reduced-impact',true,false,true);
   const saved=JSON.stringify(state);await load();await click('continue',true);assert(saved===JSON.stringify(state),'settings reload changed save');await probe('end-turn','29-persisted-impact',true,false,true);
   await settings(['reduced-motion','mute-sound']);const before=feedbackEvents.length;

@@ -369,10 +369,27 @@ var docMissing = rows.Where(row => !docLines.Any(l => l.Contains("`" + row.Spec.
 foreach (var d in docMissing.Take(10)) Console.WriteLine("  doc missing " + d);
 Check(docText.Length > 0 && docMissing.Count == 0, DocPath + " cites every value at its current file:line (" + rows.Count + " rows)");
 Check(profile.Motions.All(m => docText.Contains("`" + m.Id + "`") || docText.Contains("Motions[" + m.Id + "]")), DocPath + " names every motion");
-Check(docText.Contains("Integration status: data + curves ready, tween wiring pending (needs Unity editor)") && docText.Contains("Feel checklist"), DocPath + " carries the integration status and the feel checklist");
+Check(docText.Contains("Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test") && docText.Contains("Feel checklist"), DocPath + " carries the integration status and the feel checklist");
+
+// ---- Presentation beat plan (FeelBeat, used by CombatFeedback) ----------------------------------
+var attackBeat = AshenSpire.Presentation.FeelBeat.Plan(profile, S(), false, true, 8, 0);
+Check(attackBeat.BannerAtMs < 0 && attackBeat.Actor.Id == "actor.lunge" && attackBeat.ImpactMs == 143 && attackBeat.Victim == AshenSpire.Presentation.FeelVictim.Enemy && attackBeat.Recoil.Id == "hit.recoil" && !attackBeat.Shake.Play, "beat: player attack lunges, impact at wind-up 143 ms, light recoil, no shake under 15");
+Check(attackBeat.TotalMs == 143 + 600 && attackBeat.NumberTier == "normal", "beat: ends when the number's 600 ms lifetime ends");
+var heavyTurn = AshenSpire.Presentation.FeelBeat.Plan(profile, S(), true, false, 0, 27);
+Check(heavyTurn.BannerAtMs == 0 && heavyTurn.Banner.Id == "banner.turn" && heavyTurn.ActorAtMs == 400 && heavyTurn.ActorSide == -1 && heavyTurn.ImpactMs == 543, "beat: enemy turn banner, then the enemy lunges after the 400 ms banner beat");
+Check(heavyTurn.Heavy && heavyTurn.Recoil.Id == "hit.recoilHeavy" && heavyTurn.Shake.Play && heavyTurn.VictimSide == -1 && heavyTurn.NumberTier == "crit" && Near(heavyTurn.NumberFontScale, 4.4 / 2.5, 1e-5), "beat: heavy hit on the player recoils heavy, shakes, and pops a crit number");
+var quickTurn = AshenSpire.Presentation.FeelBeat.Plan(profile, FeelSettings.FromToggles(false, true), true, false, 0, 3);
+Check(quickTurn.ActorAtMs == 260 && quickTurn.ImpactMs == 260 + 88 && quickTurn.Actor.DurationMs == 172, "beat: Quick animations = fast pacing (banner beat 260, wind-up 88, lunge 172)");
+var reducedTurn = AshenSpire.Presentation.FeelBeat.Plan(profile, FeelSettings.FromToggles(true, false), true, false, 0, 30);
+Check(!reducedTurn.Actor.Play && !reducedTurn.Shake.Play && !reducedTurn.Recoil.Has("x") && !reducedTurn.Recoil.Has("rotate") && reducedTurn.Recoil.Has("brightness") && reducedTurn.Number.Id == "damageNumber.reduced" && !reducedTurn.Number.Has("y") && reducedTurn.Banner.Has("opacity") && !reducedTurn.Banner.Has("letterSpacing"), "beat: Reduced motion drops every movement, keeps flash and fades");
+Check(reducedTurn.ImpactMs == profile.Pacing.QueueStepMs, "beat: Reduced motion paces like instant; queued effects stay 80 ms apart");
+var guardBeat = AshenSpire.Presentation.FeelBeat.Plan(profile, S(), false, false, 0, 0);
+Check(guardBeat.Actor.Id == "actor.step" && guardBeat.Victim == AshenSpire.Presentation.FeelVictim.None && guardBeat.Glow.Play && !guardBeat.Recoil.Play, "beat: non-attack actions step and glow without a recoil");
+var beatSource = Read("Unity/Assets/AshenSpire/Runtime/Presentation/FeelBeat.cs");
+Check(!Regex.IsMatch(beatSource, @"using UnityEngine|UnityEngine\.") && !Regex.IsMatch(beatSource, @"\b\d{3,}\b"), "FeelBeat is engine-free and carries no hard-coded millisecond values");
 
 // ---- Unity asset hygiene ---------------------------------------------------------------------------
-var metas = new[] { "Unity/Assets/AshenSpire/Resources/Feel.meta", ProfilePath + ".meta", "Unity/Assets/AshenSpire/Runtime/Domain/FeelProfile.cs.meta", "Unity/Assets/AshenSpire/Runtime/Domain/FeelCurves.cs.meta" };
+var metas = new[] { "Unity/Assets/AshenSpire/Resources/Feel.meta", ProfilePath + ".meta", "Unity/Assets/AshenSpire/Runtime/Domain/FeelProfile.cs.meta", "Unity/Assets/AshenSpire/Runtime/Domain/FeelCurves.cs.meta", "Unity/Assets/AshenSpire/Runtime/Presentation/FeelBeat.cs.meta", "Unity/Assets/AshenSpire/Runtime/Presentation/FeelDriver.cs.meta", "Unity/Assets/AshenSpire/Runtime/Presentation/FeelTween.cs.meta" };
 var guids = Directory.GetFiles(Path.Combine(root, "Unity/Assets"), "*.meta", SearchOption.AllDirectories)
     .Select(p => Regex.Match(File.ReadAllText(p), @"^guid: ([0-9a-f]{32})\s*$", RegexOptions.Multiline).Groups[1].Value).Where(x => x.Length > 0).ToList();
 Check(metas.All(p => File.Exists(Path.Combine(root, p)) && Regex.IsMatch(Read(p), @"^guid: [0-9a-f]{32}\s*$", RegexOptions.Multiline)), "Feel folder, profile and scripts carry .meta files with 32-hex guids");
