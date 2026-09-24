@@ -44,10 +44,13 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
   test project (Domain, Parity, NativeFeedback, CardText, CardCosts,
   SpriteStyles, MapShape, MapKnowledge, MapViewport, CoopRun, CoopRun
   `--policy`, Interruption, Viewport, RendererPatch, Authoring, Balance, plus the
-  optional Mods, SaveSlots, RunSummary, Telegraphs, Music and Feel suites), run in
-  parallel with `fail-fast: false` so one failure does not hide others. An
-  optional suite is skipped with a notice until its project exists on the branch;
-  once every feature branch carrying one has merged, drop `optional: true`.
+  optional Mods, SaveSlots, RunSummary, Telegraphs, Music and Feel suites), run as
+  **four shards** (rules, presentation, map-and-data, features) with
+  `fail-fast: false`. Inside a shard every suite runs even after one fails, and the
+  job lists the failed suites. Four runners per PR instead of ~20 keeps several
+  open PRs from queueing behind each other. A suite marked `?` is skipped with a
+  notice until its project exists on the branch; drop the `?` once every feature
+  branch carrying it has merged.
 - **unity-language** — builds every file under `Unity/Assets/AshenSpire/Runtime/Domain`
   with `UnityTests/LangCheck` (C# 9, .NET Standard 2.1, no implicit usings), the
   rules the Unity 6 editor compiles by. The console test projects use net8.0/C# 12,

@@ -83,88 +83,27 @@ jobs:
         run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
 
   domain-tests:
-    name: Console tests (${{ matrix.name }})
+    name: Console tests (${{ matrix.shard }})
     needs: changes
     # Docs-only and unrelated changes skip this job entirely.
     if: ${{ needs.changes.outputs.unity == 'true' || needs.changes.outputs.tooling == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
+    # Four balanced shards instead of one runner per project: several open PRs
+    # at once no longer queue ~20 jobs each. Entries are "Project[:args]";
+    # a trailing "?" marks a suite that may not exist on this branch yet.
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Domain
-            project: UnityTests/Domain
-            args: ''
-          - name: Parity
-            project: UnityTests/Parity
-            args: ''
-          - name: NativeFeedback
-            project: UnityTests/NativeFeedback
-            args: ''
-          - name: CardText
-            project: UnityTests/CardText
-            args: ''
-          - name: CardCosts
-            project: UnityTests/CardCosts
-            args: ''
-          - name: SpriteStyles
-            project: UnityTests/SpriteStyles
-            args: ''
-          - name: MapShape
-            project: UnityTests/MapShape
-            args: ''
-          - name: MapKnowledge
-            project: UnityTests/MapKnowledge
-            args: ''
-          - name: MapViewport
-            project: UnityTests/MapViewport
-            args: ''
-          - name: CoopRun
-            project: UnityTests/CoopRun
-            args: ''
-          - name: CoopRun policy
-            project: UnityTests/CoopRun
-            args: '--policy'
-          - name: Interruption
-            project: UnityTests/Interruption
-            args: ''
-          - name: Viewport
-            project: UnityTests/Viewport
-            args: ''
-          - name: RendererPatch
-            project: UnityTests/RendererPatch
-            args: ''
-          - name: Authoring
-            project: UnityTests/Authoring
-            args: 'TestResults/Authoring/checks.json'
-          - name: Balance
-            project: UnityTests/Balance
-            args: 'GameContent/Unity/campaign.json TestResults/Balance/campaign.json'
-          - name: Mods
-            project: UnityTests/Mods
-            args: ''
-            optional: true
-          - name: SaveSlots
-            project: UnityTests/SaveSlots
-            args: ''
-            optional: true
-          - name: RunSummary
-            project: UnityTests/RunSummary
-            args: ''
-            optional: true
-          - name: Telegraphs
-            project: UnityTests/Telegraphs
-            args: ''
-            optional: true
-          - name: Music
-            project: UnityTests/Music
-            args: ''
-            optional: true
-          - name: Feel
-            project: UnityTests/Feel
-            args: ''
-            optional: true
+          - shard: rules
+            suites: 'Domain Parity CoopRun CoopRun:--policy'
+          - shard: presentation
+            suites: 'NativeFeedback CardText CardCosts SpriteStyles Viewport RendererPatch Interruption'
+          - shard: map-and-data
+            suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
+          - shard: features
+            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel?'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -176,26 +115,28 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('UnityTests/**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
-      - name: Run ${{ matrix.project }}
+      - name: Run ${{ matrix.shard }} suites
         env:
-          PROJECT: ${{ matrix.project }}
-          ARGS: ${{ matrix.args }}
-          OPTIONAL: ${{ matrix.optional && 'true' || 'false' }}
+          SUITES: ${{ matrix.suites }}
         run: |
-          set -euo pipefail
-          # Suites added by in-flight feature branches are optional until they land.
-          if [ "$OPTIONAL" = "true" ] && ! ls "$PROJECT"/*.csproj >/dev/null 2>&1; then
-            echo "::notice::$PROJECT is not on this branch; that suite did not run."
-            exit 0
-          fi
+          set -uo pipefail
           mkdir -p TestResults/Authoring TestResults/Balance
-          # ARGS is word-split on purpose: it holds separate arguments.
-          if [ -n "$ARGS" ]; then
-            dotnet run --project "$PROJECT" -- $ARGS
-          else
-            dotnet run --project "$PROJECT"
-          fi
-
+          failed=()
+          for entry in $SUITES; do
+            optional=false
+            case "$entry" in *'?') optional=true; entry="${entry%\?}";; esac
+            name="${entry%%:*}"; args=""
+            [ "$name" != "$entry" ] && args="${entry#*:}"
+            project="UnityTests/$name"
+            if $optional && ! ls "$project"/*.csproj >/dev/null 2>&1; then
+              echo "::notice::$project is not on this branch; that suite did not run."
+              continue
+            fi
+            echo "::group::$name ${args//,/ }"
+            # args uses commas between separate arguments.
+            if dotnet run --project "$project" -- ${args//,/ }; then echo "::endgroup::"; else echo "::endgroup::"; echo "::error::$name failed"; failed+=("$name"); fi
+          done
+          if [ ${#failed[@]} -gt 0 ]; then echo "Failed suites: ${failed[*]}"; exit 1; fi
   unity-license:
     name: Unity license probe
     needs: changes
