@@ -157,6 +157,24 @@ owner rebuild before the package check passes.
 - Tasks live in GitHub Issues (Unity work: issue #33).
 - If two agents would touch the same files, stop and ask.
 
+## Parallel story branches and version numbers
+
+Several stories can be in flight at once, each on its own branch and draft PR
+(`feature/unity-f08-music`, …). Each one bumps from `dev`'s version, so two open
+story PRs will both claim the same next number (e.g. `0.0.15.0`). That is
+expected. After the owner merges one, update the next branch:
+
+1. `git merge origin/dev` into the story branch; on the `version.json` and
+   `docs/Unity-Changelog.md` conflict take `dev`'s side.
+2. Re-run `node tools/unity-version.mjs bump story --note "<same note>"`.
+3. `node tools/unity-version.mjs check --base origin/dev`, then rebuild with
+   `tools/build-unity.ps1` (owner, Windows) and push.
+
+Also check: **all code under `Runtime/Domain` must compile as C# 9 on .NET Standard
+2.1** (Unity 6's rules): `dotnet build UnityTests/LangCheck`.
+Application/Presentation code (UI wiring) can be compile-checked without the
+editor: `node tools/unity-runtime-check.mjs`. It does not replace a play test.
+
 ## Known blockers
 
 1. **No Unity editor in cloud agent sessions.** Agents can edit C#, JSON and
