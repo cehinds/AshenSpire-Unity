@@ -183,7 +183,14 @@ let browser,ui,map;
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1)&&inside(choice,map.value.viewport,1),'fresh touch route is visible inside the map');
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:rect.x+rect.width/2,y:rect.y+rect.height/2,id:1,radiusX:1,radiusY:1,force:1}]});await page.waitForTimeout(140);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await settled();await cdp.detach();
-  }else await control('native-route-'+routeId);
+  }else{
+   // The controls report can trail the Fit camera by a layout pass; clicking a
+   // stale rect misses the node. Wait until the route control sits on the node
+   // the map reports, then click. The assertion still fails if it never does.
+   const routeOnNode=()=>{const c=ui.controls?.Controls.find(r=>r.Id==='native-route-'+routeId&&r.Enabled);if(!c)return false;const cx=c.X+c.Width/2,cy=c.Y+c.Height/2;return cx>=choice.x-1&&cx<=choice.x+choice.width+1&&cy>=choice.y-1&&cy<=choice.y+choice.height+1;};
+   await eventually(routeOnNode,'route control matches the fitted map node');
+   await control('native-route-'+routeId);
+  }
   await ui.until(()=>ui.revision>revision&&ui.state.phase!=='Map','actual route transition');
   ui.check(ui.state.run.mapNodeId===routeId&&ui.state.run.path.at(-1)===routeId,'actual route tap enters the selected authoritative node');await ui.shot('08-entered-route');
   const matches=row=>ui.state.phase===row.phase&&ui.state.player.hp===row.hp&&ui.state.player.mana===row.mana&&ui.state.player.stamina===row.stamina&&ui.state.turn===row.turn&&ui.state.act===row.act;

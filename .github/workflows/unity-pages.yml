@@ -129,7 +129,7 @@ jobs:
 
   # Browser playtests drive the packaged WebGL player under software rendering
   # and dominate the wall clock. Shards are balanced by measured step times
-  # (run 36051894484) to ~30 minutes each; `coop` also builds the companion host.
+  # (runs 36051894484 and 36065296538) to under ~30 minutes each; `coop` also builds the companion host.
   playtests:
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
@@ -156,12 +156,12 @@ jobs:
             run: |
               node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
               node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
-              node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
               node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
           - shard: coop
             companion: true
             run: |
               node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
+              node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
               node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
     name: playtests (${{ matrix.shard }})
     steps:
