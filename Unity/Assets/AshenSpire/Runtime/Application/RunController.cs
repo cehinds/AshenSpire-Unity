@@ -150,7 +150,7 @@ namespace AshenSpire.Application
         private void BindOriginal(OriginalGameSession value)
         {
             if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
-            _originalGame = value; _originalGame.Changed += RefreshOriginal;
+            _originalGame = value; TrackSummary(value); _originalGame.Changed += RefreshOriginal;
         }
         private void RefreshOriginal()
         {
@@ -160,9 +160,10 @@ namespace AshenSpire.Application
                 var run = _originalGame.RunPlayer;
                 foreach (var id in run["foundArmaments"] ?? new JArray()) _profile.CollectArmament(run, (string)id, (string)run["room"]?["source"] ?? "run");
                 if (_originalGame.Phase == OriginalRunPhase.Victory || _originalGame.Phase == OriginalRunPhase.Defeat)
-                    _profile.Finish((string)run["runId"], run, _originalGame.Phase == OriginalRunPhase.Victory);
+                    AttachSummaryUnlocks(_profile.Finish((string)run["runId"], run, _originalGame.Phase == OriginalRunPhase.Victory));
                 _profileSaves.Save(_profile.Snapshot());
             }
+            _view.NativeSummary = CurrentSummary;
             var feedbackCue = _view.Native(_originalGame, _content.Feedback);
             if (feedbackCue != null) _audio.Play(feedbackCue);
         }

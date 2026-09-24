@@ -1,10 +1,12 @@
 # Unity end-of-run summary (F11 / US-11.2)
 
-**Integration status: domain ready, UI wiring pending (needs Unity editor).**
+**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
 
-The Unity Victory/Defeat screen (`Presentation/OriginalRunPanel.cs`) shows one
-line of text. The domain now produces the complete run summary that the HTML
-end screen shows. The screen itself has not been wired up yet.
+The Unity Victory/Defeat screen now renders the full HTML end screen
+(`src/ui/screens/gameover.js`) from `RunSummary`, in solo and co-op. The UI
+code compiles against the Unity reference assemblies
+(`node tools/unity-runtime-check.mjs`), but nobody has yet looked at it in the
+Unity editor or a rebuilt player.
 
 ## What was added
 
@@ -17,7 +19,7 @@ end screen shows. The screen itself has not been wired up yet.
 Both files are in the `AshenSpire.Original` assembly, which has no engine
 references. They sit in a `Summary/` subfolder so that the companion's native
 source list (`Published/Companion.build.json`, checked by
-`tools/validate-companion.py`) stays unchanged. No existing file was edited.
+`tools/validate-companion.py`) stays unchanged.
 
 ## Entry point
 
@@ -89,14 +91,32 @@ stream, and never writes the save.
 - the summary against the saved run, the `OriginalProfile.Finish` record, the
   earned unlocks and a restored finished save.
 
+## UI wiring
+
+| File | Change |
+| --- | --- |
+| `Runtime/Presentation/RunSummaryView.cs` (new) | Builds the end screen: page door head, title (upper-cased, danger tone on defeat), ornament, detail card, stat chips, "Earned" card, "Final deck" head and strip, button row. `FromCoopView` builds a member's summary from a completed co-op view |
+| `Resources/RunSummary.uss` (new) | Styles, with values taken from `styles/kit.css` and `styles/base.css`. The view adds it to the panel root |
+| `Runtime/Presentation/CampaignView.RunSummary.cs` (new) | `NativeSummary` property that carries the summary from the controller to the panel |
+| `Runtime/Application/RunController.Summary.cs` (new) | Creates the `RunSummaryTracker` and attaches the earned unlocks |
+| `RunController.cs` (3 hook lines) | `BindOriginal` creates the tracker before it subscribes `RefreshOriginal`, so the summary is saved first. `RefreshOriginal` passes the `Finish` result to `AttachSummaryUnlocks`, then sets `_view.NativeSummary` |
+| `CampaignView.cs` (1 line) | Passes `NativeSummary` and a "Run history" handler (`ProfileRequested`, the Chronicle) to `OriginalRunPanel` |
+| `OriginalRunPanel.cs` | On Victory/Defeat it skips the status header and mounts `RunSummaryView`. If no summary was passed, it falls back to `RunSummary.FromSession`. The existing `native-deck` and `native-menu` buttons keep their names and move into the button row. On this screen `native-menu` reads "Return to title" (the HTML wording) and is primary |
+| `OriginalCoopPanel.cs` (1 line) | The `complete` scene mounts the same view (without "Run history" or earned unlocks, which the co-op panel does not receive). If the summary cannot be built, it keeps the old text |
+
+Named elements for playtests: `native-run-summary`, `native-run-summary-title`,
+`native-run-summary-card`, `native-run-summary-seed`,
+`native-run-summary-stats`, `native-run-summary-stat-<id>`,
+`native-run-summary-earned`, `native-run-summary-deck`,
+`native-run-summary-buttons`, `native-run-history`.
+
 ## Remaining work (needs the Unity editor)
 
-1. In `OriginalRunPanel`, replace the single `Victory`/`Defeat` line with a
-   layout that renders `RunSummary`. Create the tracker when the panel receives
-   its session.
-2. Call `AttachEarned` wherever the panel records the run in `OriginalProfile`.
-3. Rebuild the player. Any new file under `Unity/Assets` changes the source
+1. Play a solo run to Victory and to Defeat, and a co-op run to completion, in
+   the editor. Check the layout at phone and desktop sizes, and check that
+   "Run history" opens the Chronicle.
+2. Rebuild the player. Any new file under `Unity/Assets` changes the source
    digest, so `node tools/unity-package.mjs --check` reports "built from
    different source" until the packaged build is regenerated.
-4. Add the RunSummary project to the CI workflow (the workflows were
+3. Add the RunSummary project to the CI workflow (the workflows were
    deliberately left unchanged).
