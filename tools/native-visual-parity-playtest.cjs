@@ -52,14 +52,14 @@ let browser,ui,records=[];
   ui.check(Math.abs(newBox.x+newBox.width/2-(newBox.canvas.x+newBox.canvas.width/2))<25,'title menu is centred in the canvas');
   record('title');await ui.shot('01-title');
   await ui.click('native-new');ui.check(labels().includes('Prepare your Forsaken'),'original-style creator heading is present');record('creator');await ui.shot('02-creation');
-  await ui.assignPoints();await ui.fill('native-seed','1');await ui.command('native-begin');ui.check(ui.state.phase==='Map','real Assigned Reaver creation enters map');record('map');await ui.shot('03-map');
+  await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');ui.check(ui.state.phase==='Map','real Standard Reaver creation enters map');record('map');await ui.shot('03-map');
   await ui.command('native-route-'+oracle[0].command.slice('enter:'.length));ui.check(match(oracle[0]),'first encounter matches committed seed1 resources');
   await checkArena();
   ui.check(ui.state.cards.every(row=>controls().some(c=>c.Id==='native-card-'+row.instance.instanceId)),'entire hand has real controls in one horizontal rail');
   ui.check(labels().includes('1'),'card action numeral is rendered');ui.check(labels().some(text=>/attack/i.test(text)),'card type band text is present');
   ui.check(labels().some(text=>text.includes('Blade')),'authored card tag is rendered');ui.check(labels().some(text=>text==='⚔'||text==='✧'||text==='🗡'),'authored card art glyph is rendered');
-  // TODO(lean): confirm from domain output (plan D5 expected value; finalise after the ruleset-6 runtime lands).
-  ui.check(labels().some(text=>text.startsWith('Deal 9 damage.')),'existing weapon total (lean Reaver, STR 3) survives the card-face redesign');
+  // Confirmed from domain output: UnityTests/CardText/WeaponTextChecks.cs asserts Deal 9 for the Standard Reaver {3,1,2,1,1}.
+  ui.check(labels().some(text=>text.startsWith('Deal 9 damage.')),'existing weapon total (Standard Reaver, STR 3) survives the card-face redesign');
   ui.check(!labels().some(text=>/\b0 MP\b|\b0 stamina\b/.test(text)),'card labels omit zero resource clutter');
   record('combat-opening');await ui.shot('04-combat');
   const last=ui.state.cards.at(-1).instance.instanceId,lastControl=controls().find(c=>c.Id==='native-card-'+last),beforeLast=await geometry(lastControl),beforeInspect=state();

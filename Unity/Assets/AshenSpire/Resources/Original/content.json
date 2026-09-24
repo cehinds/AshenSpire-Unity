@@ -20937,8 +20937,18 @@
   ],
   "creationModes": [
     {
+      "id": "leanStandard",
+      "label": "Standard",
+      "baseline": 1,
+      "bonusPool": 3,
+      "minimum": 1,
+      "maximum": 4,
+      "belowBaseline": "allow",
+      "redistribution": "fixedTotal"
+    },
+    {
       "id": "lean",
-      "label": "Assigned",
+      "label": "Assign points",
       "baseline": 1,
       "bonusPool": 3,
       "minimum": 1,
@@ -20948,7 +20958,7 @@
     },
     {
       "id": "standard",
-      "label": "Standard",
+      "label": "Standard (legacy)",
       "baseline": 10,
       "bonusPool": 5,
       "minimum": 10,
@@ -20958,7 +20968,7 @@
     },
     {
       "id": "pointbuy",
-      "label": "Assign points",
+      "label": "Assign points (legacy)",
       "baseline": 5,
       "bonusPool": 35,
       "minimum": 5,
@@ -20968,8 +20978,38 @@
     }
   ],
   "attributeRules": {
-    "defaultMode": "lean",
+    "defaultMode": "leanStandard",
     "presets": {
+      "leanStandard": {
+        "reaver": {
+          "strength": 3,
+          "dexterity": 1,
+          "constitution": 2,
+          "wisdom": 1,
+          "intelligence": 1
+        },
+        "starseer": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 1,
+          "wisdom": 2,
+          "intelligence": 3
+        },
+        "herald": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 2,
+          "wisdom": 3,
+          "intelligence": 1
+        },
+        "rogue": {
+          "strength": 1,
+          "dexterity": 3,
+          "constitution": 2,
+          "wisdom": 1,
+          "intelligence": 1
+        }
+      },
       "lean": {
         "reaver": {
           "strength": 1,
@@ -21163,6 +21203,44 @@
       "minimum": 3,
       "maximum": 15
     },
+    "classStarting": {
+      "reaver": {
+        "base": 3,
+        "statEnabled": true,
+        "stat": "strength",
+        "baseline": 1,
+        "pointsPerCard": 2,
+        "minimum": 3,
+        "maximum": 6
+      },
+      "rogue": {
+        "base": 4,
+        "statEnabled": true,
+        "stat": "dexterity",
+        "baseline": 1,
+        "pointsPerCard": 2,
+        "minimum": 3,
+        "maximum": 6
+      },
+      "herald": {
+        "base": 4,
+        "statEnabled": true,
+        "stat": "wisdom",
+        "baseline": 1,
+        "pointsPerCard": 2,
+        "minimum": 3,
+        "maximum": 6
+      },
+      "starseer": {
+        "base": 5,
+        "statEnabled": true,
+        "stat": "intelligence",
+        "baseline": 1,
+        "pointsPerCard": 2,
+        "minimum": 3,
+        "maximum": 6
+      }
+    },
     "turn": {
       "base": 2,
       "statEnabled": true,
@@ -21185,6 +21263,7 @@
   "characterCreation": {
     "spritePreviewSide": "right",
     "visibleModeIds": [
+      "leanStandard",
       "lean"
     ],
     "layout": {

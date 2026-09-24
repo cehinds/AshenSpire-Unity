@@ -24,7 +24,7 @@ resource prices, payment rules or combat effects.
   authoritative command restrictions.
 
 Since the lean rebase (owner, 2026-09-24) the CardText fixture and the browser
-playtests both use the lean Reaver allocation (STR 3, DEX 1, CON 2, WIS 1, INT 1).
+playtests both use the Standard Reaver preset (STR 3, DEX 1, CON 2, WIS 1, INT 1).
 Its starting Slashing Strike adds Attack Rating: a two-point attribute term
 (`floor(0.75 × 3)`) plus the Straight Sword's own AR of 2. It reads
 **“Deal 9 damage. Includes +4 total damage from Attack Rating.”** Gorefire Slash,

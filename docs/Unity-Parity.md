@@ -150,7 +150,7 @@ identified otherwise. They are regression baselines, not build 11 test results.
 | Content | Full original JSON, IDs, tag joins, source receipts and native table consumers | Complete reachable interaction coverage and full original schema parity |
 | Randomness | Original streams/counters, map/offers, custom starts and resume comparisons | Broader adversarial and multiplayer command traces |
 | Maps and rooms | Seeded graph, original run-shape caps/weights, encounters, unknown/history gates, all 62 event choices, services and act cycles; 60 phone/desktop map-shape controls/combat/reload checks passed | Full original branching-map presentation, including solo fog and Sealstone Key reveal, plus player-driven coverage of every room/service branch |
-| Character creation | Four classes, Assigned points, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Broader discovery-to-unlock-to-new-character coverage and owner visual acceptance |
+| Character creation | Four classes, Standard presets and Assign points, discovered kits/alternatives, wardrobe/relic choices, keepsakes and saved kit identity | Broader discovery-to-unlock-to-new-character coverage and owner visual acceptance |
 | Formulas, tags and statuses | Native consumers and original differential formula/damage/status/command fixtures | All-content interactions, malformed-content and authoring coverage |
 | Flasks | Charges/utility commands, shrine split/refill, growth and cooperative friendly targets | Complete browser interaction, audible feedback and physical-device regression |
 | Equipment | Owned/unlocked sets, stable cards, tiers, mounts, smithing and paid solo combat swaps; pinned original co-op has no paid combat swap command | Broader touch interaction coverage; adding co-op combat swaps would be future design, not original parity |
@@ -179,11 +179,15 @@ walk routes to the boss, and search the content tables. These are development to
 the route explorer does not execute battles or alter a campaign save.
 
 Owner-requested defaults in the current four-part-version branch (owner, 2026-09-24:
-"the numbers should be 1's with 3 points to spend (total of 8, not 35)"):
-**Assigned** (mode id `lean`) opens every class at **1** in all five attributes with
-**3 unspent**, a fixed total of 8; each attribute stays within 1–4. Only Assigned is
-offered. The previous 5/60/35 mode (`pointbuy`, relabelled "Assign points") and
-**Standard** keep their presets in the table so existing saves still resolve;
+"the numbers should be 1's with 3 points to spend (total of 8, not 35)"; then "I'd
+like everyone to have low stats 1's in most stats, and starseer to have a 3 in int,
+and start with 4-6 cards depending on the base (3-5)"): two modes on the lean scale
+(1–4 per attribute, total 8). **Standard** (`leanStandard`, default) opens each class
+on its preset with nothing unspent — Reaver 3/1/2/1/1, Starseer 1/1/1/2/3, Herald
+1/1/2/3/1, Rogue 1/3/2/1/1. **Assign points** (`lean`) opens at all 1s with 3
+unspent. The pool is content (`creationModes[].bonusPool`; no Advanced-settings UI in
+Unity). The previous 5/60/35 mode (`pointbuy`, "Assign points (legacy)") and the old
+10–15 `standard` ("Standard (legacy)") keep their presets in the table so existing saves still resolve;
 **Tuned** is removed from the fork. The original oracle still contains all original
 modes, so these intentional fork settings are checked separately from upstream
 parity. Removing Tuned does not delete its historical fixtures or rewrite the
@@ -194,7 +198,10 @@ plus a per-level term), damage and guard follow Attack/Defense/Power Rating with
 source armament's own rating added, item weights are scaled by 0.2, and weapon
 requirements are STR 2 / STR 3 / DEX 2 / INT 3 (Straight Sword, Greatsword, Dagger,
 Ash Staff). Solo combat follows the web hand rules (O-4, ported 2026-09-24:
-opening 4 + INT above 1 per 2, fixed turn draw 2, capacity 7, cards retained);
+fixed turn draw 2, capacity 7, cards retained) with a per-class opening hand
+(`handRules.classStarting`, owner "Class base 3–5, +1 from stats"): base Reaver 3,
+Rogue 4, Herald 4, Starseer 5, +1 once the primary stat (STR/DEX/WIS/INT) reaches 3,
+capped at 6 — so the Standard presets open on 4/5/5/6;
 co-op, LAN and saves without a hand-rules snapshot keep the legacy draw. The
 Poise row and Ward meters (O-5) are not ported, and dodge keeps `(DEX − 10) / 2`
 (O-6); see [UNITY-SPEC.md](UNITY-SPEC.md).

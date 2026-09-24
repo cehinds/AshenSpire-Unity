@@ -15,7 +15,7 @@ let browser,ui;
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,styles[index]));const feedback=[],pendingShots=[];
   page.on('console',message=>{const value=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=value.indexOf(prefix);if(at<0)return;try{const row=JSON.parse(value.slice(at+prefix.length));feedback.push(row);if(row.Status==='impact'&&pendingShots.length===0)pendingShots.push(page.screenshot({path:path.join(ui.output,'03-combat-impact.png')}));}catch(error){ui.errors.push(error.message);}});
-  await ui.open(process.argv[2]);await ui.click('native-new');await ui.assignPoints();
+  await ui.open(process.argv[2]);await ui.click('native-new');await ui.useStandard();
   await ui.fill('native-name','Style '+styles[index]);
   // Exercise all original choices through actual dropdown interactions before saving.
   for(let n=0;n<tints.length;n++)await ui.choose('native-tint',n);
@@ -26,7 +26,7 @@ let browser,ui;
   const expected={name:'Style '+styles[index],spriteStyle:styles[index],tint:tints[index+1],glyph:sigils[index+1]};
   const identity=()=>Object.entries(expected).every(([key,value])=>ui.state.run.customization[key]===value);
   ui.check(identity(),'native run saves actual chosen style, tint, sigil and name: expected '+JSON.stringify(expected)+'; observed '+JSON.stringify(ui.state.run.customization));
-  ui.check(ui.state.phase==='Map','Assigned Reaver starts on map');
+  ui.check(ui.state.phase==='Map','Standard Reaver starts on map');
   const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];await ui.command('native-route-'+route.id);ui.check(ui.state.phase==='Combat','seed 1 opening route enters real combat');
   await ui.shot('02-combat-idle-'+styles[index]);
   const row=ui.state.cards.find(row=>row.card.type==='attack'&&row.cost.action<=ui.state.player.energy&&row.cost.mana<=ui.state.player.mana&&row.cost.stamina<=ui.state.player.stamina);ui.check(!!row,'opening hand has a legal attack');

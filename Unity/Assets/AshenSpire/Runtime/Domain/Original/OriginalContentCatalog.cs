@@ -42,7 +42,13 @@ namespace AshenSpire.Domain.Original
             foreach (var config in ((JObject)_content["mapConfigs"]).Properties()) ActMapGenerator.Validate((JObject)config.Value);
             foreach (var table in new[] { "cards", "statuses", "stances", "enemies", "relics", "events", "flasks", "scripts" }) ValidateBehaviors(_content[table]);
             // Optional: content frozen in a save made before hand rules existed has none, and its fights stay legacy.
-            if (_content["handRules"] != null) HandRules.Validate(_content["handRules"]);
+            if (_content["handRules"] != null)
+            {
+                HandRules.Validate(_content["handRules"]);
+                var classIds = ((JArray)_content["classes"]).Select(x => (string)x["id"]).ToHashSet();
+                if (_content["handRules"]["classStarting"] is JObject classStarting)
+                    foreach (var entry in classStarting.Properties()) if (!classIds.Contains(entry.Name)) throw new ArgumentException("Hand rules: classStarting names unknown class " + entry.Name);
+            }
             var rules = DerivedStatCalculator.Resolve((JObject)_content["derivedStatRules"]);
             foreach (var mode in ((JObject)_content["attributeRules"]["presets"]).Properties()) foreach (var hero in _content["classes"])
                 foreach (var rule in rules.Properties()) DerivedStatCalculator.Receipt(rules, rule.Name, (JObject)mode.Value[(string)hero["id"]], (JObject)hero);

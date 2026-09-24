@@ -6,21 +6,48 @@ Owner, 2026-09-24: "why are the numbers so high, rebase because the numbers
 should be 1's with 3 points to spend (total of 8, not 35) ... use my past prompts
 for the defaults." The fork now follows the web build's lean scale.
 
-**Assigned** (mode id `lean`) is the default and only offered creation mode.
-Every class opens with all five attributes at **1** and **3** unspent points, a
-fixed total of **8**. Each attribute stays within **1–4**; plus/minus controls
-reflect those bounds and the remaining pool, and a climb cannot begin until the
-pool is empty. The web build's per-class rows (Reaver STR 3 / DEX 1 / CON 2 /
-WIS 1 / INT 1, Starseer 1/1/1/2/3, Herald 1/1/2/3/1, Rogue 1/3/2/1/1) are used
-only by bots and browser drivers (`LEAN_CLASS_ALLOCATIONS` in
-`tools/native-ui-driver.cjs`); they are not creation presets.
+Owner, 2026-09-24: "please for the love of god improve the settings for this one. in
+short, I'd like everyone to have low stats 1's in most stats, and starseer to have a 3
+in int, and start with 4-6 cards depending on the base (3-5)". Follow-ups the same day:
+creation "should have the option of standard (pre assigned class presets) and assign
+points (x points to assign but configurable in advanced settings)"; opening hand
+"Class base 3–5, +1 from stats"; balance "Only hand + stats" — nothing else was retuned.
 
-`characterCreation.visibleModeIds` is `["lean"]`. The earlier `pointbuy` mode
-(label restored to "Assign points"; five at 5, 60 total, 35 unspent, maximum 15)
-and `standard` stay in `creationModes` with their presets, so existing saves and
-exported configurations still resolve; they are simply no longer offered. Tuned
-remains removed. These are Constantine's explicit fork settings; the pinned
-original-engine fixtures remain unchanged as historical parity evidence.
+Two creation modes are offered, both on the lean scale (baseline **1**, each
+attribute **1–4**, total = 5 + pool, **8** as shipped):
+
+- **Standard** (mode id `leanStandard`, the default) opens each class on its preset
+  with nothing unspent, so a climb can begin at once. The presets are the web
+  build's class rows (str/dex/con/wis/int): Reaver 3/1/2/1/1, Starseer 1/1/1/2/3
+  (INT 3, WIS 2), Herald 1/1/2/3/1, Rogue 1/3/2/1/1. Points may still be moved
+  within the fixed total.
+- **Assign points** (mode id `lean`) opens every class at all **1s** with the pool
+  (**3**) unspent; a climb cannot begin until it is spent. Plus/minus controls
+  reflect the bounds and the remaining pool.
+
+**Configuring the pool.** Unity has no Advanced-settings screen; the pool is
+content. Edit `bonusPool` on the `lean` (Assign points) and `leanStandard`
+(Standard) rows of `creationModes` in `GameContent/Unity/Original/content.json`
+and mirror the file byte for byte to
+`Unity/Assets/AshenSpire/Resources/Original/content.json` (baseline, minimum and
+maximum live on the same rows; presets under `attributeRules.presets.leanStandard`).
+A Standard preset that no longer matches its pool is fitted, not refused
+(`CreationModel.Select`): values are clamped to the mode's limits; if the preset
+spends more than the new total, one point at a time comes off the highest
+attribute (ties: the one authored lower, then the later attribute), so the class's
+primary stat shrinks last; if it spends less, the difference is left unspent for
+the player to assign. A pool of 1 gives Reaver 2/1/1/1/1 and Starseer 1/1/1/1/2;
+a pool of 5 gives the shipped presets plus 2 to assign. Edit the presets too if a
+different spread is wanted.
+
+`characterCreation.visibleModeIds` is `["leanStandard", "lean"]` and
+`attributeRules.defaultMode` is `leanStandard`. The older `pointbuy` (relabelled
+"Assign points (legacy)"; five at 5, 60 total, 35 unspent, maximum 15) and
+`standard` (relabelled "Standard (legacy)"; 10–15, total 55) rows stay in
+`creationModes` with their presets, so existing saves, LAN setups and exported
+configurations still resolve; they are not offered. Tuned remains removed. These
+are Constantine's explicit fork settings; the pinned original-engine fixtures
+remain unchanged as historical parity evidence.
 
 ## Owner-requested attribute and resource progression
 
@@ -83,11 +110,31 @@ minimum/maximum, reading the attribute as the sheet shows it:
 
 | Count | Base | Stat | Baseline | Points per card | Min–max |
 |---|---|---|---|---|---|
-| Opening draw | 4 | INT | 1 | 2 | 3–15 |
+| Opening draw (shared fallback) | 4 | INT | 1 | 2 | 3–15 |
 | Turn draw (fixed mode) | 2 | INT | 4 | 5 | 2–10 |
 | Hand capacity | 7 | INT | 1 | 5 | 1–30 |
 
-At lean INT 1–4 a hand opens on 4–5 cards, holds 7, and draws a fixed 2 a turn.
+**Per-class opening hand** (owner, 2026-09-24: "start with 4-6 cards depending on
+the base (3-5)"; "Class base 3–5, +1 from stats"). `handRules.classStarting` gives
+each class its own opening-draw rule with the same formula, replacing the shared
+row for that class:
+
+| Class | Base | Stat | Baseline | Points per card | Min–max | Standard preset | All 1s |
+|---|---|---|---|---|---|---|---|
+| Reaver | 3 | STR | 1 | 2 | 3–6 | 4 (STR 3) | 3 |
+| Rogue | 4 | DEX | 1 | 2 | 3–6 | 5 (DEX 3) | 4 |
+| Herald | 4 | WIS | 1 | 2 | 3–6 | 5 (WIS 3) | 4 |
+| Starseer | 5 | INT | 1 | 2 | 3–6 | 6 (INT 3) | 5 |
+
+So the opening hand is the class base, +1 once the class's primary stat reaches 3
+(lean maximum 4 keeps it at +1), never more than 6. An Assign-points character at
+all 1s opens on its base unless it invests in its primary stat. Each entry is
+validated like any hand rule, and the content catalog refuses entries for unknown
+classes. When a solo fight is created its snapshot takes the class's entry as its
+`starting` rule (`HandRules.ForClass`) and drops `classStarting`, so saved fights
+hold only the rule they use; content, runs and fights without `classStarting`
+keep the shared row. Turn draw and capacity are unchanged: a hand holds 7 and
+draws a fixed 2 a turn at lean INT 1–4.
 Unplayed cards are retained (`retain`); the fixed turn draw and every draw effect
 stop at capacity without touching the draw pile (`drawMode` `fill` instead draws
 up to capacity). `overflow` `discard` requires the retained cards past capacity to
@@ -108,7 +155,8 @@ at turn end. The web build's Advanced-settings editor for these rules is not
 ported: the values are content. The native UI has no discard picker; with the
 shipped rules no prompt arises unless a combat set swap leaves retained cards past
 capacity, when ending the turn is refused until a picker exists.
-Checks: `UnityTests/HandRules` (mirrors web `tests/hand-rules.test.mjs`).
+Checks: `UnityTests/HandRules` (mirrors web `tests/hand-rules.test.mjs`, then the
+per-class openings 4/5/5/6 for Standard presets and 3/4/4/5 at all 1s).
 
 **Not ported (open gaps, owner 2026-09-24).** O-5: the web Poise
 rating row and Ward meters are not ported; poise stays on its authored mechanics.

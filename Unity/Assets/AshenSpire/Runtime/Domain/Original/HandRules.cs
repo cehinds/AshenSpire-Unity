@@ -2,7 +2,9 @@
 // src/model/handRules.js). Authored once in content.json "handRules"; a solo
 // fight snapshots them at creation and carries them in its save. A fight with no
 // snapshot (co-op, LAN, saves made before the rules existed) keeps the legacy
-// derived-Draw turn draw and balance.handMax capacity.
+// derived-Draw turn draw and balance.handMax capacity. Optional "classStarting"
+// gives each class its own opening-hand rule (ForClass), resolved when a fight is
+// created so the snapshot holds only the rule that fight uses.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,16 +31,46 @@ namespace AshenSpire.Domain.Original
             foreach (var group in Groups)
             {
                 if (!(rules[group] is JObject rule)) { problems.Add("Hand rules: missing " + group); continue; }
-                var stat = rule["stat"]?.Type == JTokenType.String ? (string)rule["stat"] : null;
-                if (rule["statEnabled"]?.Type != JTokenType.Boolean || !Attributes.Contains(stat)) problems.Add("Hand rules: invalid " + group + " stat");
-                foreach (var key in new[] { "base", "baseline", "pointsPerCard", "minimum", "maximum" })
+                GroupProblems(rule, group, group == "capacity", problems);
+            }
+            // Optional per-class opening hands (owner, 2026-09-24): each entry replaces
+            // "starting" for that class when a solo fight is created (ForClass).
+            if (rules["classStarting"] != null)
+            {
+                if (!(rules["classStarting"] is JObject classes)) problems.Add("Hand rules: classStarting must be an object");
+                else foreach (var entry in classes.Properties())
                 {
-                    var min = key == "pointsPerCard" || (group == "capacity" && (key == "base" || key == "minimum" || key == "maximum")) ? 1 : 0;
-                    if (!WholeIn(rule[key], min, 99)) problems.Add("Hand rules: invalid " + group + "." + key);
+                    if (!(entry.Value is JObject rule)) { problems.Add("Hand rules: classStarting." + entry.Name + " must be an object"); continue; }
+                    GroupProblems(rule, "classStarting." + entry.Name, false, problems);
                 }
-                if (WholeIn(rule["minimum"], 0, 99) && WholeIn(rule["maximum"], 0, 99) && (long)rule["minimum"] > (long)rule["maximum"]) problems.Add("Hand rules: " + group + " minimum must not exceed maximum");
             }
             return problems;
+        }
+
+        private static void GroupProblems(JObject rule, string group, bool capacity, List<string> problems)
+        {
+            var stat = rule["stat"]?.Type == JTokenType.String ? (string)rule["stat"] : null;
+            if (rule["statEnabled"]?.Type != JTokenType.Boolean || !Attributes.Contains(stat)) problems.Add("Hand rules: invalid " + group + " stat");
+            foreach (var key in new[] { "base", "baseline", "pointsPerCard", "minimum", "maximum" })
+            {
+                var min = key == "pointsPerCard" || (capacity && (key == "base" || key == "minimum" || key == "maximum")) ? 1 : 0;
+                if (!WholeIn(rule[key], min, 99)) problems.Add("Hand rules: invalid " + group + "." + key);
+            }
+            if (WholeIn(rule["minimum"], 0, 99) && WholeIn(rule["maximum"], 0, 99) && (long)rule["minimum"] > (long)rule["maximum"]) problems.Add("Hand rules: " + group + " minimum must not exceed maximum");
+        }
+
+        /// <summary>
+        /// The rules one class fights under: a copy whose "starting" is that class's
+        /// classStarting entry when one is authored, with classStarting itself removed so a
+        /// fight's snapshot carries only the rule it uses. Rules without classStarting (and
+        /// classes it does not name) keep the shared "starting" rule unchanged.
+        /// </summary>
+        public static JObject ForClass(JObject rules, string classId)
+        {
+            var resolved = (JObject)rules.DeepClone();
+            if (resolved["classStarting"] is JObject classes && classId != null && classes[classId] is JObject rule) resolved["starting"] = rule.DeepClone();
+            resolved.Remove("classStarting");
+            return resolved;
         }
 
         /// <summary>Throws ArgumentException naming every problem; returns a private copy.</summary>

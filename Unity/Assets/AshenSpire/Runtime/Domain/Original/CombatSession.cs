@@ -43,8 +43,9 @@ namespace AshenSpire.Domain.Original
             : this(content, mechanics, random, MakePlayer(player), (JObject)(player["attributes"]?.DeepClone() ?? new JObject()), (JObject)(player["weights"]?.DeepClone() ?? new JObject()), resolveCard)
         {
             var sourceDeck = deck.Select(c => (JObject)c.DeepClone()).ToList();
-            // A solo fight snapshots its hand rules here (web createCombat); null keeps the legacy draw.
-            if (handRules != null) _handRules = HandRules.Validate(handRules);
+            // A solo fight snapshots its hand rules here (web createCombat), with the class's own opening-hand
+            // rule (handRules.classStarting) resolved in; null keeps the legacy draw.
+            if (handRules != null) _handRules = HandRules.ForClass(HandRules.Validate(handRules), (string)player["classId"]);
             if (sourceDeck.Any(c => string.IsNullOrWhiteSpace((string)c["instanceId"])) || sourceDeck.Select(c => (string)c["instanceId"]).Distinct(StringComparer.Ordinal).Count() != sourceDeck.Count) throw new ArgumentException("Deck instance IDs must be unique.");
             foreach (var card in sourceDeck) ValidateEffects(ResolvedCard(card)["effects"]);
             foreach (var id in enemyIds)

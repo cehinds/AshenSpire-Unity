@@ -38,7 +38,7 @@ let browser,context,active;
    active.check(JSON.stringify(active.state)===expected.get(visit.channel),'channel resumes its own exact saved run');
   }else{
    active.check(!active.has('native-continue'),'new channel does not inherit the other channel save');
-   await active.click('native-new');await active.assignPoints();await active.fill('native-seed',String(visit.seed));await active.command('native-begin');
+   await active.click('native-new');await active.useStandard();await active.fill('native-seed',String(visit.seed));await active.command('native-begin');
    active.check(active.state.phase==='Map'&&active.state.run.seed===visit.seed,'real input starts the intended channel seed');
    const node=active.state.legalNodes[0];await active.command('native-route-'+node);
    active.check(active.state.phase==='Combat','real route selection enters combat');

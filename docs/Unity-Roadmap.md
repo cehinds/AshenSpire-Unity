@@ -58,6 +58,15 @@ all archived players and independently tested channel saves. See
   hand rules first"): opening draw, fixed turn draw, hand capacity, retention and
   turn-end discards, snapshotted per fight; legacy saves, co-op and LAN unchanged.
   A native discard picker (for `promptDiscard` or a swap-caused overflow) remains.
+- [x] Improve creation settings (owner, 2026-09-24: "I'd like everyone to have low
+  stats 1's in most stats, and starseer to have a 3 in int, and start with 4-6 cards
+  depending on the base (3-5)"): offer **Standard** (`leanStandard`, class presets,
+  default) and **Assign points** (`lean`, all 1s + a content-configured pool of 3);
+  per-class opening hand `handRules.classStarting` (base 3–5, +1 at primary stat 3,
+  cap 6). Only hand and stats changed ("Only hand + stats"). The bot gate
+  (`UnityTests/Playthrough -- 3`) still wins 0/12 on 2026-09-24 and was not retuned,
+  so the regenerated Reaver seed-1 replay ends in Defeat (act 3) and
+  `tools/native-playtest.cjs`'s three-act-victory check cannot pass until it wins.
 - [ ] Decide the lean-scale gaps still open on 2026-09-24: the Poise row and Ward
   meters (O-5), and dodge's `(DEX − 10) / 2` pivot at DEX 1–4 (O-6).
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and

@@ -7,9 +7,9 @@ var mechanics = JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Un
 var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/progression.json"))));
 var checks = 0;
 void Check(bool yes,string name) { if (!yes) throw new Exception(name); checks++; }
-// Lean creation (all 1s + 3 points) spent by the web bot/driver class rows (web src/model/attributes.js:171-174),
-// order str,dex,con,wis,int; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
-CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"lean",progression);var order=new[]{"strength","dexterity","constitution","wisdom","intelligence"};var targets=new Dictionary<string,int[]>{["reaver"]=new[]{3,1,2,1,1},["starseer"]=new[]{1,1,1,2,3},["herald"]=new[]{1,1,2,3,1},["rogue"]=new[]{1,3,2,1,1}}[cls];for(var i=0;i<order.Length;i++)for(var n=1;n<targets[i];n++)if(!creation.Adjust(order[i],1))throw new Exception("Lean allocation refused "+cls+" "+order[i]);if(!creation.CanBegin)throw new Exception("Lean allocation left points for "+cls);return creation;}
+// Standard creation ("leanStandard"): each class's preset row (web src/model/attributes.js:171-174), nothing
+// left to spend; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
+CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"leanStandard",progression);if(!creation.CanBegin)throw new Exception("Standard preset left points for "+cls);return creation;}
 var creation = Lean("reaver");
 var player = new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creation,"authoringKit");
 Check((string)player["loadout"]!["sets"]!["rightHand"]![0] == "authoringSword","CSV weapon equipped through authored kit");

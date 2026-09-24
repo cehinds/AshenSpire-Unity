@@ -18,6 +18,10 @@ void Throws(Action action, string label) { try { action(); } catch (ArgumentExce
 // The shipped defaults are the owner's 2026-09-24 values (web src/content/handRules.js).
 Equal(shipped, JObject.Parse(@"{retain:true,promptDiscard:false,discardLimit:10,replaceDiscards:false,overflow:'discard',reshuffle:true,drawMode:'fixed',
  starting:{base:4,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:2,minimum:3,maximum:15},
+ classStarting:{reaver:{base:3,statEnabled:true,stat:'strength',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
+  rogue:{base:4,statEnabled:true,stat:'dexterity',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
+  herald:{base:4,statEnabled:true,stat:'wisdom',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
+  starseer:{base:5,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:2,minimum:3,maximum:6}},
  turn:{base:2,statEnabled:true,stat:'intelligence',baseline:4,pointsPerCard:5,minimum:2,maximum:10},
  capacity:{base:7,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:5,minimum:1,maximum:30}}"), "shipped hand rules");
 Check(File.ReadAllText(Path.Combine(root, "Unity/Assets/AshenSpire/Resources/Original/content.json")) == contentText, "Resources content.json mirrors GameContent byte for byte");
@@ -27,9 +31,11 @@ var legacyRules = new JObject { ["drawMode"] = "fill", ["overflow"] = "keep",
  ["starting.base"] = 3, ["starting.statEnabled"] = true, ["starting.baseline"] = 10, ["starting.pointsPerCard"] = 10, ["starting.minimum"] = 0, ["starting.maximum"] = 10,
  ["turn.base"] = 2, ["turn.statEnabled"] = false, ["turn.baseline"] = 10, ["turn.pointsPerCard"] = 10, ["turn.minimum"] = 0, ["turn.maximum"] = 10,
  ["capacity.base"] = 10, ["capacity.statEnabled"] = false, ["capacity.baseline"] = 10, ["capacity.pointsPerCard"] = 10, ["capacity.minimum"] = 1, ["capacity.maximum"] = 30 };
+// The mechanic cases below exercise the shared "starting" rule, so they drop the per-class
+// opening hands (section 12 covers those).
 JObject RulesOf(JObject overrides = null, JObject basis = null)
 {
- var rules = (JObject)shipped.DeepClone();
+ var rules = (JObject)shipped.DeepClone(); rules.Remove("classStarting");
  foreach (var source in new[] { basis ?? legacyRules, overrides ?? new JObject() })
   foreach (var p in source.Properties()) { var parts = p.Name.Split('.'); if (parts.Length == 1) rules[parts[0]] = p.Value.DeepClone(); else rules[parts[0]]![parts[1]] = p.Value.DeepClone(); }
  return rules;
@@ -169,8 +175,8 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
 {
  var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(directory, "progression.json"))));
  var supplement = JObject.Parse(File.ReadAllText(Path.Combine(directory, "event-choices.json")));
- var creator = new CreationModel(catalog, "starseer", "lean", progression);
- foreach (var (id, times) in new[] { ("wisdom", 1), ("intelligence", 2) }) for (var n = 0; n < times; n++) Check(creator.Adjust(id, 1), "lean point to " + id);
+ var creator = new CreationModel(catalog, "starseer", "leanStandard", progression);
+ Check(creator.CanBegin, "the Standard Starseer preset begins without spending");
  var kit = (string)catalog.Table("equipment.startingKits").First(x => (string)x["classId"] == "starseer" && (bool?)x["baseline"] == true)["id"]!;
  var player = new OriginalCharacterBuilder(catalog, progression, mechanics).Build(creator, kit);
  var game = OriginalGameSession.Start(catalog, supplement, mechanics, player, 7);
@@ -182,10 +188,11 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
  }
  var fight = IntoFight(atMap);
  var combat = (JObject)fight.Snapshot()["run"]!["room"]!["combatSnapshot"]!;
- Equal(combat["handRules"], shipped, "a new fight snapshots the run's frozen hand rules");
+ Equal(combat["handRules"], HandRules.ForClass(shipped, "starseer"), "a new fight snapshots the run's frozen hand rules, resolved for its class");
+ Check(combat["handRules"]!["classStarting"] == null, "the snapshot carries only the class's opening rule");
  Equal(combat["pendingDiscardDraw"], 0, "no replacements owed at the start");
  var intelligence = (int)player["attributes"]!["intelligence"]!;
- Equal(fight.Hand.Count, Math.Min(HandRules.ScaledCards((JObject)shipped["starting"]!, (JObject)player["attributes"]!), HandRules.ScaledCards((JObject)shipped["capacity"]!, (JObject)player["attributes"]!)), "opening hand from the starting rule (INT " + intelligence + ")");
+ Equal(fight.Hand.Count, 6, "the Standard Starseer (INT " + intelligence + ") opens on six");
  Equal(fight.DiscardPlan, JObject.FromObject(new { cardIds = Ids(fight.Hand), minimum = 0, maximum = 0, prompt = false }), "default rules never prompt under capacity");
  var retained = Ids(fight.Hand); fight.EndTurn();
  if (fight.Phase == OriginalRunPhase.Combat) Check(retained.All(id => Ids(fight.Hand).Contains(id)), "unplayed cards are kept through the session");
@@ -201,5 +208,57 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
  Check(resumed.Snapshot()["run"]!["room"]!["combatSnapshot"]!["handRules"] == null, "saved legacy fight keeps no rules after restore");
  resumed.EndTurn();
  if (resumed.Phase == OriginalRunPhase.Combat) Equal(resumed.Hand.Count, Math.Min((int)player["draw"]!, (int)catalog.Data()["balance"]!["handMax"]!), "saved legacy fight: hand discarded, derived Draw drawn");
+}
+// 12. per-class opening hands (owner, 2026-09-24: "start with 4-6 cards depending on the base (3-5)";
+// "Class base 3–5, +1 from stats"). Base: Reaver 3, Rogue 4, Herald 4, Starseer 5; +1 once the class's
+// primary stat (STR, DEX, WIS, INT) reaches 3; never more than six.
+{
+ var primary = new Dictionary<string, string> { ["reaver"] = "strength", ["rogue"] = "dexterity", ["herald"] = "wisdom", ["starseer"] = "intelligence" };
+ var standard = new Dictionary<string, int> { ["reaver"] = 4, ["rogue"] = 5, ["herald"] = 5, ["starseer"] = 6 };
+ var allOnes = new Dictionary<string, int> { ["reaver"] = 3, ["rogue"] = 4, ["herald"] = 4, ["starseer"] = 5 };
+ var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(directory, "progression.json"))));
+ JObject Hero(string cls, JObject attributes) => new JObject { ["classId"] = cls, ["maxHp"] = 10000, ["hp"] = 10000, ["maxMana"] = 0, ["energyMax"] = 3, ["drawPerTurn"] = 2, ["attributes"] = attributes, ["relicIds"] = new JArray() };
+ CombatSession Open(string cls, JObject attributes) => new CombatSession(catalog, mechanics, new RandomStreams(2309), Hero(cls, attributes), Deck(), new[] { "wanderingSoldier" }, ResolveCard, 1, null, shipped);
+ foreach (var cls in primary.Keys)
+ {
+  var preset = new CreationModel(catalog, cls, "leanStandard", progression).Attributes();
+  var ones = new CreationModel(catalog, cls, "lean", progression).Attributes();
+  var rule = (JObject)HandRules.ForClass(shipped, cls)["starting"]!;
+  Equal(rule, shipped["classStarting"]![cls], cls + " resolves its own opening rule");
+  Equal(HandRules.ScaledCards(rule, preset), standard[cls], cls + " Standard preset opening");
+  Equal(HandRules.ScaledCards(rule, ones), allOnes[cls], cls + " all-1s opening is the class base");
+  var fight = Open(cls, preset);
+  Equal(fight.Hand.Count, standard[cls], cls + " Standard fight opens on " + standard[cls]);
+  Equal(fight.HandRulesSnapshot!["starting"], rule, cls + " fight snapshots its class rule");
+  Check(fight.HandRulesSnapshot!["classStarting"] == null, cls + " snapshot drops classStarting");
+  Equal(Open(cls, ones).Hand.Count, allOnes[cls], cls + " all-1s fight opens on " + allOnes[cls]);
+  var two = (JObject)ones.DeepClone(); two[primary[cls]] = 2;
+  Equal(HandRules.ScaledCards(rule, two), allOnes[cls], cls + " primary 2 adds nothing");
+  var four = (JObject)ones.DeepClone(); four[primary[cls]] = 4;
+  Equal(HandRules.ScaledCards(rule, four), allOnes[cls] + 1, cls + " primary 4 still +1");
+  var huge = (JObject)ones.DeepClone(); huge[primary[cls]] = 99;
+  Equal(HandRules.ScaledCards(rule, huge), 6, cls + " capped at six");
+  // Only the primary stat counts: INT 3 on a Reaver opens on the Reaver base.
+  var other = (JObject)ones.DeepClone(); other[cls == "starseer" ? "strength" : "intelligence"] = 3;
+  Equal(HandRules.ScaledCards(rule, other), allOnes[cls], cls + " off-primary stat adds nothing");
+ }
+ // A class the override does not name keeps the shared rule; rules without classStarting are unchanged.
+ Equal(HandRules.ForClass(shipped, "wanderer")["starting"], shipped["starting"], "unnamed class keeps the shared starting rule");
+ var noClass = (JObject)shipped.DeepClone(); noClass.Remove("classStarting");
+ Equal(HandRules.ForClass(noClass, "reaver"), noClass, "rules without classStarting pass through unchanged");
+ // Validation: a malformed override is refused like any other hand rule; an unknown class is refused by the catalog.
+ foreach (var (key, value) in new (string, JToken)[] { ("pointsPerCard", 0), ("stat", "luck"), ("minimum", 7), ("base", -1) })
+ {
+  var bad = (JObject)shipped.DeepClone(); bad["classStarting"]!["reaver"]![key] = value;
+  Check(HandRules.Problems(bad).Count > 0, "classStarting problem reported for " + key);
+  Throws(() => new CombatSession(catalog, mechanics, new RandomStreams(1), Hero("rogue", new JObject()), Deck(), new[] { "wanderingSoldier" }, ResolveCard, 1, null, bad), "combat with bad classStarting." + key);
+ }
+ var notObject = (JObject)shipped.DeepClone(); notObject["classStarting"] = 3; Check(HandRules.Problems(notObject).Count > 0, "classStarting must be an object");
+ var unknown = JObject.Parse(contentText); unknown["handRules"]!["classStarting"]!["wanderer"] = shipped["classStarting"]!["reaver"]!.DeepClone();
+ Throws(() => new OriginalContentCatalog(unknown.ToString()), "classStarting for an unknown class");
+ // A saved fight that predates classStarting keeps the shared rule it snapshotted.
+ var old = (JObject)shipped.DeepClone(); old.Remove("classStarting");
+ var legacy = CombatSession.Restore(catalog, mechanics, Edit(Open("reaver", new JObject { ["intelligence"] = 1, ["strength"] = 3 }), s => s["handRules"] = old.DeepClone()).Snapshot(), ResolveCard);
+ Equal(legacy.HandRulesSnapshot!["starting"], shipped["starting"], "restored pre-override fight keeps the shared starting rule");
 }
 Console.WriteLine($"Hand rules checks passed: {checks}");
