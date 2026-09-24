@@ -214,6 +214,135 @@ foreach (var file in new[] { "MusicDirector.cs", "MusicCatalog.cs" })
     Check(Exists("Unity/Assets/AshenSpire/Runtime/Domain/" + file + ".meta"), file + " has a Unity .meta file");
 }
 
+// ---- procedural bed synthesis (MusicSynth.cs ports audio.js playProcedural + drone) ----------------
+foreach (var literal in new[] {
+    "scale[(step * lift + (step % 2 ? 2 : 0)) % scale.length]", "step % 4 === 0 ? 2 : 1", "step % 3 === 1",
+    "exponentialRampToValueAtTime(0.16, t + 0.08)", "exponentialRampToValueAtTime(0.0001, t + 1.8)", "o.stop(t + 1.9)",
+    "freq * 1.4983", "exponentialRampToValueAtTime(0.07, t + 0.12)", "exponentialRampToValueAtTime(0.0001, t + 1.6)", "h.stop(t + 1.7)",
+    "Math.max(420, variant.cadence / 2)", "exponentialRampToValueAtTime(variant.root / 3, t + 0.18)", "o.frequency.setValueAtTime(variant.root / 2, t)",
+    "exponentialRampToValueAtTime(0.22, t + 0.02)", "exponentialRampToValueAtTime(0.0001, t + 0.32)", "o.stop(t + 0.36)",
+    "drone(variant.root / 2, 0.12, out)", "freq * 1.005", "lp.frequency.value = 700", "lfoG.gain.value = 260", "lfo.frequency.value = 0.07", "o.type = 'sawtooth'" })
+    Check(audioJs.Contains(literal), "audio.js still has the synthesized literal: " + literal);
+var synthRng = new RandomStreams(777); synthRng.Float("map");
+var synthRngBefore = JsonSerializer.Serialize(synthRng.Snapshot());
+var bedTracks = catalog.Tracks.Where(t => t.Kind == MusicCatalog.KindBed).ToArray();
+var synthHashes = new SortedDictionary<string, string>(StringComparer.Ordinal);
+var synthWatch = System.Diagnostics.Stopwatch.StartNew();
+long largestPrerenderBytes = 0; long totalSamples = 0;
+foreach (var t in bedTracks)
+{
+    var spec = MusicBedSpec.From(catalog, t.Id);
+    var steps = spec.PatternSteps;
+    Check(steps == 84, t.Id + ": note pattern repeats every 84 steps (melody 14 x octave 4 x harmony 3)");
+    var js = new double[steps];
+    var scale = catalog.Scales.First(x => x.Id == t.Scale).Steps;
+    for (var step = 0; step < steps; step++) js[step] = t.Root * (step % 4 == 0 ? 2 : 1) * Math.Pow(2, scale[(step * t.Lift + (step % 2 == 1 ? 2 : 0)) % scale.Length] / 12.0);
+    Check(Enumerable.Range(0, steps).All(i => Near(spec.NoteFrequency(i), js[i], 1e-9) && Near(spec.NoteFrequency(i + steps), js[i], 1e-9)), t.Id + ": note frequencies match the audio.js formula and repeat after the pattern");
+    var loopSamples = MusicSynth.LoopSamples(spec, steps);
+    Check(Near(MusicSynth.LoopSeconds(spec, steps), steps * t.CadenceMs / 1000.0, 1e-9) && Math.Abs(loopSamples - steps * t.CadenceMs * 22.05) <= 0.5, t.Id + ": loop = 84 x " + t.CadenceMs + " ms = " + (steps * t.CadenceMs / 1000.0).ToString("0.##") + " s (" + loopSamples + " samples @ 22050 Hz)");
+    if (t.Pulse) Check(Near(steps * t.CadenceMs / (Math.Max(420, t.CadenceMs / 2.0)) % 1, 0, 1e-9), t.Id + ": pulse interval divides the loop");
+    var full = MusicSynth.Render(spec);
+    totalSamples += full.Length;
+    var finite = full.All(float.IsFinite);
+    var peak = full.Max(Math.Abs);
+    var rms = Math.Sqrt(full.Average(x => (double)x * x));
+    Check(full.Length == loopSamples && finite && peak < 1f && peak > 0.05f && rms > 0.005, t.Id + ": finite, audible, never clips (peak " + peak.ToString("0.###") + ", rms " + rms.ToString("0.####") + ")");
+    Check(Math.Abs(full[^1] - full[0]) < 0.05, t.Id + ": loop seam is continuous");
+    var stream = MusicSynth.Open(spec);
+    stream.SetPosition(loopSamples - 22050);
+    var across = new float[44100];
+    stream.Read(across, 0, across.Length);
+    var drift = 0.0; for (var i = 0; i < 44100; i++) drift = Math.Max(drift, Math.Abs(across[i] - full[(loopSamples - 22050 + i) % loopSamples]));
+    Check(drift < 1e-3, t.Id + ": streaming reader wraps the loop seamlessly and matches the pre-render (max drift " + drift.ToString("0.#####") + ")");
+    if (synthHashes.Count < 3)
+    {
+        var chunked = new float[loopSamples]; var reader = MusicSynth.Open(spec);
+        for (var at = 0; at < loopSamples; at += 1000) reader.Read(chunked, at, Math.Min(1000, loopSamples - at));
+        Check(MusicSynth.Hash(chunked) == MusicSynth.Hash(full), t.Id + ": output does not depend on read chunk size (PCM callback vs pre-render)");
+    }
+    var jumped = MusicSynth.Open(spec); jumped.SetPosition(loopSamples / 2); var part = new float[4096]; jumped.Read(part);
+    var jumpDrift = 0.0; for (var i = 0; i < part.Length; i++) jumpDrift = Math.Max(jumpDrift, Math.Abs(part[i] - full[loopSamples / 2 + i]));
+    Check(jumpDrift < 1e-3, t.Id + ": SetPosition resumes mid-loop (max drift " + jumpDrift.ToString("0.#####") + ")");
+    synthHashes[t.Id] = MusicSynth.Hash(full);
+    var capped = MusicSynth.LoopSteps(spec, MusicSynth.DefaultMaxPrerenderSeconds);
+    var cappedSeconds = MusicSynth.LoopSeconds(spec, capped);
+    Check((capped == 84 || capped == 28) && cappedSeconds <= MusicSynth.DefaultMaxPrerenderSeconds && (capped == 84) == (84 * t.CadenceMs / 1000.0 <= MusicSynth.DefaultMaxPrerenderSeconds), t.Id + ": WebGL pre-render loop " + capped + " steps = " + cappedSeconds.ToString("0.#") + " s");
+    largestPrerenderBytes = Math.Max(largestPrerenderBytes, MusicSynth.LoopSamples(spec, capped) * 4L);
+}
+synthWatch.Stop();
+Console.WriteLine("  rendered " + bedTracks.Length + " full loops (" + (totalSamples / 22050.0).ToString("0") + " s of audio) in " + synthWatch.Elapsed.TotalSeconds.ToString("0.0") + " s");
+var again = MusicSynth.Render(MusicBedSpec.From(catalog, bedTracks[0].Id));
+Check(MusicSynth.Hash(again) == synthHashes[bedTracks[0].Id], "rendering the same track twice gives the same hash");
+Check(synthHashes.Values.Distinct().Count() == bedTracks.Length, "every bed renders to distinct audio");
+Check(largestPrerenderBytes <= 11 * 1024 * 1024, "largest WebGL pre-rendered loop is " + (largestPrerenderBytes / 1048576.0).ToString("0.0") + " MB (float32 mono)");
+var hashPath = Path.Combine(root, "UnityTests/Music/synth-hashes.json");
+var hashJson = JsonSerializer.Serialize(synthHashes, new JsonSerializerOptions { WriteIndented = true }) + "\n";
+if (args.Contains("--write-synth-hashes")) { File.WriteAllText(hashPath, hashJson); Console.WriteLine("Wrote UnityTests/Music/synth-hashes.json"); }
+var pinned = File.Exists(hashPath) ? JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(hashPath)) : new Dictionary<string, string>();
+foreach (var (id, hash) in synthHashes)
+    Check(pinned.TryGetValue(id, out var want) && want == hash, id + ": output hash " + hash + " matches the pinned synth-hashes.json (regenerate with --write-synth-hashes after an intended change)");
+Check(JsonSerializer.Serialize(synthRng.Snapshot()) == synthRngBefore, "rendering every bed leaves run RandomStreams counters untouched");
+Check(Throws(() => MusicBedSpec.From(catalog, "bed.nope.1")) && Throws(() => MusicBedSpec.From(withFiles, "file.combat.a")), "the synth refuses unknown tracks and file tracks");
+
+// ---- decks: the adapter's crossfade/stop plan -------------------------------------------------
+var dd = new MusicDirector(catalog, 21);
+var decks = new MusicDecks();
+List<MusicDeckAction> Run(IReadOnlyList<MusicCommand> commands) => commands.SelectMany(decks.Apply).ToList();
+var acts = Run(dd.Enter(MusicScene.Title, 0));
+Check(acts.Count == 1 && acts[0].Kind == MusicDeckActionKind.Start && acts[0].Deck == 0 && acts[0].Loop && decks.ActiveDeck == 0, "title starts on deck A");
+var titleLevel = dd.CurrentVolume;
+Check(Near(decks.VolumeAt(0, 0), floor) && Near(decks.VolumeAt(0, 1.5), titleLevel) && Near(decks.VolumeAt(0, 60), titleLevel), "deck A fades in over 1.5 s to the director volume");
+acts = Run(dd.Enter(MusicScene.Boss, 10));
+Check(acts.Count == 1 && acts[0].Deck == 1 && decks.IsFadingOut(0) && decks.ActiveDeck == 1, "boss crossfades onto deck B while A fades out");
+Check(Near(decks.VolumeAt(0, 10), titleLevel) && decks.VolumeAt(0, 10.6) == 0 && Near(decks.VolumeAt(1, 11.5), dd.CurrentVolume), "crossfade: A 0.6 s out, B 1.5 s in");
+var midB = decks.VolumeAt(1, 10.3);
+acts = Run(dd.Enter(MusicScene.Map, 10.3));
+Check(acts.Count == 2 && acts[0].Kind == MusicDeckActionKind.Stop && acts[0].Deck == 0 && acts[1].Kind == MusicDeckActionKind.Start && acts[1].Deck == 0, "an interrupting crossfade reclaims the still-fading deck");
+Check(Near(decks.VolumeAt(1, 10.3), midB) && decks.VolumeAt(1, 10.5) < midB, "the interrupted deck fades out from its actual level (no jump)");
+Check(decks.Tick(10.8).Count == 0 && decks.Tick(10.9).Count == 1 && decks.TrackOn(1) == null, "a finished fade-out stops its deck");
+var mapLevel = dd.CurrentVolume;
+acts = Run(dd.ApplySettings(new MusicSettings { MasterVolume = 100, MusicVolume = 80, MusicEnabled = true }, 20));
+Check(acts.Count == 0 && Near(decks.VolumeAt(0, 20.1), dd.CurrentVolume) && Near(decks.VolumeAt(0, 20.05), (mapLevel + dd.CurrentVolume) / 2, 1e-4), "a volume change ramps the playing deck in place");
+var mapTrackOnDeck = decks.TrackOn(0);
+acts = Run(dd.ApplySettings(new MusicSettings { MasterVolume = 100, MusicVolume = 80, MusicEnabled = true, Muted = true }, 30));
+Check(acts.Count == 0 && decks.ActiveDeck == -1 && decks.IsFadingOut(0), "mute fades the deck out");
+Check(decks.Tick(30.31).Count == 1 && decks.VolumeAt(0, 30.31) == 0 && decks.VolumeAt(1, 30.31) == 0, "mute: both decks silent after 0.3 s");
+var mixed = new float[22050]; var mapBed = MusicSynth.Open(MusicBedSpec.From(catalog, mapTrackOnDeck)); mapBed.Read(mixed);
+for (var i = 0; i < mixed.Length; i++) mixed[i] *= decks.VolumeAt(0, 31 + i / 22050.0) + decks.VolumeAt(1, 31 + i / 22050.0);
+Check(mixed.All(x => x == 0), "silence when muted: rendered bed x deck volume is exactly 0");
+Check(Run(dd.Enter(MusicScene.Combat, 32)).Count == 0 && decks.TrackOn(0) == null && decks.TrackOn(1) == null, "muted: entering a context starts no deck");
+var mutedDecks = new MusicDecks();
+Check(new MusicDirector(catalog, 1, new MusicSettings { MusicVolume = 50, MasterVolume = 100, MusicEnabled = true, Muted = true }).Enter(MusicScene.Title, 0).SelectMany(mutedDecks.Apply).Count() == 0, "muted at start: no deck ever starts");
+acts = Run(dd.ApplySettings(new MusicSettings { MasterVolume = 100, MusicVolume = 80, MusicEnabled = true }, 40));
+Check(acts.Count == 1 && acts[0].Kind == MusicDeckActionKind.Start && acts[0].TrackId.StartsWith("bed.combat."), "unmute starts the current context on a deck");
+decks.Reanchor(acts[0].Deck, 41);
+Check(Near(decks.VolumeAt(acts[0].Deck, 41), floor), "a late clip (WebGL render) restarts its fade-in when it becomes ready");
+acts = Run(dd.Enter(MusicScene.Death, 50));
+Check(acts.Count == 0 && decks.Tick(50.61).Count == 1 && decks.ActiveDeck == -1, "death fades the deck out and stops it");
+
+// ---- run phase to scene ------------------------------------------------------------------------
+Check(MusicSceneMap.ForNativePhase("Map", null) == MusicScene.Map && MusicSceneMap.ForNativePhase("Combat", "normal") == MusicScene.Combat
+    && MusicSceneMap.ForNativePhase("Combat", "elite") == MusicScene.Elite && MusicSceneMap.ForNativePhase("Combat", "boss") == MusicScene.Boss
+    && MusicSceneMap.ForNativePhase("Rewards", "boss") == MusicScene.Rewards && MusicSceneMap.ForNativePhase("Shop", null) == MusicScene.Shop
+    && MusicSceneMap.ForNativePhase("Shrine", null) == MusicScene.Shrine && MusicSceneMap.ForNativePhase("Event", null) == MusicScene.Event
+    && MusicSceneMap.ForNativePhase("EventResult", null) == MusicScene.Event && MusicSceneMap.ForNativePhase("Draft", null) == MusicScene.Event
+    && MusicSceneMap.ForNativePhase("Victory", "boss") == MusicScene.Victory && MusicSceneMap.ForNativePhase("Defeat", null) == MusicScene.Death, "native phases map to HTML music scenes");
+Check(MusicSceneMap.ForCampaignPhase("Map") == MusicScene.Map && MusicSceneMap.ForCampaignPhase("Combat") == MusicScene.Combat && MusicSceneMap.ForCampaignPhase("Reward") == MusicScene.Rewards
+    && MusicSceneMap.ForCampaignPhase("Victory") == MusicScene.Victory && MusicSceneMap.ForCampaignPhase("Defeat") == MusicScene.Death, "campaign phases map to music scenes");
+var phaseNames = Regex.Match(Read("Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunSession.cs"), @"enum OriginalRunPhase \{([^}]*)\}").Groups[1].Value.Split(',').Select(p => p.Trim()).ToArray();
+Check(phaseNames.Length == 10 && phaseNames.All(p => p is "Map" or "Combat" or "Rewards" or "Shop" or "Shrine" or "Event" or "EventResult" or "Victory" or "Defeat" or "Draft"), "every OriginalRunPhase has a music mapping");
+foreach (var file in new[] { "MusicSynth.cs", "MusicPlayback.cs" })
+{
+    var src = Regex.Replace(Read("Unity/Assets/AshenSpire/Runtime/Domain/" + file), @"//.*", "");
+    Check(!Regex.IsMatch(src, @"RandomStreams|new Random\(|System\.Random|UnityEngine"), file + " references no run RNG, System.Random or UnityEngine");
+    Check(Exists("Unity/Assets/AshenSpire/Runtime/Domain/" + file + ".meta"), file + " has a Unity .meta file");
+}
+Check(Exists("Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs.meta"), "MusicPlayer.cs has a Unity .meta file");
+var playerSource = Regex.Replace(Read("Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs"), @"//.*", "");
+Check(!Regex.IsMatch(playerSource, @"RandomStreams|UnityEngine\.Random|System\.Random|new Random\("), "MusicPlayer.cs draws no random numbers");
+
 if (failures.Count > 0) { Console.WriteLine("Music: " + failures.Count + " of " + (passed + failures.Count) + " checks FAILED"); return 1; }
 Console.WriteLine("Music: " + passed + " checks passed");
 return 0;
+
+static bool Throws(Action a) { try { a(); return false; } catch (ArgumentException) { return true; } }

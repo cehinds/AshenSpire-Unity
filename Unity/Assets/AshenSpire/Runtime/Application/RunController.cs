@@ -73,6 +73,7 @@ namespace AshenSpire.Application
                 _audio.SetSuspended(false);
                 _interruption = new InterruptionState();
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
+                AttachMusic();
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
                 _originalSaves = new OriginalSaveJournal("AshenSpire.Unity.Original.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
@@ -165,6 +166,7 @@ namespace AshenSpire.Application
             }
             var feedbackCue = _view.Native(_originalGame, _content.Feedback);
             if (feedbackCue != null) _audio.Play(feedbackCue);
+            MusicNative();
         }
         private void LoadOriginalProfile()
         {
@@ -243,12 +245,14 @@ namespace AshenSpire.Application
             PlayerPrefs.SetInt("AshenSpire.Muted", muted ? 1 : 0);
             PlayerPrefs.Save();
             _audio.SetMuted(muted);
+            MusicMuted(muted);
         }
         private void Menu()
         {
             Save();
             _view.NativeSaveAvailable = _originalSaves?.HasSave == true;
             _view.Title(_content, _saves.HasSave);
+            MusicTitle();
         }
         private void Settings(bool reduced, bool fast)
         {
@@ -260,6 +264,7 @@ namespace AshenSpire.Application
         {
             Save();
             _view.Render(_session);
+            MusicCampaign();
             if (_diagnosticsEnabled)
                 Debug.Log("ASHENSPIRE_CAMPAIGN " + JsonUtility.ToJson(_session.State));
         }
@@ -297,6 +302,7 @@ namespace AshenSpire.Application
             var first = !_interruption.IsInterrupted;
             if (!_interruption.Set(source, active)) return;
             _audio.SetSuspended(true);
+            MusicSuspended(true);
             _view.ShowInterruption(_interruption.CanReturn);
             if (first)
             {
@@ -311,6 +317,7 @@ namespace AshenSpire.Application
             _view.HideInterruption();
             if (_coopActive && _coopSnapshot != null) RenderCoop();
             _audio.SetSuspended(false);
+            MusicSuspended(false);
             ReportInterruption();
         }
         [Serializable]
@@ -350,6 +357,7 @@ namespace AshenSpire.Application
             BrowserVisibility.Remove();
             Save();
             if (_audio != null) _audio.SetMuted(true);
+            MusicStop();
             if (_session != null)
                 _session.Changed -= Refresh;
             if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
