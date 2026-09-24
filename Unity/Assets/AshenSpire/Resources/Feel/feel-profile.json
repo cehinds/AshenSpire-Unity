@@ -1,0 +1,996 @@
+{
+  "SchemaVersion": 1,
+  "Reference": "HTML Ashen Spire: src/ui/fx.js, styles/*.css, src/ui/reaverAttack.js, src/content/balance.js. Every value is cited in docs/Unity-Feel.md and re-read by UnityTests/Feel.",
+  "DefaultSpeed": "normal",
+  "Speeds": [
+    {
+      "Id": "slow",
+      "BeatMs": 700,
+      "StepMs": 140,
+      "LungeMs": 340,
+      "Instant": false
+    },
+    {
+      "Id": "normal",
+      "BeatMs": 400,
+      "StepMs": 90,
+      "LungeMs": 260,
+      "Instant": false
+    },
+    {
+      "Id": "fast",
+      "BeatMs": 180,
+      "StepMs": 45,
+      "LungeMs": 160,
+      "Instant": false
+    },
+    {
+      "Id": "instant",
+      "BeatMs": 0,
+      "StepMs": 0,
+      "LungeMs": 0,
+      "Instant": true
+    }
+  ],
+  "Pacing": {
+    "QueueStepMs": 80,
+    "BannerMinBeatMs": 260,
+    "WindupLungeFraction": 0.55,
+    "WatchdogBaseMs": 2000,
+    "WatchdogStepsPerBeat": 4,
+    "HitStopMs": 0
+  },
+  "Thresholds": {
+    "HeavyHitDamage": 15,
+    "CritDamage": 25,
+    "SmallDamageBelow": 6,
+    "ShakeMaxPx": 4
+  },
+  "DamageNumbers": {
+    "BaseFontRem": 2.5,
+    "SmallFontRem": 2,
+    "HeavyFontRem": 3.4,
+    "CritFontRem": 4.4,
+    "BurstFontRem": 3.6,
+    "JitterPx": 13,
+    "PairedOffsetPx": 26,
+    "AnchorHeightFraction": 0.25,
+    "EdgePadPx": 6
+  },
+  "Input": {
+    "DragSlopPx": 12,
+    "InspectHoldMs": 400,
+    "HoldConfirmDefault": "normal",
+    "HoldConfirmOffMs": 0,
+    "HoldConfirmShortMs": 350,
+    "HoldConfirmNormalMs": 600,
+    "HoldConfirmLongMs": 1000,
+    "HoldBeatAt": [0, 0.42, 0.78],
+    "TooltipOpenMs": 500,
+    "TooltipFocusMs": 160,
+    "TooltipHandoverMs": 120
+  },
+  "Sequences": {
+    "BossIntroHoldMs": 2300,
+    "BossIntroRemoveMs": 480,
+    "PoseHoldMs": 260,
+    "PoseMinMs": 60,
+    "ReaverFrameMs": 56,
+    "ReaverFrameCount": 60,
+    "ReaverImpactFrame": 31,
+    "ReaverNormalLungeMs": 260,
+    "SlashRotateJitterDeg": 25
+  },
+  "Motions": [
+    {
+      "Id": "card.hover",
+      "Source": "styles/kit.css .card transition + styles/combat.css .hand .card:hover",
+      "DurationMs": 140,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": -56 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 1.32 }]
+        }
+      ]
+    },
+    {
+      "Id": "card.rewardHover",
+      "Source": "styles/kit.css .card transition + .reward-row .card:hover",
+      "DurationMs": 140,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": -8 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 1.06 }]
+        }
+      ]
+    },
+    {
+      "Id": "card.play",
+      "Source": "styles/combat.css .card-ghost + src/ui/screens/combat.js flyCard (travel to the target is computed)",
+      "DurationMs": 220,
+      "Easing": "ease-in",
+      "Timing": "fixed",
+      "LifetimeMs": 260,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "travel",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0.35 }]
+        },
+        {
+          "Property": "rotate",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 6 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "button.hover",
+      "Source": "styles/base.css button transition (colour only; no press transform)",
+      "DurationMs": 120,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "tint",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "toggle.knob",
+      "Source": "styles/kit.css .as-toggle .knob transition",
+      "DurationMs": 140,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "travel",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "actor.lunge",
+      "Source": "styles/combat.css @keyframes lunge-right (player; lunge-left mirrors x)",
+      "DurationMs": 280,
+      "Easing": "ease-out",
+      "Timing": "lunge",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.35, "V": 26 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.35, "V": 1.06 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.35, "V": 1.25 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "actor.step",
+      "Source": "styles/combat.css @keyframes act-step",
+      "DurationMs": 260,
+      "Easing": "ease-out",
+      "Timing": "lunge",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.4, "V": -8 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.4, "V": 1.05 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.4, "V": 1.35 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "enemy.coopLunge",
+      "Source": "styles/ui.css @keyframes enemy-lunge",
+      "DurationMs": 400,
+      "Easing": "cubic-bezier(.25,.8,.35,1)",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.35, "V": -22 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.35, "V": 1.05 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.35, "V": 1.3 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "hit.flash",
+      "Source": "styles/combat.css @keyframes hitflash",
+      "DurationMs": 200,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 4 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 2.1 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "saturate",
+          "Keys": [{ "T": 0, "V": 1.8 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "hit.recoil",
+      "Source": "styles/combat.css @keyframes hit-enemy (hit-player mirrors x)",
+      "DurationMs": 220,
+      "Easing": "cubic-bezier(0.25, 0.8, 0.35, 1)",
+      "Timing": "fixed",
+      "LifetimeMs": 220,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.3, "V": 13 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 2.1 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "saturate",
+          "Keys": [{ "T": 0, "V": 1.8 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "hit.recoilHeavy",
+      "Source": "styles/combat.css @keyframes hit-enemy-heavy (hit-player-heavy mirrors x and rotate)",
+      "DurationMs": 340,
+      "Easing": "cubic-bezier(0.25, 0.8, 0.35, 1)",
+      "Timing": "fixed",
+      "LifetimeMs": 380,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.28, "V": 26 }, { "T": 0.6, "V": 6 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "rotate",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.28, "V": 5 }, { "T": 0.6, "V": 1 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "brightness",
+          "Keys": [{ "T": 0, "V": 2.3 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "saturate",
+          "Keys": [{ "T": 0, "V": 1.9 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "screen.shake",
+      "Source": "styles/combat.css @keyframes shake",
+      "DurationMs": 200,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": true,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "x",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.25, "V": 4 }, { "T": 0.5, "V": -4 }, { "T": 0.75, "V": 3 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.25, "V": -3 }, { "T": 0.5, "V": 2 }, { "T": 0.75, "V": 3 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "damageNumber.pop",
+      "Source": "styles/combat.css @keyframes num-pop",
+      "DurationMs": 540,
+      "Easing": "cubic-bezier(0.2, 0.9, 0.3, 1)",
+      "Timing": "fixed",
+      "LifetimeMs": 600,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "damageNumber.reduced",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 6 }, { "T": 0.16, "V": 0 }, { "T": 0.3, "V": -2 }, { "T": 1, "V": -48 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.5 }, { "T": 0.16, "V": 1.22 }, { "T": 0.3, "V": 1 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.16, "V": 1 }, { "T": 0.7, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "damageNumber.reduced",
+      "Source": "styles/combat.css .reduced-motion .float-num + @keyframes float-up",
+      "DurationMs": 260,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 600,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": -42 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "banner.turn",
+      "Source": "styles/combat.css @keyframes banner-pop",
+      "DurationMs": 300,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 320,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "letterSpacing",
+          "Keys": [{ "T": 0, "V": 0.6 }, { "T": 1, "V": 0.25 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.3, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "banner.coop",
+      "Source": "styles/kit.css @keyframes as-banner",
+      "DurationMs": 1100,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 1100,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 500,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.92 }, { "T": 0.18, "V": 1 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.18, "V": 1 }, { "T": 0.78, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "banner.coopSmall",
+      "Source": "styles/kit.css .as-banner.small + @keyframes as-banner",
+      "DurationMs": 900,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 900,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 500,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.92 }, { "T": 0.18, "V": 1 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.18, "V": 1 }, { "T": 0.78, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "screen.enter",
+      "Source": "styles/base.css #app > * + @keyframes screenIn",
+      "DurationMs": 240,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 8 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "toast.enter",
+      "Source": "styles/ui.css .save-toast + @keyframes screenIn",
+      "DurationMs": 200,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 8 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "saveSlots.enter",
+      "Source": "styles/ui.css .slot-list + @keyframes screenIn",
+      "DurationMs": 500,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 8 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "eventChoice.enter",
+      "Source": "styles/ui.css #choices button + @keyframes screenIn",
+      "DurationMs": 260,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 8 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "boss.veil",
+      "Source": "styles/combat.css @keyframes bi-veil",
+      "DurationMs": 480,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "boss.rise",
+      "Source": "styles/combat.css @keyframes bi-rise",
+      "DurationMs": 700,
+      "Easing": "cubic-bezier(0.2, 0.8, 0.3, 1)",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 16 }, { "T": 1, "V": 0 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.97 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "boss.rule",
+      "Source": "styles/combat.css @keyframes bi-rule",
+      "DurationMs": 900,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "scaleX",
+          "Keys": [{ "T": 0, "V": 0.2 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "boss.out",
+      "Source": "styles/combat.css @keyframes bi-fade",
+      "DurationMs": 460,
+      "Easing": "ease-in",
+      "Timing": "fixed",
+      "LifetimeMs": 480,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "reward.taken",
+      "Source": "styles/kit.css .reward-kind[data-state=taken] + styles/ui.css @keyframes reward-took",
+      "DurationMs": 420,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1.04 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "enemy.death",
+      "Source": "styles/combat.css @keyframes crumble",
+      "DurationMs": 550,
+      "Easing": "ease-in",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 14 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0.9 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 0.4, "V": 0.7 }, { "T": 1, "V": 0.12 }]
+        },
+        {
+          "Property": "grayscale",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.4, "V": 0.6 }, { "T": 1, "V": 1 }]
+        },
+        {
+          "Property": "blur",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.4, "V": 1 }, { "T": 1, "V": 3 }]
+        }
+      ]
+    },
+    {
+      "Id": "fx.slash",
+      "Source": "styles/combat.css @keyframes slash-sweep (rotate is relative to a random base)",
+      "DurationMs": 260,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 300,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "rotate",
+          "Keys": [{ "T": 0, "V": -90 }, { "T": 1, "V": 70 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.55 }, { "T": 1, "V": 1.2 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.25, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "fx.glyph",
+      "Source": "styles/combat.css @keyframes glyph-pop",
+      "DurationMs": 430,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 450,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": -14 }]
+        },
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.4 }, { "T": 1, "V": 1.6 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.3, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "fx.spark",
+      "Source": "styles/combat.css @keyframes spark-pop",
+      "DurationMs": 300,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 320,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.5 }, { "T": 1, "V": 1.5 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.4, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "stagger.wobble",
+      "Source": "styles/combat.css @keyframes wobble",
+      "DurationMs": 550,
+      "Easing": "ease-in-out",
+      "Timing": "fixed",
+      "LifetimeMs": 600,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "rotate",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.2, "V": 6 }, { "T": 0.4, "V": -5 }, { "T": 0.6, "V": 3 }, { "T": 0.8, "V": -2 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "relic.proc",
+      "Source": "styles/combat.css @keyframes relicProc",
+      "DurationMs": 300,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 320,
+      "Loop": false,
+      "Flash": true,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 1.45 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "stance.flare",
+      "Source": "styles/combat.css @keyframes flare",
+      "DurationMs": 300,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 320,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "scale",
+          "Keys": [{ "T": 0, "V": 0.4 }, { "T": 1, "V": 1.4 }]
+        },
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0.7 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "hud.barFill",
+      "Source": "styles/base.css .bar > .fill transition",
+      "DurationMs": 200,
+      "Easing": "ease",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "travel",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "proc.barDrain",
+      "Source": "src/ui/fx.js procBurst bar transition",
+      "DurationMs": 250,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "travel",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "tooltip.show",
+      "Source": "styles/kit.css #tooltip transition",
+      "DurationMs": 140,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 1, "V": 1 }]
+        }
+      ]
+    },
+    {
+      "Id": "tooltip.fade",
+      "Source": "styles/kit.css #tooltip.is-fading",
+      "DurationMs": 160,
+      "Easing": "ease-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": false,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "opacity",
+          "Keys": [{ "T": 0, "V": 1 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "idle.bob",
+      "Source": "styles/combat.css @keyframes sprite-idle",
+      "DurationMs": 3100,
+      "Easing": "ease-in-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": true,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.5, "V": -4 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    },
+    {
+      "Id": "idle.bobEnemy",
+      "Source": "styles/combat.css .combatant.enemy animation-duration + @keyframes sprite-idle",
+      "DurationMs": 2600,
+      "Easing": "ease-in-out",
+      "Timing": "fixed",
+      "LifetimeMs": 0,
+      "Loop": true,
+      "Flash": false,
+      "Shake": false,
+      "ReducedMotionId": "",
+      "ReducedDurationMs": 0,
+      "Tracks": [
+        {
+          "Property": "y",
+          "Keys": [{ "T": 0, "V": 0 }, { "T": 0.5, "V": -4 }, { "T": 1, "V": 0 }]
+        }
+      ]
+    }
+  ],
+  "NotInReference": ["hitStop", "intentReveal", "cardDraw", "cardDiscard", "buttonPress", "orbPulse"]
+}
