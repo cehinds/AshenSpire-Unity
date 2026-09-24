@@ -19,7 +19,7 @@ page for that play test.
 |---|---|---|
 | Profile load at startup | `Resources/Feel/feel-profile.json`, validated | `FeelDriver.Load()` from the `CampaignView` constructor |
 | Reduced motion / Quick animations toggles | `FeelSettings.FromToggles` (Quick = `Speeds[fast]`) | `FeelDriver.Configure`, `CombatFeedback.Play` |
-| Hand card (`OriginalCardView` inside a hand rail, solo and co-op) on pointer hover | `card.hover` (140 ms `ease`, y −56, scale 1.32, bottom-centre origin) | `FeelDriver.HandCardHover` |
+| Hand card (`OriginalCardView` inside a hand rail, solo and co-op) on pointer hover | `card.hover` (140 ms `ease`, y −56, scale 1.32, bottom-centre origin), drawn by an overlay copy | `FeelDriver.HandCardHover` |
 | Acting player figure (player turn) | `actor.lunge` for an `attack` cue, else `actor.step`; `Pace.WindupMs` | `CombatFeedback` via `FeelBeat.Plan` |
 | Acting enemy figure (enemy turn) | `actor.lunge` mirrored (`side = -1`) after `Pace.BannerBeatMs` | `CombatFeedback` via `FeelBeat.Plan` |
 | Damaged enemy / player figure | `hit.recoil`, or `hit.recoilHeavy` at `Thresholds.HeavyHitDamage`; `brightness` → cue-colour flash | `CombatFeedback` |
@@ -40,10 +40,16 @@ Not wired, because Unity has no matching element yet: `card.rewardHover`,
 HUD bar fills, tooltips and idle bob. `ExpeditionView` (not constructed
 anywhere) keeps its old 220 ms pose swap.
 
-Known limits to judge in the editor: the hand rail is a clipping `ScrollView`,
-so the hovered card's lifted top can be cut off, and a hovered card is drawn
-under the cards to its right (UI Toolkit draws in hierarchy order, and
-reordering would change layout).
+The hover lift is drawn by an overlay copy. The hand rail is a clipping
+`ScrollView`, and UI Toolkit draws in hierarchy order. So `FeelDriver` does not
+move the real card. It draws an unnamed, unpickable copy of the card in a
+`feel-overlay` layer, the last child of the view root. The copy follows the
+card's `worldBound` every frame and plays the lift and scale there, above the
+rail's clip and above the neighbouring cards. The real card stays at rest and is
+hidden with opacity only. Its name, order, bounds and pointer input do not
+change. The controls report skips everything in the overlay. One difference
+from the HTML to judge in the editor: hover belongs to the card's rest box, so
+moving the pointer onto the lifted part above the card ends the hover.
 
 | File | What it is |
 |---|---|

@@ -562,7 +562,7 @@ namespace AshenSpire.Presentation
             var surface = _interruptionCover ?? _root;
             var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
                 .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList()).Concat(surface.Query<DropdownField>().ToList()).Concat(surface.Query<SliderInt>().ToList()).Concat(surface.Query<IntegerField>().ToList())
-                .Where(x => !string.IsNullOrEmpty(x.name))
+                .Where(x => !string.IsNullOrEmpty(x.name) && !FeelDriver.InOverlay(x))
                 .Select(x => (Control: x, Bound: FeelDriver.SettledBound(x))) // settled: feel transforms are visual only
                 .Select(x => new ControlBounds { Id = x.Control.name, X = x.Bound.x, Y = x.Bound.y,
                     Width = x.Bound.width, Height = x.Bound.height, Enabled = x.Control.enabledInHierarchy }).ToArray();
@@ -577,7 +577,7 @@ namespace AshenSpire.Presentation
             var report = Newtonsoft.Json.JsonConvert.SerializeObject(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
                 LayoutAttempts = _controlReportAttempts + 1,
-                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() },
+                Labels = surface.Query<Label>().ToList().Where(label => !FeelDriver.InOverlay(label)).Select(label => label.text).ToArray() }, // hover copies are not controls
                 new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
             // Web console messages have a finite byte limit. Expanded creators
             // and inventories must keep their complete read-only report rather
