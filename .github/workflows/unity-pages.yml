@@ -13,28 +13,56 @@ on:
 permissions:
   contents: read
   pull-requests: read
+# One run per PR: a newer push cancels the older PR run instead of both
+# occupying runners. Branch pushes keep one run per commit, as before.
 concurrency:
-  group: unity-checkpoint-${{ github.event_name }}-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: unity-checkpoint-${{ github.event_name }}-${{ github.ref }}${{ github.event_name != 'pull_request' && format('-{0}', github.sha) || '' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+# The checks used to run as one serial ~2h20m job. They are split into jobs
+# that run in parallel; `validate-and-assemble` keeps its name as the single
+# check that passes only when every part passed (or was skipped as docs-only).
 jobs:
-  validate-and-assemble:
+  changes:
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
-    # A stalled browser playtest must not bill the default six hours; a green run
-    # finishes well inside this.
-    timeout-minutes: 240
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - id: diff
+        name: Skip the Unity suite when only docs changed
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # Docs-only = every changed path is Markdown or under docs/, except
+          # Markdown that ships in Published/, GameContent/ or Unity/.
+          if [ "${{ github.event_name }}" = workflow_dispatch ] || [ -z "$BASE" ] || [ "$BASE" = 0000000000000000000000000000000000000000 ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo code=true >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          code=false
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            echo "$f"
+            case "$f" in
+              Published/*|GameContent/*|Unity/*) code=true ;;
+              docs/*|*.md) ;;
+              *) code=true ;;
+            esac
+          done < <(git diff --name-only "$BASE" "$GITHUB_SHA")
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+
+  parity:
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Test deterministic Unity rules
-        run: dotnet run --project UnityTests/Domain
       - name: Compare native foundations with the original engine
         run: |
           dotnet run --project UnityTests/Parity
@@ -49,6 +77,33 @@ jobs:
           dotnet run --project UnityTests/CoopRun
           dotnet run --project UnityTests/CoopRun -- --policy
           dotnet run --project UnityTests/Playthrough -- 3 TestResults/NativePolicy
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-parity
+          path: |
+            TestResults/NativePolicy
+            TestResults/NativeFeedback
+            TestResults/CardText
+          if-no-files-found: ignore
+
+  checks:
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test deterministic Unity rules
+        run: dotnet run --project UnityTests/Domain
       - name: Verify cooperative host authority, persistence and packaging guards
         run: |
           dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
@@ -88,65 +143,95 @@ jobs:
         run: node tools/unity-archive-hosting.test.mjs
       - name: Verify bounded Pages artifact copying
         run: node tools/unity-git-blobs.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-checks
+          path: |
+            TestResults/Authoring
+            TestResults/Balance
+          if-no-files-found: ignore
+
+  # Browser playtests drive the packaged WebGL player under software rendering
+  # and dominate the wall clock. Shards are balanced by measured step times
+  # (run 36051894484) to ~30 minutes each; `coop` also builds the companion host.
+  playtests:
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: climb
+            run: |
+              node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+          - shard: features
+            run: |
+              node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
+              node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
+              node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
+              node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
+          - shard: appearance
+            run: |
+              node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
+              node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
+          - shard: layout
+            run: |
+              node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
+              node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
+              node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
+              node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
+              node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
+          - shard: coop
+            companion: true
+            run: |
+              node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
+              node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
+    name: playtests (${{ matrix.shard }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        if: ${{ matrix.companion }}
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build the cooperative companion host
+        if: ${{ matrix.companion }}
+        run: dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
       - name: Install browser test tooling
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - name: Start the packaged player server
         run: python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
-      - name: Exercise feedback preferences and interruption
-        run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
-      - name: Exercise original foundation controls and compiled map parity
-        run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
-      - name: Exercise actual browser hiding and explicit return
-        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
-      - name: Exercise seed editing and rotation at phone pixel density
-        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
-      - name: Exercise dense mobile layout with touch input
-        run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
-      - name: Complete the native three-act climb with reloads
-        run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
-      - name: Verify card numbers and resource shortage feedback
-        run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
-      - name: Exercise native draft, level-up, flask allocation and merchant transactions
-        run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
-      - name: Verify original sprite styles and saved appearance through actual controls
-        run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
-      - name: Verify painted enemies through target selection and combat
-        run: node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
-      - name: Exercise custom map caps and weights through actual controls
-        run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
-      - name: Exercise branching maps, fog, camera restoration and touch navigation
-        run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
-      - name: Complete an actual two-player Unity fight and rejoin
-        run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
-      - name: Exercise the packaged game with real pointer input
-        run: |
-          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
+      - name: Run ${{ matrix.shard }} playtests
+        run: ${{ matrix.run }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: browser-evidence
-          path: |
-            TestResults/Browser
-            TestResults/Feedback
-            TestResults/Authoring
-            TestResults/Balance
-            TestResults/Mobile
-            TestResults/Interruption
-            TestResults/Seed
-            TestResults/Foundation
-            TestResults/NativeBrowser
-            TestResults/NativePolicy
-            TestResults/NativeFeedback
-            TestResults/CardText
-            TestResults/NativeFeatures
-            TestResults/NativeCardCosts
-            TestResults/NativeCoopBrowser
-            TestResults/NativeAppearance
-            TestResults/NativeEnemyArt
-            TestResults/NativeMapShape
-            TestResults/NativeMap
+          name: evidence-${{ matrix.shard }}
+          path: TestResults
+          if-no-files-found: ignore
+
+  validate-and-assemble:
+    needs: [changes, parity, checks, playtests]
+    if: ${{ always() && !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every part passed, or the change was docs-only
+        run: |
+          echo "changes=${{ needs.changes.result }} code=${{ needs.changes.outputs.code }}"
+          echo "parity=${{ needs.parity.result }} checks=${{ needs.checks.result }} playtests=${{ needs.playtests.result }}"
+          [ "${{ needs.changes.result }}" = success ] || exit 1
+          if [ "${{ needs.changes.outputs.code }}" = true ]; then
+            for r in "${{ needs.parity.result }}" "${{ needs.checks.result }}" "${{ needs.playtests.result }}"; do
+              [ "$r" = success ] || exit 1
+            done
+          fi
   publish-library:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_library_only }}
     permissions:
