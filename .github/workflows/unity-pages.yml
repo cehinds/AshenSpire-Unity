@@ -1,9 +1,17 @@
 name: Unity checkpoint and Pages
 on:
+  # Docs-only changes cannot alter the packaged player or any check below, so
+  # they skip this pipeline. A change touching any other file still runs all of it.
   pull_request:
     branches: [dev]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   push:
     branches: [dev, test, release, main, "codex/**"]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
     inputs:
       publish_library_only:
@@ -13,49 +21,17 @@ on:
 permissions:
   contents: read
   pull-requests: read
-# One run per PR: a newer push cancels the older PR run instead of both
-# occupying runners. Branch pushes keep one run per commit, as before.
 concurrency:
-  group: unity-checkpoint-${{ github.event_name }}-${{ github.ref }}${{ github.event_name != 'pull_request' && format('-{0}', github.sha) || '' }}
+  # A new commit on a pull request supersedes the older run; push runs (which
+  # feed the Pages library) keep one group per commit and are never cancelled.
+  group: ${{ github.event_name == 'pull_request' && format('unity-checkpoint-pr-{0}', github.event.pull_request.number) || format('unity-checkpoint-{0}-{1}-{2}', github.event_name, github.ref, github.sha) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-# The checks used to run as one serial ~2h20m job. They are split into jobs
-# that run in parallel; `validate-and-assemble` keeps its name as the single
-# check that passes only when every part passed (or was skipped as docs-only).
+# The checks used to run as one serial ~2h20m job. They now run as parallel
+# jobs; `validate-and-assemble` keeps its name as the single check that passes
+# only when every part passed.
 jobs:
-  changes:
-    if: ${{ !inputs.publish_library_only }}
-    runs-on: ubuntu-latest
-    outputs:
-      code: ${{ steps.diff.outputs.code }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: diff
-        name: Skip the Unity suite when only docs changed
-        env:
-          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-        run: |
-          # Docs-only = every changed path is Markdown or under docs/, except
-          # Markdown that ships in Published/, GameContent/ or Unity/.
-          if [ "${{ github.event_name }}" = workflow_dispatch ] || [ -z "$BASE" ] || [ "$BASE" = 0000000000000000000000000000000000000000 ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
-            echo code=true >> "$GITHUB_OUTPUT"; exit 0
-          fi
-          code=false
-          while IFS= read -r f; do
-            [ -z "$f" ] && continue
-            echo "$f"
-            case "$f" in
-              Published/*|GameContent/*|Unity/*) code=true ;;
-              docs/*|*.md) ;;
-              *) code=true ;;
-            esac
-          done < <(git diff --name-only "$BASE" "$GITHUB_SHA")
-          echo "code=$code" >> "$GITHUB_OUTPUT"
-
   parity:
-    needs: changes
-    if: ${{ needs.changes.outputs.code == 'true' }}
+    if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -88,8 +64,7 @@ jobs:
           if-no-files-found: ignore
 
   checks:
-    needs: changes
-    if: ${{ needs.changes.outputs.code == 'true' }}
+    if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -156,8 +131,7 @@ jobs:
   # and dominate the wall clock. Shards are balanced by measured step times
   # (run 36051894484) to ~30 minutes each; `coop` also builds the companion host.
   playtests:
-    needs: changes
-    if: ${{ needs.changes.outputs.code == 'true' }}
+    if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 75
     strategy:
@@ -218,20 +192,16 @@ jobs:
           if-no-files-found: ignore
 
   validate-and-assemble:
-    needs: [changes, parity, checks, playtests]
+    needs: [parity, checks, playtests]
     if: ${{ always() && !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     steps:
-      - name: Every part passed, or the change was docs-only
+      - name: Every part passed
         run: |
-          echo "changes=${{ needs.changes.result }} code=${{ needs.changes.outputs.code }}"
           echo "parity=${{ needs.parity.result }} checks=${{ needs.checks.result }} playtests=${{ needs.playtests.result }}"
-          [ "${{ needs.changes.result }}" = success ] || exit 1
-          if [ "${{ needs.changes.outputs.code }}" = true ]; then
-            for r in "${{ needs.parity.result }}" "${{ needs.checks.result }}" "${{ needs.playtests.result }}"; do
-              [ "$r" = success ] || exit 1
-            done
-          fi
+          for r in "${{ needs.parity.result }}" "${{ needs.checks.result }}" "${{ needs.playtests.result }}"; do
+            [ "$r" = success ] || exit 1
+          done
   publish-library:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_library_only }}
     permissions:

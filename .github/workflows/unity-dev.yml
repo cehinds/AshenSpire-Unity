@@ -1,0 +1,182 @@
+name: Unity dev builds and promotion PR
+# After the owner merges into dev: build players with GameCI when a license is
+# configured, and keep one dev -> test promotion pull request up to date with a
+# generated test plan. It never merges anything and never publishes Pages; the
+# playable channels stay with unity-pages.yml / unity-build-library.yml.
+# See docs/CI-CD.md.
+on:
+  push:
+    branches: [dev]
+  schedule:
+    # Nightly, 03:17 UTC (off the hour to avoid the scheduler rush).
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # A newer dev head supersedes an older one; nightly and push runs are kept apart.
+  group: unity-dev-${{ github.event_name }}
+  cancel-in-progress: true
+jobs:
+  unity-license:
+    name: Unity license probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      has_license: ${{ steps.probe.outputs.has_license }}
+    steps:
+      - name: Check whether GameCI secrets are configured
+        id: probe
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          # Only presence is tested; the values are never printed.
+          if [ -n "$UNITY_LICENSE" ] && [ -n "$UNITY_EMAIL" ] && [ -n "$UNITY_PASSWORD" ]; then
+            echo "has_license=true" >> "$GITHUB_OUTPUT"
+            echo "Unity license secrets are present; the GameCI build jobs will run."
+          else
+            echo "has_license=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Unity build NOT run::No Unity player was built in CI. The owner must add repository secrets UNITY_LICENSE, UNITY_EMAIL and UNITY_PASSWORD (docs/CI-CD.md, https://game.ci/docs/github/activation). Until then the committed Published build and node tools/unity-package.mjs --check remain the gate."
+          fi
+
+  build-web:
+    name: GameCI WebGL build
+    needs: unity-license
+    if: ${{ needs.unity-license.outputs.has_license == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Restore Unity Library cache
+        uses: actions/cache@v4
+        with:
+          path: Unity/Library
+          key: unity-library-WebGL-${{ hashFiles('Unity/Packages/packages-lock.json', 'Unity/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: unity-library-WebGL-
+      - name: Build WebGL player
+        uses: game-ci/unity-builder@v4
+        with:
+          projectPath: Unity
+          targetPlatform: WebGL
+          buildMethod: AshenSpire.Editor.BuildTools.BuildWeb
+      - name: Upload WebGL build
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-dev-WebGL-${{ github.sha }}
+          path: Builds/Web
+          if-no-files-found: error
+          retention-days: 14
+
+  build-native:
+    name: GameCI ${{ matrix.target }} build
+    needs: unity-license
+    # Windows and Android are slow; only nightly and on demand.
+    if: ${{ needs.unity-license.outputs.has_license == 'true' && github.event_name != 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: StandaloneWindows64
+            method: AshenSpire.Editor.BuildTools.BuildWindows
+            output: Builds/Windows
+          - target: Android
+            method: AshenSpire.Editor.BuildTools.BuildAndroid
+            output: Builds/Android
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Restore Unity Library cache
+        uses: actions/cache@v4
+        with:
+          path: Unity/Library
+          key: unity-library-${{ matrix.target }}-${{ hashFiles('Unity/Packages/packages-lock.json', 'Unity/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: unity-library-${{ matrix.target }}-
+      - name: Build ${{ matrix.target }} player
+        uses: game-ci/unity-builder@v4
+        with:
+          projectPath: Unity
+          targetPlatform: ${{ matrix.target }}
+          buildMethod: ${{ matrix.method }}
+      - name: Upload ${{ matrix.target }} build
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-dev-${{ matrix.target }}-${{ github.sha }}
+          path: ${{ matrix.output }}
+          if-no-files-found: error
+          retention-days: 7
+
+  promotion-pr:
+    name: Create or update the dev -> test promotion PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check that the test branch exists
+        id: target
+        run: |
+          if git ls-remote --exit-code --heads origin test > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=No promotion PR::Branch 'test' does not exist on origin, so no dev -> test promotion PR was created or updated. The owner creates 'test' when ready."
+          fi
+      - name: Generate the test plan
+        if: ${{ steps.target.outputs.exists == 'true' }}
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/test:refs/remotes/origin/test' '+refs/heads/dev:refs/remotes/origin/dev'
+          node tools/unity-test-plan.mjs --base origin/test --head origin/dev --out test-plan.md
+          if [ ! -s test-plan.md ]; then
+            echo "::error::tools/unity-test-plan.mjs wrote no test plan."
+            exit 1
+          fi
+      - name: Create or update the promotion PR (never merges)
+        if: ${{ steps.target.outputs.exists == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "$(git rev-list --count origin/test..origin/dev)" = "0" ]; then
+            echo "dev has no commits that test lacks; no promotion PR is needed."
+            exit 0
+          fi
+          version="$(node -e "process.stdout.write(String(JSON.parse(require('fs').readFileSync('GameContent/Unity/version.json','utf8')).Version))")"
+          title="Promote dev → test: $version"
+          # GitHub rejects bodies over 65536 characters.
+          head -c 60000 test-plan.md > body.md
+          if [ "$(wc -c < test-plan.md)" -gt 60000 ]; then
+            printf '\n\n_Test plan truncated; run `node tools/unity-test-plan.mjs --base origin/test --head origin/dev --out test-plan.md` for the full plan._\n' >> body.md
+          fi
+          number="$(gh pr list --base test --head dev --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --title "$title" --body-file body.md
+            echo "Updated promotion PR #$number: $title"
+          else
+            gh pr create --base test --head dev --title "$title" --body-file body.md
+            echo "Opened promotion PR: $title"
+          fi

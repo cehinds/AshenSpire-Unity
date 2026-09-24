@@ -1,0 +1,211 @@
+name: Unity fast gate
+# Cheap checks that answer quickly on every pull request. The heavy browser
+# pipeline (unity-pages.yml) still runs; nothing here replaces any of it.
+# See docs/CI-CD.md.
+on:
+  pull_request:
+    branches: [dev, test, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: unity-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  changes:
+    name: Classify changed paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      unity: ${{ steps.filter.outputs.unity }}
+      tooling: ${{ steps.filter.outputs.tooling }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Diff against the pull request base
+        id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            # A manual run has no diff to narrow; run everything.
+            echo "Manual dispatch: every job is enabled."
+            { echo "unity=true"; echo "tooling=true"; echo "docs=true"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          base="$(git merge-base "origin/$BASE_REF" HEAD)"
+          git diff --name-only "$base" HEAD > "$RUNNER_TEMP/changed.txt"
+          echo "Changed files: $(wc -l < "$RUNNER_TEMP/changed.txt")"
+          match() { if grep -Eq "$1" "$RUNNER_TEMP/changed.txt"; then echo true; else echo false; fi; }
+          unity="$(match '^(Unity/|GameContent/Unity/|UnityTests/|tools/NativeLan/)')"
+          tooling="$(match '^(tools/unity-|\.github/workflows/)')"
+          docs="$(match '(^docs/|\.md$)')"
+          echo "unity=$unity tooling=$tooling docs=$docs"
+          { echo "unity=$unity"; echo "tooling=$tooling"; echo "docs=$docs"; } >> "$GITHUB_OUTPUT"
+
+  version-gate:
+    name: Unity version bump gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unity source changes carry a legal A.B.C.D version bump
+        env:
+          BASE_REF: ${{ github.base_ref || 'dev' }}
+        run: node tools/verdict.mjs -- node tools/unity-version.mjs check --base "origin/$BASE_REF"
+
+  unity-language:
+    name: Engine code compiles as Unity does (C# 9, .NET Standard 2.1)
+    needs: changes
+    if: ${{ needs.changes.outputs.unity == 'true' || needs.changes.outputs.tooling == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build the Domain and Original sources under Unity's language rules
+        run: dotnet build UnityTests/LangCheck -warnaserror:CS8773,CS8400,CS9058
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile all Runtime assemblies against Unity reference assemblies
+        run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
+
+  domain-tests:
+    name: Console tests (${{ matrix.shard }})
+    needs: changes
+    # Docs-only and unrelated changes skip this job entirely.
+    if: ${{ needs.changes.outputs.unity == 'true' || needs.changes.outputs.tooling == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # Four balanced shards instead of one runner per project: several open PRs
+    # at once no longer queue ~20 jobs each. Entries are "Project[:args]";
+    # a trailing "?" marks a suite that may not exist on this branch yet.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: rules
+            suites: 'Domain Parity CoopRun CoopRun:--policy'
+          - shard: presentation
+            suites: 'NativeFeedback CardText CardCosts SpriteStyles Viewport RendererPatch Interruption'
+          - shard: map-and-data
+            suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
+          - shard: features
+            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel?'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore NuGet cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('UnityTests/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+      - name: Run ${{ matrix.shard }} suites
+        env:
+          SUITES: ${{ matrix.suites }}
+        run: |
+          set -uo pipefail
+          mkdir -p TestResults/Authoring TestResults/Balance
+          failed=()
+          for entry in $SUITES; do
+            optional=false
+            case "$entry" in *'?') optional=true; entry="${entry%\?}";; esac
+            name="${entry%%:*}"; args=""
+            [ "$name" != "$entry" ] && args="${entry#*:}"
+            project="UnityTests/$name"
+            if $optional && ! ls "$project"/*.csproj >/dev/null 2>&1; then
+              echo "::notice::$project is not on this branch; that suite did not run."
+              continue
+            fi
+            echo "::group::$name ${args//,/ }"
+            # args uses commas between separate arguments.
+            if dotnet run --project "$project" -- ${args//,/ }; then echo "::endgroup::"; else echo "::endgroup::"; echo "::error::$name failed"; failed+=("$name"); fi
+          done
+          if [ ${#failed[@]} -gt 0 ]; then echo "Failed suites: ${failed[*]}"; exit 1; fi
+  unity-license:
+    name: Unity license probe
+    needs: changes
+    if: ${{ needs.changes.outputs.unity == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      has_license: ${{ steps.probe.outputs.has_license }}
+    steps:
+      - name: Check whether GameCI secrets are configured
+        id: probe
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          # Only presence is tested; the values are never printed.
+          if [ -n "$UNITY_LICENSE" ] && [ -n "$UNITY_EMAIL" ] && [ -n "$UNITY_PASSWORD" ]; then
+            echo "has_license=true" >> "$GITHUB_OUTPUT"
+            echo "Unity license secrets are present; the GameCI build job will run."
+          else
+            echo "has_license=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Unity build NOT run::No Unity editor build or Unity test run happened in CI. The owner must add repository secrets UNITY_LICENSE, UNITY_EMAIL and UNITY_PASSWORD (docs/CI-CD.md, https://game.ci/docs/github/activation). Until then the committed Published build and node tools/unity-package.mjs --check (unity-pages.yml) remain the gate."
+          fi
+
+  unity-build:
+    name: Unity tests and WebGL build (GameCI)
+    needs: [changes, unity-license]
+    # Skipped (neutral), never green, when the license secrets are absent.
+    if: ${{ needs.changes.outputs.unity == 'true' && needs.unity-license.outputs.has_license == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Restore Unity Library cache
+        uses: actions/cache@v4
+        with:
+          path: Unity/Library
+          key: unity-library-WebGL-${{ hashFiles('Unity/Packages/packages-lock.json', 'Unity/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: unity-library-WebGL-
+      - name: Run EditMode and PlayMode tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          projectPath: Unity
+          testMode: all
+          artifactsPath: TestResults/UnityTests
+      - name: Build WebGL player
+        uses: game-ci/unity-builder@v4
+        with:
+          projectPath: Unity
+          targetPlatform: WebGL
+          buildMethod: AshenSpire.Editor.BuildTools.BuildWeb
+      - name: Upload Unity test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-test-results
+          path: TestResults/UnityTests
+          if-no-files-found: ignore
+      - name: Upload WebGL build
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-webgl-${{ github.sha }}
+          path: Builds/Web
+          if-no-files-found: error
+          retention-days: 14
