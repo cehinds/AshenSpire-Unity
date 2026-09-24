@@ -125,6 +125,23 @@ jobs:
           - name: Mods
             project: UnityTests/Mods
             args: ''
+            optional: true
+          - name: SaveSlots
+            project: UnityTests/SaveSlots
+            args: ''
+            optional: true
+          - name: RunSummary
+            project: UnityTests/RunSummary
+            args: ''
+            optional: true
+          - name: Telegraphs
+            project: UnityTests/Telegraphs
+            args: ''
+            optional: true
+          - name: Music
+            project: UnityTests/Music
+            args: ''
+            optional: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -140,10 +157,12 @@ jobs:
         env:
           PROJECT: ${{ matrix.project }}
           ARGS: ${{ matrix.args }}
+          OPTIONAL: ${{ matrix.optional && 'true' || 'false' }}
         run: |
           set -euo pipefail
-          if [ "$PROJECT" = "UnityTests/Mods" ] && [ ! -f UnityTests/Mods/Mods.csproj ]; then
-            echo "::notice::UnityTests/Mods/Mods.csproj is not on this branch; the Mods suite did not run."
+          # Suites added by in-flight feature branches are optional until they land.
+          if [ "$OPTIONAL" = "true" ] && ! ls "$PROJECT"/*.csproj >/dev/null 2>&1; then
+            echo "::notice::$PROJECT is not on this branch; that suite did not run."
             exit 0
           fi
           mkdir -p TestResults/Authoring TestResults/Balance

@@ -43,9 +43,11 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
 - **domain-tests** — only if `unity` or `tooling` changed. One job per console
   test project (Domain, Parity, NativeFeedback, CardText, CardCosts,
   SpriteStyles, MapShape, MapKnowledge, MapViewport, CoopRun, CoopRun
-  `--policy`, Interruption, Viewport, RendererPatch, Authoring, Balance, Mods),
-  run in parallel with `fail-fast: false` so one failure does not hide others.
-  Mods is skipped with a notice until `UnityTests/Mods/Mods.csproj` exists.
+  `--policy`, Interruption, Viewport, RendererPatch, Authoring, Balance, plus the
+  optional Mods, SaveSlots, RunSummary, Telegraphs and Music suites), run in
+  parallel with `fail-fast: false` so one failure does not hide others. An
+  optional suite is skipped with a notice until its project exists on the branch;
+  once every feature branch carrying one has merged, drop `optional: true`.
 - **unity-license** + **unity-build** — only if `unity` changed. See
   [GameCI](#gameci-unity-builds-in-ci).
 - A new commit on the same PR cancels the older run of this workflow.
