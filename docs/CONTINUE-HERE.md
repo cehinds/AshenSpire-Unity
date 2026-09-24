@@ -141,10 +141,7 @@ node tools/unity-version.mjs bump story --feature F00 --note "US-0.2 custom-mode
 node tools/unity-version.mjs check --base origin/dev
 ```
 
-The changelog goes to `docs/Unity-Changelog.md`. If `tools/unity-version.mjs`
-is not present on your branch yet (it is being added separately), edit
-`GameContent/Unity/version.json` by hand following the same rules and add the
-changelog entry yourself. Any bump changes `GameContent/Unity`, so it needs an
+The changelog goes to `docs/Unity-Changelog.md`. Any bump changes `GameContent/Unity`, so it needs an
 owner rebuild before the package check passes.
 
 ## Branch and PR rules (from AGENTS.md)
