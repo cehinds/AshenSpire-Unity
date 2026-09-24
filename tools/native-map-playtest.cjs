@@ -58,6 +58,10 @@ let browser,ui,map;
    await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await ui.frames();await page.mouse.down();await page.waitForTimeout(140);await page.mouse.up();await settled();
   };
   const mapControl=async id=>{const before=map.revision;await control('native-map-'+id);await ui.until(()=>map.revision>before,'map response '+id);};
+  // Unity may defer the controls report by a layout pass after the map view
+  // report lands, so control-list assertions wait for the report to catch up
+  // before checking. The assertion itself is unchanged and still fails.
+  const eventually=async(test,label)=>{try{await ui.until(test,label,10000);}catch{}ui.check(test(),label);};
   const snapshot=()=>JSON.stringify(ui.state);
   const unchanged=(before,label)=>ui.check(snapshot()===before&&ui.state.phase==='Map',label);
   const wheel=async()=>{const rect=await getBounds(map.value.viewport),before=map.value.camera.scrollTop,revision=map.revision;await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.wheel(0,before>30?-180:180);await ui.until(()=>map.revision>revision,'map wheel receipt');await settled();ui.check(Math.abs(map.value.camera.scrollTop-before)>1,'wheel moves the map camera');};
@@ -65,8 +69,8 @@ let browser,ui,map;
    const value=map.value,canvas=await page.locator('#unity-canvas').boundingBox(),bounds=await getBounds(value.viewport);
    ui.check(value.scope==='solo',label+': solo map receipt');
    ui.check(bounds.width>0&&bounds.height>0&&inside(bounds,{x:0,y:0,...activeViewport},1),label+': bounded map viewport is on screen');
-   const nodeIds=new Set(value.nodes.map(n=>n.id)),controls=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-   ui.check(controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length))),label+': no hidden node controls');
+   const nodeIds=new Set(value.nodes.map(n=>n.id)),routeControls=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+   await eventually(()=>{const controls=routeControls();return controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length)));},label+': no hidden node controls');
    const legal=value.nodes.filter(n=>n.legal);
    ui.check(legal.length===ui.state.legalNodes.length&&legal.every(n=>ui.state.legalNodes.includes(n.id)),label+': board choices match authoritative legal routes');
    for(const node of legal){ui.check(node.width*canvas.width/ui.controls.PanelWidth>=43.5&&node.height*canvas.height/ui.controls.PanelHeight>=43.5,label+': 44 CSS-pixel route '+node.id);}
@@ -125,11 +129,11 @@ let browser,ui,map;
   ui.check(fogEdges.every(e=>fogIds.includes(e.from)&&fogIds.includes(e.to)),'fog edges connect only visible nodes');
   await inspectTargets('all-paths');await ui.shot('02-all-paths');
   await mapControl('glow');ui.check(map.value.shrineGlow===false,'shrine highlight preference can be disabled');unchanged(initial,'highlight toggle does not mutate the run');
-  await mapControl('legend');ui.check(ui.has('native-map-close'),'legend opens a dismissible overlay');
-  const coveredRoutes=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-  ui.check(coveredRoutes.length>0&&coveredRoutes.every(c=>!c.Enabled),'legend disables every underlying node control');
+  await mapControl('legend');await eventually(()=>ui.has('native-map-close'),'legend opens a dismissible overlay');
+  const coveredRoutes=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+  await eventually(()=>coveredRoutes().length>0&&coveredRoutes().every(c=>!c.Enabled),'legend disables every underlying node control');
   await ui.shot('03-legend');await mapControl('close');
-  await mapControl('routes');ui.check(ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
+  await mapControl('routes');await eventually(()=>ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
   for(let step=0;step<4;step++)await mapControl('zoom-in');
   await wheel();unchanged(initial,'wheel camera movement never travels');
   await mapControl('recenter');
