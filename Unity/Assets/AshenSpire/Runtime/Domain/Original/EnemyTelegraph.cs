@@ -1,7 +1,7 @@
 // EnemyTelegraph.cs — pure view-model for enemy intent badges and Poise meters (F04).
 // Mirrors src/ui/uiContent.js intentBadge/intentTooltip and the enemy Poise bar
 // (src/model/resources.js poise source, coop.js `.poisebar`). Reads enemy/player
-// JObjects only; never mutates them. UI Toolkit wiring is pending — see docs/Unity-Telegraphs.md.
+// JObjects only; never mutates them. Drawn by Presentation/EnemyTelegraphView.cs — see docs/Unity-Telegraphs.md.
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -1,12 +1,66 @@
 # Enemy telegraphs: intent badges and Poise meter (F04)
 
-**Integration status: view-model ready, UI Toolkit wiring pending (needs Unity editor).**
+**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
 
-The Unity domain already tracks enemy intents and Poise, but
-`Presentation/OriginalCombatLayout.cs` (`Enemy`) draws the intent as text and
-draws no Poise meter. This change adds a pure C# view-model that computes what
-the HTML shows. Presentation is unchanged because it cannot be compiled or
-checked without the Unity editor.
+The Unity domain tracks enemy intents and Poise. A pure C# view-model
+(`EnemyTelegraphViewModel`) computes what the HTML shows, and
+`Presentation/EnemyTelegraphView.cs` draws it in the UI Toolkit combat screen,
+solo and co-op. `node tools/unity-runtime-check.mjs` compiles it against the
+Unity reference assemblies; nobody has run it in the editor or a player yet.
+
+## UI wiring (what shipped)
+
+- `Presentation/EnemyTelegraphView.cs` (new) and `Resources/EnemyTelegraphs.uss`
+  (new, loaded by the view onto each enemy slot). `Attach(slot, telegraph)`
+  replaces the old `original-enemy-intent` text label, at the same position, with
+  an intent pill named `enemy-intent-<id>` (glyph + value, classes
+  `telegraph-intent telegraph-<kind> telegraph-severity-<severity>` plus
+  `telegraph-delayed`/`telegraph-pending`). It inserts a Poise meter named
+  `enemy-poise-<id>` directly under the HP pool: a 6px gold track, a tick at 75%,
+  `near-break`, `broken` and `staggered` classes, and a small ✦ when the meter is
+  broken or the enemy is Staggered.
+- Hook lines: `OriginalRunPanel.Combat` passes `OriginalGameSession.Telegraphs()`
+  (a new one-line pass-through to `CombatSession.Telegraphs()`, so solo numbers
+  include Strength/Weak/Vulnerable). `OriginalCoopPanel.Combat` builds from the
+  host snapshot with `EnemyTelegraphView.FromSnapshot` (victim "each hero").
+  Co-op shows **authored** damage because the client has no combat session; the
+  local hero is used only for the Lethal tier.
+- Enemy target buttons keep their names (`native-target-<id>`, `coop-target-<id>`),
+  click behaviour and slot sizes. The new elements are not Buttons, so the
+  control reports the browser playtests read are unchanged. The HP pool,
+  name and caption labels are untouched.
+- Tooltips: runtime UI Toolkit panels do not draw `tooltip`, so the view shows
+  its own floating panel on the panel root. With a mouse it appears after a
+  350 ms hover and hides when the pointer leaves. With touch or a pen it appears
+  after a 450 ms long press, releases the slot's pointer capture so the press
+  does not also select the target, and hides after 4 s or on the next re-render.
+  The intent and Poise meter both have one.
+- Glyph fonts: ⚔ 🛡 ✦ ⌛ come from `Fonts/GlyphFonts.json`. ↑ and ☾ are not in
+  that map, so they fall back to `Fonts/NotoSansSymbols-Regular`, which contains
+  both (checked against its cmap). The sprite fallback (`missing.svg`) is not
+  wired.
+
+## What the owner should look at in play
+
+1. **Solo first fight:** each enemy shows a coloured pill above its art (red ⚔
+   for attacks, blue 🛡 for block, gold ↑ buff, violet ☾ debuff, grey `?`). Check
+   that the number matches the damage taken, including with Weak or Vulnerable.
+2. **Glyph rendering:** every glyph draws rather than showing a box, on Web,
+   Windows and Android.
+3. **Poise meter:** a thin gold bar under each enemy HP bar. It fills as you
+   hit, brightens at 75% (at the tick), and shows a gold border and ✦ when the
+   enemy is Staggered. The next intent should read `✦ Staggered`.
+4. **Delayed/committed attacks** (e.g. charged moves): the pill is hollow and
+   dimmer with ⌛. When committed it gets a thicker border.
+5. **Lethal:** when an attack would kill you through your Block, the pill turns
+   bright red with a thicker border.
+6. **Tooltips:** hover on desktop, long-press on a phone. The panel should
+   stay on screen near the screen edges, and a long press must not change
+   the selected target.
+7. **Layout:** the phone portrait/landscape enemy slots still fit. The pill
+   keeps the old 24px row, and the Poise row adds about 12px taken from the art.
+8. **Co-op:** the same pill and meter show on the shared fight. The tooltip
+   says "each hero", and the numbers are authored (unmodified) damage.
 
 ## Entry point
 
@@ -95,7 +149,7 @@ file, and the tests check that it exists. Every row also has
 The default UI Toolkit font may not contain ⚔ 🛡 ☾ ✦. Check this in the editor,
 and use the sprite when a glyph does not render.
 
-## UI Toolkit sketch (to wire in the editor)
+## UI Toolkit sketch (original design note; the shipped version is above)
 
 This matches the HTML composition: the intent pill sits above the head, and a
 thin gold Poise track sits directly under the HP meter.
