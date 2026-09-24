@@ -21,7 +21,7 @@ jobs:
   # job, so the run takes as long as its slowest single check, not their sum.
   # The required check keeps the name `validate-and-assemble`: it is the last
   # job, needs every split job, and fails unless all of them passed.
-  browser-playtests:
+  browser-critical:
     name: browser (${{ matrix.id }})
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
@@ -30,9 +30,9 @@ jobs:
     timeout-minutes: 25
     strategy:
       fail-fast: false
-      # Listed slowest first so they start first when runners are scarce.
-      # `--case=i/n` must name the harness's case count, so a new viewport or
-      # style fails loudly until it has its own row here.
+      # The two longest playtests. They need nothing, so they take runners
+      # before every other job (which waits for start-gate) when the account's
+      # concurrent-job limit is shared with other runs.
       matrix:
         include:
           - id: native-climb
@@ -43,6 +43,51 @@ jobs:
             name: Exercise native draft, level-up, flask allocation and merchant transactions
             run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
             evidence: TestResults/NativeFeatures
+    env:
+      # Render Unity WebGL with Mesa's lavapipe instead of Chromium's SwiftShader
+      # (about 60 instead of 7 frames per second). The playtests' inputs, waits
+      # and assertions are unchanged; see tools/playwright-lavapipe.cjs.
+      PLAYWRIGHT_MODULE: ${{ github.workspace }}/tools/playwright-lavapipe.cjs
+      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/browser-playtest-setup
+        with:
+          companion: ${{ matrix.id == 'native-coop' }}
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.id }}
+          path: ${{ matrix.evidence }}
+          if-no-files-found: ignore
+
+  # Every job except browser-critical waits for this no-op, so the critical
+  # path is first in the queue for runners.
+  start-gate:
+    name: start (critical path queued first)
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Let the critical path queue first
+        run: echo "browser-critical is queued; starting the other checks."
+
+  browser-playtests:
+    name: browser (${{ matrix.id }})
+    needs: start-gate
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    # A stalled browser playtest must not bill the default six hours; the
+    # slowest one (the three-act climb) finishes in about fifteen minutes.
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      # `--case=i/n` must name the harness's case count, so a new viewport or
+      # style fails loudly until it has its own row here.
+      matrix:
+        include:
           - id: native-map-320x640
             name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
             run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
@@ -139,27 +184,9 @@ jobs:
       VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.json
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/browser-playtest-setup
         with:
-          node-version: '22'
-      - uses: actions/setup-dotnet@v4
-        if: matrix.id == 'native-coop'
-        with:
-          dotnet-version: '8.0.x'
-      - name: Build the local co-op test companion
-        if: matrix.id == 'native-coop'
-        run: dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
-      - name: Install browser test tooling
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-          sudo apt-get install -y --no-install-recommends mesa-vulkan-drivers
-          node tools/playwright-lavapipe.cjs
-      - name: Start the packaged player server
-        run: |
-          python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
-          for attempt in $(seq 1 50); do curl -sf http://127.0.0.1:8787/build-source.json > /dev/null && exit 0; sleep 0.2; done
-          echo "Packaged player server did not start"; cat /tmp/ashenspire-preview.log; exit 1
+          companion: ${{ matrix.id == 'native-coop' }}
       - name: ${{ matrix.name }}
         run: ${{ matrix.run }}
       - uses: actions/upload-artifact@v4
@@ -171,6 +198,7 @@ jobs:
 
   dotnet-suites:
     name: dotnet (${{ matrix.id }})
+    needs: start-gate
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -248,6 +276,7 @@ jobs:
 
   node-checks:
     name: node (listeners, packaging and build history)
+    needs: start-gate
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -278,7 +307,7 @@ jobs:
 
   validate-and-assemble:
     if: ${{ always() && !inputs.publish_library_only }}
-    needs: [browser-playtests, dotnet-suites, node-checks]
+    needs: [browser-critical, start-gate, browser-playtests, dotnet-suites, node-checks]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

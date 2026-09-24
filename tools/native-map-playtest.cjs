@@ -215,5 +215,5 @@ let browser,ui,map;
   fs.writeFileSync(path.join(ui.output,'first-fight-replay.json'),JSON.stringify({fixture:'UnityTests/Parity/native-browser-replay.json',fixtureSha256:crypto.createHash('sha256').update(traceBytes).digest('hex'),commands:replayed},null,2));
   await finish();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:(desktopOnly?'desktop-only':'full-five-cases')+(selection.length===cases.length?'':' case '+selection[0]+'/'+cases.length),viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':selection.length===cases.length?'full-five-cases':'case '+selection[0]+'/'+cases.length,viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);if(map)fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify({receipts:map.receipts,last:map.value},null,2));}if(browser)await browser.close();process.exitCode=1;});
