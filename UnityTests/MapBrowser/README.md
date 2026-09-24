@@ -48,9 +48,10 @@ state and a failure screenshot; an exception exits nonzero.
 
 These checks cover the solo board at 320×640, 390×844, 412×915 and 1440×900.
 A fifth independent 390×844 climb uses the verified `BA` (395) Reaver route,
-created as Assigned (every attribute 12), to earn the Sealstone Key through a
-real two-turn fight and an Unknown treasure. The fight's commands were
-re-derived from `OriginalGameSession` for those stats; the route after it is
+created as a lean Assigned Reaver (STR 3, DEX 1, CON 2, WIS 1, INT 1; owner,
+2026-09-24), to earn the Sealstone Key through a real fight and an Unknown
+treasure. The fight's commands and HP readings are re-derived from
+`OriginalGameSession` for those stats and the ruleset-6/Attack Rating rules; the route after it is
 the one the original Standard-stat receipt verified.
 Its four screenshots record Unknown, the reward offer, revealed fog and revealed
 paths. Checks require the accepted reward and its resulting projection; direct

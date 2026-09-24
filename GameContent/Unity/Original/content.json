@@ -11,7 +11,7 @@
     "energy": 3,
     "draw": 5,
     "handMax": 10,
-    "flaskCapacity": 4,
+    "flaskCapacity": 3,
     "flaskGrowth": [
       {
         "source": "relic",
@@ -14071,7 +14071,7 @@
       "name": "Reaver",
       "maxHp": 84,
       "startingFlaskAllocation": {
-        "hp": 3,
+        "hp": 2,
         "mana": 1
       },
       "startingRelic": "forsakenMedallion",
@@ -14127,7 +14127,7 @@
       "name": "Starseer",
       "maxHp": 72,
       "startingFlaskAllocation": {
-        "hp": 2,
+        "hp": 1,
         "mana": 2
       },
       "startingRelic": "starstoneShard",
@@ -14183,7 +14183,7 @@
       "name": "Rogue",
       "maxHp": 74,
       "startingFlaskAllocation": {
-        "hp": 3,
+        "hp": 2,
         "mana": 1
       },
       "startingRelic": "cutpursesCoin",
@@ -14239,7 +14239,7 @@
       "name": "Herald",
       "maxHp": 78,
       "startingFlaskAllocation": {
-        "hp": 3,
+        "hp": 2,
         "mana": 1
       },
       "startingRelic": "goldFigurine",
@@ -15131,14 +15131,14 @@
         "dropWeight": 10,
         "artKey": "straightSword",
         "poiseThreshold": 5,
-        "attackRating": 5,
+        "attackRating": 2,
         "defenseRating": 2,
         "weight": 5,
         "weaponArtManaCost": 0,
         "uniqueSkillStaminaCost": 0,
         "requirements": {
           "attributes": {
-            "strength": 10
+            "strength": 2
           }
         }
       },
@@ -15165,14 +15165,14 @@
         "dropWeight": 7,
         "artKey": "greatsword",
         "poiseThreshold": 8,
-        "attackRating": 9,
+        "attackRating": 4,
         "defenseRating": 2,
         "weight": 8,
         "weaponArtManaCost": 0,
         "uniqueSkillStaminaCost": 0,
         "requirements": {
           "attributes": {
-            "strength": 12
+            "strength": 3
           }
         }
       },
@@ -15197,14 +15197,14 @@
         "dropWeight": 10,
         "artKey": "dagger",
         "poiseThreshold": 3,
-        "attackRating": 3,
+        "attackRating": 1,
         "defenseRating": 2,
         "weight": 3,
         "weaponArtManaCost": 0,
         "uniqueSkillStaminaCost": 0,
         "requirements": {
           "attributes": {
-            "dexterity": 11
+            "dexterity": 2
           }
         }
       },
@@ -15227,7 +15227,7 @@
         "dropWeight": 10,
         "artKey": "dagger",
         "poiseThreshold": 2,
-        "attackRating": 4,
+        "attackRating": 1,
         "defenseRating": 2,
         "weight": 2,
         "weaponArtManaCost": 0,
@@ -15255,7 +15255,7 @@
         "dropWeight": 7,
         "artKey": "katana",
         "poiseThreshold": 5,
-        "attackRating": 4,
+        "attackRating": 2,
         "defenseRating": 2,
         "weight": 5,
         "weaponArtManaCost": 0,
@@ -15284,7 +15284,7 @@
         "dropWeight": 7,
         "artKey": "halberd",
         "poiseThreshold": 7,
-        "attackRating": 8,
+        "attackRating": 4,
         "defenseRating": 2,
         "weight": 7,
         "weaponArtManaCost": 0,
@@ -15312,7 +15312,7 @@
         "dropWeight": 7,
         "artKey": "warhammer",
         "poiseThreshold": 9,
-        "attackRating": 7,
+        "attackRating": 3,
         "defenseRating": 2,
         "weight": 9,
         "weaponArtManaCost": 0,
@@ -15369,7 +15369,7 @@
         "dropWeight": 10,
         "artKey": "battleaxe",
         "poiseThreshold": 7,
-        "attackRating": 8,
+        "attackRating": 2,
         "defenseRating": 2,
         "weight": 7,
         "weaponArtManaCost": 0,
@@ -15396,7 +15396,7 @@
         "dropWeight": 10,
         "artKey": "buckler",
         "poiseThreshold": 4,
-        "attackRating": 0,
+        "attackRating": 1,
         "defenseRating": 5,
         "weight": 4,
         "weaponArtManaCost": 0,
@@ -15425,7 +15425,7 @@
         "artKey": "kiteShield",
         "poiseThreshold": 8,
         "attackRating": 0,
-        "defenseRating": 6,
+        "defenseRating": 4,
         "weight": 8,
         "weaponArtManaCost": 0,
         "uniqueSkillStaminaCost": 0
@@ -15508,7 +15508,7 @@
         "dropWeight": 7,
         "artKey": "spikedShield",
         "poiseThreshold": 8,
-        "attackRating": 0,
+        "attackRating": 2,
         "defenseRating": 5,
         "weight": 8,
         "weaponArtManaCost": 0,
@@ -15618,14 +15618,14 @@
         "dropWeight": 10,
         "artKey": "ashStaff",
         "poiseThreshold": 3,
-        "attackRating": 2,
+        "attackRating": 1,
         "defenseRating": 1,
         "weight": 3,
         "weaponArtManaCost": 1,
         "uniqueSkillStaminaCost": 0,
         "requirements": {
           "attributes": {
-            "intelligence": 12
+            "intelligence": 3
           }
         }
       },
@@ -15680,7 +15680,7 @@
         "dropWeight": 7,
         "artKey": "boneSceptre",
         "poiseThreshold": 4,
-        "attackRating": 3,
+        "attackRating": 2,
         "defenseRating": 1,
         "weight": 4,
         "weaponArtManaCost": 1,
@@ -17160,22 +17160,22 @@
       {
         "itemId": "straightSword",
         "attributeId": "strength",
-        "minimum": 10
+        "minimum": 2
       },
       {
         "itemId": "greatsword",
         "attributeId": "strength",
-        "minimum": 12
+        "minimum": 3
       },
       {
         "itemId": "dagger",
         "attributeId": "dexterity",
-        "minimum": 11
+        "minimum": 2
       },
       {
         "itemId": "ashStaff",
         "attributeId": "intelligence",
-        "minimum": 12
+        "minimum": 3
       }
     ],
     "itemUpgradeChanges": [
@@ -20937,6 +20937,16 @@
   ],
   "creationModes": [
     {
+      "id": "lean",
+      "label": "Assigned",
+      "baseline": 1,
+      "bonusPool": 3,
+      "minimum": 1,
+      "maximum": 4,
+      "belowBaseline": "allow",
+      "redistribution": "fixedTotal"
+    },
+    {
       "id": "standard",
       "label": "Standard",
       "baseline": 10,
@@ -20948,7 +20958,7 @@
     },
     {
       "id": "pointbuy",
-      "label": "Assigned",
+      "label": "Assign points",
       "baseline": 5,
       "bonusPool": 35,
       "minimum": 5,
@@ -20958,8 +20968,38 @@
     }
   ],
   "attributeRules": {
-    "defaultMode": "pointbuy",
+    "defaultMode": "lean",
     "presets": {
+      "lean": {
+        "reaver": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 1,
+          "wisdom": 1,
+          "intelligence": 1
+        },
+        "starseer": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 1,
+          "wisdom": 1,
+          "intelligence": 1
+        },
+        "herald": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 1,
+          "wisdom": 1,
+          "intelligence": 1
+        },
+        "rogue": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 1,
+          "wisdom": 1,
+          "intelligence": 1
+        }
+      },
       "standard": {
         "reaver": {
           "strength": 13,
@@ -21026,43 +21066,49 @@
     }
   },
   "derivedStatRules": {
-    "rulesetVersion": 4,
+    "rulesetVersion": 6,
     "defaults": {
-      "pointsPerTier": 5,
-      "rounding": "floor",
+      "perLevel": 0,
       "cap": null
     },
     "rules": {
       "energy": {
-        "base": 2,
-        "sourceStat": "dexterity",
-        "pointsPerTier": 10,
-        "gainPerTier": 1,
-        "cap": null
+        "base": 3,
+        "strength": 0.1,
+        "dexterity": 0.2,
+        "wisdom": 0.01,
+        "intelligence": 0.01,
+        "perLevel": 0.1
       },
       "draw": {
-        "base": 4,
-        "sourceStat": "intelligence",
-        "pointsPerTier": 10,
-        "gainPerTier": 1,
-        "cap": null
+        "base": 3,
+        "dexterity": 0.25,
+        "wisdom": 0.25,
+        "intelligence": 0.5,
+        "perLevel": 0.1
       },
       "hp": {
         "base": 30,
-        "sourceStat": "constitution",
-        "pointsPerTier": 1,
-        "gainPerTier": 2
+        "strength": 0.35,
+        "constitution": 4,
+        "wisdom": 0.1,
+        "perLevel": 2
       },
       "stamina": {
-        "base": 0,
-        "sourceStat": "constitution",
-        "gainPerTier": 1
+        "base": 1,
+        "strength": 0.25,
+        "dexterity": 0.25,
+        "constitution": 0.5,
+        "wisdom": 0.1,
+        "perLevel": 0.2
       },
       "mana": {
-        "base": 0,
-        "sourceStat": "wisdom",
-        "gainPerTier": 1,
-        "cap": null
+        "base": 1,
+        "strength": 0.1,
+        "constitution": 0.25,
+        "wisdom": 0.5,
+        "intelligence": 0.3,
+        "perLevel": 0.2
       }
     },
     "presentation": {
@@ -21103,7 +21149,7 @@
   "characterCreation": {
     "spritePreviewSide": "right",
     "visibleModeIds": [
-      "pointbuy"
+      "lean"
     ],
     "layout": {
       "classPreviewPercent": 30,

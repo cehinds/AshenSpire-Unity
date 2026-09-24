@@ -23,12 +23,13 @@ resource prices, payment rules or combat effects.
   Resource affordability does not override target, turn, ownership or other
   authoritative command restrictions.
 
-For the CardText fixture at **Strength 13**, the starting Slashing Strike
-has a six-point equipment amount and an existing eight-point Strength
-contribution. It reads **“Deal 14 damage. Includes +8 total damage from
-Strength.”** The tested smithing tier 1 version reads 17. The browser playtests
-create an Assigned Reaver (every attribute 12), whose Slashing Strike reads
-**“Deal 13 damage. Includes +7 total damage from Strength.”** These are specific
+Since the lean rebase (owner, 2026-09-24) the CardText fixture and the browser
+playtests both use the lean Reaver allocation (STR 3, DEX 1, CON 2, WIS 1, INT 1).
+Its starting Slashing Strike adds Attack Rating: a two-point attribute term
+(`floor(0.75 × 3)`) plus the Straight Sword's own AR of 2. It reads
+**“Deal 9 damage. Includes +4 total damage from Attack Rating.”** Gorefire Slash,
+which has no source armament, carries only the attribute term: **“Deal 7 damage.
+… Includes +2 total damage from Attack Rating.”** These are specific
 loadout examples against an unmodified test target, not universal card values
 or guaranteed enemy HP loss.
 

@@ -24,6 +24,16 @@ async function stablePointOf(ui,id,fraction){
  }
  throw Error('Unstable control geometry: '+id);
 }
+// Lean creation targets per class (web attributes.js:171-174). Used only by
+// drivers and bots; the game itself opens every class at all 1s with 3 unspent.
+const LEAN_ATTRIBUTE_ORDER=Object.freeze(['strength','dexterity','constitution','wisdom','intelligence']);
+const LEAN_CLASS_ALLOCATIONS=Object.freeze({
+ reaver:Object.freeze({strength:3,dexterity:1,constitution:2,wisdom:1,intelligence:1}),
+ starseer:Object.freeze({strength:1,dexterity:1,constitution:1,wisdom:2,intelligence:3}),
+ herald:Object.freeze({strength:1,dexterity:1,constitution:2,wisdom:3,intelligence:1}),
+ rogue:Object.freeze({strength:1,dexterity:3,constitution:2,wisdom:1,intelligence:1})
+});
+const LEAN_REAVER=LEAN_CLASS_ALLOCATIONS.reaver;
 class NativeUiDriver {
  constructor(page,output){this.page=page;this.output=output;this.controls=null;this.state=null;this.coop=null;this.layout=0;this.revision=0;this.coopRevision=0;this.errors=[];this.checks=[];this.chunks=new Map();fs.mkdirSync(output,{recursive:true});
   const normalizeControls=controlReportsForPage(page,e=>this.errors.push(e));
@@ -107,10 +117,17 @@ class NativeUiDriver {
   }
   throw Error('Cannot reach '+id+' after bounded measured scrolling');
  }
- // Spend every unspent creation point round-robin through the visible +attribute
- // controls. Standard is no longer offered (owner, 2026-09-24), so a climb can only
- // begin once the Assigned pool is empty.
- async assignPoints(){for(let n=0;n<100;n++){const ups=(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled);if(!ups.length)return;await this.click(ups[n%ups.length].Id);}throw Error('Creation points never ran out');}
+ // Spend the three Assigned points the way the web bots do (web attributes.js,
+ // owner 2026-09-24): every attribute opens at 1 and the class row below is the
+ // target. Each +attribute control is pressed (target-1) times in the fixed order
+ // strength, dexterity, constitution, wisdom, intelligence; afterwards no
+ // +attribute control may remain enabled, since a climb only begins once the
+ // lean pool (3 points, total 8) is empty.
+ async assignPoints(targets=LEAN_REAVER){
+  for(const id of LEAN_ATTRIBUTE_ORDER){const target=targets[id]??1;for(let n=1;n<target;n++)await this.click('attribute-'+id+'-up');}
+  const left=(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled).map(c=>c.Id);
+  if(left.length)throw Error('Creation points remain after assignment: '+left.join(', '));
+ }
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
  async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
@@ -118,4 +135,4 @@ class NativeUiDriver {
  async shot(name){await this.page.waitForTimeout(250);await this.page.screenshot({path:path.join(this.output,name+'.png')});}
  save(success){fs.writeFileSync(path.join(this.output,'checks.json'),JSON.stringify({success,checks:this.checks,errors:this.errors,state:this.state,coop:this.coop,controls:this.controls,physicalDevice:false},null,2));}
 }
-module.exports={NativeUiDriver};
+module.exports={NativeUiDriver,LEAN_CLASS_ALLOCATIONS,LEAN_ATTRIBUTE_ORDER,LEAN_REAVER};

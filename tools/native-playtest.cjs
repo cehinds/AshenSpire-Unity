@@ -38,7 +38,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  page.on('console',m=>{const value=normalizeControls(m.text());if(value===null)return;if(m.type()==='error')errors.push(value);for(const [prefix,receive] of [['ASHENSPIRE_CONTROLS ',d=>{controls=d;layout++;}],['ASHENSPIRE_NATIVE_STATE_CHUNK ',d=>{let parts=chunks.get(d.sequence);if(!parts){parts=[];chunks.set(d.sequence,parts);}parts[d.index]=d.text;if(parts.filter(x=>x!==undefined).length===d.count){state=JSON.parse(parts.join(''));revision++;chunks.delete(d.sequence);}}]]){const at=value.indexOf(prefix);if(at>=0)receive(JSON.parse(value.slice(at+prefix.length)));}});
  await page.goto(process.argv[2]);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await until(()=>controls?.Controls.length,'title');await shot('00-phone-title');
  await click('native-new');await shot('01-phone-assign-points');
- check(controls.Labels.some(t=>t.includes('35')),'35 points initially unspent');
+ check(controls.Labels.some(t=>t.trim()==='Unspent points: 3'),'Unspent points: 3 (lean Assigned, all 1s)');
  await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-assigned-creation');await command('native-begin');
  check(state.phase==='Map','native three-act run starts');
  for(let index=0;index<replay.length;index++){

@@ -46,9 +46,17 @@ all archived players and independently tested channel saves. See
   touch cancellation and profile persistence; test real multi-choice layouts.
 - [x] Default to Assign points: five attributes at 5, 60 total, 35 unspent;
   remove Tuned from the fork's available modes.
-- [x] Offer only Assigned at creation (relabelled from "Assign points"); Standard
-  stays in the table for saves but is hidden via `visibleModeIds` (2026-09-24).
+- [x] Offer only Assigned at creation; Standard stays in the table for saves but
+  is hidden via `visibleModeIds` (2026-09-24; superseded below by the lean mode).
 - [x] Make every attribute point useful and author five-point mechanical thresholds.
+- [x] Rebase creation onto the web lean scale (owner, 2026-09-24): Assigned (`lean`)
+  opens at all 1s with 3 points to spend (total 8, range 1–4); ruleset-6 derived
+  pools, AR/DR/PR ratings plus the armament's own rating, `itemWeightScale` 0.2,
+  requirements STR 2/STR 3/DEX 2/INT 3 and three-charge flasks. `pointbuy` and
+  `standard` stay resolvable for existing saves.
+- [ ] Decide the lean-scale gaps left open on 2026-09-24: web hand rules (O-4),
+  the Poise row and Ward meters (O-5), and dodge's `(DEX − 10) / 2` pivot at
+  DEX 1–4 (O-6).
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and
   saved kit identity; retain the uncustomized baseline kit's creation-only waiver.
 - [x] Compose weapon-owned cards and pay final action/MP/stamina costs.

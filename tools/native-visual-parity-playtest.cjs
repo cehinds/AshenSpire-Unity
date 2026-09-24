@@ -58,7 +58,8 @@ let browser,ui,records=[];
   ui.check(ui.state.cards.every(row=>controls().some(c=>c.Id==='native-card-'+row.instance.instanceId)),'entire hand has real controls in one horizontal rail');
   ui.check(labels().includes('1'),'card action numeral is rendered');ui.check(labels().some(text=>/attack/i.test(text)),'card type band text is present');
   ui.check(labels().some(text=>text.includes('Blade')),'authored card tag is rendered');ui.check(labels().some(text=>text==='⚔'||text==='✧'||text==='🗡'),'authored card art glyph is rendered');
-  ui.check(labels().some(text=>text.startsWith('Deal 13 damage.')),'existing weapon total (Assigned Reaver, STR 12) survives the card-face redesign');
+  // TODO(lean): confirm from domain output (plan D5 expected value; finalise after the ruleset-6 runtime lands).
+  ui.check(labels().some(text=>text.startsWith('Deal 9 damage.')),'existing weapon total (lean Reaver, STR 3) survives the card-face redesign');
   ui.check(!labels().some(text=>/\b0 MP\b|\b0 stamina\b/.test(text)),'card labels omit zero resource clutter');
   record('combat-opening');await ui.shot('04-combat');
   const last=ui.state.cards.at(-1).instance.instanceId,lastControl=controls().find(c=>c.Id==='native-card-'+last),beforeLast=await geometry(lastControl),beforeInspect=state();

@@ -32,8 +32,9 @@ Paths below are relative to the repository root.
 | What to change | Authoritative file or component |
 |---|---|
 | Cards, enemies, encounters, classes, relics, events, equipment and tag joins | `GameContent/Unity/Original/content.json` |
-| Per-point bonuses, five-point thresholds and Catch Breath | `GameContent/Unity/Original/progression.json` |
-| Weight, resource and original supplementary mechanics | `GameContent/Unity/Original/mechanics.json` |
+| Attack/Defense/Power Rating weights, rating ids per weapon profile and damage school, the equipment rating addend, and allocation explanations (schema 2, lean scale; owner 2026-09-24) | `GameContent/Unity/Original/progression.json` |
+| Creation modes (`lean` Assigned: all 1s, 3 to spend, total 8, range 1–4; `pointbuy`/`standard` kept for saves), ruleset-6 derived pools, weapon requirements and flask capacity | `GameContent/Unity/Original/content.json` (`creationModes`, `attributeRules`, `derivedStatRules`, `equipment.equipmentRequirements`, `balance`) |
+| Weight (including `itemWeightScale` 0.2), resource, Catch Breath and original supplementary mechanics | `GameContent/Unity/Original/mechanics.json` |
 | Authored event choice/history rules | `GameContent/Unity/Original/event-choices.json` |
 | Custom menu labels/options | `GameContent/Unity/Original/custom-run-options.json`; magnitudes live in `content.json` under `balance.customMods` and `balance.endless` |
 | Run-shape control labels, limits and probe count | `GameContent/Unity/Original/custom-run-options.json` under `mapShape`; generation uses `OriginalMapShape` and `ActMapGenerator` |

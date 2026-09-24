@@ -2,40 +2,87 @@
 
 ## Owner-requested creation defaults (four-part versioning)
 
-Assigned (mode id `pointbuy`, formerly labelled "Assign points") is the default
-and only offered creation mode. Tuned is removed from the fork's available modes.
-All five attributes start at the minimum value of 5 for every class. The total
-budget is 60, so the initial unspent pool is 60 - (5 × 5) = 35. The per-attribute
-maximum remains 15. Plus/minus controls reflect the current bounds and remaining
-budget.
+Owner, 2026-09-24: "why are the numbers so high, rebase because the numbers
+should be 1's with 3 points to spend (total of 8, not 35) ... use my past prompts
+for the defaults." The fork now follows the web build's lean scale.
 
-Owner, 2026-09-24: "Standard isn't an option for stats and tuned should say
-assigned." Creation offers only `characterCreation.visibleModeIds` (now
-`["pointbuy"]`), with the default mode always included. Standard stays in
-`creationModes` with its presets so existing saves and exported configurations
-still resolve; it is simply no longer offered.
-These are Constantine's explicit fork settings; the pinned original-engine
-fixtures remain unchanged as historical parity evidence.
+**Assigned** (mode id `lean`) is the default and only offered creation mode.
+Every class opens with all five attributes at **1** and **3** unspent points, a
+fixed total of **8**. Each attribute stays within **1–4**; plus/minus controls
+reflect those bounds and the remaining pool, and a climb cannot begin until the
+pool is empty. The web build's per-class rows (Reaver STR 3 / DEX 1 / CON 2 /
+WIS 1 / INT 1, Starseer 1/1/1/2/3, Herald 1/1/2/3/1, Rogue 1/3/2/1/1) are used
+only by bots and browser drivers (`LEAN_CLASS_ALLOCATIONS` in
+`tools/native-ui-driver.cjs`); they are not creation presets.
+
+`characterCreation.visibleModeIds` is `["lean"]`. The earlier `pointbuy` mode
+(label restored to "Assign points"; five at 5, 60 total, 35 unspent, maximum 15)
+and `standard` stay in `creationModes` with their presets, so existing saves and
+exported configurations still resolve; they are simply no longer offered. Tuned
+remains removed. These are Constantine's explicit fork settings; the pinned
+original-engine fixtures remain unchanged as historical parity evidence.
 
 ## Owner-requested attribute and resource progression
 
-`Original/progression.json` records intentional Unity improvements separately from
-the pinned original oracle. STR, DEX, INT and WIS each add one total damage per
-point above five to their matching attacks: strength, finesse, magic and arcane.
-Weapon profile identity selects the attribute; otherwise damage school and authored
-card tags select it. A multi-hit card distributes that bonus across its hits,
-retaining every invested point without multiplying it by the hit count. Only the
-first damage operation receives the bonus. WIS also adds one card healing per point
-above five. CON retains two health and two carry capacity per point; STR retains
-one carry capacity per point. These benefits are explained during allocation.
+`Original/progression.json` (schema 2) records intentional Unity improvements
+separately from the pinned original oracle. Every calculation is
+`Σ floor(weight × attribute)` plus any equipment addend (owner, 2026-09-24: "all
+calculations should be sum(floor(statmult*stat)) + equipment bonus"); no creation
+mode converts an attribute on its way in.
 
-DEX adds one action and INT one draw at each five-point threshold; at five they
-still begin with two actions and four draw. WIS and CON retain one maximum mana
-and stamina respectively per five points. Other original dodge and equipment
-rules remain in their own authored mechanics. MP persists between battles; mana
-flasks and shrines restore it. An authored Catch Breath command converts one
-action into one stamina once per turn, only while stamina is below capacity.
-Normal idle stamina recovery retains the original spend ledger.
+**Derived stats, ruleset 6.** `derivedStatRules.rulesetVersion` is 6. Each row is
+`base + Σ floor(weight × attribute) + floor((level − 1) × perLevel)`, where level is
+`balance.levels.playerStartingLevel` plus the run's level-ups:
+
+| Pool | Base | STR | DEX | CON | WIS | INT | Per level |
+|---|---|---|---|---|---|---|---|
+| Actions (energy) | 3 | 0.1 | 0.2 | — | 0.01 | 0.01 | 0.1 |
+| Draw | 3 | — | 0.25 | — | 0.25 | 0.5 | 0.1 |
+| HP | 30 | 0.35 | — | 4 | 0.1 | — | 2 |
+| Stamina | 1 | 0.25 | 0.25 | 0.5 | 0.1 | — | 0.2 |
+| Mana | 1 | 0.1 | — | 0.25 | 0.5 | 0.3 | 0.2 |
+
+At all 1s a character has 34 HP and 3 actions; each CON point adds 4 HP and each
+level 2 HP. Rows authored with `sourceStat`/tiers (rulesets before 6) still resolve
+through the legacy path, so older saves are never re-priced.
+
+**Ratings.** Attack (AR), Defense (DR) and Power (PR) Rating replace the old
+per-point-above-five bonuses:
+
+- AR = 0.75 STR + 0.5 DEX + 0.25 CON + 0.25 WIS + 0.25 INT
+- DR = 0.5 STR + 0.75 DEX + 0.25 CON + 0.35 WIS + 0.15 INT
+- PR = 0.25 DEX + 0.5 CON + 0.5 WIS + 0.75 INT
+
+Each weight is a floored term of its own, so a 0.25 weight contributes nothing
+until the attribute reaches 4, and all-1s ratings are 0. The card's weapon profile
+selects the rating (`profileRatings`); otherwise its damage school does (physical
+and pierce → AR, magic and arcane → PR). A profile-projected weapon card also adds
+its source armament's own `attackRating` (AR/PR) or `defenseRating` (DR) — the
+equipment addend. The rating joins the first damage operation, and guard-profile
+cards add DR/PR once to their first block. Card text names the rating, e.g. a lean
+Reaver's Slashing Strike "Includes +4 total damage from Attack Rating." Healing
+receives PR (attribute term only) only on a magic or arcane card. Armament
+ratings follow the web weapon table (for example Straight Sword AR 2, Greatsword
+AR 4). Allocation explains the next score at which each attribute steps a rating
+or pool.
+
+**Carry weight.** Capacity stays `2 × CON + STR`; `weight.itemWeightScale` 0.2
+multiplies every piece weight (kept to a tenth) so lean starts are not all Heavy.
+**Flasks** hold 3 charges: Reaver, Rogue and Herald start 2 HP / 1 MP, the
+Starseer 1 HP / 2 MP. MP persists between battles; mana flasks and shrines restore
+it. An authored Catch Breath command converts one action into one stamina once per
+turn, only while stamina is below capacity. Normal idle stamina recovery retains
+the original spend ledger.
+
+**Not ported (open gaps, owner 2026-09-24).** O-4: the web build's hand rules
+(opening draw, turn draw and hand capacity from `content/handRules.js`) are not
+ported; Unity keeps its derived Draw and existing hand cap. O-5: the web Poise
+rating row and Ward meters are not ported; poise stays on its authored mechanics.
+O-6: dodge keeps its `(DEX − 10) / 2` formula unchanged even though lean DEX
+(1–4) sits below its pivot; it is flagged for review rather than retuned.
+
+Weapon requirements are on the lean scale: Straight Sword STR 2, Greatsword STR 3,
+Dagger DEX 2, Ash Staff INT 3.
 
 Weapon cards and resource costs must use their final projected definition for
 both display and execution. Alternate kits must meet their equipment requirements.

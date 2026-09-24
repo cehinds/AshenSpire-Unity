@@ -35,7 +35,8 @@ let browser,ui;
   ui.check(current.card.y<before.card.y-1,'real vertical wheel moves long card upwards');
   ui.check(current.card.y+current.card.height<=current.play.y-1,'entire lower card edge and description end are above Play');
   ui.check(current.card.y+current.card.height>current.canvas.y&&current.card.x+current.card.width>current.canvas.x&&current.card.x<current.canvas.x+current.canvas.width,'description end remains inside the actual canvas');
-  ui.check(current.labels.some(label=>label.includes('Deal 12 damage.')&&label.includes('Apply 3 Bleed.')&&label.includes('Includes +7 total damage from Strength.')),'full authored long description remains in read-only labels');
+  // TODO(lean): confirm from domain output (plan D5 expected Gorefire values; finalise after the ruleset-6 runtime lands).
+  ui.check(current.labels.some(label=>label.includes('Deal 7 damage.')&&label.includes('Apply 3 Bleed.')&&label.includes('Includes +2 total damage from Attack Rating.')),'full authored long description remains in read-only labels');
   for(const action of[current.play,current.end]){
    ui.check(action.enabled&&action.x>=current.canvas.x-0.1&&action.x+action.width<=current.canvas.x+current.canvas.width+0.1&&action.y>=current.canvas.y&&action.y+action.height<=current.canvas.y+current.canvas.height+0.1,'action remains enabled and fully on canvas: '+action.id);
    ui.check(action.width>=43.9&&action.height>=43.9,'action keeps44CSS target: '+action.id);

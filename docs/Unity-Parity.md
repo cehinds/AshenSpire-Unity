@@ -178,17 +178,26 @@ Inspect all four classes, change allocation modes and points, generate seeded ma
 walk routes to the boss, and search the content tables. These are development tools;
 the route explorer does not execute battles or alter a campaign save.
 
-Owner-requested defaults in the current four-part-version branch: **Assigned** (formerly
-"Assign points") starts every attribute at 5.
-Five attributes consume 25 of the 60 total points, leaving **35 unspent**. The
-maximum remains 15. **Standard** is no longer offered at creation (owner,
-2026-09-24) but keeps its presets in the table for existing saves; **Tuned** is removed from the
-fork. The original oracle still contains all original modes, so these intentional
-fork settings are checked separately from upstream parity. Removing Tuned does
-not delete its historical fixtures or rewrite the original import receipt.
+Owner-requested defaults in the current four-part-version branch (owner, 2026-09-24:
+"the numbers should be 1's with 3 points to spend (total of 8, not 35)"):
+**Assigned** (mode id `lean`) opens every class at **1** in all five attributes with
+**3 unspent**, a fixed total of 8; each attribute stays within 1–4. Only Assigned is
+offered. The previous 5/60/35 mode (`pointbuy`, relabelled "Assign points") and
+**Standard** keep their presets in the table so existing saves still resolve;
+**Tuned** is removed from the fork. The original oracle still contains all original
+modes, so these intentional fork settings are checked separately from upstream
+parity. Removing Tuned does not delete its historical fixtures or rewrite the
+original import receipt.
 
-The owner-requested per-point/threshold bonuses and Catch Breath are recorded in
-`progression.json` and [UNITY-SPEC.md](UNITY-SPEC.md). They are deliberate fork
+Derived pools follow the web build's ruleset 6 (`base + Σ floor(weight × attribute)`
+plus a per-level term), damage and guard follow Attack/Defense/Power Rating with the
+source armament's own rating added, item weights are scaled by 0.2, and weapon
+requirements are STR 2 / STR 3 / DEX 2 / INT 3 (Straight Sword, Greatsword, Dagger,
+Ash Staff). The web hand rules (O-4), Poise row and Ward meters (O-5) are not
+ported, and dodge keeps `(DEX − 10) / 2` (O-6); see [UNITY-SPEC.md](UNITY-SPEC.md).
+
+The owner-requested rating formulas are recorded in `progression.json`, Catch
+Breath in `mechanics.json`, and both in [UNITY-SPEC.md](UNITY-SPEC.md). They are deliberate fork
 rules. Leaving a shrine without resting is another explicit usability addition;
 it grants no healing or charges and prevents a no-rest relic from trapping a run.
 
