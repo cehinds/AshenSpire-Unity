@@ -9,6 +9,7 @@
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
 // WebGL (and Android, whose StreamingAssets sit inside the APK) need web requests, which are
 // not wired; the player sees why in Settings and the shipped content is used.
+// CO-OP: always the shipped content (CoopContent), whatever the toggle says, so seats match.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,13 +92,21 @@ namespace AshenSpire.Application
         /// <summary>The modded catalog when "Load content mods" is on and a pack source is readable; otherwise null.</summary>
         private OriginalContentCatalog ModdedCatalog()
         {
-            if (_playerSettings == null || !_playerSettings.LoadContentMods) return null;
+            if (_playerSettings == null || !_playerSettings.ContentModsActive(coop: false)) return null;
             if (!_modsAttempted)
             {
                 ReadContentMods();
                 if (_view != null) _view.ContentModStatus = ModStatus();
             }
             return _modResult?.Catalog;
+        }
+        private OriginalContentCatalog _coopContent;
+        /// <summary>Co-op always uses the shipped content, whatever LoadContentMods says (ContentModsActive(coop: true) is false).</summary>
+        private OriginalContentCatalog CoopContent()
+        {
+            // Mods off: the solo catalog is already the shipped one, exactly as before this change.
+            if (_originalContent != null && (_playerSettings == null || !_playerSettings.LoadContentMods)) return _originalContent;
+            return _coopContent ?? (_coopContent = new OriginalContentCatalog(OriginalRules("content").ToString()));
         }
         private void ReadContentMods()
         {
@@ -142,9 +151,10 @@ namespace AshenSpire.Application
                 lines.Add("Off. The shipped content is used and StreamingAssets/Mods is not read.");
                 return lines;
             }
+            lines.Add("Mods are disabled in co-op. Shared climbs always use the shipped content.");
             if (!_modsAttempted)
             {
-                lines.Add("On. Packs are read when a new run, the profile or co-op next loads content.");
+                lines.Add("On. Packs are read when a new solo run or the profile next loads content.");
                 return lines;
             }
             if (_modNotice != null) lines.Add(_modNotice);
@@ -161,7 +171,7 @@ namespace AshenSpire.Application
             if (_modResult.Errors.Count > shown)
                 lines.Add("[more] " + (_modResult.Errors.Count - shown) + " more errors are in the player log.");
             if (_modResult.Loaded.Count > 0)
-                lines.Add("Packs apply to new runs. A run in progress keeps the content it started with.");
+                lines.Add("Packs apply to new solo runs. A run in progress keeps the content it started with.");
             return lines;
         }
     }

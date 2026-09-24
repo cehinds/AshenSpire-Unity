@@ -180,7 +180,7 @@ How it is wired (`Unity/Assets/AshenSpire/Runtime/Application/RunController.Sett
    null without touching the file system. Both catalog builders
    (`RunController.LoadOriginalProfile` and `OpenFoundation`) then build the shipped catalog
    exactly as before, so the sample pack does not load.
-2. **When content loads.** The first time a new run, the profile, co-op or the foundation
+2. **When content loads.** The first time a new solo run, the profile or the foundation
    screen needs the catalog, `OriginalModPacks.Load` runs with
    `new OriginalModDirectorySource(Application.streamingAssetsPath)`. The accepted catalog
    is used. Turning the toggle on in Settings loads the packs at once, so the result can be
@@ -197,9 +197,11 @@ How it is wired (`Unity/Assets/AshenSpire/Runtime/Application/RunController.Sett
    (`[code] pack: file: message`, up to 12; the rest go to the player log). If the base
    content itself is refused, a note says so. In development builds `ASHENSPIRE_MODS` logs
    a JSON summary.
-5. **Co-op (not done).** Every seat must run the same packs. The companion validates
-   characters against its own data. Comparing a hash of `result.ContentJson` before a
-   shared run starts is still to do. Until then, keep mods off for co-op.
+5. **Co-op.** Co-op always uses the shipped content, for host and guest, whatever the
+   toggle says (`OriginalPlayerSettings.ContentModsActive(coop: true)` is always false;
+   `RunController.CoopContent()`). The companion never reads mods. Settings says "Mods are
+   disabled in co-op". Letting packs into co-op would need every seat to compare a hash of
+   `result.ContentJson` first.
 
 Play test in the editor: turn on Load content mods. Check that Settings lists
 `Loaded: Sample Ember Pack 1.0.0 (sample-ember-pack)`. Start a new run as a class that

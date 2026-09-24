@@ -61,6 +61,9 @@ static class SettingsChecks
         Check(!d.LoadContentMods && d.ToJson()["loadContentMods"]?.Type == JTokenType.Boolean && !(bool)d.ToJson()["loadContentMods"], "mods: content mods are off by default and saved explicitly");
         Check(OriginalPlayerSettings.LoadOrMigrate(new OriginalPlayerSettings { LoadContentMods = true }.ToJson().ToString(), Prefs(0, 0, 0), out _).LoadContentMods, "mods: the toggle survives save and load");
         Check(!OriginalPlayerSettings.LoadOrMigrate(null, Prefs(1, 1, 1), out _).LoadContentMods && !OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"loadContentMods\":\"yes\"}"), out var modNotes).LoadContentMods && modNotes.Count == 1, "mods: migration and bad values keep mods off");
+        var modsOn = new OriginalPlayerSettings { LoadContentMods = true };
+        Check(modsOn.ContentModsActive(coop: false) && !modsOn.ContentModsActive(coop: true) && !d.ContentModsActive(false) && !d.ContentModsActive(true), "mods: co-op resolution ignores the toggle; solo follows it");
+        Check(!OriginalPlayerSettings.LoadOrMigrate(modsOn.ToJson().ToString(), Prefs(0, 0, 0), out _).ContentModsActive(coop: true), "mods: a saved 'on' toggle still gives base content in co-op");
         Check(!d.QuickAnimations && legacy.QuickAnimations && new OriginalPlayerSettings { InstantAnimations = true }.QuickAnimations && !new OriginalPlayerSettings { AnimationSpeed = 1.5 }.QuickAnimations, "quick animations: legacy flag is instant or speed 2");
 
         // Key bindings and conflicts.

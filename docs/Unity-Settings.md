@@ -31,7 +31,7 @@ on screen or in sound.
 | Master / music / SFX / UI volume | `audio.master`, `audio.music`, `audio.sfx`, `audio.ui` | 0 – 1 | 1.0 each | Buses do not turn the sound down. Campaign sound tuning (`Audio.Volume`) still applies on top. |
 | Mute | `audio.muted` | on/off | off | The existing toggle. `Gain(bus)` returns 0 while muted. |
 | Key bindings | `keyBindings` | action → key name | see below | |
-| Load content mods | `loadContentMods` | on/off | **off** | Mods are opt-in. See [MODDING.md](MODDING.md). |
+| Load content mods | `loadContentMods` | on/off | **off** | Mods are opt-in and solo only; co-op always uses the shipped content. See [MODDING.md](MODDING.md). |
 
 Default key bindings are exactly the keys the map board handles today, as Unity
 `KeyCode` names: `mapScrollUp` = `PageUp`, `mapScrollDown` = `PageDown`, `mapTop` =

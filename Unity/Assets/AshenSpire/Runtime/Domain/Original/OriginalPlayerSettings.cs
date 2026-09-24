@@ -42,6 +42,9 @@ namespace AshenSpire.Domain.Original
         public bool Muted;
         /// <summary>Read StreamingAssets/Mods when content loads. Off by default: the shipped content only.</summary>
         public bool LoadContentMods;
+        /// <summary>Whether packs apply to this content load. Co-op (host, guest, companion) always uses the
+        /// shipped content so every seat runs the same rules; the toggle only affects solo play.</summary>
+        public bool ContentModsActive(bool coop) => LoadContentMods && !coop;
         private readonly Dictionary<string, string> _keys = new Dictionary<string, string>(DefaultKeyBindings, StringComparer.Ordinal);
         public IReadOnlyDictionary<string, string> KeyBindings => _keys;
 
