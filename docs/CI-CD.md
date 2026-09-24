@@ -44,7 +44,7 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
   test project (Domain, Parity, NativeFeedback, CardText, CardCosts,
   SpriteStyles, MapShape, MapKnowledge, MapViewport, CoopRun, CoopRun
   `--policy`, Interruption, Viewport, RendererPatch, Authoring, Balance, plus the
-  optional Mods, SaveSlots, RunSummary, Telegraphs and Music suites), run in
+  optional Mods, SaveSlots, RunSummary, Telegraphs, Music and Feel suites), run in
   parallel with `fail-fast: false` so one failure does not hide others. An
   optional suite is skipped with a notice until its project exists on the branch;
   once every feature branch carrying one has merged, drop `optional: true`.

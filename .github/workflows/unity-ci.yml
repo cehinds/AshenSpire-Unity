@@ -161,6 +161,10 @@ jobs:
             project: UnityTests/Music
             args: ''
             optional: true
+          - name: Feel
+            project: UnityTests/Feel
+            args: ''
+            optional: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
