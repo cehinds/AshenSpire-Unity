@@ -57,6 +57,12 @@ static class SettingsChecks
             Check(OriginalPlayerSettings.TryParsePalette(OriginalPlayerSettings.PaletteName(palette), out var parsed) && parsed == palette, "palette " + palette + " round-trips by name");
         Check(JToken.DeepEquals(custom.Clone().ToJson(), custom.ToJson()), "clone is a deep equal copy");
 
+        // Content mods toggle and the legacy "Quick animations" flag.
+        Check(!d.LoadContentMods && d.ToJson()["loadContentMods"]?.Type == JTokenType.Boolean && !(bool)d.ToJson()["loadContentMods"], "mods: content mods are off by default and saved explicitly");
+        Check(OriginalPlayerSettings.LoadOrMigrate(new OriginalPlayerSettings { LoadContentMods = true }.ToJson().ToString(), Prefs(0, 0, 0), out _).LoadContentMods, "mods: the toggle survives save and load");
+        Check(!OriginalPlayerSettings.LoadOrMigrate(null, Prefs(1, 1, 1), out _).LoadContentMods && !OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"loadContentMods\":\"yes\"}"), out var modNotes).LoadContentMods && modNotes.Count == 1, "mods: migration and bad values keep mods off");
+        Check(!d.QuickAnimations && legacy.QuickAnimations && new OriginalPlayerSettings { InstantAnimations = true }.QuickAnimations && !new OriginalPlayerSettings { AnimationSpeed = 1.5 }.QuickAnimations, "quick animations: legacy flag is instant or speed 2");
+
         // Key bindings and conflicts.
         var keys = new OriginalPlayerSettings();
         Check(!keys.TryBind("mapTop", "pageup", out var conflict) && conflict == "mapScrollUp" && keys.KeyBindings["mapTop"] == "Home", "keys: binding a used key (case-insensitive) is refused and names the holder");

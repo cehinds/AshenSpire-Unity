@@ -4,7 +4,8 @@
 // StorageKey. Defaults reproduce the current build: full-speed feedback, no shake or
 // hit-stop (the Unity presentation has neither yet), unattenuated buses, unmuted.
 // Reading never throws: bad or out-of-range values are clamped or defaulted and listed
-// in Adjustments. Wiring into CampaignView/RunController is pending (needs Unity editor).
+// in Adjustments. RunController loads/saves it and keeps the legacy flags written;
+// CampaignView.PlayerSettings.cs is the settings screen (needs an editor play test).
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,10 +40,14 @@ namespace AshenSpire.Domain.Original
         public ColorblindPalette ColorblindPalette = ColorblindPalette.None;
         public double MasterVolume = 1, MusicVolume = 1, SfxVolume = 1, UiVolume = 1;
         public bool Muted;
+        /// <summary>Read StreamingAssets/Mods when content loads. Off by default: the shipped content only.</summary>
+        public bool LoadContentMods;
         private readonly Dictionary<string, string> _keys = new Dictionary<string, string>(DefaultKeyBindings, StringComparer.Ordinal);
         public IReadOnlyDictionary<string, string> KeyBindings => _keys;
 
         /// <summary>Multiplier for feedback durations: 0 when instant, 1 / speed otherwise (legacy fast = .5).</summary>
+        /// <summary>The legacy "Quick animations" flag (AshenSpire.FastMotion): instant or at least the legacy fast speed.</summary>
+        public bool QuickAnimations => InstantAnimations || AnimationSpeed >= LegacyFastAnimationSpeed;
         public double AnimationDurationScale => InstantAnimations ? 0 : 1 / AnimationSpeed;
         /// <summary>Effective gain for a bus after master volume and mute.</summary>
         public double Gain(string bus)
@@ -88,7 +93,7 @@ namespace AshenSpire.Domain.Original
                 ["screenShake"] = ScreenShake, ["screenShakeIntensity"] = ScreenShakeIntensity, ["hitStop"] = HitStop,
                 ["colorblindPalette"] = PaletteName(ColorblindPalette),
                 ["audio"] = new JObject { ["master"] = MasterVolume, ["music"] = MusicVolume, ["sfx"] = SfxVolume, ["ui"] = UiVolume, ["muted"] = Muted },
-                ["keyBindings"] = keys,
+                ["keyBindings"] = keys, ["loadContentMods"] = LoadContentMods,
             };
         }
         public OriginalPlayerSettings Clone() => FromJson(ToJson(), out _);
@@ -160,6 +165,7 @@ namespace AshenSpire.Domain.Original
             s.ScreenShake = Bool(json["screenShake"], "screenShake", s.ScreenShake);
             s.ScreenShakeIntensity = Number(json["screenShakeIntensity"], "screenShakeIntensity", s.ScreenShakeIntensity, IntensityMin, IntensityMax);
             s.HitStop = Bool(json["hitStop"], "hitStop", s.HitStop);
+            s.LoadContentMods = Bool(json["loadContentMods"], "loadContentMods", s.LoadContentMods);
             var palette = json["colorblindPalette"];
             if (palette != null) { if (palette.Type == JTokenType.String && TryParsePalette((string)palette, out var parsed)) s.ColorblindPalette = parsed; else notes.Add("colorblindPalette '" + palette + "' is unknown; none used"); }
             if (json["audio"] is JObject audio)

@@ -6,10 +6,11 @@ player-facing customization option in one versioned record. It builds on the thr
 settings the Unity build already saves in PlayerPrefs: **Reduced motion**, **Quick
 animations** and **Mute sound**. It is not a second, parallel settings system.
 
-> **Status: domain ready, wiring pending (needs Unity editor).** The model, migration and
-> tests are done (`dotnet run --project UnityTests/Mods`). `CampaignView`,
-> `CombatFeedback`, `GameAudio` and `RunController` still read the old PlayerPrefs flags
-> until they are switched over in the editor.
+> **Status: wired; compile-verified against Unity reference assemblies; needs editor play
+> test.** The model, migration and tests are done (`dotnet run --project UnityTests/Mods`).
+> `RunController.Settings.cs` loads and saves the record, and the settings screen
+> (`CampaignView.PlayerSettings.cs`) shows every field. `node tools/unity-runtime-check.mjs`
+> compiles it. Nobody has played it in the Unity editor or a player build yet.
 
 ## Settings, ranges and defaults
 
@@ -30,6 +31,7 @@ on screen or in sound.
 | Master / music / SFX / UI volume | `audio.master`, `audio.music`, `audio.sfx`, `audio.ui` | 0 – 1 | 1.0 each | Buses do not turn the sound down. Campaign sound tuning (`Audio.Volume`) still applies on top. |
 | Mute | `audio.muted` | on/off | off | The existing toggle. `Gain(bus)` returns 0 while muted. |
 | Key bindings | `keyBindings` | action → key name | see below | |
+| Load content mods | `loadContentMods` | on/off | **off** | Mods are opt-in. See [MODDING.md](MODDING.md). |
 
 Default key bindings are exactly the keys the map board handles today, as Unity
 `KeyCode` names: `mapScrollUp` = `PageUp`, `mapScrollDown` = `PageDown`, `mapTop` =
@@ -86,15 +88,36 @@ keeps working.
   older build.
 - `ResetKeyBindings()` restores the defaults.
 
-## Wiring it in (pending, needs Unity editor)
+## Wiring (done; needs editor play test)
 
-1. `RunController`: load with `LoadOrMigrate` and save with `ToJson` in place of the
-   three `PlayerPrefs.SetInt` calls. Pass the settings object to `CampaignView` in place
-   of `(reducedMotion, fast, muted)`.
-2. `CombatFeedback.Play`: use `settings.AnimationDurationScale` in place of
-   `(fast ? .5 : 1)`. When it is 0, finish at once.
-3. `GameAudio`: `source.volume = tuning.Volume * settings.Gain("sfx")`.
-4. UI Toolkit: apply `textScale` and `uiScale` to the root panel. Swap palette stylesheets
-   by `colorblindPalette`.
-5. Screen shake and hit-stop are new presentation features. Build them to read these
-   settings when they are added.
+Hook lines in existing files are marked with a comment that names the new file.
+
+| Where | What it does |
+|---|---|
+| `RunController.Settings.cs` (new) | `InstallPlayerSettings()` runs in `OnEnable` after the view exists. It calls `LoadOrMigrate`. The three legacy ints then win for reduced motion, quick animations and mute, because an older build on the same device may have changed them. Every change saves `AshenSpire.Settings.v1` **and** writes `AshenSpire.ReducedMotion`, `AshenSpire.FastMotion` (= `QuickAnimations`) and `AshenSpire.Muted`. So the older code paths (`RunController.Settings/Mute`, the `CampaignView` constructor) keep working. |
+| `CampaignView.PlayerSettings.cs` (new) | The settings screen, grouped like the HTML game: **Game** (Quick animations, animation speed, instant, interface size, screen shake + intensity, hit-stop), **Audio** (Mute sound, master/SFX/music/interface volume), **Accessibility** (Reduced motion, text size, colorblind palette), **Controls** (map keys, conflict message, reset), **Content mods**. The original toggles keep their names (`reduced-motion`, `fast-motion`, `mute-sound`) and labels; they are only moved under the headings. New control names: `animation-speed`, `instant-animations`, `ui-scale`, `screen-shake`, `screen-shake-intensity`, `hit-stop`, `volume-master`, `volume-sfx`, `volume-music`, `volume-ui`, `text-scale`, `colorblind-palette`, `key-mapScrollUp` … `key-mapBottom`, `keys-reset`, `load-content-mods`. |
+| `OriginalKeyBindings.cs` (new) | Turns bindings (Unity `KeyCode` names, case-insensitive) into map actions. `OriginalMapBoard.Key` asks `OriginalMapViewServices.KeyAction`. Without bindings it uses the old four keys. |
+| `Resources/OriginalPalette.uss` (new) | `palette-protanopia`, `palette-deuteranopia` and `palette-tritanopia` on the root re-color the health/stamina/mana pools, the card cost badges and warning text. |
+
+What each setting does today:
+
+- **Reduced motion, Mute:** the same flags as before.
+- **Quick animations / animation speed / instant:** `CombatFeedback` still only knows normal
+  and quick (half duration). The legacy flag is `QuickAnimations` = instant, or speed ≥ 2.
+  Other speeds are saved but do not change timing yet. Turning Quick animations on sets
+  speed 2, and turning it off sets speed 1.
+- **Interface size:** `PanelSettings.scale` = the asset's own scale × `uiScale`. It is
+  restored in `OnDisable`, so the shared asset is never left changed.
+- **Text size:** each text element is scaled from its resolved USS size. Elements that size
+  their own text in code (the title wordmark, the appearance name) are left alone. At 100%
+  nothing is touched.
+- **Volumes:** `GameAudio.SetVolumeScale(master × sfx)` multiplies the campaign tuning volume.
+  The Unity build has no music or interface sounds yet, so those two sliders are only saved.
+- **Screen shake, hit-stop:** only saved. They will be used when those effects are built.
+- **Key bindings:** a key that another action already uses is refused. The message names
+  the action that holds it (`TryBind`). Conflicts in a saved record are shown when the
+  screen opens. Esc cancels a capture.
+
+Play test in the editor: open Settings from the title screen, change every control, then
+restart. Check that the values persist and that the three legacy toggles still match. Rebind
+a map key, then scroll the map with it. Pick each palette and look at a combat HUD.

@@ -5,11 +5,12 @@ cards, relics, enemies, encounters, events, flasks, classes, equipment and more.
 contain data only. They cannot add code, and they cannot add new kinds of effects. They
 build on the effect operations the game already supports.
 
-> **Integration status: domain ready, runtime wiring pending (needs Unity editor).**
-> The loader, its validation and the sample pack are finished and tested in plain .NET
-> (`UnityTests/Mods`). The game does not read `StreamingAssets/Mods` yet. The last step
-> is one call in the Application layer (see [Wiring it in](#wiring-it-in-application-layer)),
-> and it has to be made and play-tested in the Unity editor.
+> **Integration status: wired; compile-verified against Unity reference assemblies; needs
+> editor play test.** The loader, its validation and the sample pack are finished and
+> tested in plain .NET (`UnityTests/Mods`). The game reads `StreamingAssets/Mods` only when
+> the player turns on **Settings → Content mods → Load content mods** (off by default).
+> With it off, nothing is read and the shipped content is used exactly as before. See
+> [Wiring it in](#wiring-it-in-application-layer).
 
 ## Folder layout
 
@@ -170,17 +171,38 @@ OriginalModLoadResult OriginalModPacks.Load(
 
 `result.Catalog` is an ordinary `OriginalContentCatalog`. With no packs installed it is
 record-for-record identical to today's catalog, and `result.ContentJson` is the
-unchanged input string. The remaining work, in the editor:
+unchanged input string.
 
-1. In `RunController.LoadOriginalProfile` (and anywhere that builds
-   `new OriginalContentCatalog(OriginalRules("content").ToString())`), call
-   `OriginalModPacks.Load(...)` once and use `result.Catalog`. Use `result.ContentJson`
-   where the raw content object is passed on (sessions, co-op snapshots).
-2. Choose the file source per platform. On desktop and in the editor, use
-   `new OriginalModDirectorySource(Application.streamingAssetsPath)`. On Android and
-   WebGL, StreamingAssets is not a normal folder, so read the files with
-   `UnityWebRequest` into an `OriginalModMemorySource` first.
-3. Show `result.Errors` and `result.Loaded` somewhere the player can see them (for
-   example the Profile or Settings screen).
-4. Co-op: every seat must run the same packs. Compare a hash of `result.ContentJson`
-   before a shared run starts.
+How it is wired (`Unity/Assets/AshenSpire/Runtime/Application/RunController.Settings.cs`):
+
+1. **Opt-in.** `OriginalPlayerSettings.LoadContentMods` (`loadContentMods` in
+   `AshenSpire.Settings.v1`) is off by default. When it is off, `ModdedCatalog()` returns
+   null without touching the file system. Both catalog builders
+   (`RunController.LoadOriginalProfile` and `OpenFoundation`) then build the shipped catalog
+   exactly as before, so the sample pack does not load.
+2. **When content loads.** The first time a new run, the profile, co-op or the foundation
+   screen needs the catalog, `OriginalModPacks.Load` runs with
+   `new OriginalModDirectorySource(Application.streamingAssetsPath)`. The accepted catalog
+   is used. Turning the toggle on in Settings loads the packs at once, so the result can be
+   shown. Changing the toggle drops the cached catalog and profile, so the next route into
+   play uses the new choice. A run in progress keeps the content stored in its own
+   snapshot.
+3. **Platforms.** Desktop and the editor read the folder directly. WebGL is skipped with a
+   message in Settings, because StreamingAssets can only be read there with web requests.
+   Android is skipped the same way: its StreamingAssets path is inside the APK
+   (`jar:file://…`), and `System.IO` cannot read that. Reading it through `UnityWebRequest`
+   into an `OriginalModMemorySource` is the remaining work for both platforms.
+4. **Visible results.** Settings → Content mods lists each loaded pack
+   (`Loaded: name version (id)`), each refused pack (`Refused: id`), and the loader errors
+   (`[code] pack: file: message`, up to 12; the rest go to the player log). If the base
+   content itself is refused, a note says so. In development builds `ASHENSPIRE_MODS` logs
+   a JSON summary.
+5. **Co-op (not done).** Every seat must run the same packs. The companion validates
+   characters against its own data. Comparing a hash of `result.ContentJson` before a
+   shared run starts is still to do. Until then, keep mods off for co-op.
+
+Play test in the editor: turn on Load content mods. Check that Settings lists
+`Loaded: Sample Ember Pack 1.0.0 (sample-ember-pack)`. Start a new run as a class that
+has Shield Bash and check that it deals 6 damage (the sample pack does not put Ember Brand
+in any reward pool). Turn the toggle off, start another run, and check that Shield Bash is
+back to 5.

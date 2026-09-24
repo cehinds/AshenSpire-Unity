@@ -14,6 +14,7 @@
 // CO-OP: RunController.Coop.cs binds a host-authoritative companion connection.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
 // SAVES: CampaignSaveStore owns checksummed primary/backup records per channel.
+// SETTINGS/MODS: RunController.Settings.cs (AshenSpire.Settings.v1, content mods toggle).
 // Legacy Expedition.v1 saves are preserved under their original keys.
 // VERIFY: select hero, play, reload/continue, claim reward, buy gear, complete a run.
 // FAILURE: missing content/art -> Import Content; blank UI -> check PanelSettings/Console.
@@ -78,6 +79,7 @@ namespace AshenSpire.Application
                 _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.MapView.Read = ReadMapView; _view.MapView.Write = WriteMapView;
+                InstallPlayerSettings(); // RunController.Settings.cs: settings v1, UI size, volume, mods.
                 _view.SetDisplayHeight(DisplayViewport.Height);
                 _view.StartRequested += StartRun;
                 _view.ContinueRequested += Resume;
@@ -111,7 +113,7 @@ namespace AshenSpire.Application
             {
                 var source = Resources.Load<TextAsset>("Original/content");
                 if (source == null) throw new InvalidOperationException("Import the original content using the AshenSpire menu.");
-                _originalContent = new AshenSpire.Domain.Original.OriginalContentCatalog(source.text);
+                _originalContent = ModdedCatalog() ?? new AshenSpire.Domain.Original.OriginalContentCatalog(source.text);
             }
             var progression = new AshenSpire.Domain.Original.AttributeProgression(Newtonsoft.Json.Linq.JObject.Parse(Resources.Load<TextAsset>("Original/progression").text));
             var mechanics = Newtonsoft.Json.Linq.JObject.Parse(Resources.Load<TextAsset>("Original/mechanics").text);
@@ -168,7 +170,7 @@ namespace AshenSpire.Application
         }
         private void LoadOriginalProfile()
         {
-            if (_originalContent == null) _originalContent = new OriginalContentCatalog(OriginalRules("content").ToString());
+            if (_originalContent == null) _originalContent = ModdedCatalog() ?? new OriginalContentCatalog(OriginalRules("content").ToString());
             if (_profile != null) return;
             _profile = _profileSaves.HasSave ? OriginalProfile.Restore(_originalContent, _profileSaves.Load(value => OriginalProfile.Restore(_originalContent, value), out _)) : new OriginalProfile(_originalContent);
         }
@@ -376,6 +378,7 @@ namespace AshenSpire.Application
             _view.RemoveRequested -= Remove;
             _view.MenuRequested -= Menu;
             _view.SettingsRequested -= Settings;
+            UninstallPlayerSettings();
             _view = null;
             _interruption = null;
             _session = null;

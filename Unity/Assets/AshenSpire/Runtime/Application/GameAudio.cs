@@ -7,6 +7,7 @@
 // VERIFY: unmute, play an attack/guard, end a turn, claim reward; mute stops all feedback.
 // WEB: browser user interaction is required before audio playback is available.
 // PAUSE: SetSuspended stops transient cues without changing the player's mute choice.
+// VOLUME: SetVolumeScale applies the player's master × SFX bus from OriginalPlayerSettings.
 using System;
 using System.Collections.Generic;
 using AshenSpire.Domain;
@@ -37,7 +38,8 @@ namespace AshenSpire.Application
             _source.Stop();
             foreach (var existing in _clips.Values) Destroy(existing);
             _clips.Clear();
-            _source.volume = tuning.Volume;
+            _baseVolume = tuning.Volume;
+            _source.volume = _baseVolume * _volumeScale;
             if (feedback != null)
             {
                 foreach (var cue in feedback.Cues)
@@ -53,6 +55,13 @@ namespace AshenSpire.Application
             Add("guard", tuning.GuardFrequency, tuning.Duration);
             Add("hit", tuning.HitFrequency, tuning.Duration);
             Add("reward", tuning.RewardFrequency, tuning.Duration * 2);
+        }
+        private float _baseVolume = 1, _volumeScale = 1;
+        /// <summary>Player bus gain (OriginalPlayerSettings master × SFX) on top of campaign tuning; 1 leaves tuning unchanged.</summary>
+        public void SetVolumeScale(float scale)
+        {
+            _volumeScale = Mathf.Clamp01(scale);
+            if (_source != null) _source.volume = _baseVolume * _volumeScale;
         }
         public void SetMuted(bool muted)
         {
