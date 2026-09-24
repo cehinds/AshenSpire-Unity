@@ -193,8 +193,11 @@ Derived pools follow the web build's ruleset 6 (`base + Σ floor(weight × attri
 plus a per-level term), damage and guard follow Attack/Defense/Power Rating with the
 source armament's own rating added, item weights are scaled by 0.2, and weapon
 requirements are STR 2 / STR 3 / DEX 2 / INT 3 (Straight Sword, Greatsword, Dagger,
-Ash Staff). The web hand rules (O-4), Poise row and Ward meters (O-5) are not
-ported, and dodge keeps `(DEX − 10) / 2` (O-6); see [UNITY-SPEC.md](UNITY-SPEC.md).
+Ash Staff). Solo combat follows the web hand rules (O-4, ported 2026-09-24:
+opening 4 + INT above 1 per 2, fixed turn draw 2, capacity 7, cards retained);
+co-op, LAN and saves without a hand-rules snapshot keep the legacy draw. The
+Poise row and Ward meters (O-5) are not ported, and dodge keeps `(DEX − 10) / 2`
+(O-6); see [UNITY-SPEC.md](UNITY-SPEC.md).
 
 The owner-requested rating formulas are recorded in `progression.json`, Catch
 Breath in `mechanics.json`, and both in [UNITY-SPEC.md](UNITY-SPEC.md). They are deliberate fork

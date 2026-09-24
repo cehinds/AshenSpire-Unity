@@ -54,9 +54,12 @@ all archived players and independently tested channel saves. See
   pools, AR/DR/PR ratings plus the armament's own rating, `itemWeightScale` 0.2,
   requirements STR 2/STR 3/DEX 2/INT 3 and three-charge flasks. `pointbuy` and
   `standard` stay resolvable for existing saves.
-- [ ] Decide the lean-scale gaps left open on 2026-09-24: web hand rules (O-4),
-  the Poise row and Ward meters (O-5), and dodge's `(DEX − 10) / 2` pivot at
-  DEX 1–4 (O-6).
+- [x] Port the web hand rules to solo combat (O-4, owner 2026-09-24: "Port web
+  hand rules first"): opening draw, fixed turn draw, hand capacity, retention and
+  turn-end discards, snapshotted per fight; legacy saves, co-op and LAN unchanged.
+  A native discard picker (for `promptDiscard` or a swap-caused overflow) remains.
+- [ ] Decide the lean-scale gaps still open on 2026-09-24: the Poise row and Ward
+  meters (O-5), and dodge's `(DEX − 10) / 2` pivot at DEX 1–4 (O-6).
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and
   saved kit identity; retain the uncustomized baseline kit's creation-only waiver.
 - [x] Compose weapon-owned cards and pay final action/MP/stamina costs.

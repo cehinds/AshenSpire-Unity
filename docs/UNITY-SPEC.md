@@ -74,9 +74,43 @@ it. An authored Catch Breath command converts one action into one stamina once p
 turn, only while stamina is below capacity. Normal idle stamina recovery retains
 the original spend ledger.
 
-**Not ported (open gaps, owner 2026-09-24).** O-4: the web build's hand rules
-(opening draw, turn draw and hand capacity from `content/handRules.js`) are not
-ported; Unity keeps its derived Draw and existing hand cap. O-5: the web Poise
+**Hand rules (O-4, ported 2026-09-24).** Owner, 2026-09-24, after the lean bot
+gate won 0/12: "Port web hand rules first." Solo combat follows the web build's
+hand rules (web SPEC §4.1, `src/content/handRules.js`), authored once as
+`handRules` in `Original/content.json`. Each count is
+`base + floor(max(0, attribute − baseline) / pointsPerCard)`, clamped to its
+minimum/maximum, reading the attribute as the sheet shows it:
+
+| Count | Base | Stat | Baseline | Points per card | Min–max |
+|---|---|---|---|---|---|
+| Opening draw | 4 | INT | 1 | 2 | 3–15 |
+| Turn draw (fixed mode) | 2 | INT | 4 | 5 | 2–10 |
+| Hand capacity | 7 | INT | 1 | 5 | 1–30 |
+
+At lean INT 1–4 a hand opens on 4–5 cards, holds 7, and draws a fixed 2 a turn.
+Unplayed cards are retained (`retain`); the fixed turn draw and every draw effect
+stop at capacity without touching the draw pile (`drawMode` `fill` instead draws
+up to capacity). `overflow` `discard` requires the retained cards past capacity to
+be chosen for discard at turn end; `promptDiscard` (off by default),
+`discardLimit` and `replaceDiscards` offer optional turn-end discards and
+replacement draws; `reshuffle` can stop the discard pile refilling the draw pile.
+Retain and Ethereal keep their lifecycle: an Ethereal card still exhausts and can
+never be chosen for discard. `CombatSession.EndTurn(discardIds)` validates the
+choice before anything moves; `DiscardChoicePlan()` / `OriginalGameSession.DiscardPlan`
+state its bounds.
+
+A new solo fight snapshots the rules from its run's frozen content into the
+combat save (`handRules`, `pendingDiscardDraw`). A fight or run without that
+snapshot — saves made before 2026-09-24, co-op and LAN combat (the web build
+applies hand rules to solo only) and headless fixtures — keeps the legacy draw
+exactly: derived Draw each turn, `balance.handMax` (10) capacity, hand discarded
+at turn end. The web build's Advanced-settings editor for these rules is not
+ported: the values are content. The native UI has no discard picker; with the
+shipped rules no prompt arises unless a combat set swap leaves retained cards past
+capacity, when ending the turn is refused until a picker exists.
+Checks: `UnityTests/HandRules` (mirrors web `tests/hand-rules.test.mjs`).
+
+**Not ported (open gaps, owner 2026-09-24).** O-5: the web Poise
 rating row and Ward meters are not ported; poise stays on its authored mechanics.
 O-6: dodge keeps its `(DEX − 10) / 2` formula unchanged even though lean DEX
 (1–4) sits below its pivot; it is flagged for review rather than retuned.

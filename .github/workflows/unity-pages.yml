@@ -42,6 +42,7 @@ jobs:
           dotnet run --project UnityTests/NativeFeedback
           dotnet run --project UnityTests/CardText
           dotnet run --project UnityTests/CardCosts
+          dotnet run --project UnityTests/HandRules
           dotnet run --project UnityTests/SpriteStyles
           dotnet run --project UnityTests/MapShape
           dotnet run --project UnityTests/MapKnowledge
