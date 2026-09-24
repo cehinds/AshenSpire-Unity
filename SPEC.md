@@ -321,7 +321,7 @@ nowhere else**. The order is fixed:
 
 1. **Bound cards are dealt first.** Anything equipment brings: cards from a piece carrying
    the `bound` tag (`equipmentGrants.csv`), a weapon package's `grantedCards`, its
-   `weaponArtDefaults`, the class signature, and `startingDeck.global.grants`. These are
+   `armamentCardDefaults`, the class signature, and `startingDeck.global.grants`. These are
    never capped, never dropped and never refused. They belong to the equipment, not the run.
 2. **Base cards fill what the cap leaves.** `filler = max(0, cap − bound)`, split between
    attack and guard by the class's `strikeBias`. An odd remainder goes to whichever role
@@ -347,7 +347,7 @@ the base strikes and defends (gear only re-skins them), the class signature, glo
 rewards. Item-owned cards ride with the item: equip it and they arrive, unequip it and they
 leave, equip it again and they return identical. **If the item is not equipped, its cards are
 gone** (owner ruling, 2026-09-03). This is one rule with three authoring sources feeding it —
-a weapon package's `grantedCards`, its `weaponArtDefaults`, and the `bound` table
+a weapon package's `grantedCards`, its `armamentCardDefaults`, and the `bound` table
 (`equipmentGrants.csv`, gated by the `bound` tag on any piece, armour included) — and one
 reconcile that applies it on every equip transition, in or out of combat. Item-owned
 instances carry deterministic ids and the owner's namespaced ref, so the reconcile is
@@ -370,7 +370,7 @@ its mounts, and **seat** a run-owned card in an emptied or open mount.
 
 - **Extract.** The card becomes the run's own — a run-owned instance joins the deck and stays
   whatever the item does — and the mount it left is never dead: it shows its kind's **fallback**
-  until something is seated. A weapon-art mount falls back to the unarmed technique (the Dodge
+  until something is seated. An armament-card mount falls back to the unarmed technique (the Dodge
   Roll), read from `unarmedProfiles`; a granted mount falls back to nothing; any item may
   override its fallback under `cardMounts.fallbackByItem`. A fallback is the mount's, not the
   item's, and is never itself extractable.
@@ -682,57 +682,78 @@ Enemy definition shape (content file):
 }
 ```
 
-### 4.7 Unique Skills — the charged weapon art *(PROPOSED, not yet approved)*
+### 4.7 Weapon Arts — the charged weapon ability *(PROPOSED, not yet approved)*
 
 **Why.** An armament today changes the starting cards (`mods`) and lends its item-owned cards
-(§3.8), then does nothing a player *chooses* in a fight. A Unique Skill gives every weapon one
+(§3.8), then does nothing a player *chooses* in a fight. A Weapon Art gives every weapon one
 active ability that is **off the deck**, **always visible**, and **charged by fighting with that
 weapon** — so the weapon is a decision every combat, and every hit visibly fills something.
 
-**Relation to what exists.** This is the consumer the `uniqueSkillStaminaCost` column has been
-waiting for (`validate.js` holds it at 0 "until an explicit unique-skill consumer exists"). It
-does **not** replace the `weaponArt` card mount (§3.8): the mount's card stays a deck card and
-stays extractable/seatable. A Unique Skill is never a card, never enters a pile, and cannot be
-extracted, seated or removed.
+**Relation to what exists — the old mount is renamed.** The name "weapon art" currently belongs
+to the item-owned *card* a weapon lends into the deck (the `weaponArt` mount kind, §3.8). That
+card is renamed **Armament Card** so "Weapon Art" means only this off-deck ability. The
+Armament Card keeps every behaviour it has today (deck card, item-owned, extractable/seatable,
+Dodge Roll fallback); only its names change:
 
-**Entity** — `UniqueSkill` (new schema in `model/schemas.js`, registry `uniqueSkills`,
-authored in `content/source/uniqueSkills.csv` + effects in `src/content/uniqueSkills.js`):
+| Old | New |
+|---|---|
+| mount kind `weaponArt` (`balance.equipment.cardMounts.kinds`) | `armamentCard` |
+| `equipmentRole: 'weaponArt'` | `equipmentRole: 'armamentCard'` |
+| instance id / mount key prefix `weaponArt:` (`mountKey.weaponArt`) | `armamentCard:` (`mountKey.armamentCard`) |
+| weapon package field `weaponArtDefaults` | `armamentCardDefaults` |
+| weapons column `weaponArtManaCost` | `armamentCardManaCost` |
+| player-facing "Weapon Art" (Armoury, smith, compendium) | "Armament Card" |
+
+**Save migration.** One pure, idempotent step at the load door (§3.12), in run and active-combat
+snapshots alike: rewrite `equipmentRole`, instance-id prefixes and `run.itemMounts` keys from
+the old words to the new. It consumes no RNG, replays nothing, and moves no card between piles.
+A save already on the new words passes through unchanged; a save carrying **both** words for
+one mount is archived fail-closed rather than merged. The Unity port and its parity references
+(`UnityTests/Parity/*`) take the same rename in the same implementation PR.
+
+This Weapon Art is the consumer the `uniqueSkillStaminaCost` column has been waiting for
+(`validate.js` holds it at 0 "until an explicit unique-skill consumer exists"); the column is
+renamed `weaponArtStaminaCost`. A Weapon Art is never a card, never enters a pile, and cannot
+be extracted, seated or removed.
+
+**Entity** — `WeaponArt` (new schema in `model/schemas.js`, registry `weaponArts`,
+authored in `content/source/weaponArts.csv` + effects in `src/content/weaponArts.js`):
 
 | Field | Meaning |
 |---|---|
 | `id, name, icon, textTemplate` | Display; text uses the §3.13 templating so previews use `previewDamage`. |
 | `charge` | Integer meter maximum (shipped range 3–6). |
 | `startCharge` | Charge at `combatStart` (default 0). |
-| `chargeOn` | Triggers (§3.6) whose `do` is the new opcode `gainSkillCharge {amount}`. Default authored set: +1 per attack hit dealt by a card this weapon's hand generated (`eventIsAttack` + new predicate `eventCardFromHand {hand: 'self'}`), +2 on `enemyStaggered`. |
+| `chargeOn` | Triggers (§3.6) whose `do` is the new opcode `gainArtCharge {amount}`. Default authored set: +1 per attack hit dealt by a card this weapon's hand generated (`eventIsAttack` + new predicate `eventCardFromHand {hand: 'self'}`), +2 on `enemyStaggered`. |
 | `targeted` | `enemy` \| none — same targeting rule as cards. |
 | `effects` | Effect DSL (§3.4). Any opcode a card may use. |
 | `upgrade` | Partial override applied at armament Smithing tier ≥ 1 (same shape and rule as card upgrades, §4.3). |
 
-Weapons gain one column, `uniqueSkill` (id, required for `kind=weapon`, optional for shields).
-`uniqueSkillStaminaCost` becomes live: the Stamina paid on use, **in addition to** a full meter;
+Weapons gain one column, `weaponArt` (id, required for `kind=weapon`, optional for shields).
+`weaponArtStaminaCost` becomes live: the Stamina paid on use, **in addition to** a full meter;
 shipped values stay 0 so the meter is the only gate until the owner tunes it.
 
 **Rules.**
 
 1. **One meter per equipped hand.** Two weapons → two skills, two meters. Unarmed hands have
    none. A two-handed weapon (`handsRequired: 2`) has one.
-2. **Use** is a new player intent `useUniqueSkill(hand, targetId?)`. Legal on the player's turn
-   when that hand's meter is full and Stamina covers `uniqueSkillStaminaCost`. It costs **no
+2. **Use** is a new player intent `useWeaponArt(hand, targetId?)`. Legal on the player's turn
+   when that hand's meter is full and Stamina covers `weaponArtStaminaCost`. It costs **no
    Actions/energy** and is limited to **once per turn** across both hands
-   (`balance.uniqueSkill.usesPerTurn`, default 1).
+   (`balance.weaponArt.usesPerTurn`, default 1).
 3. **Spend:** meter → 0, then effects enqueue on the action queue (§3.9) like a played card,
-   emitting new event `uniqueSkillUsed(hand, skillId)`. It is **not** `cardPlayed`: card-count
+   emitting new event `weaponArtUsed(hand, artId)`. It is **not** `cardPlayed`: card-count
    predicates (`everyNthCardThisCombat`, `cardsPlayedThisTurn`) do not see it.
 4. **Charge is combat-scoped.** It resets to `startCharge` each combat, caps at `charge`
    (overflow is lost) and is saved in the combat snapshot, never on the run.
 5. **Swapping** an armament mid-combat (§3.8 swap cost rules) sets the new hand's meter to the
-   new skill's `startCharge`; the old meter is lost. A swap never refunds charge.
-6. **Relics/perks** may interact through the same doors: the `gainSkillCharge` opcode and the
-   `uniqueSkillUsed` event. No skill-specific engine code (Law 2).
+   new art's `startCharge`; the old meter is lost. A swap never refunds charge.
+6. **Relics/perks** may interact through the same doors: the `gainArtCharge` opcode and the
+   `weaponArtUsed` event. No art-specific engine code (Law 2).
 
 **Shipped M-set (one per shipped weapon; numbers PROVISIONAL, owned by the balance pass):**
 
-| Weapon | Skill | Charge | Effect | Upgrade |
+| Weapon | Art | Charge | Effect | Upgrade |
 |---|---|---|---|---|
 | Straight Sword | Riposte | 3 | Gain 6 Block. Deal 8. | 9 / 11 |
 | Greatsword | Crushing Arc | 5 | Deal 14 to ALL enemies. 6 Poise damage to ALL. | 18 / 8 |
@@ -746,22 +767,24 @@ shipped values stay 0 so the meter is the only gate until the owner tunes it.
 | Buckler (shield) | Parry | 2 | Gain Block equal to the next enemy intent's attack total (max 20). | max 30 |
 | Kite / Tower Shield | Brace | 3 | Gain 12 Block. Retain Block next turn. | 16 |
 
-**UI (§7.2).** One skill button per armed hand beside the Actions orb: icon, a segmented meter
+**UI (§7.2).** One Weapon Art button per armed hand beside the Actions orb: icon, a segmented meter
 (one pip per point of `charge`), and the templated text on hover/long-press. Full meter → the
 button glows and pulses once with a sound; use → a short flourish on the weapon sprite. The
-Armoury shows each weapon's skill before equip, so the weapon choice reads as a skill choice.
+Armoury shows each weapon's Weapon Art before equip, so the weapon choice reads as an art choice.
 
-**Validation (§3.14).** Refuse by name: weapon with no/dangling `uniqueSkill`; `charge < 1`;
-`startCharge > charge`; `chargeOn` hook whose `do` contains anything but `gainSkillCharge`;
-negative `uniqueSkillStaminaCost`; an upgrade naming a field the base does not have.
+**Validation (§3.14).** Refuse by name: weapon with no/dangling `weaponArt`; `charge < 1`;
+`startCharge > charge`; `chargeOn` hook whose `do` contains anything but `gainArtCharge`;
+negative `weaponArtStaminaCost`; any old-word name from the rename table in content; an upgrade naming a field the base does not have.
 
 **Acceptance.**
-- Headless: a Straight Sword combat fills 3 charge from 3 Strike hits, `useUniqueSkill` resolves
+- Headless: a Straight Sword combat fills 3 charge from 3 Strike hits, `useWeaponArt` resolves
   Riposte, meter returns to 0; a second use the same turn is refused.
 - Two one-handed weapons show and charge two meters independently.
 - A mid-combat swap resets that hand's meter; a save/load mid-combat preserves both meters.
-- No card-count predicate advances when a skill is used.
-- `tools/runsim.mjs` reports skill uses per combat per weapon (target: 1–2 in a normal fight).
+- No card-count predicate advances when an art is used.
+- A save carrying `weaponArt:` Armament Card instances loads with them renamed, same piles,
+  same RNG counters; loading it twice is identical to loading it once.
+- `tools/runsim.mjs` reports Weapon Art uses per combat per weapon (target: 1–2 in a normal fight).
 
 ---
 
@@ -827,10 +850,10 @@ and `pointsPerLevel` stay exactly as above.
   | Tier | Perk | Effect |
   |---|---|---|
   | 1 | Second Wind | The first time each combat you fall below 50% HP, gain 10 Block. |
-  | 1 | Honed Edge | Unique Skills start each combat with 1 charge. |
+  | 1 | Honed Edge | Weapon Arts start each combat with 1 charge. |
   | 1 | Deep Pockets | +1 flask capacity (through the `relic` flask-growth row, §5.5.2). |
   | 2 | Momentum | Every 4th card you play each turn costs 0. |
-  | 2 | Twin Discipline | Your Unique Skills may be used twice per turn. |
+  | 2 | Twin Discipline | Your Weapon Arts may be used twice per turn. |
   | 2 | Tempered | +1 Action at the start of each turn if you have no Block. |
   | 3 | Ascendant | +1 card drawn each turn. |
   | 3 | Warlord | At combat start, gain 2 Strength. |
