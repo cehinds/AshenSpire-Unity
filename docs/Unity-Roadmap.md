@@ -27,19 +27,19 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
-| F04 | Enemy AI & telegraphs (intents, Poise/Stagger) | in-progress | — | `CombatSession.EnemyAi.cs` · `OriginalCombatLayout.Enemy` |
+| F04 | Enemy AI & telegraphs (intents, Poise/Stagger) | in-progress | — | `CombatSession.EnemyAi.cs` · `OriginalCombatLayout.Enemy` · open: [#49](https://github.com/cehinds/AshenSpire-Unity/pull/49) telegraph view-model |
 | F05 | Branching map & fog | in-progress | — | `OriginalMapBoard.cs` · `OriginalMapKnowledge.cs` · [map](Unity-Map-Foundation.md) |
 | F06 | Rewards, cinders, relics, equipment & flasks | in-progress | — | `OriginalRunPanel.cs` (Reward/Deck) · `WeaponLoadout.cs` · `FlaskChargePool.cs` |
-| F07 | Juice pass (animation, hit feedback, transitions) | in-progress | — | `CombatFeedback.cs` · `NativeFeedbackProjection.cs` · `OriginalPlayerFigure.cs` |
-| F08 | Audio & music | in-progress | — | `Runtime/Application/GameAudio.cs` (procedural cues only; no music) |
+| F07 | Juice pass (animation, hit feedback, transitions) | in-progress | — | `CombatFeedback.cs` · `NativeFeedbackProjection.cs` · `OriginalPlayerFigure.cs` · open: [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) feel profile |
+| F08 | Audio & music | in-progress | — | `Runtime/Application/GameAudio.cs` (procedural cues only; no music) · open: [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) music director |
 | F09 | Merchant, shrine & events | in-progress | — | `OriginalRunServices.cs` · `OriginalRunPanel.cs` (Shop/Shrine/Event) |
-| F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` |
-| F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` |
+| F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` · open: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) save slots |
+| F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` · open: [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) run summary |
 | F12 | Acts 1–3 & bosses (plus Custom Climb/Endless) | in-progress | — | `OriginalRunRules.cs` · `OriginalCustomRunRules.cs` · full-climb 657 checks |
 | F13 | Accessibility & phone layout | in-progress | — | `ViewportLayout.cs` · `DisplayViewport.cs` · reduced-motion toggle |
 | F14 | Co-op (LAN companion) | in-progress | — | `OriginalCoopRun*.cs` · `OriginalCoopPanel.cs` · `tools/NativeLan/` |
-| F15 | Customization settings & controls | todo | — | HTML `src/ui/screens/settings.js`, `controls.js`; Unity has 3 toggles only |
-| F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` |
+| F15 | Customization settings & controls | in-progress | — | HTML `src/ui/screens/settings.js`, `controls.js`; Unity has 3 toggles only · open: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) settings model |
+| F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` · open: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) mod packs |
 | F17 | Performance & platform polish | todo | — | no budgets measured; no physical device/iOS evidence |
 
 ### Parity diff summary (HTML reference → Unity build 14)
