@@ -3,15 +3,16 @@
 // Observer JSON supplies saved customization and rendered timeline diagnostics.
 const fs=require('node:fs'),path=require('node:path');
 const{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const{NativeUiDriver}=require('./native-ui-driver.cjs');
+const{NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const output=path.resolve(process.argv[3]||'TestResults/NativeAppearance');fs.mkdirSync(output,{recursive:true});
  const styles=['animated','rendered','classic','glyph'],tints=['gold','ember','frost','rot','grace'],sigils=['⚔','🛡','🔥','🌙','☀','🐺'];
- const summaries=[];
+ const summaries=[],selection=selectedCases(styles.length);
  for(let index=0;index<styles.length;index++){
   if(process.env.NATIVE_APPEARANCE_STYLE&&styles[index]!==process.env.NATIVE_APPEARANCE_STYLE)continue;
+  if(!selection.includes(index))continue;
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,styles[index]));const feedback=[],pendingShots=[];
   page.on('console',message=>{const value=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=value.indexOf(prefix);if(at<0)return;try{const row=JSON.parse(value.slice(at+prefix.length));feedback.push(row);if(row.Status==='impact'&&pendingShots.length===0)pendingShots.push(page.screenshot({path:path.join(ui.output,'03-combat-impact.png')}));}catch(error){ui.errors.push(error.message);}});
@@ -40,5 +41,5 @@ let browser,ui;
   ui.check(JSON.stringify(ui.state)===saved,'reload preserves exact game state and appearance');ui.check(identity(),'reloaded customization is unchanged');await ui.shot('04-reloaded-'+styles[index]);
   ui.check(ui.errors.length===0,'no browser or Unity errors');fs.writeFileSync(path.join(ui.output,'feedback.json'),JSON.stringify(feedback,null,2));ui.save(true);summaries.push({style:styles[index],checks:ui.checks.length});await context.close();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===styles.length?'all-styles':'case '+selection[0]+'/'+styles.length,styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

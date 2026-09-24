@@ -5,7 +5,7 @@
 // Screenshots/receipts are source-matched; viewport emulation is not device proof.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 class MapObserver {
  constructor(page,ui){
@@ -43,7 +43,8 @@ let browser,ui,map;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const desktopOnly=process.argv.slice(4).includes('--desktop-only');
  const cases=[{width:320,height:640},{width:390,height:844},{width:412,height:915},{width:1440,height:900},{width:390,height:844,sealstone:true}];
- for(const config of cases.filter(row=>!desktopOnly||row.width===1440)){
+ const selection=selectedCases(cases.length);
+ for(const config of cases.filter((row,index)=>selection.includes(index)&&(!desktopOnly||row.width===1440))){
   const viewport={width:config.width,height:config.height},sealstone=!!config.sealstone;
   const phone=viewport.width<500,context=await browser.newContext({viewport,deviceScaleFactor:phone?2:1,hasTouch:phone});
   let activeViewport=viewport;const replayed=[];
@@ -214,5 +215,5 @@ let browser,ui,map;
   fs.writeFileSync(path.join(ui.output,'first-fight-replay.json'),JSON.stringify({fixture:'UnityTests/Parity/native-browser-replay.json',fixtureSha256:crypto.createHash('sha256').update(traceBytes).digest('hex'),commands:replayed},null,2));
   await finish();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':'full-five-cases',viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:(desktopOnly?'desktop-only':'full-five-cases')+(selection.length===cases.length?'':' case '+selection[0]+'/'+cases.length),viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);if(map)fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify({receipts:map.receipts,last:map.value},null,2));}if(browser)await browser.close();process.exitCode=1;});

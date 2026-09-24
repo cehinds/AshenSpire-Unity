@@ -4,7 +4,7 @@
 // No saves, Unity messages, gameplay state or network commands are injected.
 const fs=require('node:fs'),path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 let browser,ui,observations=[];
 (async()=>{
@@ -14,7 +14,8 @@ let browser,ui,observations=[];
  const opening=replay.slice(0,5); // Enter, three legal payments, then the first enemy turn.
  const summaries=[];let source;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
- for(const viewport of[{width:320,height:640},{width:390,height:844},{width:1440,height:900}]){
+ const viewports=[{width:320,height:640},{width:390,height:844},{width:1440,height:900}],selection=selectedCases(viewports.length);
+ for(const viewport of selection.map(index=>viewports[index])){
   const context=await browser.newContext({viewport,deviceScaleFactor:viewport.width<500?2:1});const page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));observations=[];
   const labels=()=>ui.controls.Labels||[];
@@ -76,5 +77,5 @@ let browser,ui,observations=[];
   const latest=await page.request.get(new URL('build-source.json',url).href);ui.check(latest.ok()&&(await latest.body()).equals(initial),'served build stayed source-matched');
   ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);summaries.push({viewport,checks:ui.checks.length,physicalDevice:false,screenshots:4});console.log('Native card-cost checks passed: '+viewport.width+'x'+viewport.height+' ('+ui.checks.length+')');await context.close();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,viewports:summaries,checks:summaries.reduce((sum,row)=>sum+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false,buttonLabelEvidence:'Disabled Play label is captured in screenshots; the read-only control report exposes enabled state and Label text, not Button.text.'},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===viewports.length?'all-viewports':'case '+selection[0]+'/'+viewports.length,viewports:summaries,checks:summaries.reduce((sum,row)=>sum+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false,buttonLabelEvidence:'Disabled Play label is captured in screenshots; the read-only control report exposes enabled state and Label text, not Button.text.'},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);fs.writeFileSync(path.join(ui.output,'readability.json'),JSON.stringify(observations,null,2));}if(browser)await browser.close();process.exitCode=1;});
