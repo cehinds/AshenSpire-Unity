@@ -52,6 +52,10 @@ let browser,ui,map;
   const getBounds=async rect=>{const canvas=await page.locator('#unity-canvas').boundingBox();return {x:canvas.x+rect.x*canvas.width/ui.controls.PanelWidth,y:canvas.y+rect.y*canvas.height/ui.controls.PanelHeight,width:rect.width*canvas.width/ui.controls.PanelWidth,height:rect.height*canvas.height/ui.controls.PanelHeight};};
   const control=async id=>{
    await ui.until(()=>ui.has(id),'map control '+id);
+   // A route's control bounds can trail the map view after a camera change;
+   // tap only once the controls report agrees with the rendered node.
+   if(id.startsWith('native-route-')){const node=()=>map.value?.nodes.find(n=>'native-route-'+n.id===id),row=()=>ui.controls.Controls.find(r=>r.Id===id);
+    await ui.until(()=>{const n=node(),c=row();return !!n&&!!c&&['x','y','width','height'].every(k=>Math.abs(n[k]-c[k==='x'?'X':k==='y'?'Y':k==='width'?'Width':'Height'])<.5);},'route control matches rendered node '+id,10000);}
    const c=ui.controls.Controls.find(row=>row.Id===id),rect=await getBounds({x:c.X,y:c.Y,width:c.Width,height:c.Height});
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1),'control is on screen: '+id);
    if(id.startsWith('native-route-'))ui.check(inside(rect,await getBounds(map.value.viewport),1),'route is inside clipped map viewport: '+id);
