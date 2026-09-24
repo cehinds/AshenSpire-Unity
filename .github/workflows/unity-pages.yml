@@ -147,6 +147,7 @@ jobs:
               node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
               node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
               node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
+              node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
           - shard: appearance
             run: |
               node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
@@ -157,7 +158,6 @@ jobs:
               node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
               node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
               node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
-              node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
           - shard: coop
             companion: true
             run: |
