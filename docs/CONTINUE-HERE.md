@@ -172,6 +172,8 @@ expected. After the owner merges one, update the next branch:
 
 Also check: **all code under `Runtime/Domain` must compile as C# 9 on .NET Standard
 2.1** (Unity 6's rules): `dotnet build UnityTests/LangCheck`.
+Application/Presentation code (UI wiring) can be compile-checked without the
+editor: `node tools/unity-runtime-check.mjs`. It does not replace a play test.
 
 ## Known blockers
 

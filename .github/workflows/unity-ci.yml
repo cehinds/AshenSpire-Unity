@@ -76,6 +76,11 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Build the Domain and Original sources under Unity's language rules
         run: dotnet build UnityTests/LangCheck -warnaserror:CS8773,CS8400,CS9058
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile all Runtime assemblies against Unity reference assemblies
+        run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
 
   domain-tests:
     name: Console tests (${{ matrix.name }})

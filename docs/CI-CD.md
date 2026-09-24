@@ -53,7 +53,13 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
   rules the Unity 6 editor compiles by. The console test projects use net8.0/C# 12,
   so a newer feature (file-scoped namespaces, collection expressions, `required`)
   would otherwise pass here and only break in the editor. Run locally:
-  `dotnet build UnityTests/LangCheck`.
+  `dotnet build UnityTests/LangCheck`. The same job then runs
+  `node tools/unity-runtime-check.mjs`, which compiles **all** Runtime code
+  (Application and Presentation included) against Unity's reference assemblies
+  (`UnityEngine.Modules` 2021.3 from NuGet plus `UnityTests/RuntimeCheck/Unity6Shims.cs`
+  for newer UI Toolkit types). Any compiler error fails it except the listed
+  Unity 6 gaps (`MeshGenerationContext.painter2D`). It proves the code compiles,
+  not that it behaves in the editor.
 - **unity-license** + **unity-build** — only if `unity` changed. See
   [GameCI](#gameci-unity-builds-in-ci).
 - A new commit on the same PR cancels the older run of this workflow.
