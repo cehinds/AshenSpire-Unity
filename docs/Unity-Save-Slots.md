@@ -1,6 +1,6 @@
 # Unity save slots and profile archive (F10)
 
-**Integration status: domain ready, UI wiring pending (needs Unity editor).**
+**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
 
 ## What this is, in plain words
 
@@ -8,9 +8,25 @@ The HTML game lets you keep three runs going at once, one per save slot, and it
 keeps a durable profile with your last 20 run results. Until now the Unity build
 kept only one run per channel (Web, Dev, Test, desktop).
 
-This change adds the game rules for three slots and the result archive to the
-Unity port's engine-free code. Nothing on screen changes yet: the title-screen
-slot picker still has to be built and wired up in the Unity editor.
+The Unity build now has three run slots and the result archive. The title
+screen has a **Load** entry that opens the slot picker; **Continue** and **New**
+work as before when you only have one run. It compiles against Unity's reference
+assemblies but has not yet been played in the Unity editor or a built player.
+
+On screen:
+
+- **Continue** resumes the slot you saved most recently. With one existing run
+  (moved into domain slot 0, shown as "Slot 1", on first start) that is the same run as before.
+- **New** starts straight away in the first empty slot. Only when all three
+  slots are full does it open the slot picker so you can choose what to
+  overwrite.
+- **Load** lists the three slots with class, act and floor, seed, last saved
+  time (UTC) and play time. Each slot offers Continue, New (Overwrite when it
+  holds a run), Copy to the first empty slot, and Delete. Overwrite and Delete
+  ask for confirmation first.
+- **Collection** (the existing profile view) lists the last 20 finished climbs,
+  newest first.
+- If a save does not verify, the next title or slot screen says so.
 
 What the new code already does:
 
@@ -111,11 +127,27 @@ deterministic, and it makes migration byte-for-byte.
   and appends the run ID and the result together. `ResultArchive()` pairs them,
   so no second copy of the history is stored.
 
-### Pending (needs the Unity editor)
+### Wiring (Application and Presentation)
 
-- Swap `RunController`'s `_originalSaves` / `_profileSaves` for one
-  `OriginalSaveSlots`, track the active slot and playtime, and call
-  `MigrateLegacy()` on boot.
-- Build a title-screen slot picker (Load/New/Copy/Delete) and a result-archive
-  view.
-- Show a failed save (`Save` returning `false`) to the player.
+| File | Role |
+| --- | --- |
+| `Runtime/Application/RunController.Slots.cs` | Creates `OriginalSaveSlots` over PlayerPrefs, runs `MigrateLegacy()` once in `OnEnable`, tracks the active slot and play time, saves checkpoints to the active slot, records finished runs with `RecordResult`, and handles load/new/copy/delete |
+| `Runtime/Presentation/OriginalSlotPanel.cs` | The slot picker (rows, confirmations); owns no save state |
+| `Runtime/Presentation/CampaignView.Slots.cs` | `SlotsRequested` event and `Slots(...)` screen |
+| `RunController.cs`, `CampaignView.cs`, `OriginalTitlePanel.cs` | Hook lines only: title `Load` entry (`native-slots`), New/Continue routed through the slots, profile view reads `ResultArchive()` |
+
+Control ids for playtests: `native-continue` and `native-new` are unchanged;
+the picker adds `native-slots`, `native-slot-<n>-continue|new|copy|delete`
+(`<n>` is 0-based), `native-slot-confirm`, `native-slot-cancel` and
+`native-slots-back`.
+
+The profile's map-viewer and co-op settings still save through the existing
+profile journal on the same key.
+
+### Still to check (needs the Unity editor)
+
+- Play the title → Load → Continue/New/Copy/Delete flow in the editor and a Web
+  player; confirm an existing single save appears in slot 1 and Continue
+  resumes it.
+- Rerun the browser playtests (`tools/native-*-playtest.cjs`,
+  `tools/interruption-playtest.cjs`) against a new build.
