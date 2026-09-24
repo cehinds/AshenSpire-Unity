@@ -26,6 +26,8 @@ var contentRoot=Path.Combine(root,"GameContent/Unity/Original");
 var mechanics=JObject.Parse(File.ReadAllText(Path.Combine(contentRoot,"mechanics.json")));
 var supplement=JObject.Parse(File.ReadAllText(Path.Combine(contentRoot,"event-choices.json")));supplement["mapShapeLimits"]=limits.DeepClone();
 var progression=new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(contentRoot,"progression.json"))));
+// This harness boots on the pinned oracle content (combat-reference.json), which predates the
+// lean mode, so the player stays on its Standard preset (legacy rules, like CoopPolicyChecks).
 JObject Player(string deck="standard"){var creator=new CreationModel(catalog,"reaver","standard",progression);var p=new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creator);new OriginalPlayerProjection(catalog,mechanics).Reconcile(p);p["custom"]=new JObject{["deckMode"]=deck,["mapShape"]=new JObject{["floors"]=7,["columns"]=2}};return p;}
 var callbacks=new OriginalRunContent(catalog,reconcile:new OriginalPlayerProjection(catalog,mechanics).Reconcile);
 OriginalRunSession Start(string deck="standard")=>OriginalRunSession.Start(catalog,supplement,Player(deck),13,callbacks);

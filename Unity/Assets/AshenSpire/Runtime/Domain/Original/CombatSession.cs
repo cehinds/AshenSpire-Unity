@@ -24,7 +24,8 @@ namespace AshenSpire.Domain.Original
         private readonly CombatContext _context;
         private readonly StatusSystem _statuses;
         private readonly WeightSystem _weightSystem;
-        private int _turn, _idCounter, _emitDepth, _catchBreathUses;
+        private int _turn, _idCounter, _emitDepth, _catchBreathUses, _pendingDiscardDraw;
+        private JObject _handRules;
         private string _phase = "setup", _result;
         public string Phase => _phase;
         public string Result => _result;
@@ -32,13 +33,18 @@ namespace AshenSpire.Domain.Original
         public JObject Player => (JObject)_player.DeepClone();
         public JArray Enemies => new JArray(_enemies.Select(e => e.DeepClone()));
         public JArray Hand => new JArray(_piles["hand"].Select(c => c.DeepClone()));
+        /// <summary>This fight's hand-rules snapshot, or null for a legacy/co-op fight.</summary>
+        public JObject HandRulesSnapshot => (JObject)_handRules?.DeepClone();
+        public int HandCapacity => HandMaximum;
         public JObject ResolvedCard(JObject instance) => (JObject)_resolveCard((JObject)instance.DeepClone()).DeepClone();
         public JObject CardCost(JObject instance) => CardMechanics.CostProfile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass());
         public JObject WeightClass() => (JObject)_weightSystem.Compute((int?)_attributes["constitution"] ?? 10, (int?)_attributes["strength"] ?? 10, _weights)["weightClass"];
-        public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null)
+        public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null, JObject handRules = null)
             : this(content, mechanics, random, MakePlayer(player), (JObject)(player["attributes"]?.DeepClone() ?? new JObject()), (JObject)(player["weights"]?.DeepClone() ?? new JObject()), resolveCard)
         {
             var sourceDeck = deck.Select(c => (JObject)c.DeepClone()).ToList();
+            // A solo fight snapshots its hand rules here (web createCombat); null keeps the legacy draw.
+            if (handRules != null) _handRules = HandRules.Validate(handRules);
             if (sourceDeck.Any(c => string.IsNullOrWhiteSpace((string)c["instanceId"])) || sourceDeck.Select(c => (string)c["instanceId"]).Distinct(StringComparer.Ordinal).Count() != sourceDeck.Count) throw new ArgumentException("Deck instance IDs must be unique.");
             foreach (var card in sourceDeck) ValidateEffects(ResolvedCard(card)["effects"]);
             foreach (var id in enemyIds)
@@ -102,15 +108,18 @@ namespace AshenSpire.Domain.Original
             else _piles["removed"].Add(instance);
             return Since(start);
         }
-        public JArray EndTurn()
+        public JArray EndTurn() => EndTurn(null);
+        /// <summary>End the turn, discarding the chosen retained cards first (web doEndTurn). The choice is validated before anything moves.</summary>
+        public JArray EndTurn(IEnumerable<string> discardIds)
         {
-            RequirePlayerTurn(); var start = _events.Count;
+            RequirePlayerTurn(); var chosen = ValidateDiscardChoice(discardIds); var start = _events.Count;
             Emit("playerTurnEnd", new JObject { ["turn"] = _turn }); OwnerHooks(_player,"ownerTurnEnd"); Drain(); if (_result != null) return Since(start);
             _statuses.DecayAtTurnEnd(_player);
             var wallet = Wallet(); var before = (int)_player["stamina"]; wallet.EndTurn(); CopyWallet(wallet);
             if ((int)_player["stamina"] != before) Emit("staminaRecovered", new JObject { ["amount"] = (int)_player["stamina"] - before, ["reason"] = "idle" });
+            ApplyDiscardChoice(chosen);
             var exhaust = new List<JObject>(); var discard = new List<JObject>();
-            foreach (var card in _piles["hand"].ToArray()) { var fate = CardMechanics.EndTurnFate(CardMechanics.FromDefinition(ResolvedCard(card))); if (fate == "keep") continue; _piles["hand"].Remove(card); (fate == "exhaust" ? exhaust : discard).Add(card); }
+            foreach (var card in _piles["hand"].ToArray()) { var fate = EndTurnCardFate(card); if (fate == "keep") continue; _piles["hand"].Remove(card); (fate == "exhaust" ? exhaust : discard).Add(card); }
             foreach (var card in exhaust) { _piles["exhaust"].Add(card); CardEvent("cardExhausted",card,"ethereal"); }
             foreach (var card in discard) { _piles["discard"].Add(card); CardEvent("cardDiscarded",card,"turnEnd"); }
             _player["energy"] = 0; Drain(); if (_result != null) return Since(start);
@@ -129,13 +138,16 @@ namespace AshenSpire.Domain.Original
         {
             _turn++; _phase = "player"; _catchBreathUses = 0; _player["counters"]["cardsPlayedThisTurn"] = 0;
             if (!_statuses.Flag(_player,"retainBlock")) _player["block"] = 0; else { var cap = BlockCap(_player); if (cap.HasValue) _player["block"] = Math.Min((int)_player["block"],cap.Value); }
-            var wallet = Wallet(); wallet.BeginTurn((int)_player["energyMax"]); CopyWallet(wallet); Draw((int)_player["drawPerTurn"]);
+            var wallet = Wallet(); wallet.BeginTurn((int)_player["energyMax"]); CopyWallet(wallet); Draw(TurnDrawCount());
             Emit("playerTurnStart",new JObject { ["turn"] = _turn }); OwnerHooks(_player,"ownerTurnStart"); Drain();
         }
         public JObject Snapshot()
         {
             if (_context.PendingCount != 0) throw new InvalidOperationException("Cannot save a pending combat command.");
-            return new JObject { ["schemaVersion"] = 1, ["seed"] = _random.Seed, ["rng"] = JObject.FromObject(_random.Snapshot()), ["turn"] = _turn, ["phase"] = _phase, ["result"] = _result, ["idCounter"] = _idCounter, ["catchBreathUses"] = _catchBreathUses, ["player"] = _player.DeepClone(), ["attributes"] = _attributes.DeepClone(), ["weights"] = _weights.DeepClone(), ["enemies"] = Enemies, ["piles"] = new JObject(_piles.Select(p => new JProperty(p.Key,new JArray(p.Value.Select(c => c.DeepClone()))))), ["triggerState"] = JObject.FromObject(_triggerState), ["events"] = new JArray(_events.Select(e => e.DeepClone())) };
+            var saved = new JObject { ["schemaVersion"] = 1, ["seed"] = _random.Seed, ["rng"] = JObject.FromObject(_random.Snapshot()), ["turn"] = _turn, ["phase"] = _phase, ["result"] = _result, ["idCounter"] = _idCounter, ["catchBreathUses"] = _catchBreathUses, ["player"] = _player.DeepClone(), ["attributes"] = _attributes.DeepClone(), ["weights"] = _weights.DeepClone(), ["enemies"] = Enemies, ["piles"] = new JObject(_piles.Select(p => new JProperty(p.Key,new JArray(p.Value.Select(c => c.DeepClone()))))), ["triggerState"] = JObject.FromObject(_triggerState), ["events"] = new JArray(_events.Select(e => e.DeepClone())) };
+            // Legacy snapshots omit both keys, and a restored legacy fight keeps the legacy draw.
+            if (_handRules != null) { saved["handRules"] = _handRules.DeepClone(); saved["pendingDiscardDraw"] = _pendingDiscardDraw; }
+            return saved;
         }
         public static CombatSession Restore(OriginalContentCatalog content, JObject mechanics, JObject snapshot, Func<JObject,JObject> resolveCard)
         {
@@ -148,6 +160,13 @@ namespace AshenSpire.Domain.Original
             foreach (var pile in session._piles.Keys) foreach (var card in (JArray)snapshot["piles"][pile]) { var copy = (JObject)card.DeepClone(); var id = (string)copy["instanceId"]; if (string.IsNullOrWhiteSpace(id) || !ids.Add(id)) throw new ArgumentException("Duplicate saved card instance."); session.ResolvedCard(copy); session._piles[pile].Add(copy); }
             foreach (var entry in ((JObject)snapshot["triggerState"]).Properties()) session._triggerState.Add(entry.Name,(JObject)entry.Value.DeepClone());
             foreach (var entry in (JArray)snapshot["events"]) session._events.Add((JObject)entry.DeepClone());
+            if (snapshot["handRules"] != null)
+            {
+                session._handRules = HandRules.Validate(snapshot["handRules"]);
+                var pending = snapshot["pendingDiscardDraw"];
+                if (pending != null && (pending.Type != JTokenType.Integer || (long)pending < 0 || (long)pending > 99)) throw new ArgumentException("pendingDiscardDraw must be an integer from 0 to 99");
+                session._pendingDiscardDraw = pending == null ? 0 : (int)pending;
+            }
             session.Wallet(); return session;
         }
         private static JObject MakePlayer(JObject input)

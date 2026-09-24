@@ -1,6 +1,7 @@
 // CreationModel.cs — original attribute allocation and derived-resource preview.
 // Edit presets/modes/derivedStatRules in content. UI requests a delta; this model
 // enforces bounds and allocation budget. Previewing never mutates a saved run.
+// Rules is a copy of the resolved derived-stat rows (for benefit previews).
 using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -40,6 +41,7 @@ namespace AshenSpire.Domain.Original
         }
         private JObject Mode => (JObject)_content["creationModes"].First(x => (string)x["id"] == ModeId);
         public JObject Attributes() => (JObject)_attributes.DeepClone();
+        public JObject Rules => (JObject)_rules.DeepClone();
         public int TotalPoints => (int)Mode["baseline"] * _content["attributes"].Count() + (int)Mode["bonusPool"];
         public int Minimum => (string)Mode["belowBaseline"] == "forbid" ? Math.Max((int)Mode["minimum"], (int)Mode["baseline"]) : (int)Mode["minimum"];
         public int Maximum => (int)Mode["maximum"];

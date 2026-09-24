@@ -14,6 +14,14 @@ Reject(new JObject{["classId"]="reaver",["modeId"]="standard",["hp"]=999},"clien
 Reject(new JObject{["classId"]="reaver",["modeId"]="standard",["profileMeta"]=new JObject()},"client unlocks refused");
 Reject(new JObject{["classId"]="reaver",["modeId"]="pointbuy",["attributes"]=new JObject{["strength"]=15,["dexterity"]=15,["constitution"]=15,["wisdom"]=15,["intelligence"]=15}},"overbudget rejected");
 Reject(new JObject{["classId"]="reaver",["modeId"]="pointbuy",["attributes"]=new JObject{["strength"]=10.5}},"partial/fractional attrs refused");
+// Lean (the default mode): all 1s plus 3 points, maximum 4, total 8.
+JObject Lean(int str,int dex,int con,int wis,int intel)=>new JObject{["strength"]=str,["dexterity"]=dex,["constitution"]=con,["wisdom"]=wis,["intelligence"]=intel};
+Reject(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(4,4,4,4,4)},"lean all 4s refused");
+Reject(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(5,1,1,1,1)},"lean attribute above maximum refused");
+var leanSetup=factory.ValidatePlayerSetup(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(3,1,2,1,1)});
+Check((string?)leanSetup["modeId"]=="lean"&&JToken.DeepEquals(leanSetup["attributes"],Lean(3,1,2,1,1)),"lean {3,1,2,1,1} accepted");
+string? unspent=null;try{factory.ValidatePlayerSetup(new JObject{["classId"]="reaver"});}catch(ArgumentException error){unspent=error.Message;}
+Check(unspent!=null&&unspent.Contains("Spend all points"),"default lean setup without attributes refused: "+unspent);
 await using var host=await Peer.Open(endpoint);await using var guest=await Peer.Open(endpoint);
 async Task<JObject> Hello(Peer peer,string cls,bool hosting){await peer.Send("hello",new JObject{["joinToken"]=options.JoinToken,["hostToken"]=hosting?options.HostToken:null,["name"]=cls,["setup"]=new JObject{["classId"]=cls,["modeId"]="standard"}},"hello");return(JObject)(await peer.Next(m=>(string?)m["type"]=="welcome"))["payload"]!;}
 var hw=await Hello(host,"reaver",true);var gw=await Hello(guest,"starseer",false);var hid=(string)hw["seatId"]!;var gid=(string)gw["seatId"]!;

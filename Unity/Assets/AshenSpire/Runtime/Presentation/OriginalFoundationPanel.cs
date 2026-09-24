@@ -104,7 +104,7 @@ namespace AshenSpire.Presentation
             Label("Unspent points: " + _creation.Remaining, "creation-unspent");
             Label(_creation.TotalPoints + " total points · " + _creation.Minimum + " minimum per attribute", "caption");
             var attributes = new VisualElement(); attributes.AddToClassList("creation-attributes"); _target.Add(attributes);
-            var benefits = _progression.Benefits(_creation.Attributes());
+            var benefits = _progression.Benefits(_creation.Attributes(), _creation.Rules);
             foreach (var attribute in _creation.Attributes().Properties())
             {
                 var id = attribute.Name;

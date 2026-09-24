@@ -10,7 +10,10 @@ var catalog=new OriginalContentCatalog(data.ToString());
 var supplement=JObject.Parse(File.ReadAllText(root+"event-choices.json"));
 var mechanics=JObject.Parse(File.ReadAllText(root+"mechanics.json"));
 var progression=new AttributeProgression(JObject.Parse(File.ReadAllText(root+"progression.json")));
-JObject Player(string cls){var creation=new CreationModel(catalog,cls,"pointbuy",progression);while(creation.Remaining>0)foreach(var stat in creation.Attributes().Properties().Select(p=>p.Name))if(creation.Remaining>0)creation.Adjust(stat,1);return new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creation);}
+// Lean creation (all 1s + 3 points) spent by the web bot/driver class rows (web src/model/attributes.js:171-174),
+// order str,dex,con,wis,int; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
+CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"lean",progression);var order=new[]{"strength","dexterity","constitution","wisdom","intelligence"};var targets=new Dictionary<string,int[]>{["reaver"]=new[]{3,1,2,1,1},["starseer"]=new[]{1,1,1,2,3},["herald"]=new[]{1,1,2,3,1},["rogue"]=new[]{1,3,2,1,1}}[cls];for(var i=0;i<order.Length;i++)for(var n=1;n<targets[i];n++)if(!creation.Adjust(order[i],1))throw new Exception("Lean allocation refused "+cls+" "+order[i]);if(!creation.CanBegin)throw new Exception("Lean allocation left points for "+cls);return creation;}
+JObject Player(string cls)=>new OriginalCharacterBuilder(catalog,progression,mechanics).Build(Lean(cls));
 if(args.Contains("--policy")){CoopPolicyChecks.Run(catalog,supplement,mechanics,progression);return;}
 Console.WriteLine($"Co-op flask tiers: {CoopFlaskChecks.Run(catalog,mechanics)} checks passed");
 var player=Player("reaver");
