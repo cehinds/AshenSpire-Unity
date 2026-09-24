@@ -52,4 +52,7 @@ music/
   and point the setting at that.
 - **Licensing:** only add tracks you have the right to use. The built-in score is
   fully generated in-code, so the game ships with no third-party audio.
+- **Unity port:** the Unity music catalog is generated from this manifest and
+  requires a credit per file (an optional `"_credits"` object here, which the
+  HTML game ignores). See [`docs/Unity-Music.md`](../docs/Unity-Music.md).
 - **Cross-origin:** remote URLs must send permissive CORS headers to play.
