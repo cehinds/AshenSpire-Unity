@@ -21,7 +21,13 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
  var result=new JObject{["classId"]=classId,["seed"]=seed};var counts=new JObject();var trace=new JArray();var phaseCounts=new JObject();var seenServices=new HashSet<string>();var rejectionPhases=new HashSet<OriginalRunPhase>();int commands=0,resumeChecks=0;OriginalGameSession game=null;string lastCommand="create";
  try
  {
-  var creator=new CreationModel(catalog,classId,"standard",progression);var kit=(string)catalog.Table("equipment.startingKits").First(x=>(string)x["classId"]==classId&&(bool?)x["baseline"]==true)["id"];
+  // Assigned ("pointbuy") is the only creation mode offered. Spend the pool exactly as
+  // NativeUiDriver.assignPoints() does in tools/native-ui-driver.cjs: one point at a time,
+  // round-robin over the attributes whose "up" is still enabled, until none is. The browser
+  // playtests replay this trace, so both sides must build the same character (all 12s).
+  var creator=new CreationModel(catalog,classId,"pointbuy",progression);var attributeIds=creator.Attributes().Properties().Select(x=>x.Name).ToArray();
+  for(var n=0;n<100;n++){var ups=attributeIds.Where(a=>creator.CanAdjust(a,1)).ToArray();if(ups.Length==0)break;creator.Adjust(ups[n%ups.Length],1);}
+  if(!creator.CanBegin)throw new Exception("Creation points never ran out");var kit=(string)catalog.Table("equipment.startingKits").First(x=>(string)x["classId"]==classId&&(bool?)x["baseline"]==true)["id"];
   var player=new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creator,kit);result["initialAttributes"]=player["attributes"].DeepClone();result["initialResources"]=new JObject{["hp"]=player["hp"],["mana"]=player["mana"],["stamina"]=player["stamina"],["actions"]=player["energy"],["draw"]=player["draw"]};
   game=OriginalGameSession.Start(catalog,supplement,mechanics,player,seed);
   void Act(string name,Action<OriginalGameSession> command)

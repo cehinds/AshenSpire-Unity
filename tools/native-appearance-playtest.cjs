@@ -26,7 +26,7 @@ let browser,ui;
   const expected={name:'Style '+styles[index],spriteStyle:styles[index],tint:tints[index+1],glyph:sigils[index+1]};
   const identity=()=>Object.entries(expected).every(([key,value])=>ui.state.run.customization[key]===value);
   ui.check(identity(),'native run saves actual chosen style, tint, sigil and name: expected '+JSON.stringify(expected)+'; observed '+JSON.stringify(ui.state.run.customization));
-  ui.check(ui.state.phase==='Map','standard Reaver starts on map');
+  ui.check(ui.state.phase==='Map','Assigned Reaver starts on map');
   const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];await ui.command('native-route-'+route.id);ui.check(ui.state.phase==='Combat','seed 1 opening route enters real combat');
   await ui.shot('02-combat-idle-'+styles[index]);
   const row=ui.state.cards.find(row=>row.card.type==='attack'&&row.cost.action<=ui.state.player.energy&&row.cost.mana<=ui.state.player.mana&&row.cost.stamina<=ui.state.player.stamina);ui.check(!!row,'opening hand has a legal attack');

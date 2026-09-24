@@ -2,7 +2,6 @@
 // Edit presets/modes/derivedStatRules in content. UI requests a delta; this model
 // enforces bounds and allocation budget. Previewing never mutates a saved run.
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -27,9 +26,10 @@ namespace AshenSpire.Domain.Original
             var preset = _content["attributeRules"]["presets"]?[modeId]?[classId] as JObject ?? throw new ArgumentException("Missing creation preset.");
             ClassId = classId; ModeId = modeId; _attributes = (JObject)preset.DeepClone(); Changed?.Invoke();
         }
-        // Modes offered at creation: characterCreation.visibleModeIds, in order, with the
-        // default mode always present (mirrors web creationModeViews). Hidden modes stay
-        // in creationModes so existing saves and Select() still resolve them.
+        // Modes offered at creation: characterCreation.visibleModeIds, in order, each resolved
+        // against creationModes as web creationModeViews does. Unlike the web, the default mode
+        // is added if the list omits it, and a missing list offers every mode. Hidden modes
+        // stay in creationModes so existing saves and Select() still resolve them.
         public static JArray VisibleModes(OriginalContentCatalog catalog)
         {
             var data = catalog.Data(); var modes = (JArray)data["creationModes"];

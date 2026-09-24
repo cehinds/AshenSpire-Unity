@@ -41,7 +41,7 @@ let browser,ui,observations=[];
   ui.check(!!weapon,'actual equipped blade supplies a Slashing Strike');
   ui.check(weapon.cost.action===1&&weapon.cost.mana===0&&weapon.cost.stamina===0,'weapon cost comes from authoritative one-action zero-extra-resource profile');
   await select(weapon.instance.instanceId);
-  ui.check(labels().some(label=>/^Deal 14 damage\./.test(label)&&label.includes('Includes +8 total damage from Strength.')),'weapon description displays14 total with included8 Strength contribution');
+  ui.check(labels().some(label=>/^Deal 13 damage\./.test(label)&&label.includes('Includes +7 total damage from Strength.')),'weapon description displays 13 total with included 7 Strength contribution (Assigned Reaver, STR 12)');
   cleanCosts();ui.check(ui.has('native-play'),'affordable weapon card enables Play');capture('weapon-total');await ui.shot('01-weapon-total-and-cost');
   // The first three payments are the committed real-play oracle; they exhaust
   // actions while leaving a live enemy and unplayed cards for refusal inspection.

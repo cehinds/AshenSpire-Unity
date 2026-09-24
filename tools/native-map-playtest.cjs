@@ -89,9 +89,17 @@ let browser,ui,map;
    // Actual domain-command oracle: work/MapRoutes/.../verified-395.json,
    // SHA-256 65f5a42539f89028c393cdba038fb60002de5b3d2c7215489a948761a9bfef7e.
    // BA is base-35 seed 395. The receipt is evidence, not injected gameplay.
+   // That receipt was recorded with Standard Reaver stats (STR 13). An Assigned Reaver
+   // (all 12s) strikes for 13, so its three-strike opening no longer clears both enemies.
+   // The fight below was re-derived by running the same domain commands through
+   // OriginalGameSession with an Assigned (all-12) Reaver, seed 395, baseline kit: two
+   // strikes kill e1, Defend's 7 block absorbs e2's 6, then Strike + Gorefire Slash on
+   // turn 2 kill e2 with HP untouched. The route after the fight (n2_2 Unknown treasure
+   // offering sealstoneKey, then n3_3/n3_2) is unchanged.
    ui.check(ui.state.run.seed===395,'BA creates the verified numeric seed395');
    await inspectTargets('sealstone-entrance');await control('native-route-n1_3');await ui.until(()=>ui.state.phase==='Combat','Sealstone opening fight');
-   for(const [instance,target,phase] of[['starting:0','e2','Combat'],['starting:3','e1','Combat'],['starting:2','e1','Rewards']]){
+   for(const [instance,target,phase] of[['starting:3','e1','Combat'],['starting:2','e1','Combat'],['starting:4','e2','Combat'],['endTurn',null,'Combat'],['starting:1','e2','Combat'],['starting:9','e2','Rewards']]){
+    if(instance==='endTurn'){await ui.command('native-end-turn');ui.check(ui.state.phase===phase&&ui.state.turn===2&&ui.state.player.hp===64,'verified Sealstone fight: Defend absorbs the first enemy turn');continue;}
     ui.check(ui.state.hand.some(card=>card.instanceId===instance),'Sealstone trace card is in actual hand: '+instance);
     await ui.click('native-target-'+target);for(let page=0;page<8&&!ui.has('native-card-'+instance)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
     await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===64,'verified Sealstone fight command: '+instance+' to '+target);
