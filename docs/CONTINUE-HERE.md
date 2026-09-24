@@ -34,6 +34,27 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   cannot be confirmed from the repository alone; open the channel page and read
   its build record.
 
+## Open story PRs (as of 2026-09-24)
+
+All are drafts to `dev`, stacked on the pipeline PR [#45](https://github.com/cehinds/AshenSpire-Unity/pull/45) (merge it
+first). Each is compile-verified against Unity reference assemblies and passes
+its console suite, but **none has been played in the editor**, and each fails
+`tools/unity-package.mjs --check` until the owner runs `tools/build-unity.ps1`
+on it. All six claim `0.0.15.0`; after one merges, re-bump the rest (below).
+
+| PR | Feature | Wired into the game | Known gaps |
+|---|---|---|---|
+| [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) | F08 music | HTML synth ported; A/B crossfade player | co-op keeps title bed; volume keys not written by settings yet |
+| [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) | F15/F16 settings + mods | settings screen; mods opt-in (off), desktop only, never in co-op | shake/hit-stop/music volume saved but unused |
+| [#49](https://github.com/cehinds/AshenSpire-Unity/pull/49) | F04 telegraphs | intent badges + Poise meters, solo/co-op | co-op shows base damage; no dedicated intent art |
+| [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) | F11 run summary | full end screen | co-op lacks Run history/unlocks |
+| [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) | F07 feel | profile-driven combat motion, hover overlay | `campaign-playtest.cjs` assertions changed, unrun |
+| [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) | F10 save slots | 3 slots, picker, 20-result archive | legacy key no longer written (no rollback) |
+
+Suggested merge order (fewest conflicts): #45 → #52 → #48 → #46 → #49 → #50 → #51.
+After #48 and #46 are both in, connect the settings music/master volume to
+`MusicPlayer` (one follow-up story).
+
 ## Next three user stories (F00)
 
 1. **US-0.1** Extend compiled painted-enemy coverage from Blight Hound/Grave
