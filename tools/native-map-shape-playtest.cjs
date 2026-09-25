@@ -2,13 +2,14 @@
 // Copy beside native-ui-driver.cjs. Never inject gameplay, saves, or Unity commands.
 const fs=require('node:fs'),path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
  const output=path.resolve(process.argv[3]||'TestResults/NativeMapShape');fs.mkdirSync(output,{recursive:true});
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const summaries=[];
- for(const viewport of[{width:390,height:844},{width:1280,height:800}]){
+ const viewports=[{width:390,height:844},{width:1280,height:800}],selection=selectedCases(viewports.length);
+ for(const viewport of selection.map(index=>viewports[index])){
   const context=await browser.newContext({viewport,deviceScaleFactor:2});const page=await context.newPage();ui=new NativeUiDriver(page,path.join(output,viewport.width===390?'phone':'desktop'));
   await ui.open(process.argv[2]);const initialBuild=fs.readFileSync(path.join(ui.output,'build-source.json'));
   await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');
@@ -46,5 +47,5 @@ let browser,ui;
   const latest=await page.request.get(new URL('build-source.json',process.argv[2]).href);ui.check(Buffer.compare(await latest.body(),initialBuild)===0,'served build remained source-matched throughout test');
   ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);summaries.push({viewport,checks:ui.checks.length});await context.close();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,viewports:summaries,physicalDevice:false,nextActBrowserProof:false},null,2));console.log('Native map shape checks passed: '+summaries.reduce((n,r)=>n+r.checks,0));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===viewports.length?'all-viewports':'case '+selection[0]+'/'+viewports.length,viewports:summaries,physicalDevice:false,nextActBrowserProof:false},null,2));console.log('Native map shape checks passed: '+summaries.reduce((n,r)=>n+r.checks,0));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

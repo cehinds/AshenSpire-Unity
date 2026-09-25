@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {NativeUiDriver,LEAN_CLASS_ALLOCATIONS,STANDARD_MODE,ASSIGN_MODE}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,STANDARD_MODE,ASSIGN_MODE}=require('./native-ui-driver.cjs');
 
 function fixture(mode){
  const ui=Object.create(NativeUiDriver.prototype);
@@ -94,4 +94,11 @@ test('assignPoints chooses Assign points, then clicks each +attribute (target-1)
 test('assignPoints refuses to finish while a +attribute control is still enabled',async()=>{
  const f=leanFixture();
  await assert.rejects(NativeUiDriver.prototype.assignPoints.call(f.ui,{strength:2}),/Creation points remain/);
+});
+test('--case selects exactly one case and refuses a stale case count',()=>{
+ assert.deepEqual(selectedCases(3,['node','harness']),[0,1,2]);
+ assert.deepEqual(selectedCases(5,['node','harness','--case=4/5']),[4]);
+ assert.throws(()=>selectedCases(4,['--case=1/5']),/update the CI matrix/);
+ assert.throws(()=>selectedCases(4,['--case=4/4']),/outside/);
+ assert.throws(()=>selectedCases(4,['--case=one']),/Use --case/);
 });

@@ -145,4 +145,18 @@ class NativeUiDriver {
  async shot(name){await this.page.waitForTimeout(250);await this.page.screenshot({path:path.join(this.output,name+'.png')});}
  save(success){fs.writeFileSync(path.join(this.output,'checks.json'),JSON.stringify({success,checks:this.checks,errors:this.errors,state:this.state,coop:this.coop,controls:this.controls,physicalDevice:false},null,2));}
 }
-module.exports={NativeUiDriver,LEAN_CLASS_ALLOCATIONS,LEAN_ATTRIBUTE_ORDER,LEAN_REAVER,STANDARD_MODE,ASSIGN_MODE};
+// `--case=<index>/<count>` runs one case of a multi-case harness so CI can give
+// each viewport or style its own job. <count> must equal the harness's case
+// count: adding a case fails every split run until the CI matrix lists it, so a
+// split can never silently drop coverage. Without the flag every case runs.
+function selectedCases(count,argv=process.argv){
+ const flag=argv.find(value=>value.startsWith('--case='));
+ if(!flag)return Array.from({length:count},(_,index)=>index);
+ const match=/^--case=(\d+)\/(\d+)$/.exec(flag);
+ if(!match)throw Error('Use --case=<index>/<count>, got '+flag);
+ const index=Number(match[1]),total=Number(match[2]);
+ if(total!==count)throw Error('--case names '+total+' cases but this harness has '+count+'; update the CI matrix');
+ if(index>=count)throw Error('--case index '+index+' is outside 0..'+(count-1));
+ return [index];
+}
+module.exports={NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,LEAN_ATTRIBUTE_ORDER,LEAN_REAVER,STANDARD_MODE,ASSIGN_MODE};
