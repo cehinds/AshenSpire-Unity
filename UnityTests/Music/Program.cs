@@ -70,6 +70,16 @@ Check(Regex.IsMatch(main, @"if \(run\.actNumber >= 3 && !endlessOn\(\)\) \{[^}]*
 var audioJs = Read("src/ui/audio.js");
 Check(audioJs.Contains("function stopMusic(fade = 0.6)") && audioJs.Contains("stopMusic(0.3)") && audioJs.Contains("exponentialRampToValueAtTime(gain, now() + 1.5)") && audioJs.Contains("master.gain.value = 0.9 * m"), "audio.js fade/headroom constants match the catalog crossfade plan");
 
+// ---- owner file tracks listed in music/manifest.json are tried before beds ---------------
+// Until the owner imports them into Resources (docs/Unity-Music.md step 4) each one fails to
+// load once and its context falls back to a bed; that fallback is checked with synthetic
+// files below. Everything else is checked against the beds alone.
+MusicCatalog BedsOnly() { var c = Load(); c.Tracks = c.Tracks.Where(t => t.Kind == MusicCatalog.KindBed).ToArray(); return c; }
+var sceneFor = new Dictionary<string, MusicScene> { ["title"] = MusicScene.Title, ["map"] = MusicScene.Map, ["combat"] = MusicScene.Combat, ["elite"] = MusicScene.Elite, ["boss"] = MusicScene.Boss, ["shop"] = MusicScene.Shop, ["rest"] = MusicScene.Shrine, ["victory"] = MusicScene.Victory };
+foreach (var pair in sceneFor.Where(p => catalog.TracksFor(p.Key, MusicCatalog.KindFile).Any()))
+    Check(new MusicDirector(catalog, 1).Enter(pair.Value, 0)[0].TrackId.StartsWith("file." + pair.Key + "."), "listed " + pair.Key + " file track is tried first");
+catalog = BedsOnly();
+
 // ---- every context ---------------------------------------------------------------------
 MusicDirector Director(uint seed = 7, MusicSettings s = null) => new MusicDirector(catalog, seed, s);
 var d = Director();
@@ -161,7 +171,7 @@ var mutedStart = new MusicDirector(catalog, 5, new MusicSettings { MusicVolume =
 Check(mutedStart.Enter(MusicScene.Title, 0).Count == 0, "starting muted plays nothing");
 
 // ---- file tracks: preference, re-pick on end, fallback on failure, silence ------------------
-var withFiles = Load();
+var withFiles = BedsOnly();
 withFiles.Tracks = withFiles.Tracks.Concat(new[] { "a", "b" }.Select(n => new MusicTrackDefinition { Id = "file.combat." + n, Context = "combat", Kind = "file", Path = "music/combat/" + n + ".ogg", ResourcePath = "Audio/Music/combat/" + n, Credit = CatalogBuilder.BedCredit, Author = "Owner", License = "CC0" })).ToArray();
 Check(withFiles.Validate(p => p.StartsWith("music/combat/") || Exists(p), credits).Count == 0, "synthetic credited file tracks validate");
 var f = new MusicDirector(withFiles, 11);
@@ -175,7 +185,7 @@ Check(cmds.Count == 1 && cmds[0].TrackId.StartsWith("bed.combat.") && cmds[0].Lo
 f.Enter(MusicScene.Map, 33);
 var failedAgain = f.Enter(MusicScene.Combat, 34)[0].TrackId;
 Check(failedAgain.StartsWith("file.combat."), "other files remain eligible after one fails");
-var quiet = Load();
+var quiet = BedsOnly();
 quiet.Contexts.First(c => c.Id == "shop").Silence = true;
 var q = new MusicDirector(quiet, 1);
 q.Enter(MusicScene.Map, 0);

@@ -17,8 +17,8 @@ Nobody has listened to it in the editor or a player yet.
 | Deck plan (A/B crossfade, stop) + run phase → scene | `Unity/Assets/AshenSpire/Runtime/Domain/MusicPlayback.cs` | ready, tested |
 | `AudioSource` adapter | `Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs` | wired, compile-verified only |
 | `RunController` hooks | `Runtime/Application/RunController.Music.cs` + 8 one-line calls in `RunController.cs` | wired |
-| Tests | `UnityTests/Music` (`dotnet run --project UnityTests/Music`) | 483 checks |
-| Imported audio files | none exist | optional, see below |
+| Tests | `UnityTests/Music` (`dotnet run --project UnityTests/Music`) | 501 checks |
+| Imported audio files | 10 listed in `music/manifest.json`, none imported into Resources yet | optional, see below |
 
 ## Synthesizer (`MusicSynth.cs`)
 
@@ -119,18 +119,22 @@ Unity loop is therefore 84 × cadence, from 72.2 s (`bed.boss.4`, 860 ms) to
 
 ## What the catalog contains today
 
-`music/` in this repository holds only `README.md` and an empty
-`manifest.json`, so **there are no audio files to import yet**. The HTML game
-makes all of its music in code: `src/content/music.js` defines 32 procedural
-"bed" variants across 8 contexts, and `src/ui/audio.js` synthesizes them. The
-catalog therefore lists:
+`music/manifest.json` lists 10 free third-party tracks (one to two per
+context, credited in CREDITS.md and in the manifest's `_credits`). The HTML
+game plays them only when the *Custom music folder* setting points at
+`music/`; otherwise it makes all of its music in code: `src/content/music.js`
+defines 32 procedural "bed" variants across 8 contexts, and `src/ui/audio.js`
+synthesizes them. The catalog therefore lists:
 
 - **32 bed tracks** (`bed.<context>.<n>`, `Kind: "bed"`). Each one records the
   music.js parameters (root, scale, cadence, wave, lift, drone, pulse), loops
   forever, and points at `src/content/music.js`. They are credited to the new
   CREDITS.md row *Procedural music beds* (AshenSpire, CC0).
-- **0 file tracks** (`file.<context>.<n>`, `Kind: "file"`). One is generated
-  for every entry the owner adds to `music/manifest.json`.
+- **10 file tracks** (`file.<context>.<n>`, `Kind: "file"`), one per entry in
+  `music/manifest.json`. The director tries them before the beds. None is
+  imported into `Resources/Audio/Music/` yet, so in Unity each one fails to
+  load once and its context falls back to a bed, which matches the HTML
+  default. Import them (step 4 below) to hear them.
 
 The catalog is generated, not hand-edited. The test fails if it drifts from
 `music.js` or `manifest.json`:
