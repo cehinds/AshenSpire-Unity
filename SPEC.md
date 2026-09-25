@@ -840,7 +840,12 @@ and `pointsPerLevel` stay exactly as above.
   written to `run.pendingMilestone = { level, offer: [id, id, id] }` **before** it is shown:
   a reload shows the same three and never rerolls. Choosing writes
   `run.milestones.push({ level, relicId })`, adds the relic through the ordinary relic-gain
-  door and clears the pending offer. Skipping is not offered.
+  door and clears the pending offer.
+- **Skipping (owner ruling, 2026-09-25).** The player may skip an offer. A skip writes
+  `run.milestones.push({ level, relicId: null })`, grants nothing, clears the pending offer,
+  and is final: the skipped milestone is never re-offered and its three perks are not
+  carried to the next milestone. The screen shows Skip beside the three perks, never as the
+  default focus, so a stray confirm cannot throw a milestone away.
 - **Buying several levels at once** (`levelUpBudget`) that cross more than one milestone
   queues one offer per milestone, resolved in level order.
 - **Shipped perk set (PROVISIONAL, 9 perks, 3 per tier):** a perk offered at level 5 is drawn
@@ -868,13 +873,16 @@ and `pointsPerLevel` stay exactly as above.
 - **Co-op.** Each member has their own `levelUps`, pending offer and milestones.
 - **Save.** Run schema gains `milestones[]` and `pendingMilestone` (absent = none; no migration
   invents history for an existing save). `validateRunShape` refuses a `milestones` entry whose
-  level is not in the authored list, is above the run's level, or is duplicated.
+  level is not in the authored list, is above the run's level, or is duplicated, and any
+  non-null `relicId` the run does not hold; a `null` `relicId` is a legal skip.
 - **Validation.** Refuse by name: non-ascending/duplicate milestone list; a milestone tier with
   fewer than 3 eligible perks for any class; a `milestone`-pool relic reachable from any
   generic pool; a `tier` on a non-milestone relic.
 - **Acceptance.** Buying levels 4→5 yields exactly one pending offer of 3 distinct tier-1
   perks; save/reload shows the same 3; buying 4→11 in one visit yields two offers, 5 then 10;
-  the 5th level costs exactly what it did before this change.
+  the 5th level costs exactly what it did before this change; skipping the level-5 offer
+  records `{ level: 5, relicId: null }`, adds no relic, and the level-10 offer still arrives
+  from tier 2 as normal.
 
 **Rogue full parity slice.** Rogue ships as a complete fourth class, not a selectable shell:
 
