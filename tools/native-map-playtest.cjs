@@ -5,7 +5,7 @@
 // Screenshots/receipts are source-matched; viewport emulation is not device proof.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 class MapObserver {
  constructor(page,ui){
@@ -43,7 +43,8 @@ let browser,ui,map;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const desktopOnly=process.argv.slice(4).includes('--desktop-only');
  const cases=[{width:320,height:640},{width:390,height:844},{width:412,height:915},{width:1440,height:900},{width:390,height:844,sealstone:true}];
- for(const config of cases.filter(row=>!desktopOnly||row.width===1440)){
+ const selection=selectedCases(cases.length);
+ for(const config of cases.filter((row,index)=>selection.includes(index)&&(!desktopOnly||row.width===1440))){
   const viewport={width:config.width,height:config.height},sealstone=!!config.sealstone;
   const phone=viewport.width<500,context=await browser.newContext({viewport,deviceScaleFactor:phone?2:1,hasTouch:phone});
   let activeViewport=viewport;const replayed=[];
@@ -52,6 +53,10 @@ let browser,ui,map;
   const getBounds=async rect=>{const canvas=await page.locator('#unity-canvas').boundingBox();return {x:canvas.x+rect.x*canvas.width/ui.controls.PanelWidth,y:canvas.y+rect.y*canvas.height/ui.controls.PanelHeight,width:rect.width*canvas.width/ui.controls.PanelWidth,height:rect.height*canvas.height/ui.controls.PanelHeight};};
   const control=async id=>{
    await ui.until(()=>ui.has(id),'map control '+id);
+   // A route's control bounds can trail the map view after a camera change;
+   // tap only once the controls report agrees with the rendered node.
+   if(id.startsWith('native-route-')){const node=()=>map.value?.nodes.find(n=>'native-route-'+n.id===id),row=()=>ui.controls.Controls.find(r=>r.Id===id);
+    await ui.until(()=>{const n=node(),c=row();return !!n&&!!c&&['x','y','width','height'].every(k=>Math.abs(n[k]-c[k==='x'?'X':k==='y'?'Y':k==='width'?'Width':'Height'])<.5);},'route control matches rendered node '+id,10000);}
    const c=ui.controls.Controls.find(row=>row.Id===id),rect=await getBounds({x:c.X,y:c.Y,width:c.Width,height:c.Height});
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1),'control is on screen: '+id);
    if(id.startsWith('native-route-'))ui.check(inside(rect,await getBounds(map.value.viewport),1),'route is inside clipped map viewport: '+id);
@@ -183,14 +188,7 @@ let browser,ui,map;
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1)&&inside(choice,map.value.viewport,1),'fresh touch route is visible inside the map');
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:rect.x+rect.width/2,y:rect.y+rect.height/2,id:1,radiusX:1,radiusY:1,force:1}]});await page.waitForTimeout(140);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await settled();await cdp.detach();
-  }else{
-   // The controls report can trail the Fit camera by a layout pass; clicking a
-   // stale rect misses the node. Wait until the route control sits on the node
-   // the map reports, then click. The assertion still fails if it never does.
-   const routeOnNode=()=>{const c=ui.controls?.Controls.find(r=>r.Id==='native-route-'+routeId&&r.Enabled);if(!c)return false;const cx=c.X+c.Width/2,cy=c.Y+c.Height/2;return cx>=choice.x-1&&cx<=choice.x+choice.width+1&&cy>=choice.y-1&&cy<=choice.y+choice.height+1;};
-   await eventually(routeOnNode,'route control matches the fitted map node');
-   await control('native-route-'+routeId);
-  }
+  }else await control('native-route-'+routeId);
   await ui.until(()=>ui.revision>revision&&ui.state.phase!=='Map','actual route transition');
   ui.check(ui.state.run.mapNodeId===routeId&&ui.state.run.path.at(-1)===routeId,'actual route tap enters the selected authoritative node');await ui.shot('08-entered-route');
   const matches=row=>ui.state.phase===row.phase&&ui.state.player.hp===row.hp&&ui.state.player.mana===row.mana&&ui.state.player.stamina===row.stamina&&ui.state.turn===row.turn&&ui.state.act===row.act;
@@ -217,5 +215,5 @@ let browser,ui,map;
   fs.writeFileSync(path.join(ui.output,'first-fight-replay.json'),JSON.stringify({fixture:'UnityTests/Parity/native-browser-replay.json',fixtureSha256:crypto.createHash('sha256').update(traceBytes).digest('hex'),commands:replayed},null,2));
   await finish();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':'full-five-cases',viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':selection.length===cases.length?'full-five-cases':'case '+selection[0]+'/'+cases.length,viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);if(map)fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify({receipts:map.receipts,last:map.value},null,2));}if(browser)await browser.close();process.exitCode=1;});

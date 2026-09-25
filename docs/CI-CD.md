@@ -195,8 +195,6 @@ node tools/workflow-lint.mjs
 .\tools\build-unity.ps1 -Target Web
 ```
 
-The full browser playtest list is the `playtests` matrix in
-`.github/workflows/unity-pages.yml` (five shards that run in parallel beside the
-`parity` and `checks` jobs; `validate-and-assemble` passes only when all of them
-pass). Each shard line is a command you can run from the repository root after
-serving `Published/Web` on port 8787.
+The full browser playtest list is the `validate-and-assemble` job in
+`.github/workflows/unity-pages.yml`; each step there is a command you can run
+from the repository root after serving `Published/Web` on port 8787.

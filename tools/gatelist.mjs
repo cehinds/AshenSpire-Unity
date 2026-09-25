@@ -662,12 +662,12 @@ if (args.includes('--selftest')) {
       expectRed: /BAD\s+G1 /,
     },
     {
-      // Step-local G1: the seed-only run in another playtest shard still invokes this .cjs tool.
+      // Step-local G1: the real seed-only sibling still invokes this .cjs tool.
       name: 'ONE step is emptied into an echo while a sibling step keeps the tool listed',
       edits: [{
         file: workflow,
-        find: '              node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
-        replace: '              echo node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
+        find: '        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
+        replace: '        run: echo node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption',
       }],
       expectRed: /BAD\s+G1 [^\n]*tools\/interruption-playtest\.cjs/,
     },
