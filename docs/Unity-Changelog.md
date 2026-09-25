@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.19.0 · build 19 · 2026-09-25
+
+- F11: end-of-run summary matching the HTML game-over screen (domain ready; UI wiring pending Unity editor)
+
 ## 0.0.18.0 · build 18 · 2026-09-25
 
 - F04: enemy telegraph view-model — intent glyph/value/tooltip/severity and Poise meter data (domain ready; UI Toolkit wiring pending Unity editor)

@@ -4,6 +4,7 @@
 // MODIFY: labels/layout here; original content and domain components own all rules.
 // COSTS: OriginalCardCostText formats authoritative costs and resource shortages.
 // MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
+// END: Victory/Defeat render RunSummaryView (F11) from the RunSummary the caller passes.
 // No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
 using System;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace AshenSpire.Presentation
         private readonly VisualElement _actionHost;
         private readonly bool _diagnostics;
         private readonly OriginalMapViewServices _mapView;
+        private readonly RunSummary _summary; private readonly Action _history; private VisualElement _summaryButtons;
         private VisualElement _actions, _combatTools;
         private string _target, _selected;
         private Label _notice;
@@ -28,17 +30,17 @@ namespace AshenSpire.Presentation
         public Image PlayerImage { get; private set; }
         public Image EnemyImage { get; private set; }
         public VisualElement Stage { get; private set; }
-        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null)
-        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; Render(); }
+        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null, RunSummary summary = null, Action history = null)
+        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; Render(); }
         private void Render()
         {
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             var combatSurface = _game.Phase == OriginalRunPhase.Combat;
             if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
-            _combatTools = null;
+            _combatTools = null; _summaryButtons = null;
             _root.Clear(); _root.AddToClassList("native-run"); _actions?.RemoveFromHierarchy(); var p = _game.Player; var run = _game.RunPlayer;
             if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));
-            else
+            else if (!RunSummary.IsTerminal(_game.Phase))
             {
             Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading");
             _root.Add(OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject));
@@ -58,12 +60,11 @@ namespace AshenSpire.Presentation
                 case OriginalRunPhase.EventResult:
                     Text((string)_game.Room["resultText"] ?? "Your choice is made.", "lead"); Button("native-event-leave", "Continue the climb", _game.LeaveEvent); break;
                 case OriginalRunPhase.Victory:
-                    Text("THE SPIRE FALLS SILENT", "node-title"); Text("All three acts are complete. Your final run remains saved.", "lead"); break;
                 case OriginalRunPhase.Defeat:
-                    Text("ASH RETURNS TO ASH", "node-title"); Text("The climb ends here. Your run remains available to inspect.", "lead"); break;
+                    _summaryButtons = RunSummaryView.Mount(_root, _summary ?? RunSummary.FromSession(_game), _history); break;
             }
-            Button("native-deck", "Deck and equipment", Deck, _combatTools);
-            Button("native-menu", "Save and return to title", _menu, _combatTools);
+            Button("native-deck", "Deck and equipment", Deck, _combatTools ?? _summaryButtons);
+            Button("native-menu", _summaryButtons != null ? "Return to title" : "Save and return to title", _menu, _combatTools ?? _summaryButtons).EnableInClassList("primary", _summaryButtons != null);
             if (_diagnostics) ReportNativeState();
             _report();
         }

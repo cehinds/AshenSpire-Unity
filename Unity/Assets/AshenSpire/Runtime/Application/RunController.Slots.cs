@@ -84,10 +84,11 @@ namespace AshenSpire.Application
             }
         }
         private string TakeSlotNotice() { var notice = _slotNotice; _slotNotice = null; return notice; }
-        private void RecordOriginalResult(JObject run, bool victory)
+        private JObject RecordOriginalResult(JObject run, bool victory)
         {
             var receipt = _slotSaves.RecordResult(_profile, run, victory);
             if (!(bool)receipt["saved"]) Debug.LogWarning("The finished climb was recorded but the profile save did not verify.");
+            return receipt;
         }
         private void ShowSaveSlots() => ShowSaveSlots(null);
         private void ShowSaveSlots(string notice)

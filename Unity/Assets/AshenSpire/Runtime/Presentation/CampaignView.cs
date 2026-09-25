@@ -173,7 +173,7 @@ namespace AshenSpire.Presentation
         public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
         {
             Shell("ASHEN SPIRE", "THE ORIGINAL CLIMB");
-            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView);
+            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke());
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
             if (panel.Stage == null || projection == null) return null;
             var cue = feedback.Cue(projection.CueId);
