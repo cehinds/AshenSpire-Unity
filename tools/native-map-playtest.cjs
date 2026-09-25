@@ -5,7 +5,7 @@
 // Screenshots/receipts are source-matched; viewport emulation is not device proof.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 class MapObserver {
  constructor(page,ui){
@@ -43,7 +43,8 @@ let browser,ui,map;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const desktopOnly=process.argv.slice(4).includes('--desktop-only');
  const cases=[{width:320,height:640},{width:390,height:844},{width:412,height:915},{width:1440,height:900},{width:390,height:844,sealstone:true}];
- for(const config of cases.filter(row=>!desktopOnly||row.width===1440)){
+ const selection=selectedCases(cases.length);
+ for(const config of cases.filter((row,index)=>selection.includes(index)&&(!desktopOnly||row.width===1440))){
   const viewport={width:config.width,height:config.height},sealstone=!!config.sealstone;
   const phone=viewport.width<500,context=await browser.newContext({viewport,deviceScaleFactor:phone?2:1,hasTouch:phone});
   let activeViewport=viewport;const replayed=[];
@@ -52,12 +53,20 @@ let browser,ui,map;
   const getBounds=async rect=>{const canvas=await page.locator('#unity-canvas').boundingBox();return {x:canvas.x+rect.x*canvas.width/ui.controls.PanelWidth,y:canvas.y+rect.y*canvas.height/ui.controls.PanelHeight,width:rect.width*canvas.width/ui.controls.PanelWidth,height:rect.height*canvas.height/ui.controls.PanelHeight};};
   const control=async id=>{
    await ui.until(()=>ui.has(id),'map control '+id);
+   // A route's control bounds can trail the map view after a camera change;
+   // tap only once the controls report agrees with the rendered node.
+   if(id.startsWith('native-route-')){const node=()=>map.value?.nodes.find(n=>'native-route-'+n.id===id),row=()=>ui.controls.Controls.find(r=>r.Id===id);
+    await ui.until(()=>{const n=node(),c=row();return !!n&&!!c&&['x','y','width','height'].every(k=>Math.abs(n[k]-c[k==='x'?'X':k==='y'?'Y':k==='width'?'Width':'Height'])<.5);},'route control matches rendered node '+id,10000);}
    const c=ui.controls.Controls.find(row=>row.Id===id),rect=await getBounds({x:c.X,y:c.Y,width:c.Width,height:c.Height});
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1),'control is on screen: '+id);
    if(id.startsWith('native-route-'))ui.check(inside(rect,await getBounds(map.value.viewport),1),'route is inside clipped map viewport: '+id);
    await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await ui.frames();await page.mouse.down();await page.waitForTimeout(140);await page.mouse.up();await settled();
   };
   const mapControl=async id=>{const before=map.revision;await control('native-map-'+id);await ui.until(()=>map.revision>before,'map response '+id);};
+  // Unity may defer the controls report by a layout pass after the map view
+  // report lands, so control-list assertions wait for the report to catch up
+  // before checking. The assertion itself is unchanged and still fails.
+  const eventually=async(test,label)=>{try{await ui.until(test,label,10000);}catch{}ui.check(test(),label);};
   const snapshot=()=>JSON.stringify(ui.state);
   const unchanged=(before,label)=>ui.check(snapshot()===before&&ui.state.phase==='Map',label);
   const wheel=async()=>{const rect=await getBounds(map.value.viewport),before=map.value.camera.scrollTop,revision=map.revision;await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.wheel(0,before>30?-180:180);await ui.until(()=>map.revision>revision,'map wheel receipt');await settled();ui.check(Math.abs(map.value.camera.scrollTop-before)>1,'wheel moves the map camera');};
@@ -65,8 +74,8 @@ let browser,ui,map;
    const value=map.value,canvas=await page.locator('#unity-canvas').boundingBox(),bounds=await getBounds(value.viewport);
    ui.check(value.scope==='solo',label+': solo map receipt');
    ui.check(bounds.width>0&&bounds.height>0&&inside(bounds,{x:0,y:0,...activeViewport},1),label+': bounded map viewport is on screen');
-   const nodeIds=new Set(value.nodes.map(n=>n.id)),controls=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-   ui.check(controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length))),label+': no hidden node controls');
+   const nodeIds=new Set(value.nodes.map(n=>n.id)),routeControls=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+   await eventually(()=>{const controls=routeControls();return controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length)));},label+': no hidden node controls');
    const legal=value.nodes.filter(n=>n.legal);
    ui.check(legal.length===ui.state.legalNodes.length&&legal.every(n=>ui.state.legalNodes.includes(n.id)),label+': board choices match authoritative legal routes');
    for(const node of legal){ui.check(node.width*canvas.width/ui.controls.PanelWidth>=43.5&&node.height*canvas.height/ui.controls.PanelHeight>=43.5,label+': 44 CSS-pixel route '+node.id);}
@@ -125,11 +134,11 @@ let browser,ui,map;
   ui.check(fogEdges.every(e=>fogIds.includes(e.from)&&fogIds.includes(e.to)),'fog edges connect only visible nodes');
   await inspectTargets('all-paths');await ui.shot('02-all-paths');
   await mapControl('glow');ui.check(map.value.shrineGlow===false,'shrine highlight preference can be disabled');unchanged(initial,'highlight toggle does not mutate the run');
-  await mapControl('legend');ui.check(ui.has('native-map-close'),'legend opens a dismissible overlay');
-  const coveredRoutes=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-  ui.check(coveredRoutes.length>0&&coveredRoutes.every(c=>!c.Enabled),'legend disables every underlying node control');
+  await mapControl('legend');await eventually(()=>ui.has('native-map-close'),'legend opens a dismissible overlay');
+  const coveredRoutes=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+  await eventually(()=>coveredRoutes().length>0&&coveredRoutes().every(c=>!c.Enabled),'legend disables every underlying node control');
   await ui.shot('03-legend');await mapControl('close');
-  await mapControl('routes');ui.check(ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
+  await mapControl('routes');await eventually(()=>ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
   for(let step=0;step<4;step++)await mapControl('zoom-in');
   await wheel();unchanged(initial,'wheel camera movement never travels');
   await mapControl('recenter');
@@ -206,5 +215,5 @@ let browser,ui,map;
   fs.writeFileSync(path.join(ui.output,'first-fight-replay.json'),JSON.stringify({fixture:'UnityTests/Parity/native-browser-replay.json',fixtureSha256:crypto.createHash('sha256').update(traceBytes).digest('hex'),commands:replayed},null,2));
   await finish();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':'full-five-cases',viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':selection.length===cases.length?'full-five-cases':'case '+selection[0]+'/'+cases.length,viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);if(map)fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify({receipts:map.receipts,last:map.value},null,2));}if(browser)await browser.close();process.exitCode=1;});
