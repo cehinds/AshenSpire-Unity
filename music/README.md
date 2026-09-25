@@ -8,7 +8,7 @@ override just the battle music if you like.
 
 1. Put audio files (`.mp3` or `.ogg`) into the per-context subfolders below.
 2. List them in [`manifest.json`](manifest.json) under the matching context.
-3. In-game: **Settings → Audio → Music folder**, enter the path/URL to this
+3. In-game: **Settings → Advanced → Debug → Custom music folder**, enter the path/URL to this
    folder (e.g. `music/` when the game is served from the project root, or a full
    `https://…` URL). Leave it blank to use the built-in generated score.
 

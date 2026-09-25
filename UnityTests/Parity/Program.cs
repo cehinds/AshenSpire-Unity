@@ -26,6 +26,10 @@ bool Equal(JToken a, JToken b)
     return JToken.DeepEquals(a, b);
 }
 void Refuses(Action operation, string message) { try { operation(); } catch (ArgumentException) { checks++; return; } throw new Exception(message); }
+// The inline oracle checks form the "core" section; every section below runs
+// in exactly one shard (see PARITY_SHARD) so CI can spread them across jobs.
+void Core()
+{
 foreach (var fixture in oracle["rng"]!)
 {
     var random = new RandomStreams((uint)fixture["seed"]!);
@@ -109,23 +113,45 @@ queueContext.Emit("example", new JObject { ["nested"] = new JObject { ["value"] 
 var observerCopy = queueContext.Events(); observerCopy[0]!["nested"]!["value"] = 99;
 Check((int)queueContext.Events()[0]!["nested"]!["value"]! == 1, "Observer mutated internal event history");
 Console.WriteLine($"Original Unity parity: {checks} checks passed");
-OwnerCreationChecks.Run(new OriginalContentCatalog(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json"))));
-Console.WriteLine($"Original resources and card lifecycle: {FrameworkChecks.Run(Path.Combine(root, "UnityTests/Parity/framework-reference.json"))} checks passed");
-AttributeProgressionChecks.Run(root);
+}
 
-Console.WriteLine($"WeaponChecks: {WeaponChecks.Run(Path.Combine(root, "UnityTests/Parity/weapon-reference.json"))} checks passed");
-
-Console.WriteLine($"NativeRunChecks: {NativeRunChecks.Run(Path.Combine(root, "UnityTests/Parity/run-reference.json"))} checks passed");
-Console.WriteLine($"Equipment transactions: {EquipmentChecks.Run(JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/run-reference.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/event-choices.json"))))} checks passed");
-
-Console.WriteLine($"CombatSessionChecks: {CombatSessionChecks.Run(Path.Combine(root, "UnityTests/Parity/combat-reference.json"))} checks passed");
-
-NativeServicesChecks.Run(root);
-
-CustomRunChecks.Run(root);
-
-Console.WriteLine($"Paid swaps: {SwapChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), Path.Combine(root, "UnityTests/Parity/swap-reference.json"))} checks passed");
-
-Console.WriteLine($"Starting choices: {StartingOptionsChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Path.Combine(root, "UnityTests/Parity/starting-reference.json"))} checks passed");
-
-Console.WriteLine($"Co-op combat: {CoopCombatChecks.Run(root)} checks passed");
+var sections = new (string Name, int Weight, Action Run)[]
+{
+    ("core", 2, Core),
+    ("owner-creation", 1, () => { OwnerCreationChecks.Run(new OriginalContentCatalog(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json")))); }),
+    ("framework", 1, () => { Console.WriteLine($"Original resources and card lifecycle: {FrameworkChecks.Run(Path.Combine(root, "UnityTests/Parity/framework-reference.json"))} checks passed"); }),
+    ("attribute-progression", 1, () => { AttributeProgressionChecks.Run(root); }),
+    ("weapons", 8, () => { Console.WriteLine($"WeaponChecks: {WeaponChecks.Run(Path.Combine(root, "UnityTests/Parity/weapon-reference.json"))} checks passed"); }),
+    ("native-run", 161, () => { Console.WriteLine($"NativeRunChecks: {NativeRunChecks.Run(Path.Combine(root, "UnityTests/Parity/run-reference.json"))} checks passed"); }),
+    ("equipment", 5, () => { Console.WriteLine($"Equipment transactions: {EquipmentChecks.Run(JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/run-reference.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/event-choices.json"))))} checks passed"); }),
+    ("combat-session", 20, () => { Console.WriteLine($"CombatSessionChecks: {CombatSessionChecks.Run(Path.Combine(root, "UnityTests/Parity/combat-reference.json"))} checks passed"); }),
+    ("native-services", 7, () => { NativeServicesChecks.Run(root); }),
+    ("custom-run", 60, () => { CustomRunChecks.Run(root); }),
+    ("swaps", 16, () => { Console.WriteLine($"Paid swaps: {SwapChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), Path.Combine(root, "UnityTests/Parity/swap-reference.json"))} checks passed"); }),
+    ("starting-options", 3, () => { Console.WriteLine($"Starting choices: {StartingOptionsChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Path.Combine(root, "UnityTests/Parity/starting-reference.json"))} checks passed"); }),
+    ("coop-combat", 89, () => { Console.WriteLine($"Co-op combat: {CoopCombatChecks.Run(root)} checks passed"); }),
+};
+// PARITY_SHARD=i/n runs shard i of n. Weights are measured local seconds; sections are
+// assigned heaviest-first to the lightest shard, so every section lands in exactly
+// one shard and running all n shards covers the whole suite. Unset runs everything.
+var shardSpec = Environment.GetEnvironmentVariable("PARITY_SHARD");
+int shard = 0, shardCount = 1;
+if (!string.IsNullOrEmpty(shardSpec))
+{
+    var parts = shardSpec.Split('/');
+    if (parts.Length != 2 || !int.TryParse(parts[0], out shard) || !int.TryParse(parts[1], out shardCount) || shardCount < 1 || shard < 0 || shard >= shardCount)
+        throw new ArgumentException("PARITY_SHARD must be i/n with 0 <= i < n, got " + shardSpec);
+}
+var loads = new int[shardCount];
+var assigned = new List<string>();
+foreach (var section in sections.Select((s, index) => (s, index)).OrderByDescending(x => x.s.Weight).ThenBy(x => x.index))
+{
+    var target = Array.IndexOf(loads, loads.Min());
+    loads[target] += Math.Max(1, section.s.Weight);
+    if (target != shard) continue;
+    var timer = System.Diagnostics.Stopwatch.StartNew();
+    section.s.Run();
+    Console.WriteLine($"Parity section {section.s.Name}: {timer.Elapsed.TotalSeconds:F1}s");
+    assigned.Add(section.s.Name);
+}
+Console.WriteLine($"Parity shard {shard}/{shardCount} ran {assigned.Count} of {sections.Length} sections: {string.Join(", ", assigned)}");
