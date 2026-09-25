@@ -735,12 +735,13 @@ shipped values stay 0 so the meter is the only gate until the owner tunes it.
 
 **Rules.**
 
-1. **One meter per equipped hand.** Two weapons → two skills, two meters. Unarmed hands have
+1. **One meter per equipped hand.** Two weapons → two arts, two meters. Unarmed hands have
    none. A two-handed weapon (`handsRequired: 2`) has one.
 2. **Use** is a new player intent `useWeaponArt(hand, targetId?)`. Legal on the player's turn
    when that hand's meter is full and Stamina covers `weaponArtStaminaCost`. It costs **no
-   Actions/energy** and is limited to **once per turn** across both hands
-   (`balance.weaponArt.usesPerTurn`, default 1).
+   Actions/energy** and each hand's art is limited to **once per turn**
+   (`balance.weaponArt.usesPerTurnPerHand`, default 1). Two armed hands may therefore use
+   both arts in the same turn (owner ruling, 2026-09-25).
 3. **Spend:** meter → 0, then effects enqueue on the action queue (§3.9) like a played card,
    emitting new event `weaponArtUsed(hand, artId)`. It is **not** `cardPlayed`: card-count
    predicates (`everyNthCardThisCombat`, `cardsPlayedThisTurn`) do not see it.
@@ -778,7 +779,8 @@ negative `weaponArtStaminaCost`; any old-word name from the rename table in cont
 
 **Acceptance.**
 - Headless: a Straight Sword combat fills 3 charge from 3 Strike hits, `useWeaponArt` resolves
-  Riposte, meter returns to 0; a second use the same turn is refused.
+  Riposte, meter returns to 0; a second use of the same hand's art that turn is refused,
+  while the other hand's full art is still usable.
 - Two one-handed weapons show and charge two meters independently.
 - A mid-combat swap resets that hand's meter; a save/load mid-combat preserves both meters.
 - No card-count predicate advances when an art is used.
@@ -858,7 +860,7 @@ and `pointsPerLevel` stay exactly as above.
   | 1 | Honed Edge | Weapon Arts start each combat with 1 charge. |
   | 1 | Deep Pockets | +1 flask capacity (through the `relic` flask-growth row, §5.5.2). |
   | 2 | Momentum | Every 4th card you play each turn costs 0. |
-  | 2 | Twin Discipline | Your Weapon Arts may be used twice per turn. |
+  | 2 | Resonance | When you use a Weapon Art, your other hand's art gains 2 charge. |
   | 2 | Tempered | +1 Action at the start of each turn if you have no Block. |
   | 3 | Ascendant | +1 card drawn each turn. |
   | 3 | Warlord | At combat start, gain 2 Strength. |
