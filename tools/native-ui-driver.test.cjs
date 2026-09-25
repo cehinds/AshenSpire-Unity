@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 function fixture(mode){
  const ui=Object.create(NativeUiDriver.prototype);
@@ -49,4 +49,12 @@ test('a redraw during press cancels outside the canvas instead of hitting a neig
 test('a delayed command response never causes a second released command',async()=>{
  const {ui,result}=fixture('late-response');await ui.click('coop-end-turn');
  assert.deepEqual(result,{accepted:1,cancelled:0,wrong:0,presses:1});
+});
+
+test('--case selects exactly one case and refuses a stale case count',()=>{
+ assert.deepEqual(selectedCases(3,['node','harness']),[0,1,2]);
+ assert.deepEqual(selectedCases(5,['node','harness','--case=4/5']),[4]);
+ assert.throws(()=>selectedCases(4,['--case=1/5']),/update the CI matrix/);
+ assert.throws(()=>selectedCases(4,['--case=4/4']),/outside/);
+ assert.throws(()=>selectedCases(4,['--case=one']),/Use --case/);
 });
