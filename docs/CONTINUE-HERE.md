@@ -34,26 +34,43 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   cannot be confirmed from the repository alone; open the channel page and read
   its build record.
 
-## Open story PRs (as of 2026-09-24)
+## Merged story work (2026-09-25)
 
-All are drafts to `dev`, stacked on the pipeline PR [#45](https://github.com/cehinds/AshenSpire-Unity/pull/45) (merge it
-first). Each is compile-verified against Unity reference assemblies and passes
-its console suite, but **none has been played in the editor**, and each fails
-`tools/unity-package.mjs --check` until the owner runs `tools/build-unity.ps1`
-on it. All six claim `0.0.15.0`; after one merges, re-bump the rest (below).
+The six story PRs are merged into `dev` in this order, each re-merged with
+`dev` and re-bumped first: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) F10 save slots (0.0.15.0) →
+[#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) F15/F16 settings + mods (0.0.16.0) → [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) F08 music (0.0.17.0) →
+[#49](https://github.com/cehinds/AshenSpire-Unity/pull/49) F04 telegraphs (0.0.18.0) → [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) F11 run summary (0.0.19.0) →
+[#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) F07 feel (0.0.20.0). `dev` is **0.0.20.0, build 20**.
 
-| PR | Feature | Wired into the game | Known gaps |
-|---|---|---|---|
-| [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) | F08 music | HTML synth ported; A/B crossfade player | co-op keeps title bed; volume keys not written by settings yet |
-| [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) | F15/F16 settings + mods | settings screen; mods opt-in (off), desktop only, never in co-op | shake/hit-stop/music volume saved but unused |
-| [#49](https://github.com/cehinds/AshenSpire-Unity/pull/49) | F04 telegraphs | intent badges + Poise meters, solo/co-op | co-op shows base damage; no dedicated intent art |
-| [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) | F11 run summary | full end screen | co-op lacks Run history/unlocks |
-| [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) | F07 feel | profile-driven combat motion, hover overlay | `campaign-playtest.cjs` assertions changed, unrun |
-| [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) | F10 save slots | 3 slots, picker, 20-result archive | legacy key no longer written (no rollback) |
+**`dev` is red until the owner rebuilds.** None of the six was rebuilt before
+merging, so `Published/` is still build 14 and `tools/unity-package.mjs --check`
+fails. Run `tools/build-unity.ps1 -Target All` on `dev` and push `Published/`.
+The browser playtests that exercise #51's feel profile (`--feedback-only`)
+also need that rebuilt player.
 
-Suggested merge order (fewest conflicts): #45 → #52 → #48 → #46 → #49 → #50 → #51.
-After #48 and #46 are both in, connect the settings music/master volume to
-`MusicPlayer` (one follow-up story).
+Every console suite and both Unity compile checks pass on the merged `dev`.
+None of this has been played in the editor yet.
+
+Merge conflicts resolved while stacking (review in the editor):
+
+- `RunController.Menu()`: #52's slot-aware title plus #46's `MusicTitle()`.
+- `RunController.RefreshOriginal()`: #52 records the finished climb through
+  `RecordOriginalResult` (verified slot-store save); it now returns the
+  `profile.Finish` receipt, which #50's `AttachSummaryUnlocks` reads.
+- `CampaignView` settings: #48's `ExtendSettings()` plus #51's
+  `FeelDriver.Configure`. `ApplyPlayerSettings()` also reconfigures the feel
+  driver.
+
+Known gaps carried over:
+
+| Feature | Gap |
+|---|---|
+| F08 music | co-op keeps the title bed; the settings music/master volume is saved but not yet connected to `MusicPlayer` (next follow-up story); the 10 `music/` tracks are listed but not imported into Resources |
+| F15/F16 | shake/hit-stop saved but unused; mods are opt-in, desktop only, never in co-op |
+| F04 | co-op shows base damage; no dedicated intent art |
+| F11 | co-op lacks run history and unlocks |
+| F07 | `campaign-playtest.cjs` feedback assertions need the rebuilt player |
+| F10 | the legacy save key is no longer written (no rollback) |
 
 ## Next three user stories (F00)
 
