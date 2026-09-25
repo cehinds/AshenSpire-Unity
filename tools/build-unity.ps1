@@ -21,6 +21,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Original card text tests failed.' }
     dotnet run --project UnityTests/CardCosts
     if ($LASTEXITCODE -ne 0) { throw 'Card cost presentation tests failed.' }
+    dotnet run --project UnityTests/HandRules
+    if ($LASTEXITCODE -ne 0) { throw 'Solo hand rules tests failed.' }
     dotnet run --project UnityTests/MapKnowledge
     if ($LASTEXITCODE -ne 0) { throw 'Original map knowledge tests failed.' }
     dotnet run --project UnityTests/MapViewport

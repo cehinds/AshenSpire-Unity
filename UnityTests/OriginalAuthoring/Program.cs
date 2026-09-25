@@ -7,7 +7,10 @@ var mechanics = JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Un
 var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/progression.json"))));
 var checks = 0;
 void Check(bool yes,string name) { if (!yes) throw new Exception(name); checks++; }
-var creation = new CreationModel(catalog,"reaver","standard",progression);
+// Standard creation ("leanStandard"): each class's preset row (web src/model/attributes.js:171-174), nothing
+// left to spend; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
+CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"leanStandard",progression);if(!creation.CanBegin)throw new Exception("Standard preset left points for "+cls);return creation;}
+var creation = Lean("reaver");
 var player = new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creation,"authoringKit");
 Check((string)player["loadout"]!["sets"]!["rightHand"]![0] == "authoringSword","CSV weapon equipped through authored kit");
 Check(player["deck"]!.Any(c => (string)c["equipmentRole"] == "attack"),"weapon supplies stable attack cards");

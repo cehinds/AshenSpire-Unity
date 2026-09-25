@@ -21,7 +21,12 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
  var result=new JObject{["classId"]=classId,["seed"]=seed};var counts=new JObject();var trace=new JArray();var phaseCounts=new JObject();var seenServices=new HashSet<string>();var rejectionPhases=new HashSet<OriginalRunPhase>();int commands=0,resumeChecks=0;OriginalGameSession game=null;string lastCommand="create";
  try
  {
-  var creator=new CreationModel(catalog,classId,"standard",progression);var kit=(string)catalog.Table("equipment.startingKits").First(x=>(string)x["classId"]==classId&&(bool?)x["baseline"]==true)["id"];
+  // Standard ("leanStandard") is the default creation mode: each class opens on its preset row
+  // (web src/model/attributes.js:171-174) with nothing unspent, exactly as the browser driver
+  // begins (tools/native-ui-driver.cjs chooses Standard). The browser playtests replay this
+  // trace, so both sides must build the same character (Reaver {3,1,2,1,1}).
+  var creator=new CreationModel(catalog,classId,"leanStandard",progression);
+  if(!creator.CanBegin)throw new Exception("Standard preset left points unspent");var kit=(string)catalog.Table("equipment.startingKits").First(x=>(string)x["classId"]==classId&&(bool?)x["baseline"]==true)["id"];
   var player=new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creator,kit);result["initialAttributes"]=player["attributes"].DeepClone();result["initialResources"]=new JObject{["hp"]=player["hp"],["mana"]=player["mana"],["stamina"]=player["stamina"],["actions"]=player["energy"],["draw"]=player["draw"]};
   game=OriginalGameSession.Start(catalog,supplement,mechanics,player,seed);
   void Act(string name,Action<OriginalGameSession> command)
@@ -32,6 +37,8 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
    var oldHand=game.Hand;var oldRun=game.RunPlayer;var oldRoom=game.Room;
    if(name.StartsWith("play:")) action["instanceId"]=(string)oldHand.First(c=>(string)c["cardId"]==name.Substring(5))["instanceId"];
    command(game);commands++;
+   // A command that is accepted but changes nothing is a stuck turn: the policy would loop until the budget runs out.
+   if(JToken.DeepEquals(before,game.Snapshot()))throw new Exception("Stuck turn: "+name+" changed no state in "+action["beforePhase"]);
    action["phase"]=game.Phase.ToString();action["hp"]=game.Player["hp"];action["mana"]=game.Player["mana"];action["stamina"]=game.Player["stamina"];action["turn"]=game.Turn;action["act"]=game.ActNumber;
    if(name=="reward:card") action["cardId"]=(string)((JArray)game.RunPlayer["deck"]).First(c=>!((JArray)oldRun["deck"]).Any(o=>(string)o["instanceId"]==(string)c["instanceId"]))["cardId"];
    if(name=="buy:relic") action["index"]=Enumerable.Range(0,((JArray)game.Room["relics"]).Count).First(i=>(bool?)oldRoom["relics"][i]["sold"]!=true&&(bool?)game.Room["relics"][i]["sold"]==true);
@@ -88,13 +95,30 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
     default:throw new Exception("Unhandled run phase "+phase);
    }
   }
+  // Every run must end cleanly in a terminal state; exhausting the command budget is a failure.
+  if(game.Phase!=OriginalRunPhase.Victory&&game.Phase!=OriginalRunPhase.Defeat)throw new Exception($"Command budget exhausted after {commands} commands in {game.Phase} without Victory or Defeat");
   result["result"]=game.Phase.ToString();result["act"]=game.ActNumber;result["floor"]=game.RunPlayer["floor"];result["hp"]=game.Player["hp"];result["fightsWon"]=game.RunPlayer["fightsWon"]??0;result["commands"]=commands;result["resumeChecks"]=resumeChecks;
  }
  catch(Exception error){result["result"]="Exception";result["error"]=error.ToString();result["lastCommand"]=lastCommand;if(game!=null){File.WriteAllText(Path.Combine(output,$"failure-{classId}-{seed}.json"),game.Snapshot().ToString());result["act"]=game.ActNumber;result["phase"]=game.Phase.ToString();result["fightsWon"]=game.RunPlayer["fightsWon"]??0;}Console.WriteLine($"ERROR {classId}/{seed} {lastCommand}: {error.Message}");}
  result["counts"]=counts;result["phaseCounts"]=phaseCounts;result["trace"]=trace;report.Add(result);Console.WriteLine($"{classId}/{seed}: {result["result"]}, act {result["act"]}, fights {result["fightsWon"]}, commands {commands}, resumes {resumeChecks}");File.WriteAllText(Path.Combine(output,"results.json"),new JObject{["runtimeSourceDigest"]=digest,["elapsedSeconds"]=timer.Elapsed.TotalSeconds,["runs"]=report}.ToString());
 }
 Console.WriteLine("Completed "+report.Count+" real-command runs in "+timer.Elapsed.TotalSeconds+" seconds.");
-if(report.Any(r=>(string)r["result"]!="Victory"))Environment.ExitCode=1;
+// Owner decision (2026-09-24): "Record wins, gate errors". The gate fails on any crash, stuck or
+// rejected turn, exhausted command budget or save/resume divergence (all surface as "Exception"),
+// but a clean Defeat is recorded, not a failure. Win rate is a balance measurement, tuned separately.
+var table=new JArray();
+Console.WriteLine();Console.WriteLine("class      wins/runs  acts reached  fights won  results");
+foreach(var classId in classes)
+{
+ var runs=report.Where(r=>(string)r["classId"]==classId).ToArray();
+ var row=new JObject{["classId"]=classId,["runs"]=runs.Length,["wins"]=runs.Count(r=>(string)r["result"]=="Victory"),["defeats"]=runs.Count(r=>(string)r["result"]=="Defeat"),["errors"]=runs.Count(r=>(string)r["result"]!="Victory"&&(string)r["result"]!="Defeat"),["actsReached"]=new JArray(runs.Select(r=>r["act"]??0)),["fightsWon"]=new JArray(runs.Select(r=>r["fightsWon"]??0))};
+ table.Add(row);
+ Console.WriteLine($"{classId,-10} {row["wins"]+"/"+row["runs"],-10} {string.Join(",",runs.Select(r=>r["act"]??0)),-13} {string.Join(",",runs.Select(r=>r["fightsWon"]??0)),-11} {string.Join(",",runs.Select(r=>r["result"]))}");
+}
+var totals=new JObject{["runs"]=report.Count,["wins"]=table.Sum(r=>(int)r["wins"]),["defeats"]=table.Sum(r=>(int)r["defeats"]),["errors"]=table.Sum(r=>(int)r["errors"]),["fightsWon"]=report.Sum(r=>(int?)r["fightsWon"]??0)};
+Console.WriteLine($"{"total",-10} {totals["wins"]+"/"+totals["runs"],-10} defeats {totals["defeats"]}, errors {totals["errors"]}, fights won {totals["fightsWon"]}");
+File.WriteAllText(Path.Combine(output,"results.json"),new JObject{["runtimeSourceDigest"]=digest,["elapsedSeconds"]=timer.Elapsed.TotalSeconds,["gate"]="terminal state required; wins recorded, not gated",["winTable"]=table,["totals"]=totals,["runs"]=report}.ToString());
+if((int)totals["errors"]>0){Console.WriteLine("FAILED: "+totals["errors"]+" run(s) did not reach Victory or Defeat cleanly.");Environment.ExitCode=1;}
 static int RouteScore(string kind,JObject player)=>kind switch{"shrine"=>0,"treasure"=>1,"event"=>2,"merchant"=>3,"monster"=>4,"elite"=>5,"boss"=>6,_=>4};
 static double RewardScore(JObject card)=>(string)card["type"]=="attack"?10:(card["effects"] as JArray??new JArray()).Any(e=>(string)e["op"]=="heal")?9:5;
 static double EventScore(JToken choice){double score=0;foreach(var e in choice["effects"] as JArray??new JArray())score+=(string)e["op"] switch{"heal"=>10,"addRelic"=>8,"addCinders"=>(double?)e["amount"]>0?5:-5,"damage"=>-10,"loseHp"=>-10,"loseMaxHpPct"=>-15,"startCombat"=>-20,_=>1};return score;}

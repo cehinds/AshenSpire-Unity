@@ -27,7 +27,7 @@ namespace AshenSpire.Domain.Original
                 var slotId = (string)slot["id"]; var item = locations.Equipped(loadout, creation.ClassId, slotId);
                 if (item == null) continue;
                 var weightKey = slotId == "rightHand" ? "mainHandWeight" : slotId == "leftHand" ? "offHandWeight" : slotId == "armor" ? "armorWeight" : "otherCountedWeight";
-                weights[weightKey] = ((int?)weights[weightKey] ?? 0) + ((int?)item[(string)item["kind"] == "armor" ? "poiseThreshold" : "weight"] ?? 0);
+                weights[weightKey] = WeightSystem.Add(weights[weightKey], WeightSystem.PieceWeight(_mechanics, (int?)item[(string)item["kind"] == "armor" ? "poiseThreshold" : "weight"] ?? 0));
             }
             var weight = new WeightSystem(_mechanics).Compute((int)attributes["constitution"], (int)attributes["strength"], weights);
             var deck = new WeaponCardComposer(_catalog).CreateStartingDeck(loadout, creation.ClassId);

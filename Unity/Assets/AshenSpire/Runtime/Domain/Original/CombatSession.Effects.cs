@@ -52,7 +52,7 @@ namespace AshenSpire.Domain.Original
                     for (var h = 0; h < hits; h++) foreach (var target in Targets(action,(string)effect["target"])) if (Alive(target))
                     { var basis = Number(effect["amount"],0,action,target,meta) + AttributeHitBonus(bonus,hits,h); Attack(action.Source,target,basis,tags,carrier); }
                     break;
-                case "block": foreach (var target in Targets(action,(string)effect["target"])) GainBlock(target,Number(effect["amount"],0,action,target,meta)); break;
+                case "block": foreach (var target in Targets(action,(string)effect["target"])) GainBlock(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"block attribute bonus") : 0)); break;
                 case "dodgeRoll":
                     if ((string)action.Source?["id"] != "player") break;
                     var roll = _random.Int("misc",1,_weightSystem.DodgeDie); var weight = WeightClass(); var receipt = _weightSystem.Dodge(roll,(int?)_attributes["dexterity"] ?? 10,weight);
@@ -160,11 +160,13 @@ namespace AshenSpire.Domain.Original
                 var growth = (double?)config["growthMult"] ?? 1.25; if (growth != 1 && !AllCombatants().Where(Alive).Any(e => _statuses.Flag(e,"meterMaxGrowthDisabled"))) meter["max"] = (int)Math.Ceiling((int)meter["max"] * growth);
             }
         }
-        private int HandMaximum => (int?)_balance["handMax"] ?? 10;
+        // Hand rules own capacity when this fight has them (web combat.handMax, restamped each turn from
+        // the same attributes, which do not change mid-fight); otherwise the balance fallback.
+        private int HandMaximum => _handRules != null ? HandRules.ScaledCards((JObject)_handRules["capacity"], _attributes) : (int?)_balance["handMax"] ?? 10;
         private void Draw(int amount)
         {
             if (amount > 10000) throw new ArgumentException("Draw exceeds command budget.");
-            for (var i = 0; i < amount; i++) { if (_piles["draw"].Count == 0) { if (_piles["discard"].Count == 0) return; Reshuffle(); } var card = _piles["draw"][0]; _piles["draw"].RemoveAt(0); if (_piles["hand"].Count >= HandMaximum) { _piles["discard"].Add(card); CardEvent("cardDiscarded",card,"handFull"); } else { _piles["hand"].Add(card); Emit("cardDrawn",new JObject { ["cardInstanceId"] = card["instanceId"], ["cardId"] = card["cardId"] }); } }
+            for (var i = 0; i < amount; i++) { if (_handRules != null && _piles["hand"].Count >= HandMaximum) return; if (_piles["draw"].Count == 0) { if (_handRules != null && (bool)_handRules["reshuffle"] == false) return; if (_piles["discard"].Count == 0) return; Reshuffle(); } var card = _piles["draw"][0]; _piles["draw"].RemoveAt(0); if (_piles["hand"].Count >= HandMaximum) { _piles["discard"].Add(card); CardEvent("cardDiscarded",card,"handFull"); } else { _piles["hand"].Add(card); Emit("cardDrawn",new JObject { ["cardInstanceId"] = card["instanceId"], ["cardId"] = card["cardId"] }); } }
         }
         private void Discard(int amount,bool random,bool exhaust)
         { for (var i = 0; i < amount && _piles["hand"].Count > 0; i++) { var hand = _piles["hand"]; var index = random ? _random.Int("misc",0,hand.Count-1) : hand.Count-1; var card = hand[index]; hand.RemoveAt(index); _piles[exhaust ? "exhaust" : "discard"].Add(card); CardEvent(exhaust ? "cardExhausted" : "cardDiscarded",card,"effect"); } }

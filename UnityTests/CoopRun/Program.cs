@@ -10,7 +10,10 @@ var catalog=new OriginalContentCatalog(data.ToString());
 var supplement=JObject.Parse(File.ReadAllText(root+"event-choices.json"));
 var mechanics=JObject.Parse(File.ReadAllText(root+"mechanics.json"));
 var progression=new AttributeProgression(JObject.Parse(File.ReadAllText(root+"progression.json")));
-JObject Player(string cls){var creation=new CreationModel(catalog,cls,"pointbuy",progression);while(creation.Remaining>0)foreach(var stat in creation.Attributes().Properties().Select(p=>p.Name))if(creation.Remaining>0)creation.Adjust(stat,1);return new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creation);}
+// Standard creation ("leanStandard"): each class's preset row (web src/model/attributes.js:171-174), nothing
+// left to spend; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
+CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"leanStandard",progression);if(!creation.CanBegin)throw new Exception("Standard preset left points for "+cls);return creation;}
+JObject Player(string cls)=>new OriginalCharacterBuilder(catalog,progression,mechanics).Build(Lean(cls));
 if(args.Contains("--policy")){CoopPolicyChecks.Run(catalog,supplement,mechanics,progression);return;}
 Console.WriteLine($"Co-op flask tiers: {CoopFlaskChecks.Run(catalog,mechanics)} checks passed");
 var player=Player("reaver");

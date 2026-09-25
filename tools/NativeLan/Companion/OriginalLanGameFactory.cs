@@ -48,7 +48,7 @@ public sealed class OriginalLanGameFactory : ILanGameFactory
     {
         if (setup.Properties().Any(p => !new[] { "classId", "modeId", "attributes", "kitId", "startingHands", "startingArmourId", "startingRelicId", "keepsakeId", "customization" }.Contains(p.Name))) throw new ArgumentException("Unknown player setup field.");
         var classId = RequiredString(setup["classId"],"classId");
-        var modeId = setup["modeId"] == null ? "pointbuy" : RequiredString(setup["modeId"],"modeId");
+        var modeId = setup["modeId"] == null ? (string)_catalog.Data()["attributeRules"]!["defaultMode"]! : RequiredString(setup["modeId"],"modeId");
         var creation = new CreationModel(_catalog,classId,modeId,_progression);
         var desired = setup["attributes"] as JObject;
         if (setup["attributes"] != null && desired == null) throw new ArgumentException("Attributes must be an object.");

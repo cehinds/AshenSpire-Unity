@@ -26,6 +26,8 @@ namespace AshenSpire.Domain.Original
             return (int)number;
         }
         private static string ClassId(JObject run) => (string)run["classId"] ?? (string)run["class"];
+        // Character level for weighted derived rows: playerStartingLevel + purchased levels.
+        private int Level(JObject run) => checked(Integer(_data["balance"]?["levels"]?["playerStartingLevel"] ?? new JValue(1), "starting level") + Integer(run["levelUps"] ?? new JValue(0), "level purchases"));
         private static JArray Relics(JObject run) => run["relics"] as JArray ?? run["relicIds"] as JArray ?? new JArray();
         private JObject BaseRules(JObject run, JObject hero)
         {
@@ -47,7 +49,7 @@ namespace AshenSpire.Domain.Original
                     }
             }
             // Every rule is evaluated before it can be installed into a saved run.
-            foreach (var row in rules.Properties()) _ = DerivedStatCalculator.Receipt(rules, row.Name, (JObject)run["attributes"], hero);
+            foreach (var row in rules.Properties()) _ = DerivedStatCalculator.Receipt(rules, row.Name, (JObject)run["attributes"], hero, Level(run));
             return rules;
         }
         public JObject RelicModifiers(JObject run, JObject baseRules)
@@ -100,7 +102,7 @@ namespace AshenSpire.Domain.Original
             var equipment = new EquipmentRunModifiers(_catalog).Resolve((JObject)run["loadout"], ClassId(run)); var derived = new JObject(); var receipts = new JArray();
             foreach (var row in folded.Properties())
             {
-                var receipt = DerivedStatCalculator.Receipt(folded, row.Name, (JObject)run["attributes"], hero); var value = Integer(receipt["value"], row.Name);
+                var receipt = DerivedStatCalculator.Receipt(folded, row.Name, (JObject)run["attributes"], hero, Level(run)); var value = Integer(receipt["value"], row.Name);
                 var bonus = new[] { "hp", "mana", "stamina" }.Contains(row.Name) ? Integer(equipment["max" + char.ToUpperInvariant(row.Name[0]) + row.Name.Substring(1)], "equipment bonus", false) : 0;
                 var adjustment = row.Name == "hp" ? Integer(run["maxHpAdjustment"] ?? new JValue(0), "max HP adjustment", false) : 0;
                 derived[row.Name] = Math.Max(row.Name == "hp" ? 1 : 0, checked(value + bonus + adjustment)); receipt["equipmentBonus"] = bonus; receipt["adjustment"] = adjustment; receipt["final"] = derived[row.Name].DeepClone(); receipts.Add(receipt);
@@ -112,10 +114,10 @@ namespace AshenSpire.Domain.Original
                 var piece = locations.Equipped((JObject)run["loadout"], ClassId(run), (string)slot["id"]); if (piece == null) continue;
                 var itemRef = WeaponLoadout.ItemRef(piece); var level = Integer(run["itemUpgradeLevels"]?[itemRef] ?? new JValue(0), "item tier");
                 if ((string)piece["kind"] == "armor") piece = upgrades.ResolveItem(itemRef, level);
-                var value = Integer(piece[(string)piece["kind"] == "armor" ? "poiseThreshold" : "weight"] ?? new JValue(0), "item weight");
+                var value = WeightSystem.PieceWeight(_mechanics, Integer(piece[(string)piece["kind"] == "armor" ? "poiseThreshold" : "weight"] ?? new JValue(0), "item weight"));
                 var key = (string)piece["kind"] == "armor" ? "armorWeight" : (string)slot["hand"] == "right" ? "mainHandWeight" : (string)slot["hand"] == "left" ? "offHandWeight" : "otherCountedWeight";
-                weights[key] = checked((int)weights[key] + value); var threshold = Integer(piece["poiseThreshold"] ?? new JValue(0), "equipment poise"); poise = checked(poise + threshold);
-                sources.Add(new JObject { ["itemRef"] = itemRef, ["weight"] = value, ["poise"] = threshold });
+                weights[key] = WeightSystem.Add(weights[key], value); var threshold = Integer(piece["poiseThreshold"] ?? new JValue(0), "equipment poise"); poise = checked(poise + threshold);
+                sources.Add(new JObject { ["itemRef"] = itemRef, ["weight"] = WeightSystem.Token(value), ["poise"] = threshold });
             }
             foreach (var id in Relics(run).Values<string>())
             { var item = upgrades.ResolveItem("relic/" + id, Integer(run["itemUpgradeLevels"]?["relic/" + id] ?? new JValue(0), "relic tier")); poise = checked(poise + Integer(item["passives"]?["poiseThresholdAdd"] ?? new JValue(0), "relic poise")); }

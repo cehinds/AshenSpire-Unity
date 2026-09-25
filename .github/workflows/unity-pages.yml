@@ -46,7 +46,7 @@ jobs:
       matrix:
         include:
           - id: native-climb
-            name: Complete the native three-act climb with reloads
+            name: Replay the native climb to its recorded Victory or Defeat with reloads
             run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
             evidence: TestResults/NativeBrowser
           - id: native-features
@@ -259,6 +259,7 @@ jobs:
               dotnet run --project UnityTests/NativeFeedback
               dotnet run --project UnityTests/CardText
               dotnet run --project UnityTests/CardCosts
+              dotnet run --project UnityTests/HandRules
               dotnet run --project UnityTests/SpriteStyles
               dotnet run --project UnityTests/MapShape
               dotnet run --project UnityTests/MapKnowledge

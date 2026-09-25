@@ -93,11 +93,13 @@ namespace AshenSpire.Domain.Original
             if (_run.Room()["combatSnapshot"] is JObject saved) _combat = CombatSession.Restore(_catalog, _mechanics, saved, Resolve);
             else
             {
+                // A new fight snapshots the run's frozen hand rules (web runCombat resolves them per fight);
+                // a run whose frozen content predates them has none and fights the legacy way.
                 var player = _run.Player(); player["energyMax"] = player["energy"].DeepClone(); player["drawPerTurn"] = player["draw"].DeepClone();
                 var encounter = _catalog.Record("encounters", (string)_run.Room()["encounterId"]);
                 var custom = new OriginalCustomRunRules(_catalog.Data()).CombatOptions(player,(string)encounter["pool"]);
                 player["startStatuses"] = new JArray(((JArray)custom["playerStatuses"]).Concat(player["startStatuses"] as JArray ?? new JArray()).Select(row => row.DeepClone()));
-                _combat = new CombatSession(_catalog, _mechanics, _run.CreateRandom(), player, ((JArray)player["deck"]).OfType<JObject>(), encounter["enemies"].Values<string>(), Resolve,(double)custom["hpMult"],(JArray)custom["enemyStatuses"]);
+                _combat = new CombatSession(_catalog, _mechanics, _run.CreateRandom(), player, ((JArray)player["deck"]).OfType<JObject>(), encounter["enemies"].Values<string>(), Resolve,(double)custom["hpMult"],(JArray)custom["enemyStatuses"],_catalog.SoloHandRules);
                 CommitCombat();
             }
         }
@@ -123,7 +125,11 @@ namespace AshenSpire.Domain.Original
         public void Enter(string id) => Change(() => { if (!_run.EnterNode(id)) throw new ArgumentException("Choose a connected route."); });
         public void PickDraft(string cardId) => Change(() => { if (!_run.PickDraft(cardId)) throw new ArgumentException("Choose one of the current draft offers."); });
         public void Play(string instance, string target) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.PlayCard(instance, target); CommitCombat(); });
-        public void EndTurn() => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.EndTurn(); CommitCombat(); });
+        public void EndTurn() => EndTurn(null);
+        /// <summary>End the turn discarding the chosen retained cards; DiscardPlan says how many must or may be chosen.</summary>
+        public void EndTurn(System.Collections.Generic.IEnumerable<string> discardIds) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.EndTurn(discardIds); CommitCombat(); });
+        /// <summary>The current turn-end discard choice (empty and unprompted outside a fight or in a legacy fight).</summary>
+        public JObject DiscardPlan => _combat?.DiscardChoicePlan() ?? new JObject { ["cardIds"] = new JArray(), ["minimum"] = 0, ["maximum"] = 0, ["prompt"] = false };
         public void CatchBreath() => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.CatchBreath(); CommitCombat(); });
         public void DrinkCharge(string kind) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkCharge(kind); CommitCombat(); });
         public void DrinkFlask(int slot, string target = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkFlask(slot, target); CommitCombat(); });

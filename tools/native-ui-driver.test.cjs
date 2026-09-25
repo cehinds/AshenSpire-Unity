@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,STANDARD_MODE,ASSIGN_MODE}=require('./native-ui-driver.cjs');
 
 function fixture(mode){
  const ui=Object.create(NativeUiDriver.prototype);
@@ -51,6 +51,50 @@ test('a delayed command response never causes a second released command',async()
  assert.deepEqual(result,{accepted:1,cancelled:0,wrong:0,presses:1});
 });
 
+// The creation panel as the driver sees it: Standard (the default) opens on the
+// class preset with nothing unspent; the Assign points mode resets to all 1s with 3.
+function leanFixture(classId='reaver'){
+ let values={...LEAN_CLASS_ALLOCATIONS[classId]};let remaining=0;const clicks=[];
+ const controls=()=>({Controls:[{Id:'foundation-mode-'+STANDARD_MODE,Enabled:true},{Id:'foundation-mode-'+ASSIGN_MODE,Enabled:true},...Object.keys(values).map(id=>({Id:'attribute-'+id+'-up',Enabled:remaining>0&&values[id]<4}))]});
+ const ui={get controls(){return controls();},click:async id=>{clicks.push(id);
+  if(id==='foundation-mode-'+ASSIGN_MODE){values={strength:1,dexterity:1,constitution:1,wisdom:1,intelligence:1};remaining=3;return;}
+  if(id==='foundation-mode-'+STANDARD_MODE){values={...LEAN_CLASS_ALLOCATIONS[classId]};remaining=0;return;}
+  const attr=/^attribute-([a-z]+)-up$/.exec(id)[1];if(remaining<1||values[attr]>=4)throw Error('disabled '+id);values[attr]++;remaining--;}};
+ return {ui,get values(){return values;},clicks,get remaining(){return remaining;}};
+}
+test('lean class table spends exactly the three assignable points',()=>{
+ for(const row of Object.values(LEAN_CLASS_ALLOCATIONS)){
+  const values=Object.values(row);
+  assert.equal(values.length,5);assert.equal(values.reduce((a,b)=>a+b,0),8);assert.ok(values.every(v=>v>=1&&v<=4));
+ }
+ assert.equal(LEAN_CLASS_ALLOCATIONS.starseer.intelligence,3,'owner: the Starseer has a 3 in INT');
+});
+test('the class table is the shipped Standard preset',()=>{
+ const content=JSON.parse(require('node:fs').readFileSync(require('node:path').join(__dirname,'..','GameContent/Unity/Original/content.json'),'utf8'));
+ assert.equal(content.attributeRules.defaultMode,STANDARD_MODE);
+ assert.deepEqual(content.characterCreation.visibleModeIds,[STANDARD_MODE,ASSIGN_MODE]);
+ for(const [classId,row] of Object.entries(LEAN_CLASS_ALLOCATIONS))assert.deepEqual(content.attributeRules.presets[STANDARD_MODE][classId],row);
+});
+test('useStandard begins on the default preset without pressing anything',async()=>{
+ const f=leanFixture();await NativeUiDriver.prototype.useStandard.call(f.ui);
+ assert.deepEqual(f.clicks,[]);assert.deepEqual(f.values,LEAN_CLASS_ALLOCATIONS.reaver);assert.equal(f.remaining,0);
+});
+test('useStandard returns to Standard when points are unspent',async()=>{
+ const f=leanFixture();await f.ui.click('foundation-mode-'+ASSIGN_MODE);f.clicks.length=0;
+ await NativeUiDriver.prototype.useStandard.call(f.ui);
+ assert.deepEqual(f.clicks,['foundation-mode-'+STANDARD_MODE]);assert.deepEqual(f.values,LEAN_CLASS_ALLOCATIONS.reaver);
+});
+test('assignPoints chooses Assign points, then clicks each +attribute (target-1) times in fixed order',async()=>{
+ const f=leanFixture();await NativeUiDriver.prototype.assignPoints.call(f.ui);
+ assert.deepEqual(f.values,LEAN_CLASS_ALLOCATIONS.reaver);assert.equal(f.remaining,0);
+ assert.deepEqual(f.clicks,['foundation-mode-'+ASSIGN_MODE,'attribute-strength-up','attribute-strength-up','attribute-constitution-up']);
+ const s=leanFixture('starseer');await NativeUiDriver.prototype.assignPoints.call(s.ui,LEAN_CLASS_ALLOCATIONS.starseer);
+ assert.deepEqual(s.values,LEAN_CLASS_ALLOCATIONS.starseer);
+});
+test('assignPoints refuses to finish while a +attribute control is still enabled',async()=>{
+ const f=leanFixture();
+ await assert.rejects(NativeUiDriver.prototype.assignPoints.call(f.ui,{strength:2}),/Creation points remain/);
+});
 test('--case selects exactly one case and refuses a stale case count',()=>{
  assert.deepEqual(selectedCases(3,['node','harness']),[0,1,2]);
  assert.deepEqual(selectedCases(5,['node','harness','--case=4/5']),[4]);

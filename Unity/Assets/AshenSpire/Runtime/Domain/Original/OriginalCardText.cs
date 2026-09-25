@@ -78,7 +78,7 @@ namespace AshenSpire.Domain.Original
                 // The executor adds a total bonus to the first repetition. Only an
                 // integer, single-hit/single-repeat amount is unambiguous to fold.
                 var bonus = (int?)effect["attributeBonus"] ?? 0;
-                if (field == "amount" && (op == "damage" || op == "heal") && bonus > 0 &&
+                if (field == "amount" && (op == "damage" || op == "heal" || op == "block") && bonus > 0 &&
                     WholeAmount(effect["amount"], out var amount) && One(effect["repeat"]) &&
                     (op != "damage" || One(effect["hits"])))
                 {
@@ -96,7 +96,7 @@ namespace AshenSpire.Domain.Original
             {
                 var op = (string)bonus["operation"];
                 text += included.Contains(op) ? " Includes +" : " +";
-                text += bonus["bonus"] + (op == "heal" ? " healing" : " total damage") + " from " + Humanize((string)bonus["attribute"]) + ".";
+                text += bonus["bonus"] + (op == "heal" ? " healing" : op == "block" ? " block" : " total damage") + " from " + ((string)bonus["label"] ?? Humanize((string)bonus["attribute"])) + ".";
             }
             return text.Trim();
         }

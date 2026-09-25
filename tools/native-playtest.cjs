@@ -4,7 +4,12 @@ const {controlReportsForPage}=require('./control-report.cjs');
 const fs=require('node:fs'), path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const output=path.resolve(process.argv[3]||'TestResults/Native'); fs.mkdirSync(output,{recursive:true});
-const replay=JSON.parse(fs.readFileSync(process.argv[4]||path.join(__dirname,'../UnityTests/Parity/native-browser-replay.json'),'utf8')).runs[0].trace;
+const recorded=JSON.parse(fs.readFileSync(process.argv[4]||path.join(__dirname,'../UnityTests/Parity/native-browser-replay.json'),'utf8')).runs[0];
+const replay=recorded.trace;
+// The replay must end where the domain run ended. Owner decision (2026-09-24): the bot gate records
+// wins instead of requiring them, so the recorded run may be a Defeat; balance is tuned separately.
+if(!['Victory','Defeat'].includes(recorded.result)||!Number.isInteger(recorded.act))throw Error('Replay fixture must record a terminal Victory or Defeat and its act');
+if(replay.length===0||replay[replay.length-1].phase!==recorded.result||replay[replay.length-1].act!==recorded.act)throw Error('Replay trace does not end in its recorded terminal state');
 let browser,page,controls,state,layout=0,revision=0; const chunks=new Map();
 const errors=[],screenshots=[],checks=[],commands=[];
 function check(value,name){if(!value)throw Error(name);checks.push(name);}
@@ -38,8 +43,8 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  page.on('console',m=>{const value=normalizeControls(m.text());if(value===null)return;if(m.type()==='error')errors.push(value);for(const [prefix,receive] of [['ASHENSPIRE_CONTROLS ',d=>{controls=d;layout++;}],['ASHENSPIRE_NATIVE_STATE_CHUNK ',d=>{let parts=chunks.get(d.sequence);if(!parts){parts=[];chunks.set(d.sequence,parts);}parts[d.index]=d.text;if(parts.filter(x=>x!==undefined).length===d.count){state=JSON.parse(parts.join(''));revision++;chunks.delete(d.sequence);}}]]){const at=value.indexOf(prefix);if(at>=0)receive(JSON.parse(value.slice(at+prefix.length)));}});
  await page.goto(process.argv[2]);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await until(()=>controls?.Controls.length,'title');await shot('00-phone-title');
  await click('native-new');await shot('01-phone-assign-points');
- check(controls.Labels.some(t=>t.includes('35')),'35 points initially unspent');
- await click('foundation-mode-standard');await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-standard-creation');await command('native-begin');
+ check(controls.Labels.some(t=>t.trim()==='Unspent points: 0'),'Unspent points: 0 (Standard preset, the default)');
+ await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-assigned-creation');await command('native-begin');
  check(state.phase==='Map','native three-act run starts');
  for(let index=0;index<replay.length;index++){
   const action=replay[index];await capture();check(state.phase===action.beforePhase&&state.player.hp===action.beforeHp,'before command '+index+' '+action.command);
@@ -63,9 +68,10 @@ function report(success){return {success,checks,screenshots,errors,commands,last
   if(index===2||index===70){const expected=JSON.stringify(state);await click('native-menu');await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await command('native-continue');check(JSON.stringify(state)===expected,'persistent page reload resumes exact native state at '+index);}
   if(index%20===0)console.log('Native browser: '+index+'/'+replay.length+' '+state.phase+' act'+state.act);
  }
- await capture();check(state.phase==='Victory'&&state.act===3,'three-act victory through actual player controls');
+ await capture();check(state.phase===recorded.result&&state.act===recorded.act,'recorded terminal '+recorded.result+' in act '+recorded.act+' through actual player controls');
  await click('native-menu');await click('native-profile');await shot('99-phone-chronicle');
- check(controls.Labels.some(t=>t.toLowerCase().includes('victor')),'completed climb recorded in chronicle');
+ check(controls.Labels.some(t=>t.includes(' · '+recorded.result+' · Act '+recorded.act+',')),'completed climb recorded in chronicle as '+recorded.result);
+ check(controls.Labels.some(t=>t.trim().startsWith('1 climbs · '+(recorded.result==='Victory'?1:0)+' victories')),'chronicle totals count the one climb');
  await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(1200);await shot('100-desktop-chronicle');
  check(errors.length===0,'no browser or Unity error logs');fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(report(true),null,2));console.log('Native browser full climb passed: '+checks.length+' checks, '+commands.length+' commands.');await browser.close();
 })().catch(async e=>{errors.push(e.stack||String(e));if(page)await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(report(false),null,2));if(browser)await browser.close();console.error(e);process.exitCode=1;});

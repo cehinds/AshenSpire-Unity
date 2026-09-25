@@ -7,8 +7,9 @@ let browser,ui;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2});
  ui=new NativeUiDriver(page,path.resolve(process.argv[3]||'TestResults/NativeFeatures'));
- await ui.open(process.argv[2]);await ui.click('native-new');ui.check(!ui.has('native-begin'),'unspent points cannot start a run');
- ui.check(!ui.controls.Controls.some(c=>c.Id.includes('tuned')),'Tuned is absent');await ui.click('foundation-mode-standard');
+ await ui.open(process.argv[2]);await ui.click('native-new');ui.check(ui.has('native-begin'),'the Standard preset can begin at once (owner, 2026-09-24)');
+ await ui.click('foundation-mode-lean');ui.check(!ui.has('native-begin'),'Assign points: unspent points cannot start a run');
+ ui.check(!ui.controls.Controls.some(c=>c.Id.includes('tuned')),'Tuned is absent');ui.check(!ui.controls.Controls.some(c=>c.Id==='foundation-mode-standard'||c.Id==='foundation-mode-pointbuy'),'legacy Standard and Assign points modes are not offered');await ui.useStandard();ui.check(ui.has('native-begin'),'returning to Standard can begin');
  await ui.fill('native-seed','1');await ui.click('native-custom-toggle');await ui.choose('native-deck-mode',2);await ui.click('native-mod-hoarder');await ui.shot('01-custom-draft-setup');
  await ui.command('native-begin');ui.check(ui.state.phase==='Draft','Draft starts before the map');ui.check(ui.state.run.custom.deckMode==='draft','chosen deck mode retained');
  const pickDraft=async()=>{let choice;await ui.until(()=>{choice=ui.controls?.Controls.find(c=>c.Id.startsWith('native-draft-')&&c.Enabled);return !!choice;},'rendered draft offers');await ui.command(choice.Id);};
@@ -35,7 +36,7 @@ let browser,ui;
   }else if(s.phase==='Shrine'){
    if(!shrine){const before=JSON.stringify(s.run);await ui.click('native-level-up');await ui.click('native-level-up-constitution');await ui.click('native-level-cancel');ui.check(JSON.stringify(ui.state.run)===before,'cancelled level purchase preserves attributes and cinders');
     const con=ui.state.run.attributes.constitution,hp=ui.state.player.maxHp,cinders=ui.state.run.cinders;await ui.click('native-level-up');await ui.click('native-level-up-constitution');await ui.command('native-level-confirm');
-    ui.check(ui.state.run.attributes.constitution===con+1&&ui.state.player.maxHp===hp+2&&ui.state.run.cinders<cinders,'one CON point purchases real HP improvement');await ui.command('native-flask-split-0');ui.check(ui.state.player.flaskCharges.hp===0,'flask allocation can dedicate every charge to MP');await ui.command('native-flask-split-3');await ui.shot('03-shrine-level-and-flasks');shrine=true;}
+    ui.check(ui.state.run.attributes.constitution===con+1&&ui.state.player.maxHp===hp+4+2&&ui.state.run.cinders<cinders,'one CON point purchases real HP improvement (ruleset 6: +4 per CON, +2 per level)');await ui.command('native-flask-split-0');ui.check(ui.state.player.flaskCharges.hp===0,'flask allocation can dedicate every charge to MP');await ui.command('native-flask-split-3');await ui.shot('03-shrine-level-and-flasks');shrine=true;}
    await ui.command('native-rest');
   }else if(s.phase==='Shop'){
    if(!shop){const buy=ui.controls.Controls.find(c=>c.Enabled&&c.Id.startsWith('native-buy-relics-'))||ui.controls.Controls.find(c=>c.Enabled&&c.Id.startsWith('native-buy-flasks-'));ui.check(!!buy,'merchant offers an affordable item');const before=s.run.cinders;await ui.command(buy.Id);ui.check(ui.state.run.cinders<before,'merchant purchase spends cinders');
