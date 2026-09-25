@@ -247,10 +247,11 @@ namespace AshenSpire.Presentation
         private void Key(KeyDownEvent e)
         {
             if (e.target != _viewport) return;
-            if (e.keyCode == KeyCode.PageUp) Scroll(_scroll - _viewport.contentRect.height * .8);
-            else if (e.keyCode == KeyCode.PageDown) Scroll(_scroll + _viewport.contentRect.height * .8);
-            else if (e.keyCode == KeyCode.Home) Scroll(0);
-            else if (e.keyCode == KeyCode.End) Scroll(_camera?.MaximumScrollTop ?? 0);
+            var action = _services?.KeyAction != null ? _services.KeyAction(e.keyCode) : OriginalKeyBindings.Action(null, e.keyCode);
+            if (action == "mapScrollUp") Scroll(_scroll - _viewport.contentRect.height * .8);
+            else if (action == "mapScrollDown") Scroll(_scroll + _viewport.contentRect.height * .8);
+            else if (action == "mapTop") Scroll(0);
+            else if (action == "mapBottom") Scroll(_camera?.MaximumScrollTop ?? 0);
             else return;
             e.StopImmediatePropagation();
         }
