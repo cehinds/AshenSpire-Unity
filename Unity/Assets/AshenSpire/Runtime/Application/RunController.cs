@@ -11,6 +11,7 @@
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
 // NATIVE GAME: Runtime/Domain/Original owns the original climb and frozen rules.
 // Native saves/profile use separate checksummed keys; the earlier campaign is preserved.
+// SLOTS: RunController.Slots.cs keeps three native run slots and the 20-result archive.
 // CO-OP: RunController.Coop.cs binds a host-authoritative companion connection.
 // UI: Presentation/CampaignView.cs and Resources/Expedition.uss. ART: Resources/Art.
 // SAVES: CampaignSaveStore owns checksummed primary/backup records per channel.
@@ -38,7 +39,6 @@ namespace AshenSpire.Application
         private InterruptionState _interruption;
         private AshenSpire.Domain.Original.OriginalContentCatalog _originalContent;
         private OriginalGameSession _originalGame;
-        private OriginalSaveJournal _originalSaves;
         private OriginalProfile _profile;
         private OriginalSaveJournal _profileSaves;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
@@ -75,7 +75,6 @@ namespace AshenSpire.Application
                 _interruption = new InterruptionState();
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
-                _originalSaves = new OriginalSaveJournal("AshenSpire.Unity.Original.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.MapView.Read = ReadMapView; _view.MapView.Write = WriteMapView;
@@ -95,10 +94,11 @@ namespace AshenSpire.Application
                 _view.SettingsRequested += Settings;
                 _view.ReturnRequested += ReturnFromInterruption;
                 _view.FoundationRequested += OpenFoundation;
-                _view.NativeRequested += CreateOriginal;
+                _view.NativeRequested += NewOriginal;
                 _view.NativeContinueRequested += ResumeOriginal;
                 _view.ProfileRequested += ShowOriginalProfile;
                 _view.CoopRequested += OpenCoop;
+                InitSaveSlots(channel); // RunController.Slots.cs: three run slots + legacy migration
                 Menu();
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
@@ -125,7 +125,7 @@ namespace AshenSpire.Application
             if (asset == null) throw new InvalidOperationException("Import native game content using the AshenSpire menu.");
             return JObject.Parse(asset.text);
         }
-        private void CreateOriginal()
+        private void CreateOriginal(int slot)
         {
             LoadOriginalProfile();
             var progression = new AttributeProgression(OriginalRules("progression")); var mechanics = OriginalRules("mechanics");
@@ -133,21 +133,10 @@ namespace AshenSpire.Application
             {
                 player["runId"] = Guid.NewGuid().ToString("N"); player["profileMeta"] = _profile.Snapshot();
                 var supplemental = OriginalRules("event-choices"); supplemental["mapShapeLimits"] = OriginalRules("custom-run-options")["mapShape"]["limits"].DeepClone();
-                BindOriginal(OriginalGameSession.Start(_originalContent, supplemental, mechanics, player, seed));
+                var game = OriginalGameSession.Start(_originalContent, supplemental, mechanics, player, seed);
+                BeginSlot(slot); BindOriginal(game);
                 RefreshOriginal();
             }, _profile.Snapshot());
-        }
-        private void ResumeOriginal()
-        {
-            try
-            {
-                LoadOriginalProfile();
-                var snapshot = _originalSaves.Load(value => OriginalGameSession.Restore(value), out var recovered);
-                BindOriginal(OriginalGameSession.Restore(snapshot));
-                if (recovered) Debug.LogWarning("Recovered the previous native run checkpoint.");
-                RefreshOriginal();
-            }
-            catch (Exception error) { Debug.LogWarning(error.Message); _view.Title(_content, _saves.HasSave, "The native save could not be restored. Existing records are preserved."); }
         }
         private void BindOriginal(OriginalGameSession value)
         {
@@ -156,13 +145,13 @@ namespace AshenSpire.Application
         }
         private void RefreshOriginal()
         {
-            _originalSaves.Save(_originalGame.Snapshot());
+            SaveOriginalSlot();
             if (_profile != null)
             {
                 var run = _originalGame.RunPlayer;
                 foreach (var id in run["foundArmaments"] ?? new JArray()) _profile.CollectArmament(run, (string)id, (string)run["room"]?["source"] ?? "run");
                 if (_originalGame.Phase == OriginalRunPhase.Victory || _originalGame.Phase == OriginalRunPhase.Defeat)
-                    _profile.Finish((string)run["runId"], run, _originalGame.Phase == OriginalRunPhase.Victory);
+                    RecordOriginalResult(run, _originalGame.Phase == OriginalRunPhase.Victory);
                 _profileSaves.Save(_profile.Snapshot());
             }
             var feedbackCue = _view.Native(_originalGame, _content.Feedback);
@@ -249,8 +238,8 @@ namespace AshenSpire.Application
         private void Menu()
         {
             Save();
-            _view.NativeSaveAvailable = _originalSaves?.HasSave == true;
-            _view.Title(_content, _saves.HasSave);
+            _view.NativeSaveAvailable = HasNativeSlotSave();
+            _view.Title(_content, _saves.HasSave, TakeSlotNotice());
         }
         private void Settings(bool reduced, bool fast)
         {
@@ -270,8 +259,7 @@ namespace AshenSpire.Application
             FlushMapView();
             if (_session != null && _saves != null)
                 _saves.Save(_session.State);
-            if (_originalGame != null && _originalSaves != null)
-                _originalSaves.Save(_originalGame.Snapshot());
+            SaveOriginalSlot();
         }
         private void OnApplicationPause(bool paused)
         {
@@ -361,7 +349,8 @@ namespace AshenSpire.Application
             FlushMapView(); // Detaching the map freezes its final camera before shutdown.
             _view.ReturnRequested -= ReturnFromInterruption;
             _view.FoundationRequested -= OpenFoundation;
-            _view.NativeRequested -= CreateOriginal;
+            _view.NativeRequested -= NewOriginal;
+            _view.SlotsRequested -= ShowSaveSlots;
             _view.NativeContinueRequested -= ResumeOriginal;
             _view.ProfileRequested -= ShowOriginalProfile;
             _view.CoopRequested -= OpenCoop;

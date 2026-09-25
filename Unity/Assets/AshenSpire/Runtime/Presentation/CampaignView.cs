@@ -142,7 +142,7 @@ namespace AshenSpire.Presentation
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
-                () => TitleExtras(content, canResume)));
+                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke()));
             Report();
         }
         // Keep earlier playable checkpoints and developer tools accessible without
@@ -187,8 +187,8 @@ namespace AshenSpire.Presentation
             var state = profile.Snapshot(); var progress = state["progress"];
             _body.Add(Text(progress["runs"] + " climbs · " + progress["wins"] + " victories · Act " + progress["maxAct"] + " reached", "lead"));
             foreach (var row in profile.UnlockView()) _body.Add(Text(((bool)row["earned"] ? "Unlocked · " : "Locked · ") + ((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]) + "\n" + (string)row["hint"], "stat"));
-            _body.Add(Text("Recent climbs", "node-title"));
-            foreach (var result in state["results"].Reverse()) _body.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat") + " · Act " + result["act"] + ", floor " + result["floor"] + "\n" + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+            _body.Add(Text("Last " + AshenSpire.Domain.Original.OriginalProfile.ResultArchiveLimit + " climbs", "node-title"));
+            foreach (var result in profile.ResultArchive().Reverse().Select(entry => entry["result"])) _body.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat") + " · Act " + result["act"] + ", floor " + result["floor"] + "\n" + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
             AddButton("native-profile-back", "Back to title", () => MenuRequested?.Invoke()); Report();
         }
         private void Heroes(CampaignDefinition content)
