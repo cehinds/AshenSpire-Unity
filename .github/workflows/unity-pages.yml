@@ -27,65 +27,281 @@ concurrency:
   group: ${{ github.event_name == 'pull_request' && format('unity-checkpoint-pr-{0}', github.event.pull_request.number) || format('unity-checkpoint-{0}-{1}-{2}', github.event_name, github.ref, github.sha) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
-  validate-and-assemble:
+  # Every independent suite, playtest, viewport and sprite style runs as its own
+  # job, so the run takes as long as its slowest single check, not their sum.
+  # The required check keeps the name `validate-and-assemble`: it is the last
+  # job, needs every split job, and fails unless all of them passed.
+  browser-critical:
+    name: browser (${{ matrix.id }})
     if: ${{ !inputs.publish_library_only }}
     runs-on: ubuntu-latest
-    # A stalled browser playtest must not bill the default six hours; a green run
-    # finishes well inside this.
-    timeout-minutes: 240
+    # A stalled browser playtest must not bill the default six hours; the
+    # slowest one (the three-act climb) finishes in about fifteen minutes.
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      # The two longest playtests. They need nothing, so they take runners
+      # before every other job (which waits for start-gate) when the account's
+      # concurrent-job limit is shared with other runs.
+      matrix:
+        include:
+          - id: native-climb
+            name: Complete the native three-act climb with reloads
+            run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
+            evidence: TestResults/NativeBrowser
+          - id: native-features
+            name: Exercise native draft, level-up, flask allocation and merchant transactions
+            run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
+            evidence: TestResults/NativeFeatures
+    env:
+      # Render Unity WebGL with Mesa's lavapipe instead of Chromium's SwiftShader
+      # (about 60 instead of 7 frames per second). The playtests' inputs, waits
+      # and assertions are unchanged; see tools/playwright-lavapipe.cjs.
+      PLAYWRIGHT_MODULE: ${{ github.workspace }}/tools/playwright-lavapipe.cjs
+      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/browser-playtest-setup
+        with:
+          companion: ${{ matrix.id == 'native-coop' }}
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.id }}
+          path: ${{ matrix.evidence }}
+          if-no-files-found: ignore
+
+  # Every job except browser-critical waits for this no-op, so the critical
+  # path is first in the queue for runners.
+  start-gate:
+    name: start (critical path queued first)
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Let the critical path queue first
+        run: echo "browser-critical is queued; starting the other checks."
+
+  browser-playtests:
+    name: browser (${{ matrix.id }})
+    needs: start-gate
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    # A stalled browser playtest must not bill the default six hours; the
+    # slowest one (the three-act climb) finishes in about fifteen minutes.
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      # `--case=i/n` must name the harness's case count, so a new viewport or
+      # style fails loudly until it has its own row here.
+      matrix:
+        include:
+          - id: native-map-320x640
+            name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
+            run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
+            evidence: TestResults/NativeMap
+          - id: native-map-390x844
+            name: Exercise branching maps, fog, camera restoration and touch navigation (390x844)
+            run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=1/5
+            evidence: TestResults/NativeMap
+          - id: native-map-412x915
+            name: Exercise branching maps, fog, camera restoration and touch navigation (412x915)
+            run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=2/5
+            evidence: TestResults/NativeMap
+          - id: native-map-1440x900
+            name: Exercise branching maps, fog, camera restoration and touch navigation (1440x900)
+            run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=3/5
+            evidence: TestResults/NativeMap
+          - id: native-map-390x844-sealstone
+            name: Exercise branching maps, fog, camera restoration and touch navigation (390x844-sealstone)
+            run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=4/5
+            evidence: TestResults/NativeMap
+          - id: native-appearance-animated
+            name: Verify original sprite styles and saved appearance through actual controls (animated)
+            run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance --case=0/4
+            evidence: TestResults/NativeAppearance
+          - id: native-appearance-rendered
+            name: Verify original sprite styles and saved appearance through actual controls (rendered)
+            run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance --case=1/4
+            evidence: TestResults/NativeAppearance
+          - id: native-appearance-classic
+            name: Verify original sprite styles and saved appearance through actual controls (classic)
+            run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance --case=2/4
+            evidence: TestResults/NativeAppearance
+          - id: native-appearance-glyph
+            name: Verify original sprite styles and saved appearance through actual controls (glyph)
+            run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance --case=3/4
+            evidence: TestResults/NativeAppearance
+          - id: mobile
+            name: Exercise dense mobile layout with touch input
+            run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
+            evidence: TestResults/Mobile
+          - id: native-map-shape-phone
+            name: Exercise custom map caps and weights through actual controls (phone)
+            run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape --case=0/2
+            evidence: TestResults/NativeMapShape
+          - id: native-map-shape-desktop
+            name: Exercise custom map caps and weights through actual controls (desktop)
+            run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape --case=1/2
+            evidence: TestResults/NativeMapShape
+          - id: native-card-costs-320x640
+            name: Verify card numbers and resource shortage feedback (320x640)
+            run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts --case=0/3
+            evidence: TestResults/NativeCardCosts
+          - id: native-card-costs-390x844
+            name: Verify card numbers and resource shortage feedback (390x844)
+            run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts --case=1/3
+            evidence: TestResults/NativeCardCosts
+          - id: native-card-costs-1440x900
+            name: Verify card numbers and resource shortage feedback (1440x900)
+            run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts --case=2/3
+            evidence: TestResults/NativeCardCosts
+          - id: native-enemy-art
+            name: Verify painted enemies through target selection and combat
+            run: node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
+            evidence: TestResults/NativeEnemyArt
+          - id: native-coop
+            name: Complete an actual two-player Unity fight and rejoin
+            run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
+            evidence: TestResults/NativeCoopBrowser
+          - id: campaign-full
+            name: Exercise the packaged game with real pointer input
+            run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
+            evidence: TestResults/Browser
+          - id: foundation
+            name: Exercise original foundation controls and compiled map parity
+            run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
+            evidence: TestResults/Foundation
+          - id: seed
+            name: Exercise seed editing and rotation at phone pixel density
+            run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
+            evidence: TestResults/Seed
+          - id: interruption
+            name: Exercise actual browser hiding and explicit return
+            run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
+            evidence: TestResults/Interruption
+          - id: feedback
+            name: Exercise feedback preferences and interruption
+            run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
+            evidence: TestResults/Feedback
+    env:
+      # Render Unity WebGL with Mesa's lavapipe instead of Chromium's SwiftShader
+      # (about 60 instead of 7 frames per second). The playtests' inputs, waits
+      # and assertions are unchanged; see tools/playwright-lavapipe.cjs.
+      PLAYWRIGHT_MODULE: ${{ github.workspace }}/tools/playwright-lavapipe.cjs
+      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/browser-playtest-setup
+        with:
+          companion: ${{ matrix.id == 'native-coop' }}
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.id }}
+          path: ${{ matrix.evidence }}
+          if-no-files-found: ignore
+
+  dotnet-suites:
+    name: dotnet (${{ matrix.id }})
+    needs: start-gate
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      # PARITY_SHARD=i/n assigns every Parity section to exactly one shard, so
+      # the two shards together always run the whole suite.
+      matrix:
+        include:
+          - id: parity-shard-0
+            name: Compare native foundations with the original engine (shard 0 of 2)
+            run: PARITY_SHARD=0/2 dotnet run --project UnityTests/Parity
+            evidence: TestResults
+          - id: parity-shard-1
+            name: Compare native foundations with the original engine (shard 1 of 2)
+            run: PARITY_SHARD=1/2 dotnet run --project UnityTests/Parity
+            evidence: TestResults
+          - id: native-policy
+            name: Play fixed native policies through real game commands
+            run: dotnet run --project UnityTests/Playthrough -- 3 TestResults/NativePolicy
+            evidence: TestResults/NativePolicy
+          - id: coop-policy
+            name: Play the cooperative run policy
+            run: dotnet run --project UnityTests/CoopRun -- --policy
+            evidence: TestResults/CoopRun
+          - id: coop-run
+            name: Check cooperative run rules
+            run: dotnet run --project UnityTests/CoopRun
+            evidence: TestResults/CoopRun
+          - id: host-authority
+            name: Verify cooperative host authority, persistence and packaging guards
+            run: |
+              dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/Checks/TransportChecks.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/NativeChecks/NativeChecks.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/PersistenceChecks/PersistenceChecks.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/StartingChoicesChecks/StartingChoicesChecks.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/CommandGateChecks/CommandGateChecks.csproj -c Release
+              dotnet run --project tools/NativeLan/Tests/PanelStateChecks/PanelStateChecks.csproj -c Release
+              python3 tools/validate-companion.test.py
+              python3 tools/validate-unity-targets.test.py
+            evidence: TestResults
+          - id: rules-and-content
+            name: Test deterministic rules, card, map, viewport, authoring and balance suites
+            run: |
+              dotnet run --project UnityTests/Domain
+              python3 UnityTests/Parity/authoring-checks.py
+              dotnet run --project UnityTests/NativeFeedback
+              dotnet run --project UnityTests/CardText
+              dotnet run --project UnityTests/CardCosts
+              dotnet run --project UnityTests/SpriteStyles
+              dotnet run --project UnityTests/MapShape
+              dotnet run --project UnityTests/MapKnowledge
+              dotnet run --project UnityTests/MapViewport
+              dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
+              dotnet run --project UnityTests/Viewport
+              dotnet run --project UnityTests/RendererPatch
+              dotnet run --project UnityTests/Interruption
+              mkdir -p TestResults/Balance
+              dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
+            evidence: TestResults
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.id }}
+          path: ${{ matrix.evidence }}
+          if-no-files-found: ignore
+
+  node-checks:
+    name: node (listeners, packaging and build history)
+    needs: start-gate
+    if: ${{ !inputs.publish_library_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test deterministic Unity rules
-        run: dotnet run --project UnityTests/Domain
-      - name: Compare native foundations with the original engine
+      - name: Test browser listener lifecycle and control reports
         run: |
-          dotnet run --project UnityTests/Parity
-          python3 UnityTests/Parity/authoring-checks.py
-          dotnet run --project UnityTests/NativeFeedback
-          dotnet run --project UnityTests/CardText
-          dotnet run --project UnityTests/CardCosts
-          dotnet run --project UnityTests/SpriteStyles
-          dotnet run --project UnityTests/MapShape
-          dotnet run --project UnityTests/MapKnowledge
-          dotnet run --project UnityTests/MapViewport
-          dotnet run --project UnityTests/CoopRun
-          dotnet run --project UnityTests/CoopRun -- --policy
-          dotnet run --project UnityTests/Playthrough -- 3 TestResults/NativePolicy
-      - name: Verify cooperative host authority, persistence and packaging guards
-        run: |
-          dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/Checks/TransportChecks.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/NativeChecks/NativeChecks.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/PersistenceChecks/PersistenceChecks.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/StartingChoicesChecks/StartingChoicesChecks.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/CommandGateChecks/CommandGateChecks.csproj -c Release
-          dotnet run --project tools/NativeLan/Tests/PanelStateChecks/PanelStateChecks.csproj -c Release
-          python3 tools/validate-companion.test.py
-          python3 tools/validate-unity-targets.test.py
-      - name: Test authoring file transactions and asset validation
-        run: dotnet run --project UnityTests/Authoring -- TestResults/Authoring/checks.json
-      - name: Test displayed viewport sizing
-        run: dotnet run --project UnityTests/Viewport
-      - name: Test Web renderer staging bounds and patch guards
-        run: dotnet run --project UnityTests/RendererPatch
-      - name: Test interruption state and browser listener lifecycle
-        run: |
-          dotnet run --project UnityTests/Interruption
           node tools/browser-visibility.test.cjs
           node tools/control-report.test.cjs
           node --test tools/native-ui-driver.test.cjs
-      - name: Exercise fixed campaign policies
-        run: |
-          mkdir -p TestResults/Balance
-          dotnet run --project UnityTests/Balance -- GameContent/Unity/campaign.json TestResults/Balance/campaign.json
       - name: Test cross-platform Unity source digest ordering
         run: node --test tools/unity-source-digest.test.mjs
       - name: Verify packaged player matches its source
@@ -98,65 +314,27 @@ jobs:
         run: node tools/unity-archive-hosting.test.mjs
       - name: Verify bounded Pages artifact copying
         run: node tools/unity-git-blobs.test.mjs
-      - name: Install browser test tooling
+
+  validate-and-assemble:
+    if: ${{ always() && !inputs.publish_library_only }}
+    needs: [browser-critical, start-gate, browser-playtests, dotnet-suites, node-checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require every split job to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
         run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-      - name: Start the packaged player server
-        run: python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
-      - name: Exercise feedback preferences and interruption
-        run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Feedback --feedback-only
-      - name: Exercise original foundation controls and compiled map parity
-        run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
-      - name: Exercise actual browser hiding and explicit return
-        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Interruption
-      - name: Exercise seed editing and rotation at phone pixel density
-        run: node tools/interruption-playtest.cjs http://127.0.0.1:8787 TestResults/Seed --seed-only
-      - name: Exercise dense mobile layout with touch input
-        run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Mobile --dpr 3 --touch --mobile-layout --landscape-repeats 3
-      - name: Complete the native three-act climb with reloads
-        run: node tools/native-playtest.cjs http://127.0.0.1:8787 TestResults/NativeBrowser
-      - name: Verify card numbers and resource shortage feedback
-        run: node tools/native-card-cost-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCardCosts
-      - name: Exercise native draft, level-up, flask allocation and merchant transactions
-        run: node tools/native-features-playtest.cjs http://127.0.0.1:8787 TestResults/NativeFeatures
-      - name: Verify original sprite styles and saved appearance through actual controls
-        run: node tools/native-appearance-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAppearance
-      - name: Verify painted enemies through target selection and combat
-        run: node tools/native-enemy-art-playtest.cjs http://127.0.0.1:8787 TestResults/NativeEnemyArt
-      - name: Exercise custom map caps and weights through actual controls
-        run: node tools/native-map-shape-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMapShape
-      - name: Exercise branching maps, fog, camera restoration and touch navigation
-        run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap
-      - name: Complete an actual two-player Unity fight and rejoin
-        run: node tools/native-coop-ci.cjs TestResults/NativeCoopBrowser
-      - name: Exercise the packaged game with real pointer input
-        run: |
-          node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
-      - uses: actions/upload-artifact@v4
+          echo "$RESULTS"
+          node -e "const bad=Object.entries(JSON.parse(process.env.RESULTS)).filter(([,job])=>job.result!=='success');if(bad.length){console.error('Not passed: '+bad.map(([name,job])=>name+'='+job.result).join(', '));process.exit(1);}console.log('Every split job passed.');"
+      - name: Gather every job's evidence into one artifact
         if: always()
+        uses: actions/upload-artifact/merge@v4
         with:
           name: browser-evidence
-          path: |
-            TestResults/Browser
-            TestResults/Feedback
-            TestResults/Authoring
-            TestResults/Balance
-            TestResults/Mobile
-            TestResults/Interruption
-            TestResults/Seed
-            TestResults/Foundation
-            TestResults/NativeBrowser
-            TestResults/NativePolicy
-            TestResults/NativeFeedback
-            TestResults/CardText
-            TestResults/NativeFeatures
-            TestResults/NativeCardCosts
-            TestResults/NativeCoopBrowser
-            TestResults/NativeAppearance
-            TestResults/NativeEnemyArt
-            TestResults/NativeMapShape
-            TestResults/NativeMap
+          pattern: evidence-*
+          separate-directories: true
+
   publish-library:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_library_only }}
     permissions:
