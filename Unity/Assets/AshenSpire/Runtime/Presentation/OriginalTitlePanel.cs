@@ -10,7 +10,7 @@ namespace AshenSpire.Presentation
     public sealed class OriginalTitlePanel : VisualElement
     {
         public OriginalTitlePanel(Action begin, Action resume, bool canResume, Action collection,
-            Action cooperative, Action settings, Action extras)
+            Action cooperative, Action settings, Action extras, Action saves = null)
         {
             AddToClassList("original-title");
             var wordmark = new Label("ASHEN SPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
@@ -18,6 +18,7 @@ namespace AshenSpire.Presentation
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
             Add(Entry("native-continue", "Continue", resume, canResume));
+            if (saves != null) Add(Entry("native-slots", "Load", saves)); // three save slots (OriginalSlotPanel)
             Add(Entry("native-new", "New", begin));
             Add(Entry("native-profile", "Collection", collection));
             Add(Entry("native-coop", "Climb together", cooperative));

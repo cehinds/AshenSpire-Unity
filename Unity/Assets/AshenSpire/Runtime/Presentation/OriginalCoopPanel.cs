@@ -99,6 +99,7 @@ namespace AshenSpire.Presentation
                 case "shop": Shop(); break;
                 case "shrine": Shrine(); break;
                 case "event": Event(); break;
+                case "complete" when RunSummaryView.FromCoopView(_view, _catalog) is RunSummary summary: RunSummaryView.Mount(_body, summary, null); break;
                 case "complete": Text((string)Scene["result"] == "victory" ? "THE SPIRE FALLS SILENT" : "ASH RETURNS TO ASH", "node-title"); Text("Your party's climb is complete.", "lead"); break;
                 default: Text("Waiting for the next room…", "lead"); break;
             }
@@ -162,6 +163,7 @@ namespace AshenSpire.Presentation
                 var id = (string)enemy["id"];
                 var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
                     () => { _target = id; Render(); }, id == _target, out _);
+                EnemyTelegraphView.Attach(target, EnemyTelegraphView.FromSnapshot(enemy, Body, _balance));
                 target.SetEnabled(!friendly); stage.Add(target);
             }
             _body.Add(stage);
