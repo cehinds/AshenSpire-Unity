@@ -73,6 +73,25 @@ row in the table below — no game-code changes.
 > an `@font-face` block and a row here — the fallbacks keep the game readable
 > until then.
 
+## Optional music folder (`music/`)
+
+Free third-party tracks for the **Custom music folder** setting (Settings → Advanced → Debug → *Custom music folder*, set to `music/` when served). The folder is **not bundled** into `AshenSpire.html`; with the setting empty (the default) the game plays only its built-in generated score. Every license below was read on the track's own page.
+
+| File | Context | Title | Author | License | Source |
+|---|---|---|---|---|---|
+| `title/the_wraiths_of_winter.ogg` | title | The Wraiths of Winter | HitCtrl | CC-BY 3.0 | https://opengameart.org/content/fantasy-music-the-wraiths-of-winter |
+| `map/rpg_ambient_4_the_dark_wood.ogg` | map | RPG Ambient 4 (The Dark Wood) | HitCtrl | CC-BY 3.0 | https://opengameart.org/content/rpg-ambient-4-the-dark-woods |
+| `combat/omens.mp3` | combat | Omens | Eliot Corley (el-corleo) | CC-BY 3.0 | https://opengameart.org/content/omens |
+| `combat/a_fight_in_the_fields.mp3` | combat | A Fight in the Fields | Jonathan Shaw (www.jshaw.co.uk) | CC-BY 3.0 | https://opengameart.org/content/a-fight-in-the-fields-rpg-orchestral-essentials-combat-music |
+| `elite/five_armies.mp3` | elite | Five Armies | Kevin MacLeod (incompetech.com) | CC-BY 4.0 | https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100366 |
+| `boss/blackmoor_colossus.mp3` | boss | Colossal Boss Battle Theme (Blackmoor Colossus) | Matthew Pablo (http://www.matthewpablo.com) | CC-BY 3.0 | https://opengameart.org/content/colossal-boss-battle-theme |
+| `boss/final_confrontation.mp3` | boss | Final Confrontation | tcarisland | CC-BY 4.0 | https://opengameart.org/content/final-confrontation |
+| `shop/the_old_tower_inn.mp3` | shop | Medieval: The Old Tower Inn | RandomMind | CC0 | https://opengameart.org/content/medieval-the-old-tower-inn |
+| `rest/peaceful_scene.ogg` | rest | Peaceful Scene | Peter Eastman (peastman) | CC-BY 3.0 | https://opengameart.org/content/peaceful-scene |
+| `victory/the_precipice_of_victory.mp3` | victory | The Precipice of Victory | Jonathan Shaw (www.jshaw.co.uk) | CC-BY 3.0 | https://opengameart.org/content/the-precipice-of-victory-rpg-orchestral-essentials-battle-results-music |
+
+Kevin MacLeod's requested line: "Five Armies" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+
 ## Code
 
 | Code | Used for | Source | License |
