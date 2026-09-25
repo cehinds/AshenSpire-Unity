@@ -1,0 +1,10 @@
+{
+  "id": "sample-ember-pack",
+  "name": "Sample Ember Pack",
+  "version": "1.0.0",
+  "gameVersionMin": "0.5.5",
+  "loadOrder": 100,
+  "dependsOn": [],
+  "author": "AshenSpire",
+  "description": "Example pack: adds the Ember Brand card and makes Shield Bash hit a little harder."
+}

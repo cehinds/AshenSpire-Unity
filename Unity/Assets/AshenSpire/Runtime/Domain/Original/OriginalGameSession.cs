@@ -29,6 +29,7 @@ namespace AshenSpire.Domain.Original
         public JArray Hand => _combat?.Hand ?? new JArray();
         public JArray Enemies => _combat?.Enemies ?? new JArray();
         public int Turn => _combat?.Turn ?? 0;
+        public System.Collections.Generic.IReadOnlyList<EnemyTelegraph> Telegraphs() => _combat != null ? _combat.Telegraphs() : Array.Empty<EnemyTelegraph>();
         public JArray EventChoices => _run.EventChoices();
         public JArray DraftChoices => _run.DraftChoices();
         private JArray _lastEvents = new JArray();
