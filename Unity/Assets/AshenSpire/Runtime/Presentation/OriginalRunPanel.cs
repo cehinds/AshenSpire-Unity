@@ -126,13 +126,14 @@ namespace AshenSpire.Presentation
             stage.Add(OriginalCombatLayout.Player(figure, _game.Player));
             var enemies = _game.Enemies.OfType<JObject>().Where(x => (bool?)x["alive"] == true).ToArray();
             if (!enemies.Any(x => (string)x["id"] == _target)) _target = (string)enemies.FirstOrDefault()?["id"];
-            EnemyImage = null;
+            EnemyImage = null; var telegraphs = _game.Telegraphs();
             foreach (var enemy in enemies)
             {
                 var id = (string)enemy["id"]; var definition = _game.Catalog.Record("enemies", (string)enemy["enemyId"]);
                 var target = OriginalCombatLayout.Enemy(enemy, (string)definition["name"], "native-target-" + id,
                     () => { _target = id; Render(); }, id == _target, out var image);
                 if (id == _target) EnemyImage = image;
+                EnemyTelegraphView.Attach(target, telegraphs.FirstOrDefault(t => t.InstanceId == id));
                 stage.Add(target);
             }
             _root.Add(stage);

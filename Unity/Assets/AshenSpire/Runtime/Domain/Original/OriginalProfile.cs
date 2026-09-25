@@ -13,6 +13,7 @@ namespace AshenSpire.Domain.Original
 {
     public sealed class OriginalProfile
     {
+        public const int ResultArchiveLimit = 20; // FIFO: the oldest result leaves first.
         private readonly OriginalContentCatalog _catalog;
         private JObject _state;
         public OriginalProfile(OriginalContentCatalog catalog)
@@ -37,7 +38,7 @@ namespace AshenSpire.Domain.Original
             foreach (var key in new[] { "runs", "wins", "maxAct" }) _ = Count(progress[key]);
             if (Count(progress["wins"]) > Count(progress["runs"])) throw new ArgumentException("Profile wins exceed runs.");
             foreach (var key in new[] { "bosses", "wonClasses" }) if (!(progress[key] is JArray rows) || rows.Any(x => x.Type != JTokenType.String)) throw new ArgumentException("Invalid profile progress " + key);
-            if (((JArray)draft["results"]).Count > 20 || ((JArray)draft["results"]).Any(x => !(x is JObject))) throw new ArgumentException("Invalid profile history.");
+            if (((JArray)draft["results"]).Count > ResultArchiveLimit || ((JArray)draft["results"]).Any(x => !(x is JObject))) throw new ArgumentException("Invalid profile history.");
             profile._state = draft; return profile;
         }
         public static bool IsCustomRun(JObject custom)
@@ -62,8 +63,18 @@ namespace AshenSpire.Domain.Original
             foreach (var id in bosses.Values<string>()) AddOnce((JArray)p["bosses"], id);
             if (victory) { p["wins"] = checked(Count(p["wins"]) + 1); AddOnce((JArray)p["wonClasses"], classId); }
             var fresh = EvaluateUnlocks(draft); foreach (var id in fresh.Values<string>()) AddOnce((JArray)draft["unlocked"], id);
-            ((JArray)draft["completedRunIds"]).Add(runId); var results = (JArray)draft["results"]; results.Add(result); while (results.Count > 20) results[0].Remove();
+            ((JArray)draft["completedRunIds"]).Add(runId); var results = (JArray)draft["results"]; results.Add(result); while (results.Count > ResultArchiveLimit) results[0].Remove();
             _state = draft; return new JObject { ["duplicate"] = false, ["result"] = result.DeepClone(), ["newUnlocks"] = fresh };
+        }
+        // The keyed result archive, oldest first. Finish appends a run ID and its result
+        // together, so the newest IDs align with the retained results; a result without
+        // a matching ID (imported history) is listed with a null key rather than dropped.
+        public JArray ResultArchive()
+        {
+            var results = (JArray)_state["results"]; var ids = ((JArray)_state["completedRunIds"]).Values<string>().ToArray(); var archive = new JArray();
+            for (var i = 0; i < results.Count; i++)
+            { var idIndex = ids.Length - results.Count + i; archive.Add(new JObject { ["key"] = idIndex >= 0 ? new JValue(ids[idIndex]) : JValue.CreateNull(), ["result"] = results[i].DeepClone() }); }
+            return archive;
         }
         public JArray EvaluateUnlocks(JObject profile = null)
         {

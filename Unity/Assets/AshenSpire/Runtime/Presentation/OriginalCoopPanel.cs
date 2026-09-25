@@ -163,6 +163,7 @@ namespace AshenSpire.Presentation
                 var id = (string)enemy["id"];
                 var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
                     () => { _target = id; Render(); }, id == _target, out _);
+                EnemyTelegraphView.Attach(target, EnemyTelegraphView.FromSnapshot(enemy, Body, _balance));
                 target.SetEnabled(!friendly); stage.Add(target);
             }
             _body.Add(stage);
