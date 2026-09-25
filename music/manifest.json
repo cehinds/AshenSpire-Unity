@@ -25,5 +25,57 @@
   ],
   "victory": [
     "victory/the_precipice_of_victory.mp3"
-  ]
+  ],
+  "_credits": {
+    "title/the_wraiths_of_winter.ogg": {
+      "credit": "title/the_wraiths_of_winter.ogg",
+      "author": "HitCtrl",
+      "license": "CC BY 3.0"
+    },
+    "map/rpg_ambient_4_the_dark_wood.ogg": {
+      "credit": "map/rpg_ambient_4_the_dark_wood.ogg",
+      "author": "HitCtrl",
+      "license": "CC BY 3.0"
+    },
+    "combat/omens.mp3": {
+      "credit": "combat/omens.mp3",
+      "author": "Eliot Corley (el-corleo)",
+      "license": "CC BY 3.0"
+    },
+    "combat/a_fight_in_the_fields.mp3": {
+      "credit": "combat/a_fight_in_the_fields.mp3",
+      "author": "Jonathan Shaw (www.jshaw.co.uk)",
+      "license": "CC BY 3.0"
+    },
+    "elite/five_armies.mp3": {
+      "credit": "elite/five_armies.mp3",
+      "author": "Kevin MacLeod (incompetech.com)",
+      "license": "CC BY 4.0"
+    },
+    "boss/blackmoor_colossus.mp3": {
+      "credit": "boss/blackmoor_colossus.mp3",
+      "author": "Matthew Pablo (http://www.matthewpablo.com)",
+      "license": "CC BY 3.0"
+    },
+    "boss/final_confrontation.mp3": {
+      "credit": "boss/final_confrontation.mp3",
+      "author": "tcarisland",
+      "license": "CC BY 4.0"
+    },
+    "shop/the_old_tower_inn.mp3": {
+      "credit": "shop/the_old_tower_inn.mp3",
+      "author": "RandomMind",
+      "license": "CC0"
+    },
+    "rest/peaceful_scene.ogg": {
+      "credit": "rest/peaceful_scene.ogg",
+      "author": "Peter Eastman (peastman)",
+      "license": "CC BY 3.0"
+    },
+    "victory/the_precipice_of_victory.mp3": {
+      "credit": "victory/the_precipice_of_victory.mp3",
+      "author": "Jonathan Shaw (www.jshaw.co.uk)",
+      "license": "CC BY 3.0"
+    }
+  }
 }
