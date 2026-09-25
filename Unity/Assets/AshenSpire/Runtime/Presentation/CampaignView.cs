@@ -56,6 +56,7 @@ namespace AshenSpire.Presentation
             _reducedMotion = reducedMotion;
             _fast = fast;
             _muted = muted;
+            FeelDriver.Load(); FeelDriver.Configure(reducedMotion, fast); // F07 feel profile: all motion timing
             MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
             MapView.SetMapSurface = SetMapSurface;
             MapView.Report = () => Report();
@@ -434,8 +435,8 @@ namespace AshenSpire.Presentation
             mute.AddToClassList("setting");
             mute.RegisterValueChangedCallback(e => { _muted = e.newValue; MuteRequested?.Invoke(e.newValue); Report(); });
             _body.Add(mute);
-            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
-            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             ExtendSettings(motion, fast, mute); // CampaignView.PlayerSettings.cs: grouped OriginalPlayerSettings sections.
             _body.Add(Text("HOW TO PLAY", "heading"));
             _body.Add(Text("Choose a card and its target, then confirm Play. Actions refresh each turn. MP and stamina pay the additional costs shown on cards; use Azure charges to restore MP or Catch Breath to recover stamina in a native solo fight.\n\nRead every enemy's intent before ending your turn. Guard absorbs damage. Status effects can change damage, resources and upcoming turns. Watch their counters and the results of each action.\n\nWeapons supply cards. Prepare equipment sets between battles; switching prepared sets during a solo fight pays the displayed cost. Shrines restore resources, reallocate flask charges and sell attribute improvements. Every attribute point has a benefit.\n\nIn a shared climb, vote for a route, play your own hand and end your own turn. The enemy phase starts when the active party finishes. You can target allies with supported cards and flasks.\n\nScroll or use More cards on smaller screens. Progress saves after accepted commands. Co-op progress belongs to the companion host; rejoin your saved seat after disconnecting.", "lead"));
@@ -563,9 +564,10 @@ namespace AshenSpire.Presentation
             var surface = _interruptionCover ?? _root;
             var controls = surface.Query<Button>().ToList().Cast<VisualElement>()
                 .Concat(surface.Query<TextField>().ToList()).Concat(surface.Query<Toggle>().ToList()).Concat(surface.Query<DropdownField>().ToList()).Concat(surface.Query<SliderInt>().ToList()).Concat(surface.Query<IntegerField>().ToList())
-                .Where(x => !string.IsNullOrEmpty(x.name))
-                .Select(x => new ControlBounds { Id = x.name, X = x.worldBound.x, Y = x.worldBound.y,
-                    Width = x.worldBound.width, Height = x.worldBound.height, Enabled = x.enabledInHierarchy }).ToArray();
+                .Where(x => !string.IsNullOrEmpty(x.name) && !FeelDriver.InOverlay(x))
+                .Select(x => (Control: x, Bound: FeelDriver.SettledBound(x))) // settled: feel transforms are visual only
+                .Select(x => new ControlBounds { Id = x.Control.name, X = x.Bound.x, Y = x.Bound.y,
+                    Width = x.Bound.width, Height = x.Bound.height, Enabled = x.Control.enabledInHierarchy }).ToArray();
             var width = _root.resolvedStyle.width;
             var height = _root.resolvedStyle.height;
             // Rotation and detached elements can expose unmeasured bounds. Never
@@ -577,7 +579,7 @@ namespace AshenSpire.Presentation
             var report = Newtonsoft.Json.JsonConvert.SerializeObject(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
                 LayoutAttempts = _controlReportAttempts + 1,
-                Labels = surface.Query<Label>().ToList().Select(label => label.text).ToArray() },
+                Labels = surface.Query<Label>().ToList().Where(label => !FeelDriver.InOverlay(label)).Select(label => label.text).ToArray() }, // hover copies are not controls
                 new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
             // Web console messages have a finite byte limit. Expanded creators
             // and inventories must keep their complete read-only report rather

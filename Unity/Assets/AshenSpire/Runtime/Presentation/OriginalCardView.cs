@@ -39,6 +39,7 @@ namespace AshenSpire.Presentation
         private static readonly Dictionary<string, Font> GlyphFontCache = new Dictionary<string, Font>(StringComparer.Ordinal);
         public string FullText { get; }
         public Label Art { get; }
+        internal Func<OriginalCardView> Ghost { get; }
 
         public OriginalCardView(OriginalContentCatalog catalog, JObject card, JObject cost,
             JObject player, bool selected, Action clicked, string controlId, Font glyphFont = null) : base(clicked)
@@ -113,6 +114,10 @@ namespace AshenSpire.Presentation
                 (tagNames.Count == 0 ? "" : string.Join(", ", tagNames) + ". ") + description +
                 (shortage == null ? "" : " " + shortage);
             tooltip = FullText;
+            // card.hover lift/scale, only inside a hand rail. The lift is drawn by an unnamed,
+            // unpickable copy in FeelDriver's overlay, so this control never moves or reorders.
+            Ghost = () => { var copy = new OriginalCardView(catalog, card, cost, player, selected, null, "", glyphFont); copy.Art.text = Art.text; copy.Art.style.unityFont = Art.style.unityFont; return copy; };
+            FeelDriver.HandCardHover(this);
         }
 
         private static void ApplyGlyphFont(Label label, string glyph)

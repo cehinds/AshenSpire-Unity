@@ -56,6 +56,7 @@ namespace AshenSpire.Presentation
             if (settings == null) return;
             _reducedMotion = settings.ReducedMotion;
             _fast = settings.QuickAnimations;
+            FeelDriver.Configure(_reducedMotion, _fast); // F07: settings screen drives motion timing too
             _muted = settings.Muted;
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
             ApplyPalette();
