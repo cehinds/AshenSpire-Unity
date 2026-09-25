@@ -63,10 +63,19 @@ all archived players and independently tested channel saves. See
   depending on the base (3-5)"): offer **Standard** (`leanStandard`, class presets,
   default) and **Assign points** (`lean`, all 1s + a content-configured pool of 3);
   per-class opening hand `handRules.classStarting` (base 3–5, +1 at primary stat 3,
-  cap 6). Only hand and stats changed ("Only hand + stats"). The bot gate
-  (`UnityTests/Playthrough -- 3`) still wins 0/12 on 2026-09-24 and was not retuned,
-  so the regenerated Reaver seed-1 replay ends in Defeat (act 3) and
-  `tools/native-playtest.cjs`'s three-act-victory check cannot pass until it wins.
+  cap 6; owner 2026-09-25 "start with 4-6 cards" raised the floor to 4, so all 1s
+  open on 4/4/4/5). Only hand and stats changed ("Only hand + stats").
+- [x] Bot gate records wins, gates errors (owner, 2026-09-25: "Record wins, gate
+  errors"). `UnityTests/Playthrough -- 3` fails on any exception, stuck or rejected
+  turn, save/resume divergence or command budget exhausted without a terminal
+  state, but a clean Defeat is recorded, not a failure; it prints and writes
+  (`results.json` `winTable`, `totals`) a per-class win table. On 2026-09-25 it
+  recorded 0/12 wins, 12 clean Defeats, 0 errors, 160 fights (Reaver acts 3,2,2;
+  Starseer 1,1,2; Rogue 2,3,2; Herald 3,2,2). `tools/native-playtest.cjs` replays the
+  Reaver seed-1 trace to its recorded terminal state (Defeat, act 3) instead of
+  requiring victory. Balance is a separate task.
+- [ ] Retune balance so the policy bots win again (win rate is measured by the gate,
+  not required by it).
 - [ ] Decide the lean-scale gaps still open on 2026-09-24: the Poise row and Ward
   meters (O-5), and dodge's `(DEX − 10) / 2` pivot at DEX 1–4 (O-6).
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and

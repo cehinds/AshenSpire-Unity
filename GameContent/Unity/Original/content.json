@@ -21210,7 +21210,7 @@
         "stat": "strength",
         "baseline": 1,
         "pointsPerCard": 2,
-        "minimum": 3,
+        "minimum": 4,
         "maximum": 6
       },
       "rogue": {
@@ -21219,7 +21219,7 @@
         "stat": "dexterity",
         "baseline": 1,
         "pointsPerCard": 2,
-        "minimum": 3,
+        "minimum": 4,
         "maximum": 6
       },
       "herald": {
@@ -21228,7 +21228,7 @@
         "stat": "wisdom",
         "baseline": 1,
         "pointsPerCard": 2,
-        "minimum": 3,
+        "minimum": 4,
         "maximum": 6
       },
       "starseer": {
@@ -21237,7 +21237,7 @@
         "stat": "intelligence",
         "baseline": 1,
         "pointsPerCard": 2,
-        "minimum": 3,
+        "minimum": 4,
         "maximum": 6
       }
     },

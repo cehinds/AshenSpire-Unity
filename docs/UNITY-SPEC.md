@@ -115,20 +115,23 @@ minimum/maximum, reading the attribute as the sheet shows it:
 | Hand capacity | 7 | INT | 1 | 5 | 1–30 |
 
 **Per-class opening hand** (owner, 2026-09-24: "start with 4-6 cards depending on
-the base (3-5)"; "Class base 3–5, +1 from stats"). `handRules.classStarting` gives
+the base (3-5)"; "Class base 3–5, +1 from stats"; 2026-09-25: "start with 4-6
+cards", so every class opens on at least 4). `handRules.classStarting` gives
 each class its own opening-draw rule with the same formula, replacing the shared
 row for that class:
 
 | Class | Base | Stat | Baseline | Points per card | Min–max | Standard preset | All 1s |
 |---|---|---|---|---|---|---|---|
-| Reaver | 3 | STR | 1 | 2 | 3–6 | 4 (STR 3) | 3 |
-| Rogue | 4 | DEX | 1 | 2 | 3–6 | 5 (DEX 3) | 4 |
-| Herald | 4 | WIS | 1 | 2 | 3–6 | 5 (WIS 3) | 4 |
-| Starseer | 5 | INT | 1 | 2 | 3–6 | 6 (INT 3) | 5 |
+| Reaver | 3 | STR | 1 | 2 | 4–6 | 4 (STR 3) | 4 |
+| Rogue | 4 | DEX | 1 | 2 | 4–6 | 5 (DEX 3) | 4 |
+| Herald | 4 | WIS | 1 | 2 | 4–6 | 5 (WIS 3) | 4 |
+| Starseer | 5 | INT | 1 | 2 | 4–6 | 6 (INT 3) | 5 |
 
 So the opening hand is the class base, +1 once the class's primary stat reaches 3
-(lean maximum 4 keeps it at +1), never more than 6. An Assign-points character at
-all 1s opens on its base unless it invests in its primary stat. Each entry is
+(lean maximum 4 keeps it at +1), never fewer than 4 and never more than 6. An
+Assign-points character at all 1s opens on its base unless it invests in its
+primary stat, except the Reaver, whose base 3 is lifted to the floor of 4 (so its
+STR 3 bonus adds nothing over all 1s). Each entry is
 validated like any hand rule, and the content catalog refuses entries for unknown
 classes. When a solo fight is created its snapshot takes the class's entry as its
 `starting` rule (`HandRules.ForClass`) and drops `classStarting`, so saved fights
@@ -156,7 +159,21 @@ ported: the values are content. The native UI has no discard picker; with the
 shipped rules no prompt arises unless a combat set swap leaves retained cards past
 capacity, when ending the turn is refused until a picker exists.
 Checks: `UnityTests/HandRules` (mirrors web `tests/hand-rules.test.mjs`, then the
-per-class openings 4/5/5/6 for Standard presets and 3/4/4/5 at all 1s).
+per-class openings 4/5/5/6 for Standard presets and 4/4/4/5 at all 1s).
+
+**Bot gate: record wins, gate errors** (owner, 2026-09-25: "Record wins, gate
+errors"). The policy playthrough (`dotnet run --project UnityTests/Playthrough -- 3
+<dir>`, 4 classes × 3 seeds through the real public commands) must bring every run
+to a terminal Victory or Defeat cleanly: it fails on an exception, an accepted
+command that changes no state (stuck turn), a rejected command, an invalid command
+that is not rejected atomically, a save/resume divergence, or the 3,000-command
+budget running out without a terminal state. A Defeat is recorded, not a failure:
+the gate prints a per-class table (wins/runs, act reached, fights won) and totals
+and writes them to `results.json` (`winTable`, `totals`). Win rate is a balance
+measurement tuned separately, not a gate. Likewise the compiled-player replay
+(`tools/native-playtest.cjs`) must reach the terminal state its recorded trace
+ends in (currently the Reaver seed-1 Defeat in act 3), with every per-step check
+unchanged, and the Chronicle must record that result.
 
 **Not ported (open gaps, owner 2026-09-24).** O-5: the web Poise
 rating row and Ward meters are not ported; poise stays on its authored mechanics.

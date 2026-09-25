@@ -201,7 +201,8 @@ Ash Staff). Solo combat follows the web hand rules (O-4, ported 2026-09-24:
 fixed turn draw 2, capacity 7, cards retained) with a per-class opening hand
 (`handRules.classStarting`, owner "Class base 3–5, +1 from stats"): base Reaver 3,
 Rogue 4, Herald 4, Starseer 5, +1 once the primary stat (STR/DEX/WIS/INT) reaches 3,
-capped at 6 — so the Standard presets open on 4/5/5/6;
+floored at 4 (owner 2026-09-25) and capped at 6 — so the Standard presets open on
+4/5/5/6 and all 1s on 4/4/4/5;
 co-op, LAN and saves without a hand-rules snapshot keep the legacy draw. The
 Poise row and Ward meters (O-5) are not ported, and dodge keeps `(DEX − 10) / 2`
 (O-6); see [UNITY-SPEC.md](UNITY-SPEC.md).

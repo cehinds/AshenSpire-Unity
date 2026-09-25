@@ -15,13 +15,14 @@ void Check(bool ok, string label) { if (!ok) throw new Exception("FAIL: " + labe
 void Equal(JToken actual, JToken expected, string label) { if (!JToken.DeepEquals(actual, expected)) throw new Exception("FAIL: " + label + "\nActual: " + actual + "\nExpected: " + expected); checks++; }
 void Throws(Action action, string label) { try { action(); } catch (ArgumentException) { checks++; return; } catch (InvalidOperationException) { checks++; return; } throw new Exception("FAIL: accepted " + label); }
 
-// The shipped defaults are the owner's 2026-09-24 values (web src/content/handRules.js).
+// The shipped defaults are the owner's 2026-09-24 values (web src/content/handRules.js), with the
+// 2026-09-25 per-class opening floor of four.
 Equal(shipped, JObject.Parse(@"{retain:true,promptDiscard:false,discardLimit:10,replaceDiscards:false,overflow:'discard',reshuffle:true,drawMode:'fixed',
  starting:{base:4,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:2,minimum:3,maximum:15},
- classStarting:{reaver:{base:3,statEnabled:true,stat:'strength',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
-  rogue:{base:4,statEnabled:true,stat:'dexterity',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
-  herald:{base:4,statEnabled:true,stat:'wisdom',baseline:1,pointsPerCard:2,minimum:3,maximum:6},
-  starseer:{base:5,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:2,minimum:3,maximum:6}},
+ classStarting:{reaver:{base:3,statEnabled:true,stat:'strength',baseline:1,pointsPerCard:2,minimum:4,maximum:6},
+  rogue:{base:4,statEnabled:true,stat:'dexterity',baseline:1,pointsPerCard:2,minimum:4,maximum:6},
+  herald:{base:4,statEnabled:true,stat:'wisdom',baseline:1,pointsPerCard:2,minimum:4,maximum:6},
+  starseer:{base:5,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:2,minimum:4,maximum:6}},
  turn:{base:2,statEnabled:true,stat:'intelligence',baseline:4,pointsPerCard:5,minimum:2,maximum:10},
  capacity:{base:7,statEnabled:true,stat:'intelligence',baseline:1,pointsPerCard:5,minimum:1,maximum:30}}"), "shipped hand rules");
 Check(File.ReadAllText(Path.Combine(root, "Unity/Assets/AshenSpire/Resources/Original/content.json")) == contentText, "Resources content.json mirrors GameContent byte for byte");
@@ -210,12 +211,16 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
  if (resumed.Phase == OriginalRunPhase.Combat) Equal(resumed.Hand.Count, Math.Min((int)player["draw"]!, (int)catalog.Data()["balance"]!["handMax"]!), "saved legacy fight: hand discarded, derived Draw drawn");
 }
 // 12. per-class opening hands (owner, 2026-09-24: "start with 4-6 cards depending on the base (3-5)";
-// "Class base 3–5, +1 from stats"). Base: Reaver 3, Rogue 4, Herald 4, Starseer 5; +1 once the class's
-// primary stat (STR, DEX, WIS, INT) reaches 3; never more than six.
+// "Class base 3–5, +1 from stats"; 2026-09-25: "start with 4-6 cards" — every class opens on at least four).
+// Base: Reaver 3, Rogue 4, Herald 4, Starseer 5; +1 once the class's primary stat (STR, DEX, WIS, INT)
+// reaches 3; never fewer than four, never more than six.
 {
  var primary = new Dictionary<string, string> { ["reaver"] = "strength", ["rogue"] = "dexterity", ["herald"] = "wisdom", ["starseer"] = "intelligence" };
  var standard = new Dictionary<string, int> { ["reaver"] = 4, ["rogue"] = 5, ["herald"] = 5, ["starseer"] = 6 };
- var allOnes = new Dictionary<string, int> { ["reaver"] = 3, ["rogue"] = 4, ["herald"] = 4, ["starseer"] = 5 };
+ var allOnes = new Dictionary<string, int> { ["reaver"] = 4, ["rogue"] = 4, ["herald"] = 4, ["starseer"] = 5 };
+ var classBase = new Dictionary<string, int> { ["reaver"] = 3, ["rogue"] = 4, ["herald"] = 4, ["starseer"] = 5 };
+ // base + floor((primary − 1) ÷ 2), clamped to the 4–6 opening range.
+ int Expected(string cls, int primaryValue) => Math.Clamp(classBase[cls] + Math.Max(0, primaryValue - 1) / 2, 4, 6);
  var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(directory, "progression.json"))));
  JObject Hero(string cls, JObject attributes) => new JObject { ["classId"] = cls, ["maxHp"] = 10000, ["hp"] = 10000, ["maxMana"] = 0, ["energyMax"] = 3, ["drawPerTurn"] = 2, ["attributes"] = attributes, ["relicIds"] = new JArray() };
  CombatSession Open(string cls, JObject attributes) => new CombatSession(catalog, mechanics, new RandomStreams(2309), Hero(cls, attributes), Deck(), new[] { "wanderingSoldier" }, ResolveCard, 1, null, shipped);
@@ -226,7 +231,9 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
   var rule = (JObject)HandRules.ForClass(shipped, cls)["starting"]!;
   Equal(rule, shipped["classStarting"]![cls], cls + " resolves its own opening rule");
   Equal(HandRules.ScaledCards(rule, preset), standard[cls], cls + " Standard preset opening");
-  Equal(HandRules.ScaledCards(rule, ones), allOnes[cls], cls + " all-1s opening is the class base");
+  Equal((int)rule["minimum"]!, 4, cls + " opening floor is four");
+  Equal(HandRules.ScaledCards(rule, ones), allOnes[cls], cls + " all-1s opening is the class base, floored at four");
+  Equal(Expected(cls, 1), allOnes[cls], cls + " all-1s table agrees with the formula");
   var fight = Open(cls, preset);
   Equal(fight.Hand.Count, standard[cls], cls + " Standard fight opens on " + standard[cls]);
   Equal(fight.HandRulesSnapshot!["starting"], rule, cls + " fight snapshots its class rule");
@@ -234,11 +241,13 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
   Equal(Open(cls, ones).Hand.Count, allOnes[cls], cls + " all-1s fight opens on " + allOnes[cls]);
   var two = (JObject)ones.DeepClone(); two[primary[cls]] = 2;
   Equal(HandRules.ScaledCards(rule, two), allOnes[cls], cls + " primary 2 adds nothing");
+  var three = (JObject)ones.DeepClone(); three[primary[cls]] = 3;
+  Equal(HandRules.ScaledCards(rule, three), Expected(cls, 3), cls + " primary 3 opens on " + Expected(cls, 3));
   var four = (JObject)ones.DeepClone(); four[primary[cls]] = 4;
-  Equal(HandRules.ScaledCards(rule, four), allOnes[cls] + 1, cls + " primary 4 still +1");
+  Equal(HandRules.ScaledCards(rule, four), Expected(cls, 4), cls + " primary 4 still +1 over the base");
   var huge = (JObject)ones.DeepClone(); huge[primary[cls]] = 99;
   Equal(HandRules.ScaledCards(rule, huge), 6, cls + " capped at six");
-  // Only the primary stat counts: INT 3 on a Reaver opens on the Reaver base.
+  // Only the primary stat counts: INT 3 on a Reaver opens on the Reaver all-1s hand.
   var other = (JObject)ones.DeepClone(); other[cls == "starseer" ? "strength" : "intelligence"] = 3;
   Equal(HandRules.ScaledCards(rule, other), allOnes[cls], cls + " off-primary stat adds nothing");
  }
