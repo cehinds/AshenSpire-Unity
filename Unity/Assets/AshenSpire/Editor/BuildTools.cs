@@ -126,17 +126,26 @@ namespace AshenSpire.Editor
                 var destination = Root + "/Resources/" + track.ResourcePath + Path.GetExtension(listed);
                 if (!File.Exists(source)) throw new FileNotFoundException("Missing authored music file", source);
                 Directory.CreateDirectory(Path.GetDirectoryName(destination));
-                if (!File.Exists(destination) || !File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(destination)))
+                var copied = !File.Exists(destination) || !File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(destination));
+                if (copied)
                     File.Copy(source, destination, true);
-                AssetDatabase.ImportAsset(destination);
+                if (copied || AssetImporter.GetAtPath(destination) == null) AssetDatabase.ImportAsset(destination);
                 var importer = AssetImporter.GetAtPath(destination) as AudioImporter;
                 if (importer == null) throw new InvalidDataException("Music did not import as audio: " + destination);
                 var sample = importer.defaultSampleSettings;
-                sample.loadType = AudioClipLoadType.Streaming;
-                sample.preloadAudioData = false;
-                importer.defaultSampleSettings = sample;
-                importer.loadInBackground = true;
-                importer.SaveAndReimport();
+                // Keep the credited originals untouched. Native Vorbis encoding at
+                // 0.5 avoids shipping a >100 MiB Windows ZIP after adding the score.
+                // Listening acceptance is separate from import/package validation.
+                if (sample.loadType != AudioClipLoadType.Streaming || sample.preloadAudioData ||
+                    !Mathf.Approximately(sample.quality, .5f) || !importer.loadInBackground)
+                {
+                    sample.loadType = AudioClipLoadType.Streaming;
+                    sample.preloadAudioData = false;
+                    sample.quality = .5f;
+                    importer.defaultSampleSettings = sample;
+                    importer.loadInBackground = true;
+                    importer.SaveAndReimport();
+                }
             }
         }
 
