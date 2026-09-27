@@ -3,54 +3,54 @@
   "buildNumber": 22,
   "stage": "Foundation in progress",
   "unityVersion": "6000.6.0f1",
-  "sourceCommit": "80f4421f2cac900bc90cafcd7b17e113a027c1a2",
-  "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
-  "builtAt": "2026-09-27T18:29:39.8870922Z",
+  "sourceCommit": "af13ed9bfb5f70709b1cf48b5d5dd1462ca0f450",
+  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+  "builtAt": "2026-09-27T19:42:30.2896717Z",
   "files": {
-    "Web/Build/Web.data": "dd2ba3ea69ab5430c6d4f724ef86294e46493487acb84fa43bd0d8dfe4a49895",
+    "Web/Build/Web.data": "e591e35a246b5d2ee2f8353fa3cc9e2fa7bd21ca7bf0c62b560153a7a6bcce32",
     "Web/Build/Web.framework.js": "48bd0293411c15e72c6c8d40b49e6566874dfe42a55bb080f2766b05e22695a5",
-    "Web/Build/Web.loader.js": "0d3e7979de48a294ff463d8109e706c8a22151bc8e242afd4ea5dcf23b4f0836",
-    "Web/Build/Web.wasm": "fd205280a9e8a3d367827bf65f694222f5260a70c06127f69745fcaaebe84b5e",
+    "Web/Build/Web.loader.js": "a287a024ead7e4bf8fd6eb70acfc8a507ca78534167052a1075829c9d6b31149",
+    "Web/Build/Web.wasm": "e57928cc89d8e5f00fbc4685cb6f9725a4c97c933b0c1cd2986beacab98a4a50",
     "Web/StreamingAssets/Mods/sample-ember-pack/cards.json": "c1e86c76a3a2bdab7c1f8f854bef48eaf66129e5284fbaa9573c7bb8effa7d35",
     "Web/StreamingAssets/Mods/sample-ember-pack/mod.json": "80a559fa466555aff2ef7b5d02b66b3387316af71bdc5f2f3dfeb169c0af300f",
-    "Web/build-source.json": "2693edf1125274a8bbec5c7e81b1fd4fbdf75a0cc56df19306988903bf9167a5",
-    "Web/index.html": "93c51ec36879887e634b3b39707b5ec90cf468ccbd3a81107594ed5a31d52650",
+    "Web/build-source.json": "d5c98fc3c6fa7a5de5a239df45de7aa7f660d7e7c6c7a336555ef8f54f65988b",
+    "Web/index.html": "353179c405af029d0b612a361707fd0453369772ec168a43ef0f75d72f317a97",
     "Web/renderer-workaround.json": "09ae65478d1c1add15cb79b484eb21db6c2de67637b44f89c27bd1b2a2ecbf5a",
-    "Web.zip": "85c8e5c93e873dd2572f1f46842929f15ebce5d765689aa121439dbdfa1255e3",
-    "Windows.zip": "223f22e4858df07d6d0c307e4950fe29c19dbc6900621a7ddd562f7e3756e249",
-    "Android.apk": "eb749511b27d8b257a1257c87b21aac73fd6ed4430621f0a8850bfee60d2db8f",
-    "Windows.build-source.json": "075bbf7afaa1b7396677dcb1c0a800423cba762f0ac8ebeb6eb591a0cb30084b",
-    "Android.build-source.json": "76df30528403bc835d85dd8a18646784ba2277c366e62fb6d12076e95085ca36",
-    "Companion.zip": "8f1b30332260c57f1a88cd40559c9b31c60c8c985cb13f1b3dec62aec8735747",
-    "Companion.build.json": "f47c563ad1893f3a622d0e48508fba8921581fb0e8cfc5f45915d68108242f5e"
+    "Web.zip": "14ba5d5310177be74188843dccf0a81f4f293040efa7662efd06168b93404640",
+    "Windows.zip": "e181eed47969393c6b2ace7bd7e9d0389f6bf3f9cd9a7ca5616683bfb8c5613f",
+    "Android.apk": "f00c1644e62745697a4932b7ab06c3908721d4def4a072fe51fa37796405fc9a",
+    "Windows.build-source.json": "72ff38f707bffa4d13feafdff321aed09681b19ca0cd034cf62ec7627e361e30",
+    "Android.build-source.json": "f9ff3c56bad16ff4e29686655b330614897774399375185df5e6a467bb96d3ea",
+    "Companion.zip": "50c24c398d12c2126fd29268ddfe108d6943bcd03a7e0903d6e588dbd50f29c3",
+    "Companion.build.json": "b9a84e69698cacc49c80759a10bcb67c6cdc137f25b0d634c1eb3aa4bfe4bdf9"
   },
   "platforms": {
     "Web": {
-      "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
-      "builtAt": "2026-09-27T18:29:39.8870922Z",
+      "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+      "builtAt": "2026-09-27T19:42:30.2896717Z",
       "version": "0.0.22.0",
       "buildNumber": 22,
       "target": "Web",
       "files": {
-        "Build/Web.data": "dd2ba3ea69ab5430c6d4f724ef86294e46493487acb84fa43bd0d8dfe4a49895",
+        "Build/Web.data": "e591e35a246b5d2ee2f8353fa3cc9e2fa7bd21ca7bf0c62b560153a7a6bcce32",
         "Build/Web.framework.js": "48bd0293411c15e72c6c8d40b49e6566874dfe42a55bb080f2766b05e22695a5",
-        "Build/Web.loader.js": "0d3e7979de48a294ff463d8109e706c8a22151bc8e242afd4ea5dcf23b4f0836",
-        "Build/Web.wasm": "fd205280a9e8a3d367827bf65f694222f5260a70c06127f69745fcaaebe84b5e",
+        "Build/Web.loader.js": "a287a024ead7e4bf8fd6eb70acfc8a507ca78534167052a1075829c9d6b31149",
+        "Build/Web.wasm": "e57928cc89d8e5f00fbc4685cb6f9725a4c97c933b0c1cd2986beacab98a4a50",
         "StreamingAssets/Mods/sample-ember-pack/cards.json": "c1e86c76a3a2bdab7c1f8f854bef48eaf66129e5284fbaa9573c7bb8effa7d35",
         "StreamingAssets/Mods/sample-ember-pack/mod.json": "80a559fa466555aff2ef7b5d02b66b3387316af71bdc5f2f3dfeb169c0af300f",
-        "index.html": "93c51ec36879887e634b3b39707b5ec90cf468ccbd3a81107594ed5a31d52650",
+        "index.html": "353179c405af029d0b612a361707fd0453369772ec168a43ef0f75d72f317a97",
         "renderer-workaround.json": "09ae65478d1c1add15cb79b484eb21db6c2de67637b44f89c27bd1b2a2ecbf5a"
       }
     },
     "Windows": {
-      "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
-      "builtAt": "2026-09-27T18:22:28.4953059Z",
+      "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+      "builtAt": "2026-09-27T19:26:06.5527922Z",
       "version": "0.0.22.0",
       "buildNumber": 22,
       "target": "Windows",
       "files": {
         "AshenSpire.exe": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d",
-        "AshenSpire_Data/Managed/AshenSpire.Application.dll": "319ce03ae0ca416c8d37f99d240951a02880325f7aee1520cdb94b9f43291112",
+        "AshenSpire_Data/Managed/AshenSpire.Application.dll": "728347931e3f8b73447faf938d345b1e18bab3771c93343d1f4e54914c1deed8",
         "AshenSpire_Data/Managed/AshenSpire.Domain.dll": "008f7eea4f8123bc293a8b6c52598f6d5128b3b2ba1d1c45032c14da38df1a85",
         "AshenSpire_Data/Managed/AshenSpire.Original.dll": "a8a57941b788d7b85a490e914b3823d02a282f7c3f813eb974bba093586f5945",
         "AshenSpire_Data/Managed/AshenSpire.Presentation.dll": "865b7d4c887f146e2e540ce84c94724cbee64cf371b039b5d57c824efb5b640a",
@@ -176,7 +176,7 @@
         "AshenSpire_Data/StreamingAssets/Mods/sample-ember-pack/cards.json": "c1e86c76a3a2bdab7c1f8f854bef48eaf66129e5284fbaa9573c7bb8effa7d35",
         "AshenSpire_Data/StreamingAssets/Mods/sample-ember-pack/mod.json": "80a559fa466555aff2ef7b5d02b66b3387316af71bdc5f2f3dfeb169c0af300f",
         "AshenSpire_Data/app.info": "7e00b554eb150271d0699c6614ca02284fd99dad41c20e48825ab0529e97af2b",
-        "AshenSpire_Data/boot.config": "f9c6345fb5ec964b5f3a8fd1e3805544185c3635c4e1d94479d7e66248455409",
+        "AshenSpire_Data/boot.config": "1dff3db9bc083c49e74a616ec38a892df123b3b8747c6ebb05f4fdce66d75fc2",
         "AshenSpire_Data/globalgamemanagers": "424f47d9c235b2c86377fd76c181749aaf69b3bb0b21734d7f5871554bfd3cf3",
         "AshenSpire_Data/globalgamemanagers.assets": "522f2082e41f8d7090f8b133ca9ca90bfbff720fb1d566c2a4927e3a40f9ed3c",
         "AshenSpire_Data/globalgamemanagers.assets.resS": "39dd38fcd8dd95d41d6d55fe16a448d29fe2c31d9a162c825c24c6d99a893d7a",
@@ -214,13 +214,13 @@
       }
     },
     "Android": {
-      "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
-      "builtAt": "2026-09-27T18:25:43.1532284Z",
+      "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+      "builtAt": "2026-09-27T19:37:46.8586766Z",
       "version": "0.0.22.0",
       "buildNumber": 22,
       "target": "Android",
       "files": {
-        "AshenSpire.apk": "eb749511b27d8b257a1257c87b21aac73fd6ed4430621f0a8850bfee60d2db8f"
+        "AshenSpire.apk": "f00c1644e62745697a4932b7ab06c3908721d4def4a072fe51fa37796405fc9a"
       }
     }
   }

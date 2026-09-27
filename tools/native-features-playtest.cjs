@@ -10,7 +10,17 @@ let browser,ui;
  await ui.open(process.argv[2]);await ui.click('native-new');ui.check(ui.has('native-begin'),'the Standard preset can begin at once (owner, 2026-09-24)');
  await ui.click('foundation-mode-lean');ui.check(!ui.has('native-begin'),'Assign points: unspent points cannot start a run');
  ui.check(!ui.controls.Controls.some(c=>c.Id.includes('tuned')),'Tuned is absent');ui.check(!ui.controls.Controls.some(c=>c.Id==='foundation-mode-standard'||c.Id==='foundation-mode-pointbuy'),'legacy Standard and Assign points modes are not offered');await ui.useStandard();ui.check(ui.has('native-begin'),'returning to Standard can begin');
- await ui.fill('native-seed','1');await ui.click('native-custom-toggle');await ui.choose('native-deck-mode',2);await ui.click('native-mod-hoarder');await ui.shot('01-custom-draft-setup');
+  await ui.fill('native-seed','1');await ui.click('native-custom-toggle');await ui.choose('native-deck-mode',2);await ui.click('native-mod-hoarder');
+  // This test accepts paid room services, not campaign balance. Use the actual
+  // Custom Climb editor to put merchants near the fixed shrine; the opening
+  // fight, draft, prices and payments still use normal game rules.
+  await ui.click('native-map-shape-toggle');
+  await ui.fill('native-map-floors-input','7');await ui.fill('native-map-columns-input','2');
+  const weights=[...new Set(ui.controls.Controls.filter(c=>/^native-map-weight-[^-]+$/.test(c.Id)).map(c=>c.Id))];
+  ui.check(weights.includes('native-map-weight-merchant'),'custom service fixture has authored merchant weight');
+  await ui.fill('native-map-weight-merchant-input','100');
+  for(const id of weights.filter(id=>id!=='native-map-weight-merchant'))await ui.fill(id+'-input','0');
+  await ui.shot('01-custom-draft-setup');
  await ui.command('native-begin');ui.check(ui.state.phase==='Draft','Draft starts before the map');ui.check(ui.state.run.custom.deckMode==='draft','chosen deck mode retained');
  const pickDraft=async()=>{let choice;await ui.until(()=>{choice=ui.controls?.Controls.find(c=>c.Id.startsWith('native-draft-')&&c.Enabled);return !!choice;},'rendered draft offers');await ui.command(choice.Id);};
  await pickDraft();

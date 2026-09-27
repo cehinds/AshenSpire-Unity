@@ -1,0 +1,24 @@
+{
+  "success": true,
+  "checks": [
+    "screen shake defaults off",
+    "enabling shake enables its intensity slider",
+    "disabling screen shake disables its intensity slider",
+    "real slider input changes Master volume",
+    "real slider input changes Music volume",
+    "real slider input changes Sound effects",
+    "real slider input changes Interface sounds",
+    "real slider input changes Text size",
+    "setting persists through player reload: Master volume · 61%",
+    "setting persists through player reload: Music volume · 62%",
+    "setting persists through player reload: Sound effects · 62%",
+    "setting persists through player reload: Interface sounds · 58%",
+    "setting persists through player reload: Text size · 123%",
+    "screen shake on persists through reload",
+    "inventory replaces map",
+    "opening and closing inventory preserves run state",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "physicalDevice": false
+}

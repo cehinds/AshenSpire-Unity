@@ -118,6 +118,11 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  }
  const firstLoadStarted=Date.now();await load();const firstLoadMilliseconds=Date.now()-firstLoadStarted;
  const expectedVersion=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../Published/build.json'),'utf8')).version;
+ if(upgradeIndex<0){
+  const source=await page.request.get(new URL('build-source.json',url).href);
+  assert(source.ok(),'compiled campaign source receipt is available');
+  fs.writeFileSync(path.join(output,'build-source.json'),await source.body());
+ }
  const previousVisibleVersion=await page.locator('#channel').innerText();
  if(upgradeIndex<0)assert(previousVisibleVersion.endsWith('UNITY '+expectedVersion),'visible build version differs from package');
  const downloadedResourceBytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,item)=>sum+(item.encodedBodySize||0),0));
