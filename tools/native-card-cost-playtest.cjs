@@ -45,6 +45,10 @@ let browser,ui,observations=[];
   // Confirmed from domain output: UnityTests/CardText/WeaponTextChecks.cs asserts this text for the Standard Reaver {3,1,2,1,1}.
   ui.check(labels().some(label=>/^Deal 9 damage\./.test(label)&&label.includes('Includes +4 total damage from Attack Rating.')),'weapon description displays 9 total with included 4 Attack Rating contribution (Standard Reaver, STR 3)');
   cleanCosts();ui.check(ui.has('native-play'),'affordable weapon card enables Play');capture('weapon-total');await ui.shot('01-weapon-total-and-cost');
+  // Card selection is a toggle. Clear this inspection before the replay selects
+  // its first card, which can be this same weapon after the lean-hand update.
+  await select(weapon.instance.instanceId);
+  ui.check(!ui.has('native-play'),'clicking the inspected card again clears selection');
   // The first three payments are the committed real-play oracle; they exhaust
   // actions while leaving a live enemy and unplayed cards for refusal inspection.
   for(const action of opening.slice(1,4)){

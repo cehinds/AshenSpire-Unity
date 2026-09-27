@@ -23,9 +23,12 @@ namespace AshenSpire.Application
         private void MusicCoop()
         {
             if (_music == null || _coopSnapshot == null) return;
-            var scene = _coopSnapshot["game"]?["scene"];
+            // JSON null is a JValue, so ?. alone does not protect child access.
+            // Lobby snapshots deliberately contain game:null before starting.
+            var game = _coopSnapshot["game"] as Newtonsoft.Json.Linq.JObject;
+            var scene = game?["scene"] as Newtonsoft.Json.Linq.JObject;
             var kind = (bool?)_coopSnapshot["lobby"]?["started"] == true ? (string)scene?["kind"] : "lobby";
-            _music.Enter(MusicSceneMap.ForCoopScene(kind, (string)scene?["pool"], (string)scene?["result"]), (int?)_coopSnapshot["game"]?["actNumber"] ?? 1);
+            _music.Enter(MusicSceneMap.ForCoopScene(kind, (string)scene?["pool"], (string)scene?["result"]), (int?)game?["actNumber"] ?? 1);
         }
         private void MusicSuspended(bool suspended) { if (_music != null) _music.SetSuspended(suspended); }
         private void MusicStop() { if (_music != null) _music.Enter(MusicScene.Quit); }

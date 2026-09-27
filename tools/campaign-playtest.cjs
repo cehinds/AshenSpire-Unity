@@ -215,7 +215,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  await shot('21-draw-pile');await click('inspection-back');assert(JSON.stringify(state)===beforePile&&revision===beforePileRevision,'draw grouping changed state');
  await inspect('draw-pile','Draw order stays hidden.');
  await resize(390,844);
- const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');if(upgradeIndex<0)captureNextImpact='26-action-impact';await click('play',true);if(upgradeIndex<0){await until(()=>feedbackEvents.some(e=>e.Status==='completed'),'first feedback settled');await Promise.all(impactCaptures);assert(feedbackEvents.some(e=>e.Status==='impact'&&Math.abs(e.PlayerX)>0),'normal feedback did not move');}
+ const beforePlay=JSON.stringify(state);const attackIndex=state.Hand.findIndex(id=>authoredContent.Cards.find(c=>c.Id===id).Tags.includes('attack'));assert(attackIndex>=0,'movement probe needs an attack card');await click('card-'+attackIndex);await shot('05-card-selected');if(upgradeIndex<0)captureNextImpact='26-action-impact';await click('play',true);if(upgradeIndex<0){await until(()=>feedbackEvents.some(e=>e.Status==='completed'),'first feedback settled');await Promise.all(impactCaptures);assert(feedbackEvents.some(e=>e.Status==='impact'&&Math.abs(e.PlayerX)>0),'normal feedback did not move');}
  const commandsChangedState=beforePlay!==JSON.stringify(state);await shot('06-card-played');
  await inspect('discard-pile','cards · grouped by name','22-discard-pile');
  await inspect('action-history','energy spent.','23-action-history');
