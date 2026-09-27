@@ -249,7 +249,7 @@ namespace AshenSpire.Editor
                     stream.Write(name, 0, name.Length);
                     var bytes = File.ReadAllBytes(Path.Combine(Repository, path));
                     var extension = Path.GetExtension(path).ToLowerInvariant();
-                    if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf" }.Contains(extension))
+                    if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf", ".mp3", ".ogg", ".wav", ".aiff", ".aif", ".flac" }.Contains(extension))
                         bytes = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace("\r\n", "\n"));
                     stream.Write(bytes, 0, bytes.Length);
                 }

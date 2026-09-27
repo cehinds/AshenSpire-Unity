@@ -1,5 +1,5 @@
 // Match BuildTools.SourceDigest: normalize relative paths BEFORE ordinal sorting.
-// Text hashes use LF; image/font bytes remain unchanged. No platform receipts or
+// Text hashes use LF; image/font/audio bytes remain unchanged. No platform receipts or
 // game assets are modified here. readBytes receives the canonical relative path.
 import {createHash} from 'node:crypto';
 
@@ -9,7 +9,7 @@ export function unitySourceDigest(relativePaths,readBytes){
  for(const path of paths){
   hash.update(path);
   const bytes=readBytes(path);
-  hash.update(/\.(png|jpg|webp|ttf|otf)$/i.test(path)?bytes:bytes.toString('utf8').replaceAll('\r\n','\n'));
+  hash.update(/\.(png|jpg|webp|ttf|otf|mp3|ogg|wav|aiff|aif|flac)$/i.test(path)?bytes:bytes.toString('utf8').replaceAll('\r\n','\n'));
  }
  return hash.digest('hex');
 }
