@@ -1,99 +1,56 @@
 {
-  "version": "0.0.13.0",
-  "buildNumber": 13,
-  "stage": "Foundation in progress",
-  "unityVersion": "6000.6.0f1",
-  "sourceCommit": "b353058064d6c765ecc64144d7b7d7eba09d883c",
-  "sourceDigest": "e162744f76dbfc50212711190eaa9fa00bfb62c492f71bd495f75282436b3105",
-  "builtAt": "2026-09-07T21:58:00.8083611Z",
+  "version": "0.0.22.0",
+  "buildNumber": 22,
+  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+  "builtAt": "2026-09-27T19:42:30.2896717Z",
   "webCompiled": true,
   "windowsCompiled": true,
   "androidCompiled": true,
   "companionPackaged": true,
   "currentPlayerSuites": [
     {
-      "suite": "CardReadability",
+      "suite": "EnemyCatalog",
       "success": true,
-      "checks": 168,
-      "viewports": [
-        {
-          "viewport": {
-            "width": 320,
-            "height": 640
-          },
-          "checks": 56,
-          "physicalDevice": false,
-          "screenshots": 4
-        },
-        {
-          "viewport": {
-            "width": 390,
-            "height": 844
-          },
-          "checks": 56,
-          "physicalDevice": false,
-          "screenshots": 4
-        },
-        {
-          "viewport": {
-            "width": 1440,
-            "height": 900
-          },
-          "checks": 56,
-          "physicalDevice": false,
-          "screenshots": 4
-        }
-      ],
-      "screenshots": 12
+      "checks": 78,
+      "physicalDevice": false
     },
     {
-      "suite": "FullClimb",
+      "suite": "CooperativeBrowserHost",
       "success": true,
-      "checks": 657,
-      "commands": 280,
-      "acts": 3,
-      "screenshots": 25
+      "checks": 8,
+      "physicalDevice": false
     },
     {
-      "suite": "CoopHost",
+      "suite": "CooperativeBrowserGuest",
       "success": true,
-      "checks": 8
+      "checks": 6,
+      "physicalDevice": false
     },
     {
-      "suite": "CoopGuest",
+      "suite": "EnemyCombat",
       "success": true,
-      "checks": 6
+      "checks": 66,
+      "physicalDevice": false
+    },
+    {
+      "suite": "PerformanceSampling",
+      "success": true,
+      "checks": 2,
+      "physicalDevice": false
+    },
+    {
+      "suite": "FoundationCampaignFull",
+      "success": true,
+      "fullRunVictory": true,
+      "resumeStateMatches": true,
+      "physicalDevice": false
     }
   ],
-  "pureCardChecks": {
-    "costs": 2133,
-    "authoredCardProfiles": 182,
-    "text": 1499
-  },
-  "packageChecks": {
-    "companion": 442,
-    "windowsAndAndroidFiles": 160,
-    "rootPackage": 18,
-    "companionRestart": 22
-  },
-  "originalNodeTests": {
-    "passed": 136,
-    "failed": 0
-  },
-  "browserRuntimeErrors": 0,
-  "physicalPhoneTested": false,
-  "nativeWindowsInteractionTested": false,
-  "audibleListeningTested": false,
-  "iosBuilt": false,
-  "fullOriginalGameplayParity": false,
-  "originalHtmlVisualParity": false,
-  "featuredScreenshots": 8,
-  "evidence": "CombatReadability/Guide.md",
-  "qaRepositoryPath": "docs/qa/unity-combat-readability-0.0.13.0",
-  "harnessHistory": {
-    "initial": "Fixed 120px footer reservation prevented clicking visible menu; failed receipt preserved.",
-    "retry": "43.999916px target failed exact 44px comparison; failed receipt preserved.",
-    "retry2": "Both phones passed 56 checks each; desktop interrupted, no aggregate pass.",
-    "final": "Measured actual footer with 0.1px tolerance; all three sizes passed 168 checks."
-  }
+  "ownerAccepted": false,
+  "physicalDevice": false,
+  "limits": [
+    "These selected browser suites do not close the roadmap.",
+    "Performance uses software WebGL, not target-device budgets.",
+    "Historical captures retain their original source receipts in docs/qa/unity-build-22."
+  ]
 }

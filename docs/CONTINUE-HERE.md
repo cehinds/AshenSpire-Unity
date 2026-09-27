@@ -34,12 +34,16 @@ no compiled exports to publish. Build 20's live player and four download URLs
 were checked. This archive publication does not promote Dev/Test/Release/Main
 or provide owner acceptance.
 
-Build 22 is also published: [play the candidate](https://cehinds.github.io/AshenSpire-Unity/builds/build-c14bbb1903aec5a6601c/Web/).
-Archive deployment [36342562149](https://github.com/cehinds/AshenSpire-Unity/actions/runs/36342562149)
-succeeded from export commit `93540d6`. The live hub now identifies Dev and Test
+Corrected build 22 is published: [play the candidate](https://cehinds.github.io/AshenSpire-Unity/builds/build-515749744afd909728e6/Web/).
+Archive deployment [36347303524](https://github.com/cehinds/AshenSpire-Unity/actions/runs/36347303524)
+succeeded with export commit `b41e32f`. The live hub now identifies Dev and Test
 as build 14, with Release/Main awaiting a selected build. Neither channel has
 been promoted to build 22. The source digest is
-`c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc`.
+`54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea`.
+All 42 applicable runtime CI checks passed at that checkpoint. See
+[build-22 QA](qa/unity-build-22/README.md) and [draft PR #56](https://github.com/cehinds/AshenSpire-Unity/pull/56).
+The public screenshot-selection fix is prepared in the PR; Pages permits only
+`dev` deployment, so the owner must merge it before the new review tooling is live.
 
 The following build-14 paragraphs are retained as historical evidence only:
 
@@ -93,15 +97,16 @@ Known gaps carried over:
 | F15/F16 | build 22 consumes shake/intensity and optional hit-stop; mods remain opt-in and desktop only, outside co-op |
 | F04 | build 22 sends per-seat damage previews including modifiers; legacy snapshots explicitly label base damage; dedicated intent art remains open |
 | F11 | `SaveCoopProgress` already records completed co-op runs and discoveries; compiled end-to-end history/unlock acceptance remains |
-| F07 | `campaign-playtest.cjs` feedback assertions need the rebuilt player |
+| F07 | corrected build 22 passes campaign feedback and mobile CI; owner feel acceptance and remaining animation hooks are open |
 | F10 | the legacy save key is no longer written (no rollback) |
 
 ## Next three user stories (F00)
 
-1. **US-0.1** Extend compiled painted-enemy coverage from Blight Hound/Grave
-   Wisp to all 19 enemies (every encounter, solo and co-op), then ask the owner
-   for visual acceptance. Start from `tools/native-enemy-art-playtest.cjs` and
-   `GameContent/Unity/Original/enemy-art.json`.
+1. **US-0.1** Review the 19-enemy compiled compendium gallery and obtain owner
+   visual acceptance; then extend actual encounter/solo/co-op coverage.
+   Build 22 renders all 19 portraits at phone and desktop sizes (78 checks).
+   The catalog gallery is not every encounter. See [build-22 QA](qa/unity-build-22/README.md),
+   `tools/native-enemy-catalog-playtest.cjs` and `native-enemy-art-playtest.cjs`.
 2. **US-0.2** Current-source compiled Custom/Sealed/Draft/Endless interaction and
    save/resume checks. Start from `tools/native-features-playtest.cjs` and
    `tools/native-map-shape-playtest.cjs`; domain in `OriginalCustomRunRules.cs`.

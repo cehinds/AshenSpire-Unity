@@ -22,9 +22,25 @@ four original/Unity screen comparisons are delivered in the task's `outputs`
 directory. Portrait registration is proven; every actual encounter is not.
 
 Initial CI found a real co-op lobby music bug: JSON `game:null` was accessed as an
-object. Commit `af13ed9` fixes it and requires rebuilt exports plus a new co-op
-receipt. The above images retain their original digest; they are not relabelled
-as captures from the corrected export.
+object. Commit `af13ed9` fixes it. Corrected exports in `b41e32f` match digest
+`54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea`.
+The original images above retain their original digest. The corrected player
+passes a fresh 19-enemy gallery (78 checks), enemy combat/feedback/reload (66),
+packaged-companion two-client fight/reward/exact-hand rejoin (eight host/six
+guest checks), foundation campaign victory/reload, and performance sampling.
+The foundation campaign is distinct from the original native climb.
+
+[All 42 applicable runtime CI checks passed](https://github.com/cehinds/AshenSpire-Unity/actions/runs/36346337322)
+at `b41e32f`, with the [fast gate](https://github.com/cehinds/AshenSpire-Unity/actions/runs/36346337124)
+also green. `Published/BuildReview` holds 24 current screenshots and the generated
+review guide; `Published/validation.json` records six source-matched suites.
+
+Pages allows deployment only from `dev`. Later review metadata needs the new
+`attachBuildReviews` assembler support in this PR before it can replace the
+archive's first-export screenshot selection. Original player/download commits
+remain immutable. Nine regression checks cover exact-byte identity, digest
+matching, failed captures, missing files and path safety; existing history and
+channel-storage checks also pass. Owner merge is required to publish this tooling.
 
 CI also exposed stale probes: re-selecting an inspected card toggled it off,
 and all-enemy redraws invalidated an assumption that the last asset report was

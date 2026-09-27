@@ -45,7 +45,7 @@ if(campaign.errors.length||!campaign.fullRunVictory||!campaign.resumeStateMatche
 // The campaign harness records its served version separately; its folder must
 // also carry the source receipt supplied by the caller's exact build run.
 receipt(config.campaign);
-suites.push({suite:'CampaignFull',success:true,fullRunVictory:true,resumeStateMatches:true,physicalDevice:false});
+suites.push({suite:'FoundationCampaignFull',success:true,fullRunVictory:true,resumeStateMatches:true,physicalDevice:false});
 if(screenshots.length>32)throw Error('Published gallery exceeds the hosting limit.');
 fs.mkdirSync(output,{recursive:true});
 for(const [source,target] of copies)fs.copyFileSync(source,target);
@@ -53,5 +53,6 @@ fs.writeFileSync(path.join(output,'enemy-gallery.json'),JSON.stringify(gallery,n
 fs.writeFileSync(path.join(output,'performance.json'),JSON.stringify(performance,null,2)+'\n');
 fs.writeFileSync(path.join(output,'Guide.md'),`# Build ${build.buildNumber} review\n\nVersion ${build.version}; source \`${build.sourceDigest}\`.\n\nThese images come from this compiled Web player using normal controls. All 19 painted portraits load; two players complete a shared fight, rewards and exact-hand rejoin. The gallery does not prove every encounter or physical device.\n\nFeatures F00–F17 remain unaccepted. Owner visual/profile acceptance, complete mode and inventory coverage, listening, target-device budgets, Android and graphical Windows play, iOS delivery and real-player pacing remain open. See [the roadmap](https://github.com/cehinds/AshenSpire-Unity/blob/feature/unity-roadmap-completion/docs/Unity-Roadmap.md) and [draft PR 56](https://github.com/cehinds/AshenSpire-Unity/pull/56).\n`);
 fs.writeFileSync(path.join(root,'Published/presentation.json'),JSON.stringify({guide:'Published/BuildReview/Guide.md',screenshots},null,2)+'\n');
+fs.appendFileSync(path.join(output,'Guide.md'),'\n## Captures\n\n'+screenshots.map(file=>'- ['+path.basename(file,'.png').replaceAll('-',' ')+']('+path.basename(file)+')').join('\n')+'\n');
 fs.writeFileSync(path.join(root,'Published/validation.json'),JSON.stringify({version:build.version,buildNumber:build.buildNumber,sourceDigest:build.sourceDigest,builtAt:build.builtAt,webCompiled:true,windowsCompiled:true,androidCompiled:true,companionPackaged:true,currentPlayerSuites:suites,ownerAccepted:false,physicalDevice:false,limits:['These selected browser suites do not close the roadmap.','Performance uses software WebGL, not target-device budgets.','Historical captures retain their original source receipts in docs/qa/unity-build-22.']},null,2)+'\n');
 console.log('Published review: '+screenshots.length+' current screenshots and '+suites.length+' suite summaries.');

@@ -118,8 +118,8 @@ build and verify it. Completion selects `0.1.0.0`.
 
 User stories (open work, from the detailed checklist below):
 
-- US-0.1 Extend compiled painted-enemy coverage from hounds/wisp to all 19
-  enemies and obtain owner visual acceptance.
+- US-0.1 Obtain owner acceptance of the compiled 19-enemy portrait gallery and
+  extend actual solo/co-op encounter coverage. The build-22 catalog passes 78 checks.
 - US-0.2 Run current-source compiled Custom/Sealed/Draft/Endless interaction
   and save/resume checks.
 - US-0.3 Check card numbers, target availability, affordability, rejection
@@ -595,8 +595,18 @@ all archived players and independently tested channel saves. See
 - [x] Pass 217 source/art checks across all 19 painted mappings, 31 compiled solo
   checks on hounds/wisp with nine screenshots, and eight host/six guest co-op
   fight/reward/rejoin checks with nine non-lobby screenshots; zero browser errors.
-- [ ] Extend build 11 compiled art coverage beyond hounds/wisp and obtain owner
-  visual acceptance. Source mapping coverage does not prove every enemy on screen.
+- [x] Render all 19 painted portraits in the build-22 compiled compendium at
+  phone and desktop sizes: 78 checks and 38 screenshots. All phone portraits
+  visually inspected; [QA receipts](qa/unity-build-22/README.md).
+- [ ] Obtain owner visual acceptance and complete every solo/co-op encounter's
+  art coverage. A compendium portrait is not an exercised encounter.
+- [x] Rebuild build 22 for Web/Windows/Android and companion; 451 companion,
+  163 native exported-file and 20 package checks. Corrected source digest:
+  `54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea`.
+- [x] Build-22 phone/desktop visual flow (148 checks), card costs (152),
+  settings persistence/inventory navigation, Draft/paid services (20), and
+  corrected two-client packaged-companion fight/reward/exact-hand rejoin
+  (eight host/six guest checks). These are bounded flows, not complete acceptance.
 - [x] Complete the build 10 scripted native browser run: 657 checks, 280
   commands, 22 fights, three acts, two reloads and Chronicle checks.
 - [ ] Complete owner acceptance and the broader profile unlock/new-creation,

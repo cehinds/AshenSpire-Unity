@@ -9,6 +9,7 @@ import {materializePublished} from './unity-git-blobs.mjs';
 import {planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
 import {planArchiveHosting} from './unity-archive-hosting.mjs';
 import {createHash} from 'node:crypto';
+import {attachBuildReviews} from './unity-build-reviews.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
 // Explicit local preview refs never move branches or alter the deployment defaults.
 const channelRefs=Object.fromEntries(channels.map(channel=>[channel,process.env[`UNITY_PAGES_${channel.toUpperCase()}_REF`]||`origin/${channel}`]));
@@ -21,6 +22,7 @@ mkdirSync(out,{recursive:true});writeFileSync(join(out,'.nojekyll'),'');
 // Branch names are display data; generated IDs alone become directory names.
 const batches=git(['for-each-ref','--format=%(refname:short)','refs/remotes/origin/']).trim().split('\n').filter(ref=>ref.startsWith('origin/')&&ref!=='origin/HEAD'&&!channels.includes(ref.slice(7))).map(ref=>({ref,branch:ref.slice(7),id:'batch-'+createHash('sha256').update(ref.slice(7)).digest('hex').slice(0,16)}));
 const history=collectHistory(root,{...channelRefs,...Object.fromEntries(batches.map(batch=>[batch.id,batch.ref]))});
+attachBuildReviews(root,history,[...Object.values(channelRefs),...batches.map(batch=>batch.ref)]);
 const selectedChannels=[];
 for(const channel of channels){
  const ref=channelRefs[channel];let manifest;
@@ -54,7 +56,10 @@ function buildPage(build,prefix){
   if(!Array.isArray(presentation.screenshots)||presentation.screenshots.length>32||presentation.screenshots.some(path=>typeof path!=='string'||!build.paths.includes(path)||!/^Published\/[A-Za-z0-9_./-]+\.png$/.test(path)))throw Error('Invalid archived screenshots');
   shots=presentation.screenshots;
  }
- const gallery=shots.length?`<section><h2>Screenshots from this build</h2><div class="shots">${shots.map(path=>{const url=`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${build.commit}/${path}`;return `<a href="${url}"><img loading="lazy" src="${url}" alt="${escape(path.split('/').pop())}"></a>`;}).join('')}</div></section>`:'';
+ const review=build.review,shotCommit=review?.commit||build.commit;
+ if(review)shots=review.screenshots;
+ const reviewLinks=review?`<p><a href="${repo}/blob/${review.commit}/${escape(review.guide)}">Current review notes</a> · <a href="${repo}/blob/${review.commit}/${review.validation}">Source-matched validation</a></p>`:'';
+ const gallery=shots.length?`<section><h2>Screenshots from this build</h2>${reviewLinks}<div class="shots">${shots.map(path=>{const url=`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${shotCommit}/${path}`;return `<a href="${url}"><img loading="lazy" src="${url}" alt="${escape(path.split('/').pop())}"></a>`;}).join('')}</div></section>`:'';
 
  return `<nav><a href="${prefix}">Latest channels</a><a href="${prefix}history/">All previous builds</a></nav><p class="kicker">Archived build ${escape(build.buildNumber)}</p><h1>AshenSpire ${escape(build.manifest.version)}</h1><p>Built ${escape(build.builtAt || 'date unknown')} · ${prLinks(build)}</p><p class="muted">Compiled runtime bytes and version labels are preserved. The launcher fetches its data file from this exact public Git commit; its hosting receipt records the URL change. Older versions may have known bugs and different save formats.</p><a class="button" href="${prefix}builds/${build.id}/Web/">Play this build</a>${['Web.zip','Windows.zip','Android.apk','Companion.zip'].filter(file=>build.paths.includes(`Published/${file}`)).map(file=>`<a class="button secondary" href="${exact}/${file}?raw=true">Download ${escape(file)}</a>`).join('')}<p>Source <code>${escape(build.manifest.sourceCommit || 'unknown')}</code> · <a href="${repo}/commit/${build.commit}">Archive commit ${build.commit.slice(0,12)}</a></p><p><a href="${prefix}builds/${build.id}/build.json">Original build manifest</a> · <a href="${prefix}builds/${build.id}/hosting.json">Hosting receipt</a> · <a href="${exact}">All evidence at this exact commit</a></p><section><h2>Changes recorded with this build</h2>${shortChanges(build)}<a href="${exact}/changelog.json">Full archived changelog</a></section>${gallery}`;
 }
