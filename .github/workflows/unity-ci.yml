@@ -99,7 +99,7 @@ jobs:
           - shard: rules
             suites: 'Domain Parity CoopRun CoopRun:--policy'
           - shard: presentation
-            suites: 'NativeFeedback CardText CardCosts SpriteStyles Viewport RendererPatch Interruption'
+            suites: 'NativeFeedback CardText CardCosts HandRules SpriteStyles Viewport RendererPatch Interruption'
           - shard: map-and-data
             suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
           - shard: features

@@ -35,14 +35,15 @@ let browser,ui,observations=[];
   const matches=action=>ui.state.phase===action.phase&&ui.state.player.hp===action.hp&&ui.state.player.mana===action.mana&&ui.state.player.stamina===action.stamina&&ui.state.turn===action.turn;
   await ui.open(url);const initial=fs.readFileSync(path.join(ui.output,'build-source.json'));
   if(source)ui.check(initial.equals(source),'viewport uses the same compiled source');else source=initial;
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');await ui.command('native-begin');
+  await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');
   ui.check(ui.state.phase==='Map','normal Standard Reaver climb starts');await ui.command('native-route-'+opening[0].command.slice('enter:'.length));
   ui.check(matches(opening[0]),'opening fight matches committed seed1 resources');
   const weapon=ui.state.cards.find(row=>row.card.equipmentProfileId==='bladeAttack'||row.instance.profileId==='bladeAttack');
   ui.check(!!weapon,'actual equipped blade supplies a Slashing Strike');
   ui.check(weapon.cost.action===1&&weapon.cost.mana===0&&weapon.cost.stamina===0,'weapon cost comes from authoritative one-action zero-extra-resource profile');
   await select(weapon.instance.instanceId);
-  ui.check(labels().some(label=>/^Deal 14 damage\./.test(label)&&label.includes('Includes +8 total damage from Strength.')),'weapon description displays14 total with included8 Strength contribution');
+  // Confirmed from domain output: UnityTests/CardText/WeaponTextChecks.cs asserts this text for the Standard Reaver {3,1,2,1,1}.
+  ui.check(labels().some(label=>/^Deal 9 damage\./.test(label)&&label.includes('Includes +4 total damage from Attack Rating.')),'weapon description displays 9 total with included 4 Attack Rating contribution (Standard Reaver, STR 3)');
   cleanCosts();ui.check(ui.has('native-play'),'affordable weapon card enables Play');capture('weapon-total');await ui.shot('01-weapon-total-and-cost');
   // The first three payments are the committed real-play oracle; they exhaust
   // actions while leaving a live enemy and unplayed cards for refusal inspection.

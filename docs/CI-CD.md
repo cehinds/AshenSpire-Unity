@@ -41,7 +41,7 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
   `node tools/verdict.mjs -- node tools/unity-version.mjs check --base origin/<base>`.
   Fails if Unity source changed without a legal `A.B.C.D` version bump.
 - **domain-tests** — only if `unity` or `tooling` changed. One job per console
-  test project (Domain, Parity, NativeFeedback, CardText, CardCosts,
+  test project (Domain, Parity, NativeFeedback, CardText, CardCosts, HandRules,
   SpriteStyles, MapShape, MapKnowledge, MapViewport, CoopRun, CoopRun
   `--policy`, Interruption, Viewport, RendererPatch, Authoring, Balance, plus the
   optional Mods, SaveSlots, RunSummary, Telegraphs, Music and Feel suites), run as

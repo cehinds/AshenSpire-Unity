@@ -91,19 +91,32 @@ let browser,ui,map;
    ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify(map.receipts,null,2));
    summaries.push({viewport,sealstone,checks:ui.checks.length,touchCancel:phone&&!sealstone,physicalDevice:false});console.log('Map viewport passed: '+viewport.width+'x'+viewport.height+(sealstone?' Sealstone':'')+' ('+ui.checks.length+' checks)');await context.close();
   };
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
+  await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
   await ui.until(()=>map.value?.scope==='solo','initial map observer');await settled();
   ui.check(ui.state.phase==='Map'&&map.value.mode==='fog','new profile defaults to solo fog');
   if(sealstone){
    // Actual domain-command oracle: work/MapRoutes/.../verified-395.json,
    // SHA-256 65f5a42539f89028c393cdba038fb60002de5b3d2c7215489a948761a9bfef7e.
    // BA is base-35 seed 395. The receipt is evidence, not injected gameplay.
+   // That receipt was recorded with the original Standard Reaver stats (STR 13). The fight
+   // below was re-derived (2026-09-24) by running domain commands through OriginalGameSession
+   // (a scratch beam search over every in-turn play order) for the Standard Reaver preset
+   // {STR 3, DEX 1, CON 2, WIS 1, INT 1}, seed 395, baseline kit, under the lean scale and the
+   // per-class opening hand (Reaver base 3 + 1 at STR 3 = four cards): three strikes kill e1
+   // (25 HP), the hound deals 6 on its first turn, then Technique/Defend/Strike and a Defend hold
+   // it to no further loss, and Gorefire Slash on turn 4 kills e2 with 43/49 HP left. The route
+   // after the fight (n2_2 Unknown treasure offering sealstoneKey, then n3_3/n3_2) is unchanged.
+   const sealstoneHp=43;
    ui.check(ui.state.run.seed===395,'BA creates the verified numeric seed395');
    await inspectTargets('sealstone-entrance');await control('native-route-n1_3');await ui.until(()=>ui.state.phase==='Combat','Sealstone opening fight');
-   for(const [instance,target,phase] of[['starting:0','e2','Combat'],['starting:3','e1','Combat'],['starting:2','e1','Rewards']]){
+   ui.check(ui.state.hand.length===4,'Standard Reaver opens the Sealstone fight on four cards (base 3, +1 at STR 3)');
+   for(const [instance,target,phase,turn,hp] of[['starting:0','e1','Combat',1,49],['starting:3','e1','Combat',1,49],['starting:2','e1','Combat',1,49],['endTurn',null,'Combat',2,43],
+    ['starting:8','e2','Combat',2,43],['starting:4','e2','Combat',2,43],['starting:1','e2','Combat',2,43],['endTurn',null,'Combat',3,43],
+    ['starting:6','e2','Combat',3,43],['endTurn',null,'Combat',4,43],['starting:9','e2','Rewards',4,sealstoneHp]]){
+    if(instance==='endTurn'){await ui.command('native-end-turn');ui.check(ui.state.phase===phase&&ui.state.turn===turn&&ui.state.player.hp===hp,'verified Sealstone fight: turn '+turn+' begins at '+hp+' HP');continue;}
     ui.check(ui.state.hand.some(card=>card.instanceId===instance),'Sealstone trace card is in actual hand: '+instance);
     await ui.click('native-target-'+target);for(let page=0;page<8&&!ui.has('native-card-'+instance)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
-    await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===64,'verified Sealstone fight command: '+instance+' to '+target);
+    await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===hp,'verified Sealstone fight command: '+instance+' to '+target);
    }
    await ui.command('native-reward-cinders');ui.check(ui.state.room.states.cinders==='taken','opening cinders are actually claimed');await ui.command('native-rewards-continue');
    await ui.until(()=>map.value?.camera.nodeId==='n1_3','Sealstone unknown-route decision');await settled();await mapControl('fit');
@@ -115,7 +128,7 @@ let browser,ui,map;
    ui.check(ui.state.room.rewards.relicId==='sealstoneKey','actual Unknown room offers Sealstone Key');await ui.shot('02-sealstone-offer');
    await ui.command('native-reward-relic');ui.check(ui.state.room.states.relic==='taken','Sealstone reward is accepted and marked taken');await ui.command('native-rewards-continue');
    await ui.until(()=>map.value?.camera.nodeId==='n2_2','post-claim revealed map');await settled();await mapControl('fit');
-   ui.check(ui.state.player.hp===64&&ui.state.legalNodes.length===2&&['n3_3','n3_2'].every(id=>ui.state.legalNodes.includes(id)),'verified Sealstone route keeps HP and reaches authored next choices');
+   ui.check(ui.state.player.hp===sealstoneHp&&ui.state.legalNodes.length===2&&['n3_3','n3_2'].every(id=>ui.state.legalNodes.includes(id)),'verified Sealstone route keeps HP and reaches authored next choices');
    ui.check(map.value.mode==='fog'&&map.value.nodes.some(n=>n.id==='n2_2'&&n.current&&n.visited&&n.revealed&&n.type==='treasure'),'claimed Key reveals the current treasure in fog');
    ui.check(Object.keys(future).every(id=>!map.value.nodes.some(n=>n.id===id)),'Key does not expose future hidden fog nodes');
    await inspectTargets('sealstone-revealed-fog');await ui.shot('03-revealed-fog');const fog=snapshot(),fogIds=map.value.nodes.map(n=>n.id).sort();

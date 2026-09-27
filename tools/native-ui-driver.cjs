@@ -24,6 +24,18 @@ async function stablePointOf(ui,id,fraction){
  }
  throw Error('Unstable control geometry: '+id);
 }
+// Lean creation rows per class (web attributes.js:171-174). They are the
+// Standard mode's presets (content.json attributeRules.presets.leanStandard,
+// owner 2026-09-24), and the targets assignPoints spends in Assign points mode.
+const LEAN_ATTRIBUTE_ORDER=Object.freeze(['strength','dexterity','constitution','wisdom','intelligence']);
+const LEAN_CLASS_ALLOCATIONS=Object.freeze({
+ reaver:Object.freeze({strength:3,dexterity:1,constitution:2,wisdom:1,intelligence:1}),
+ starseer:Object.freeze({strength:1,dexterity:1,constitution:1,wisdom:2,intelligence:3}),
+ herald:Object.freeze({strength:1,dexterity:1,constitution:2,wisdom:3,intelligence:1}),
+ rogue:Object.freeze({strength:1,dexterity:3,constitution:2,wisdom:1,intelligence:1})
+});
+const LEAN_REAVER=LEAN_CLASS_ALLOCATIONS.reaver;
+const STANDARD_MODE='leanStandard',ASSIGN_MODE='lean';
 class NativeUiDriver {
  constructor(page,output){this.page=page;this.output=output;this.controls=null;this.state=null;this.coop=null;this.layout=0;this.revision=0;this.coopRevision=0;this.errors=[];this.checks=[];this.chunks=new Map();fs.mkdirSync(output,{recursive:true});
   const normalizeControls=controlReportsForPage(page,e=>this.errors.push(e));
@@ -107,6 +119,25 @@ class NativeUiDriver {
   }
   throw Error('Cannot reach '+id+' after bounded measured scrolling');
  }
+ // Standard (the default creation mode, owner 2026-09-24): the class opens on
+ // its preset row with nothing unspent, so a climb can begin at once. If an
+ // earlier step left the Assign points mode selected, choose Standard again.
+ async useStandard(){
+  const unspent=()=>(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled).map(c=>c.Id);
+  if(unspent().length)await this.click('foundation-mode-'+STANDARD_MODE);
+  const left=unspent();if(left.length)throw Error('Standard preset left points unspent: '+left.join(', '));
+ }
+ // Assign points: choose the Assign points mode (every attribute at 1, the
+ // configured pool unspent), then press each +attribute control (target-1)
+ // times in the fixed order strength, dexterity, constitution, wisdom,
+ // intelligence; afterwards no +attribute control may remain enabled, since
+ // a climb only begins once the pool is empty.
+ async assignPoints(targets=LEAN_REAVER){
+  await this.click('foundation-mode-'+ASSIGN_MODE);
+  for(const id of LEAN_ATTRIBUTE_ORDER){const target=targets[id]??1;for(let n=1;n<target;n++)await this.click('attribute-'+id+'-up');}
+  const left=(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled).map(c=>c.Id);
+  if(left.length)throw Error('Creation points remain after assignment: '+left.join(', '));
+ }
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
  async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
@@ -128,4 +159,4 @@ function selectedCases(count,argv=process.argv){
  if(index>=count)throw Error('--case index '+index+' is outside 0..'+(count-1));
  return [index];
 }
-module.exports={NativeUiDriver,selectedCases};
+module.exports={NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,LEAN_ATTRIBUTE_ORDER,LEAN_REAVER,STANDARD_MODE,ASSIGN_MODE};
