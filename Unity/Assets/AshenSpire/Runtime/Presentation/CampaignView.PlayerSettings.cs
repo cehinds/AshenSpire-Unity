@@ -56,7 +56,7 @@ namespace AshenSpire.Presentation
             if (settings == null) return;
             _reducedMotion = settings.ReducedMotion;
             _fast = settings.QuickAnimations;
-            FeelDriver.Configure(_reducedMotion, _fast); // F07: settings screen drives motion timing too
+            FeelDriver.Configure(settings);
             _muted = settings.Muted;
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
             ApplyPalette();
@@ -130,14 +130,14 @@ namespace AshenSpire.Presentation
             });
             speed = SettingSlider("animation-speed", "Animation speed", 50, 200, Percent(s.AnimationSpeed), v => { s.AnimationSpeed = v / 100.0; SyncQuick(); });
             instant = SettingToggle("instant-animations", "Instant animations", s.InstantAnimations, v => { s.InstantAnimations = v; SyncQuick(); });
-            _body.Add(Text("Combat feedback plays quick at 200% or with Instant on. Other speeds are saved and apply when feedback timing supports them.", "caption"));
+            _body.Add(Text("Below 100% uses slow pacing; 100–199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
             intensity = SettingSlider("screen-shake-intensity", "Shake intensity", 0, 100, Percent(s.ScreenShakeIntensity), v => s.ScreenShakeIntensity = v / 100.0);
             intensity.SetEnabled(s.ScreenShake);
             SettingToggle("hit-stop", "Hit-stop", s.HitStop, v => s.HitStop = v);
-            _body.Add(Text("Screen shake and hit-stop are saved now and used when those combat effects are added.", "caption"));
+            _body.Add(Text("Reduced motion disables screen shake and hit-stop.", "caption"));
 
             // AUDIO
             _body.Add(Text("AUDIO", "heading"));
@@ -147,7 +147,7 @@ namespace AshenSpire.Presentation
             SettingSlider("volume-sfx", "Sound effects", 0, 100, Percent(s.SfxVolume), v => s.SfxVolume = v / 100.0);
             SettingSlider("volume-music", "Music volume", 0, 100, Percent(s.MusicVolume), v => s.MusicVolume = v / 100.0);
             SettingSlider("volume-ui", "Interface sounds", 0, 100, Percent(s.UiVolume), v => s.UiVolume = v / 100.0);
-            _body.Add(Text("Combat sounds follow Master × Sound effects. Music and interface volumes apply when those sounds are added.", "caption"));
+            _body.Add(Text("Master volume controls music and sound effects. Music volume changes the playing track immediately.", "caption"));
 
             // ACCESSIBILITY
             _body.Add(Text("ACCESSIBILITY", "heading"));
@@ -220,6 +220,7 @@ namespace AshenSpire.Presentation
 
         private void Changed()
         {
+            ApplyPlayerSettings();
             PlayerSettingsChanged?.Invoke();
             Report();
         }

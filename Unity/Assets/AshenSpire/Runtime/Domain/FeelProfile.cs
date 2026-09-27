@@ -48,6 +48,8 @@ namespace AshenSpire.Domain
         public string Speed = "normal";
         public bool ReducedMotion;
         public bool ScreenShake = true;
+        public double ScreenShakeIntensity = 1;
+        public bool HitStop;
         public bool ReduceFlashes;
         /// <summary>CampaignView's "Reduced motion" and "Quick animations" toggles: Quick = the HTML `fast` speed.</summary>
         public static FeelSettings FromToggles(bool reducedMotion, bool quickAnimations) =>
@@ -218,7 +220,7 @@ namespace AshenSpire.Domain
         public float WindupLungeFraction = .55f; // impact after lungeMs × 0.55
         public int WatchdogBaseMs = 2000;
         public int WatchdogStepsPerBeat = 4;
-        public int HitStopMs;                 // 0: the reference has no hit-stop
+        public int HitStopMs;                 // Opt-in Unity presentation hold; disabled in player defaults.
     }
 
     [Serializable]

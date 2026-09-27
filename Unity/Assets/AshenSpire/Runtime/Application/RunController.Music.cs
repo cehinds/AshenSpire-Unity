@@ -1,7 +1,7 @@
 // RunController.Music.cs — music hooks, part of RunController (F08).
 // ATTACH: no additional MonoBehaviour of its own; MusicPlayer is added to ExpeditionRoot.
 // MODIFY: which screen plays which context lives in MusicSceneMap/MusicDirector (Domain);
-// this file only forwards run changes. Co-op screens keep the title bed (not wired yet).
+// this file forwards solo and host-authoritative co-op scene changes.
 using AshenSpire.Domain;
 using UnityEngine;
 namespace AshenSpire.Application
@@ -20,6 +20,13 @@ namespace AshenSpire.Application
             _music.Enter(MusicSceneMap.ForNativePhase(phase.ToString(), pool), _originalGame.ActNumber);
         }
         private void MusicMuted(bool muted) { if (_music != null) _music.SetMuted(muted); }
+        private void MusicCoop()
+        {
+            if (_music == null || _coopSnapshot == null) return;
+            var scene = _coopSnapshot["game"]?["scene"];
+            var kind = (bool?)_coopSnapshot["lobby"]?["started"] == true ? (string)scene?["kind"] : "lobby";
+            _music.Enter(MusicSceneMap.ForCoopScene(kind, (string)scene?["pool"], (string)scene?["result"]), (int?)_coopSnapshot["game"]?["actNumber"] ?? 1);
+        }
         private void MusicSuspended(bool suspended) { if (_music != null) _music.SetSuspended(suspended); }
         private void MusicStop() { if (_music != null) _music.Enter(MusicScene.Quit); }
     }

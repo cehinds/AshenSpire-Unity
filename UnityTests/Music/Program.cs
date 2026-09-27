@@ -63,7 +63,7 @@ var main = Read("src/main.js");
 var called = Regex.Matches(main, @"audio\.music\('(\w+)'\)").Select(m => m.Groups[1].Value).Distinct().OrderBy(s => s).ToArray();
 Check(called.SequenceEqual(new[] { "map", "rest", "shop", "title", "victory" }), "main.js literal music contexts are title/map/rest/shop/victory");
 Check(main.Contains("audio.music(enc.pool === 'boss' ? 'boss' : enc.pool === 'elite' ? 'elite' : 'combat')"), "main.js combat music chooses boss/elite/combat by pool");
-var showEvent = Regex.Match(main, @"function showEvent\(.*?\n}\n", RegexOptions.Singleline).Value;
+var showEvent = Regex.Match(main, @"function showEvent\(.*?\r?\n}\r?\n", RegexOptions.Singleline).Value;
 Check(showEvent.Length > 0 && !showEvent.Contains("audio."), "main.js showEvent makes no music call (event holds the map bed)");
 Check(Regex.IsMatch(main, @"if \(result !== 'victory'\) \{\s*audio\.stopMusic\(\);"), "main.js death stops music");
 Check(Regex.IsMatch(main, @"if \(run\.actNumber >= 3 && !endlessOn\(\)\) \{[^}]*audio\.music\('victory'\)", RegexOptions.Singleline), "main.js victory music only for act-3 boss outside Endless");
@@ -351,6 +351,15 @@ Check(Exists("Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs.meta"),
 var playerSource = Regex.Replace(Read("Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs"), @"//.*", "");
 Check(!Regex.IsMatch(playerSource, @"RandomStreams|UnityEngine\.Random|System\.Random|new Random\("), "MusicPlayer.cs draws no random numbers");
 
+Check(MusicSceneMap.ForCoopScene("lobby", null, null) == MusicScene.Title
+    && MusicSceneMap.ForCoopScene("map", null, null) == MusicScene.Map
+    && MusicSceneMap.ForCoopScene("combat", "elite", null) == MusicScene.Elite
+    && MusicSceneMap.ForCoopScene("combat", "boss", null) == MusicScene.Boss
+    && MusicSceneMap.ForCoopScene("shop", null, null) == MusicScene.Shop
+    && MusicSceneMap.ForCoopScene("shrine", null, null) == MusicScene.Shrine
+    && MusicSceneMap.ForCoopScene("complete", null, "victory") == MusicScene.Victory
+    && MusicSceneMap.ForCoopScene("complete", null, "defeat") == MusicScene.Death,
+    "co-op scenes follow the same music contexts as solo, including bosses and completed runs");
 if (failures.Count > 0) { Console.WriteLine("Music: " + failures.Count + " of " + (passed + failures.Count) + " checks FAILED"); return 1; }
 Console.WriteLine("Music: " + passed + " checks passed");
 return 0;

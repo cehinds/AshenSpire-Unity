@@ -104,7 +104,40 @@ namespace AshenSpire.Editor
                 File.WriteAllText(target, json);
             AssetDatabase.Refresh();
             OriginalSpriteImport.Configure();
+            ImportMusic();
             Debug.Log($"Content import: {content.Cards.Length} cards and {content.Enemies.Length} enemies validated.");
+        }
+
+        private static void ImportMusic()
+        {
+            var manifest = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(Repository, "music/manifest.json")));
+            var catalog = JsonUtility.FromJson<MusicCatalog>(File.ReadAllText(Root + "/Resources/Audio/music-catalog.json"));
+            foreach (var track in catalog.Tracks.Where(track => track.Kind == MusicCatalog.KindFile))
+            {
+                const string prefix = "Audio/Music/";
+                if (track.ResourcePath == null || !track.ResourcePath.StartsWith(prefix, StringComparison.Ordinal))
+                    throw new InvalidDataException("Invalid music resource: " + track.Id);
+                var relative = track.ResourcePath.Substring(prefix.Length);
+                var listed = manifest.Properties().Where(property => property.Value is Newtonsoft.Json.Linq.JArray)
+                    .SelectMany(property => property.Value.Values<string>()).SingleOrDefault(file => Path.ChangeExtension(file, null).Replace('\\', '/') == relative);
+                if (listed == null || listed.Contains("..") || Path.IsPathRooted(listed))
+                    throw new InvalidDataException("Music track is missing from the credited manifest: " + track.Id);
+                var source = Path.Combine(Repository, "music", listed);
+                var destination = Root + "/Resources/" + track.ResourcePath + Path.GetExtension(listed);
+                if (!File.Exists(source)) throw new FileNotFoundException("Missing authored music file", source);
+                Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                if (!File.Exists(destination) || !File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(destination)))
+                    File.Copy(source, destination, true);
+                AssetDatabase.ImportAsset(destination);
+                var importer = AssetImporter.GetAtPath(destination) as AudioImporter;
+                if (importer == null) throw new InvalidDataException("Music did not import as audio: " + destination);
+                var sample = importer.defaultSampleSettings;
+                sample.loadType = AudioClipLoadType.Streaming;
+                sample.preloadAudioData = false;
+                importer.defaultSampleSettings = sample;
+                importer.loadInBackground = true;
+                importer.SaveAndReimport();
+            }
         }
 
         [MenuItem("AshenSpire/2. Prepare Playable Scene")]

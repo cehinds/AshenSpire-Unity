@@ -28,7 +28,8 @@ namespace AshenSpire.Presentation
             AddToClassList("fighter"); style.overflow = Overflow.Hidden;
             _art.image = texture; _art.style.position = Position.Absolute; Add(_art);
             RegisterCallback<GeometryChangedEvent>(_ => Place());
-            if (Debug.isDebugBuild) Debug.Log("ASHENSPIRE_ENEMY_ART " + new JObject { ["enemyId"] = enemyId, ["resource"] = resource, ["width"] = texture.width, ["height"] = texture.height }.ToString(Newtonsoft.Json.Formatting.None));
+            var diagnostics = Debug.isDebugBuild || (Uri.TryCreate(UnityEngine.Application.absoluteURL, UriKind.Absolute, out var uri) && (uri.IsLoopback || uri.AbsolutePath.Contains("/dev/")));
+            if (diagnostics) Debug.Log("ASHENSPIRE_ENEMY_ART " + new JObject { ["enemyId"] = enemyId, ["resource"] = resource, ["width"] = texture.width, ["height"] = texture.height }.ToString(Newtonsoft.Json.Formatting.None));
         }
         public void FeedbackTint(Color color) { _art.tintColor = color; }
         private void Place()

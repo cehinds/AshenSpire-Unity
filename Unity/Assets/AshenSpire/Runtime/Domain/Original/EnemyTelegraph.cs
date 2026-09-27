@@ -129,6 +129,12 @@ namespace AshenSpire.Domain.Original
 
     public static class EnemyTelegraphViewModel
     {
+        public static EnemyTelegraph FromSnapshot(JObject enemy, JObject player, double poiseGrowthMult = 1.25)
+        {
+            var preview = (int?)enemy?["intent"]?["previewDamage"];
+            Func<JObject, int, int> calculator = preview.HasValue ? (entity, basis) => preview.Value : (Func<JObject, int, int>)null;
+            return Build(enemy, player, calculator, "you", poiseGrowthMult);
+        }
         public const string StaggeredTooltipBody = "Poise broken — this enemy's turn is skipped and it takes +50% damage.";
 
         /// <summary>"6" or "6×3" — the badge number (uiContent.js intentBadge).</summary>
@@ -173,7 +179,7 @@ namespace AshenSpire.Domain.Original
                 var hits = Int(iv["hits"]) ?? 1;
                 var total = damage * hits;
                 var label = FormatDamage(damage, hits) + (delayed ? " ⌛" : "");
-                var body = "Attacking " + victim + " for " + damage + (hits > 1 ? " × " + hits + " (" + total + " total)" : "") + " damage (modifiers included).";
+                var body = "Attacking " + victim + " for " + damage + (hits > 1 ? " × " + hits + " (" + total + " total)" : "") + (previewDamage != null ? " damage (modifiers included)." : " base damage (before modifiers).");
                 if (pending) body += "\nCommitted: this delayed attack lands this coming turn — Stagger cancels it.";
                 else if (delayed) body += "\nDelayed: it holds this turn and strikes the next. Stagger cancels it.";
                 var lethal = player != null && total > 0 && total >= ((int?)player["hp"] ?? int.MaxValue) + ((int?)player["block"] ?? 0);

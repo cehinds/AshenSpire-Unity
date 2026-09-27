@@ -19,6 +19,18 @@ namespace AshenSpire.Domain.Original
         public string Phase=>_phase;public string Result=>_result;public int Turn=>_turn;
         public static double HpMultiplier(int headcount,double factor=.6)=>1+factor*Math.Max(0,headcount-1);
         public JArray Enemies=>new JArray(_enemies.Select(e=>e.DeepClone()));
+        // Per-seat presentation projection: shared enemies stay unchanged; damage includes
+        // this hero's Vulnerable and the enemy's Strength/Weak through the combat calculator.
+        public JArray EnemyViewsFor(string memberId)
+        {
+            var rows = Enemies;
+            var seat = _seats.FirstOrDefault(s => s.Id == memberId);
+            if (seat == null) return rows;
+            foreach (JObject enemy in rows)
+                if (enemy["intent"] is JObject intent && intent["damage"]?.Type == JTokenType.Integer)
+                    intent["previewDamage"] = seat.Core.PreviewEnemyAttack((string)enemy["id"], (int)intent["damage"]);
+            return rows;
+        }
         public JArray Players=>new JArray(_seats.Select(s=>new JObject{["id"]=s.Id,["name"]=s.Name,["classId"]=s.ClassId,["connected"]=s.Connected,["ended"]=s.Ended,["entity"]=s.Core.Player,["piles"]=s.Core.Snapshot()["piles"].DeepClone()}));
         public JObject Card(string memberId,JObject instance)=>SeatFor(memberId).Core.ResolvedCard(instance);
         public JObject Cost(string memberId,JObject instance)=>SeatFor(memberId).Core.CardCost(instance);
@@ -156,6 +168,5 @@ namespace AshenSpire.Domain.Original
         }
     }
 }
-
 
 

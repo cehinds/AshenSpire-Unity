@@ -350,7 +350,9 @@ Check(Mirrors(COMBAT, "lunge-right", "lunge-left", "x") && Mirrors(COMBAT, "hit-
 var allCss = string.Join("\n", new[] { BASE, UI, COMBAT, "styles/map.css", KIT }.Select(f => File0(f)));
 var uiJs = string.Join("\n", Directory.GetFiles(Path.Combine(root, "src/ui"), "*.js", SearchOption.AllDirectories).Select(File.ReadAllText));
 Check(profile.NotInReference.OrderBy(x => x).SequenceEqual(new[] { "buttonPress", "cardDiscard", "cardDraw", "hitStop", "intentReveal", "orbPulse" }), "NotInReference lists the six checked absences");
-Check(!Regex.IsMatch(uiJs + allCss, @"hit-?stop|hitpause|freeze-?frame", RegexOptions.IgnoreCase) && profile.Pacing.HitStopMs == 0, "hitStop: the reference has no hit-stop (HitStopMs 0)");
+Check(!Regex.IsMatch(uiJs + allCss, @"hit-?stop|hitpause|freeze-?frame", RegexOptions.IgnoreCase), "hitStop: the reference has no hit-stop");
+Check(profile.Pacing.HitStopMs > 0 && profile.Pacing.HitStopMs <= profile.Pacing.QueueStepMs && !new FeelSettings().HitStop,
+    "Unity hit-stop is an opt-in presentation hold shorter than one queued beat");
 Check(!Regex.IsMatch(allCss, @"@keyframes\s+[\w-]*(intent)", RegexOptions.IgnoreCase) && !Regex.IsMatch(allCss, @"intent[^{}]*\{[^}]*(animation|transition)\s*:", RegexOptions.IgnoreCase), "intentReveal: intents are not animated in the reference");
 Check(!Regex.IsMatch(allCss, @"@keyframes\s+[\w-]*(draw|deal)", RegexOptions.IgnoreCase), "cardDraw: no draw/deal animation (a draw is its own paced beat)");
 Check(!Regex.IsMatch(allCss, @"@keyframes\s+[\w-]*discard", RegexOptions.IgnoreCase), "cardDiscard: no discard animation");
@@ -386,6 +388,15 @@ Check(reducedTurn.ImpactMs == profile.Pacing.QueueStepMs, "beat: Reduced motion 
 var guardBeat = AshenSpire.Presentation.FeelBeat.Plan(profile, S(), false, false, 0, 0);
 Check(guardBeat.Actor.Id == "actor.step" && guardBeat.Victim == AshenSpire.Presentation.FeelVictim.None && guardBeat.Glow.Play && !guardBeat.Recoil.Play, "beat: non-attack actions step and glow without a recoil");
 var beatSource = Read("Unity/Assets/AshenSpire/Runtime/Presentation/FeelBeat.cs");
+var originalHold = profile.Pacing.HitStopMs;
+profile.Pacing.HitStopMs = 40;
+var held = AshenSpire.Presentation.FeelBeat.Plan(profile, new FeelSettings { HitStop = true }, false, true, 8, 0);
+Check(held.HoldMs == 40 && held.VisualTime(held.ImpactMs + 20) == held.ImpactMs && held.VisualTime(held.ImpactMs + 50) == held.ImpactMs + 10,
+    "optional hit-stop holds the presentation at impact then resumes without changing game time");
+Check(AshenSpire.Presentation.FeelBeat.Plan(profile, new FeelSettings { HitStop = false }, false, true, 8, 0).HoldMs == 0
+    && AshenSpire.Presentation.FeelBeat.Plan(profile, new FeelSettings { HitStop = true, ReducedMotion = true }, false, true, 8, 0).HoldMs == 0,
+    "hit-stop is disabled by its setting and by reduced motion");
+profile.Pacing.HitStopMs = originalHold;
 Check(!Regex.IsMatch(beatSource, @"using UnityEngine|UnityEngine\.") && !Regex.IsMatch(beatSource, @"\b\d{3,}\b"), "FeelBeat is engine-free and carries no hard-coded millisecond values");
 
 // ---- Unity asset hygiene ---------------------------------------------------------------------------

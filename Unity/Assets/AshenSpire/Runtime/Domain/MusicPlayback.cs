@@ -133,6 +133,21 @@ namespace AshenSpire.Domain
     /// <summary>Run phase → MusicScene, following the HTML call sites listed in MusicDirector.cs.</summary>
     public static class MusicSceneMap
     {
+        public static MusicScene ForCoopScene(string kind, string pool, string result)
+        {
+            switch (kind)
+            {
+                case "lobby": return MusicScene.Title;
+                case "map": return MusicScene.Map;
+                case "combat": return MusicDirector.SceneForEncounter(pool);
+                case "rewards": return MusicScene.Rewards;
+                case "shop": return MusicScene.Shop;
+                case "shrine": return MusicScene.Shrine;
+                case "complete": return result == "victory" ? MusicScene.Victory : MusicScene.Death;
+                default: return MusicScene.Event;
+            }
+        }
+
         /// <summary>Native run (OriginalRunPhase name + the room's encounter pool).</summary>
         public static MusicScene ForNativePhase(string phase, string pool)
         {

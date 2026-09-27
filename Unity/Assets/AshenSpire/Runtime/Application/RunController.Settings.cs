@@ -66,6 +66,8 @@ namespace AshenSpire.Application
                 if (_panelSettings.scale != scale) _panelSettings.scale = scale;
             }
             _audio?.SetVolumeScale((float)(_playerSettings.MasterVolume * _playerSettings.SfxVolume));
+            _music?.ApplySettings((int)Math.Round(_playerSettings.MasterVolume * 100), (int)Math.Round(_playerSettings.MusicVolume * 100), true);
+            _music?.SetMuted(_playerSettings.Muted);
         }
         private void SavePlayerSettings()
         {

@@ -141,6 +141,7 @@ namespace AshenSpire.Application
         private void RenderCoop(string notice = null)
         {
             if (_coopSnapshot == null) return;
+            MusicCoop();
             if ((bool?)_coopSnapshot["lobby"]?["started"] != true)
                 _view.CoopLobby(_coopSnapshot, _coopHost, ready => SendCoopEnvelope("ready", new JObject { ["ready"] = ready }), () => SendCoopEnvelope("start", new JObject { ["sequence"] = 1 }), seed => SendCoopEnvelope("seed", new JObject { ["seed"] = seed }), endless => SendCoopEnvelope("endless", new JObject { ["enabled"] = endless }), LeaveCoop, notice, seatId => SendCoopEnvelope("removeSeat", new JObject { ["seatId"] = seatId }));
             else _view.CoopGame((JObject)_coopSnapshot["game"], CoopContent(), OriginalRules("event-choices"), CoopIntent, LeaveCoop);

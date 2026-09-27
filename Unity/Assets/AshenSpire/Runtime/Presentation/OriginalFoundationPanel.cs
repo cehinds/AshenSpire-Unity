@@ -244,6 +244,14 @@ namespace AshenSpire.Presentation
         private void Detail(JObject row)
         {
             Header((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]);
+            if (_table == "enemies")
+            {
+                var figure = OriginalEnemyFigure.Create((string)row["id"]);
+                figure.style.height = 280;
+                figure.style.width = Length.Percent(100);
+                figure.style.flexShrink = 0;
+                _root.Add(figure);
+            }
             Label((string)row["description"] ?? (string)row["textTemplate"] ?? (string)row["text"] ?? (string)row["flavor"] ?? "", "lead");
             var json = new TextField("Original record") { value = row.ToString(), multiline = true, isReadOnly = true, name = "foundation-record" }; json.AddToClassList("report-field"); json.AddToClassList("foundation-field"); _root.Add(json);
             Button("foundation-record-back", "Back to results", Catalog); _report();
