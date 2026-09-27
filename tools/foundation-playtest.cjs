@@ -57,23 +57,28 @@ function result(success) { return { success, checks, screenshots, errors, creati
   await page.waitForFunction(() => !!window.unityInstance, null, { timeout: 120000 });
   await until(() => controls?.Controls.length, 'Unity controls');
   await shot('01-phone-title'); await click('foundation'); await until(() => creations.length > 0, 'original creation');
-  check(creations.at(-1).classId === 'reaver' && creations.at(-1).mode === 'pointbuy', 'Assign points is the default');
-  check(Object.values(creations.at(-1).attributes).every(value => value === 5) && creations.at(-1).remaining === 35, 'five minimum attributes leave 35 of 60 points unspent');
+  // Owner, 2026-09-24: two modes on the lean scale. Standard (the default) opens on the class preset
+  // with nothing unspent; Assign points opens at all 1s with the configured pool (3) to place.
+  check(creations.at(-1).classId === 'reaver' && creations.at(-1).mode === 'leanStandard', 'Standard is the default (owner, 2026-09-24)');
+  check(JSON.stringify(creations.at(-1).attributes) === JSON.stringify({ strength: 3, dexterity: 1, constitution: 2, wisdom: 1, intelligence: 1 }) && creations.at(-1).remaining === 0, 'Standard Reaver opens on its preset {3,1,2,1,1} with nothing unspent');
+  check(creations.at(-1).resources.hp === 39 && creations.at(-1).resources.energy === 3, 'Standard Reaver preview uses ruleset-6 resource rules (hp 39, energy 3)');
   check(!controls.Controls.some(x => x.Id === 'foundation-mode-tuned'), 'Tuned is removed');
-  check(creations.at(-1).resources.hp === 40 && creations.at(-1).resources.energy === 2, 'minimum attributes use original resource rules');
+  const modes = controls.Controls.filter(x => x.Id.startsWith('foundation-mode-')).map(x => x.Id);
+  check(JSON.stringify(modes) === JSON.stringify(['foundation-mode-leanStandard', 'foundation-mode-lean']), 'Standard and Assign points are offered; legacy pointbuy and standard stay save-only');
+  await click('foundation-mode-lean'); await until(() => creations.at(-1).mode === 'lean', 'Assign points mode');
+  check(Object.values(creations.at(-1).attributes).every(value => value === 1) && creations.at(-1).remaining === 3, 'Assign points opens all attributes at 1 with 3 of 8 points unspent');
+  check(creations.at(-1).resources.hp === 34 && creations.at(-1).resources.energy === 3, 'all-1s attributes use ruleset-6 resource rules (hp 34, energy 3)');
   const minimumControls = controls.Controls.filter(x => x.Id.startsWith('attribute-') && x.Id.endsWith('-down'));
   check(minimumControls.length === 5 && minimumControls.every(x => !x.Enabled), 'minimum decrement controls are disabled');
   await shot('02-phone-creation');
-  await click('attribute-strength-up'); check(creations.at(-1).remaining === 34 && creations.at(-1).attributes.strength === 6, 'attribute allocation spends exactly one point');
-  await click('attribute-strength-down'); check(creations.at(-1).remaining === 35 && creations.at(-1).attributes.strength === 5, 'attribute decrement returns exactly one point');
+  await click('attribute-strength-up'); check(creations.at(-1).remaining === 2 && creations.at(-1).attributes.strength === 2, 'attribute allocation spends exactly one point');
+  await click('attribute-strength-down'); check(creations.at(-1).remaining === 3 && creations.at(-1).attributes.strength === 1, 'attribute decrement returns exactly one point');
   await shot('03-phone-attributes');
   await click('foundation-class-starseer');
   await until(() => creations.at(-1).classId === 'starseer', 'Starseer selection');
-  check(creations.at(-1).remaining === 35 && Object.values(creations.at(-1).attributes).every(value => value === 5), 'class selection retains minimum allocation defaults');
-  await click('foundation-mode-standard');
-  check(creations.at(-1).remaining === 0 && creations.at(-1).attributes.intelligence === 14, 'Standard preserves its class preset');
-  await click('foundation-mode-pointbuy');
-  check(creations.at(-1).remaining === 35 && creations.at(-1).attributes.intelligence === 5, 'Assign points resets to minimum after Standard');
+  check(creations.at(-1).remaining === 3 && Object.values(creations.at(-1).attributes).every(value => value === 1), 'Starseer also opens at all 1s with 3 unspent in Assign points');
+  await click('foundation-mode-leanStandard'); await until(() => creations.at(-1).mode === 'leanStandard', 'Standard mode again');
+  check(creations.at(-1).attributes.intelligence === 3 && creations.at(-1).attributes.wisdom === 2 && creations.at(-1).remaining === 0, 'Standard Starseer has INT 3 and WIS 2 (owner, 2026-09-24)');
   await shot('04-phone-starseer');
   await click('foundation-map'); await until(() => maps.length >= 3, 'three original act maps');
   await click('foundation-seed', false, .8); await key('Control+a'); await key('Backspace'); await key('1'); await key('Tab');

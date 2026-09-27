@@ -12,7 +12,7 @@ let browser,ui;
  for(const viewport of selection.map(index=>viewports[index])){
   const context=await browser.newContext({viewport,deviceScaleFactor:2});const page=await context.newPage();ui=new NativeUiDriver(page,path.join(output,viewport.width===390?'phone':'desktop'));
   await ui.open(process.argv[2]);const initialBuild=fs.readFileSync(path.join(ui.output,'build-source.json'));
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');
+  await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');
   // Closed custom shape must not roll 72 probe maps during each creator redraw.
   ui.check(ui.controls.Labels.some(x=>x.includes('Open Run shape to sample map density.')),'closed map section defers sampling');
   await ui.click('native-custom-toggle');await ui.click('native-map-shape-toggle');

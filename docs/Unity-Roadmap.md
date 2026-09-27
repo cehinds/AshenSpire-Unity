@@ -496,8 +496,39 @@ all archived players and independently tested channel saves. See
 - [x] Restore local Fit/manual camera state, vertical pan, zoom steps, recenter,
   touch cancellation and profile persistence; test real multi-choice layouts.
 - [x] Default to Assign points: five attributes at 5, 60 total, 35 unspent;
-  retain Standard and remove Tuned from the fork's available modes.
+  remove Tuned from the fork's available modes.
+- [x] Offer only Assigned at creation; Standard stays in the table for saves but
+  is hidden via `visibleModeIds` (2026-09-24; superseded below by the lean mode).
 - [x] Make every attribute point useful and author five-point mechanical thresholds.
+- [x] Rebase creation onto the web lean scale (owner, 2026-09-24): Assigned (`lean`)
+  opens at all 1s with 3 points to spend (total 8, range 1–4); ruleset-6 derived
+  pools, AR/DR/PR ratings plus the armament's own rating, `itemWeightScale` 0.2,
+  requirements STR 2/STR 3/DEX 2/INT 3 and three-charge flasks. `pointbuy` and
+  `standard` stay resolvable for existing saves.
+- [x] Port the web hand rules to solo combat (O-4, owner 2026-09-24: "Port web
+  hand rules first"): opening draw, fixed turn draw, hand capacity, retention and
+  turn-end discards, snapshotted per fight; legacy saves, co-op and LAN unchanged.
+  A native discard picker (for `promptDiscard` or a swap-caused overflow) remains.
+- [x] Improve creation settings (owner, 2026-09-24: "I'd like everyone to have low
+  stats 1's in most stats, and starseer to have a 3 in int, and start with 4-6 cards
+  depending on the base (3-5)"): offer **Standard** (`leanStandard`, class presets,
+  default) and **Assign points** (`lean`, all 1s + a content-configured pool of 3);
+  per-class opening hand `handRules.classStarting` (base 3–5, +1 at primary stat 3,
+  cap 6; owner 2026-09-25 "start with 4-6 cards" raised the floor to 4, so all 1s
+  open on 4/4/4/5). Only hand and stats changed ("Only hand + stats").
+- [x] Bot gate records wins, gates errors (owner, 2026-09-25: "Record wins, gate
+  errors"). `UnityTests/Playthrough -- 3` fails on any exception, stuck or rejected
+  turn, save/resume divergence or command budget exhausted without a terminal
+  state, but a clean Defeat is recorded, not a failure; it prints and writes
+  (`results.json` `winTable`, `totals`) a per-class win table. On 2026-09-25 it
+  recorded 0/12 wins, 12 clean Defeats, 0 errors, 160 fights (Reaver acts 3,2,2;
+  Starseer 1,1,2; Rogue 2,3,2; Herald 3,2,2). `tools/native-playtest.cjs` replays the
+  Reaver seed-1 trace to its recorded terminal state (Defeat, act 3) instead of
+  requiring victory. Balance is a separate task.
+- [ ] Retune balance so the policy bots win again (win rate is measured by the gate,
+  not required by it).
+- [ ] Decide the lean-scale gaps still open on 2026-09-24: the Poise row and Ward
+  meters (O-5), and dodge's `(DEX − 10) / 2` pivot at DEX 1–4 (O-6).
 - [x] Apply discovered starting kits, alternate hands, wardrobe/relic choices and
   saved kit identity; retain the uncustomized baseline kit's creation-only waiver.
 - [x] Compose weapon-owned cards and pay final action/MP/stamina costs.
