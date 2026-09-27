@@ -7,12 +7,27 @@ support. On 2026-09-27, `adb devices` found no connected Android device. There
 is no verified macOS/Xcode/signing environment. Builds and browser emulation
 must not be recorded as physical-device passes.
 
+The locally compiled Windows player reached `ASHENSPIRE_UI_READY` on
+2026-09-27. Two attempts to capture its actual window failed with
+`FrameArrived timed out` / `window capture timed out`. This is startup evidence
+only, not graphical play-through acceptance. The capture failure did not report
+a game exception, but the inaccessible screen prevents visual claims.
+
 `tools/native-performance-playtest.cjs` records startup, resource bytes,
 browser animation-frame intervals, JavaScript heap usage and reserved WASM
 memory in title, map and combat. Each receipt names the compiled source digest.
 The default Edge SwiftShader run is a reproducible software-rendering baseline;
 its RAF intervals are not Unity GPU timings and localhost is not a mobile
 network. Target-phone budgets remain unset until reference hardware is selected.
+
+Build 22 imports the ten original music files with streaming/background loading
+and native encoding quality 0.5. The source files under `music/` are preserved.
+Quality 1 made the Windows ZIP 114,469,872 bytes; the adjusted export is
+103,762,976 bytes. This is distribution-size work, not listening acceptance.
+`unity-package.mjs` now refuses any tracked export above GitHub's
+[100 MiB ordinary-Git file limit](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github).
+The Windows archive remains close to that limit; future growth
+may require a verified external download path rather than raising the gate.
 
 ## Android and Windows acceptance
 

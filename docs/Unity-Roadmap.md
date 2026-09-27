@@ -1,7 +1,7 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.14.0 · build 14 ·
+content while improving phone play. Current source: **0.0.22.0 · build 22 ·
 Foundation in progress** (`GameContent/Unity/version.json`). Published channels
 may still carry earlier checkpoints.
 
@@ -23,7 +23,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 
 | ID | Feature | Status | Version | Evidence |
 |---|---|---|---|---|
-| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.14.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
+| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.22.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
@@ -31,18 +31,26 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 | F05 | Branching map & fog | in-progress | — | `OriginalMapBoard.cs` · `OriginalMapKnowledge.cs` · [map](Unity-Map-Foundation.md) |
 | F06 | Rewards, cinders, relics, equipment & flasks | in-progress | — | `OriginalRunPanel.cs` (Reward/Deck) · `WeaponLoadout.cs` · `FlaskChargePool.cs` |
 | F07 | Juice pass (animation, hit feedback, transitions) | in-progress | — | `CombatFeedback.cs` · `NativeFeedbackProjection.cs` · `OriginalPlayerFigure.cs` · merged: [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) feel profile |
-| F08 | Audio & music | in-progress | — | `Runtime/Application/GameAudio.cs` (procedural cues only; no music) · merged: [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) music director |
+| F08 | Audio & music | in-progress | — | `MusicPlayer.cs`, `MusicDirector.cs`, all 10 imported file tracks; build 22 connects live volume and co-op scene music; owner listening acceptance remains |
 | F09 | Merchant, shrine & events | in-progress | — | `OriginalRunServices.cs` · `OriginalRunPanel.cs` (Shop/Shrine/Event) |
 | F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` · merged: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) save slots |
 | F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` · merged: [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) run summary |
 | F12 | Acts 1–3 & bosses (plus Custom Climb/Endless) | in-progress | — | `OriginalRunRules.cs` · `OriginalCustomRunRules.cs` · full-climb 657 checks |
 | F13 | Accessibility & phone layout | in-progress | — | `ViewportLayout.cs` · `DisplayViewport.cs` · reduced-motion toggle |
 | F14 | Co-op (LAN companion) | in-progress | — | `OriginalCoopRun*.cs` · `OriginalCoopPanel.cs` · `tools/NativeLan/` |
-| F15 | Customization settings & controls | in-progress | — | HTML `src/ui/screens/settings.js`, `controls.js`; Unity has 3 toggles only · merged: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) settings model |
+| F15 | Customization settings & controls | in-progress | — | `CampaignView.PlayerSettings.cs`, `OriginalPlayerSettings.cs`; build 22 consumes shake/intensity and optional hit-stop; full controls parity remains |
 | F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` · merged: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) mod packs |
-| F17 | Performance & platform polish | todo | — | no budgets measured; no physical device/iOS evidence |
+| F17 | Performance & platform polish | in-progress | — | `native-performance-playtest.cjs`; [platform acceptance and iOS plan](Unity-Platform-Acceptance.md); no target-phone budget or physical-device acceptance |
 
 ### Parity diff summary (HTML reference → Unity build 14)
+
+This is a **historical build-14 survey**, not a current list of missing code.
+Builds 15–22 add save slots, detailed settings, music, telegraphs, run summaries,
+feel integration and lean creation/hand rules. Build 22 additionally connects
+music volume and co-op music, imports the 10 tracks, consumes shake/hit-stop
+settings and provides per-seat co-op damage previews. The developer compendium
+now renders every enemy portrait for compiled review. Full product acceptance
+and the remaining visual/interaction parity work are still open.
 
 Evidence-based survey of `src/ui/screens/*.js`, `src/ui/components/*.js`,
 `src/engine/*.js`, `src/content/*` and `SPEC.md` against
@@ -457,6 +465,18 @@ checkmarks do not certify every interaction or platform. See
 [Unity-Parity.md](Unity-Parity.md) for receipts.
 
 ### Build history
+
+Build 22 integrates live music/feedback settings, file music imports, co-op
+scene music and damage previews, and compiled catalog/performance/settings
+test tools. F00–F16 remain in progress until compiled criteria and owner
+acceptance are both recorded. F17 has started with measurement tooling and an
+iOS/device plan; software-browser measurements cannot close its device gates.
+
+On 2026-09-27 the build-20 exports were verified and pushed in `4707586`.
+Pages workflow 36337567712 published 22 archived players within 816.5 MiB,
+including builds 13, 14 and 20, with no archive deletion. Versions 15–19 have
+no compiled exports in history. Archive availability is separate from channel
+promotion. The old capacity blocker below is historical.
 
 Build 14 prioritizes matching the HTML reference visually: title composition, serif display type, warm palette, class preview, compact combat HUD, simultaneous enemies and framed horizontal cards. See [visual parity](Unity-Visual-Parity.md) for evidence and remaining gaps.
 

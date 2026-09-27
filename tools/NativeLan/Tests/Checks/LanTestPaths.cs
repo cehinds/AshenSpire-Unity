@@ -2,6 +2,9 @@
 // fixture by default. Receipts/state contain ephemeral test credentials: never publish.
 internal static class LanTestPaths
 {
+    // Local builds can saturate this host. Keep CI's normal 10 s deadline unless
+    // the caller explicitly chooses a bounded test wait; this is not a latency budget.
+    public static readonly TimeSpan ReplyTimeout = ReadReplyTimeout();
     public static readonly string RepositoryRoot = FindRepository();
     public static readonly string ContentRoot = Environment.GetEnvironmentVariable("AS_LAN_CONTENT_ROOT") ?? Path.Combine(RepositoryRoot,"GameContent","Unity","Original");
     public static readonly string OutputRoot = CreateOutput();
@@ -16,6 +19,14 @@ internal static class LanTestPaths
         for(var directory=new DirectoryInfo(Environment.CurrentDirectory);directory!=null;directory=directory.Parent)
             if(Directory.Exists(Path.Combine(directory.FullName,"Unity","Assets"))&&Directory.Exists(Path.Combine(directory.FullName,"tools","NativeLan")))return directory.FullName;
         throw new InvalidOperationException("Run from the repository or set AS_LAN_REPOSITORY_ROOT.");
+    }
+    private static TimeSpan ReadReplyTimeout()
+    {
+        var value = Environment.GetEnvironmentVariable("AS_LAN_TEST_TIMEOUT_MS");
+        if (string.IsNullOrEmpty(value)) return TimeSpan.FromSeconds(10);
+        if (!int.TryParse(value, out var milliseconds) || milliseconds < 1000 || milliseconds > 120000)
+            throw new ArgumentException("AS_LAN_TEST_TIMEOUT_MS must be 1000..120000.");
+        return TimeSpan.FromMilliseconds(milliseconds);
     }
     private static string CreateOutput(){var path=Environment.GetEnvironmentVariable("AS_LAN_TEST_OUTPUT")??Path.Combine(Path.GetTempPath(),"AshenSpire.NativeLan.Tests",Guid.NewGuid().ToString("N"));Directory.CreateDirectory(path);return path;}
     private static string CreateWebFixture(){var configured=Environment.GetEnvironmentVariable("AS_LAN_WEB_ROOT");if(!string.IsNullOrEmpty(configured))return Path.GetFullPath(configured);var path=Path.Combine(OutputRoot,"StaticFixture");Directory.CreateDirectory(Path.Combine(path,"Build"));File.WriteAllText(Path.Combine(path,"index.html"),"<!doctype html><title>Transport test fixture</title>");File.WriteAllBytes(Path.Combine(path,"Build","Web.wasm"),new byte[]{0,97,115,109,1,0,0,0});return path;}
