@@ -4,8 +4,8 @@
 // BOOT: MigrateLegacy copies the one-run save into slot 0 once; the legacy key is never written.
 // DEFAULT PATH: title Continue resumes the most recently saved slot; title New starts in the
 // first empty slot with no extra step, and only opens the slot picker when all three are full.
-// SAVE: every checkpoint goes to the active slot with the running playtime. A save that does
-// not read back keeps the slot's previous record and is reported on the next title screen.
+// SAVE: every checkpoint goes to the active slot with the running playtime. A save that
+// fails retains in-memory progress for retry and reports the failure in the game.
 // RESULTS: a finished run is recorded once through RecordResult (FIFO archive of 20).
 using System;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace AshenSpire.Application
             try
             {
                 if (slot < 0) throw new InvalidOperationException("No saved native climb to continue.");
-                LoadOriginalProfile();
+                if (!TryLoadOriginalProfile()) return;
                 var snapshot = _slotSaves.Load(slot, value => OriginalGameSession.Restore(value), out var meta, out var recovered);
                 var game = OriginalGameSession.Restore(snapshot);
                 _activeSlot = slot; _playtimeBase = meta?.PlaytimeSeconds ?? 0; _playtimeSince = Time.realtimeSinceStartup;
@@ -79,22 +79,24 @@ namespace AshenSpire.Application
             var playtime = _playtimeBase + (long)Math.Max(0f, Time.realtimeSinceStartup - _playtimeSince);
             if (!_slotSaves.Save(_activeSlot, _originalGame.Snapshot(), playtime))
             {
-                Debug.LogWarning("Native save to slot " + (_activeSlot + 1) + " did not verify; the slot keeps its previous save.");
-                _slotNotice = "The last save to slot " + (_activeSlot + 1) + " could not be verified. The slot keeps its previous save; free some storage and keep playing to retry.";
+                Debug.LogWarning("Native save to slot " + (_activeSlot + 1) + " did not verify; in-memory progress is retained for retry.");
+                _slotNotice = "The last save to slot " + (_activeSlot + 1) + " could not be verified. Keep this game open, free some storage and keep playing to retry.";
             }
+            else _slotNotice = null;
         }
         private string TakeSlotNotice() { var notice = _slotNotice; _slotNotice = null; return notice; }
         private JObject RecordOriginalResult(JObject run, bool victory)
         {
             var receipt = _slotSaves.RecordResult(_profile, run, victory);
-            if (!(bool)receipt["saved"]) Debug.LogWarning("The finished climb was recorded but the profile save did not verify.");
+            ProfileSaveResult((bool)receipt["saved"]);
             return receipt;
         }
         private void ShowSaveSlots() => ShowSaveSlots(null);
         private void ShowSaveSlots(string notice)
         {
-            LoadOriginalProfile();
+            if (!TryLoadOriginalProfile()) return;
             _view.Slots(_slotSaves.List(), ClassName, notice ?? TakeSlotNotice(), ResumeSlot, CreateOriginal, DeleteSlot, CopySlot);
+            _view.PersistenceNotice(_profileNotice);
         }
         private string ClassName(string id)
         {

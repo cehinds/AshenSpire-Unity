@@ -27,7 +27,7 @@ namespace AshenSpire.Application
         private const string CoopReceiptsKey = "AshenSpire.Unity.Coop.Receipts.v1";
         private void OpenCoop()
         {
-            LoadOriginalProfile();
+            if (!TryLoadOriginalProfile()) return;
             if (_coopDraft == null)
             {
                 var endpoint = PlayerPrefs.GetString("AshenSpire.Unity.Coop.Endpoint", "ws://127.0.0.1:8795/lan");
@@ -51,6 +51,7 @@ namespace AshenSpire.Application
                     _coopCharacter = player; _coopCharacter["seed"] = seed; ShowCoopConnect("Wanderer selected. Join the companion when ready.");
                 }, new OriginalProfile(CoopContent()).Snapshot());
             }, ConnectCoop, () => { CloseCoop(); Menu(); });
+            _view.PersistenceNotice(_profileNotice);
         }
         private void ConnectCoop(bool rejoin)
         {
@@ -145,6 +146,7 @@ namespace AshenSpire.Application
             if ((bool?)_coopSnapshot["lobby"]?["started"] != true)
                 _view.CoopLobby(_coopSnapshot, _coopHost, ready => SendCoopEnvelope("ready", new JObject { ["ready"] = ready }), () => SendCoopEnvelope("start", new JObject { ["sequence"] = 1 }), seed => SendCoopEnvelope("seed", new JObject { ["seed"] = seed }), endless => SendCoopEnvelope("endless", new JObject { ["enabled"] = endless }), LeaveCoop, notice, seatId => SendCoopEnvelope("removeSeat", new JObject { ["seatId"] = seatId }));
             else _view.CoopGame((JObject)_coopSnapshot["game"], CoopContent(), OriginalRules("event-choices"), CoopIntent, LeaveCoop);
+            _view.PersistenceNotice(_profileNotice);
         }
         private void CoopIntent(JObject intent)
         {
@@ -162,7 +164,7 @@ namespace AshenSpire.Application
             {
                 _profile.Finish((string)run["runId"], run, (string)_coopSnapshot["game"]["scene"]["result"] == "victory"); changed = true;
             }
-            if (changed) _profileSaves.Save(_profile.Snapshot());
+            if (changed || _profileWritePending) SaveOriginalProfile();
         }
         private void ReportCoop()
         {

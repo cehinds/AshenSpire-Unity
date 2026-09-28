@@ -1,6 +1,13 @@
 # Unity save slots and profile archive (F10)
 
-**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
+**Integration status: build 25 save-recovery implementation; acceptance remains open.**
+
+The current storage suite passes 99 checks, including thrown I/O failures,
+partial writes, recovery and repeated result saves. The Unity-compiled
+controller/view fixtures pass 36 checks using isolated storage. Build 24's
+compiled browser checks already cover combat checkpoint restoration; build 25
+exports and browser checks are being prepared. These checks do not prove
+physical-device durability or asynchronous browser storage quota handling.
 
 ## What this is, in plain words
 
@@ -10,8 +17,8 @@ kept only one run per channel (Web, Dev, Test, desktop).
 
 The Unity build now has three run slots and the result archive. The title
 screen has a **Load** entry that opens the slot picker; **Continue** and **New**
-work as before when you only have one run. It compiles against Unity's reference
-assemblies but has not yet been played in the Unity editor or a built player.
+work as before when you only have one run. Normal save/reload has been exercised
+in compiled browser players; see the source-specific receipts in `docs/qa`.
 
 On screen:
 
@@ -26,7 +33,12 @@ On screen:
   ask for confirmation first.
 - **Collection** (the existing profile view) lists the last 20 finished climbs,
   newest first.
-- If a save does not verify, the next title or slot screen says so.
+- If a save fails, the current game shows a warning and retains in-memory
+  progress for retry. Keep the game open while freeing storage. A verified
+  retry clears the failure warning.
+- An unreadable profile leaves its records untouched and returns a useful
+  title message. A recovered backup is identified explicitly; recent progress
+  may be missing.
 
 What the new code already does:
 
@@ -40,9 +52,10 @@ What the new code already does:
   an older build can still open it. This happens once; deleting slot 0 later
   does not bring the old run back.
 - **Saves are checked after writing.** Every save is read back and compared. If
-  the stored bytes do not match (full storage, interrupted write), the slot keeps
-  its previous good save and the save reports failure instead of pretending it
-  worked.
+  the stored bytes do not match or storage throws, the journal reports failure
+  and attempts to restore the old primary. A surviving backup is not rolled
+  back or deleted. Restoration can itself fail while storage is unavailable;
+  the in-memory snapshot remains available for retry.
 - **Damaged saves are never thrown away.** A slot whose latest save is damaged
   opens its previous checkpoint. A damaged save that gets overwritten is first
   set aside under its own key. A slot with nothing readable says so and keeps the
@@ -50,9 +63,13 @@ What the new code already does:
 - **Last 20 results.** Finishing a run adds its result to the profile. Only the
   20 newest results are kept (oldest leaves first), each labelled with its run
   ID. Win/run totals and unlocks keep counting past 20. Recording the same run
-  twice does nothing.
+  twice does not count it again, but still retries the verified profile write.
 - **Your profile carries over.** The profile uses the same storage key as
   before, so existing unlocks and history are unaffected.
+- **One profile journal.** Solo, co-op, result recording and map preferences
+  share the same journal instance, preserving the recovery state. A primary
+  rejected for an unsupported schema is quarantined even if its checksum is
+  valid. No save format, schema version or key changed in build 25.
 
 ## For developers
 

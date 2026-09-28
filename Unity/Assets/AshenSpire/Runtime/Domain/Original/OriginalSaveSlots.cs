@@ -141,7 +141,9 @@ namespace AshenSpire.Domain.Original
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             var receipt = profile.Finish((string)run?["runId"], run, victory);
-            receipt["saved"] = (bool)receipt["duplicate"] || SaveProfile(profile); return receipt;
+            // Finish is idempotent in memory; a previous persistence attempt may
+            // still have failed. A duplicate result must retry the verified write.
+            receipt["saved"] = SaveProfile(profile); return receipt;
         }
 
         // ---- record format ------------------------------------------------------

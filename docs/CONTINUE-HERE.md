@@ -8,7 +8,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.24.0 · build 24 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.25.0 · build 25 · Foundation in progress** (`GameContent/Unity/version.json`) |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -16,6 +16,15 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Build 25 in progress
+
+Profile recovery now uses one journal across solo, co-op, results and map
+preferences. Failed writes retain progress for retry, report a visible warning,
+and preserve existing records. Storage checks pass 99 assertions and compiled
+controller/view fixtures pass 36 checks. Exports and browser validation are next.
+No save format, key or game rule changed. Build 24 remains the packaged player
+until the build-25 export succeeds.
 
 ### Local build 24 candidate
 

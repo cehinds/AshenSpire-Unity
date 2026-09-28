@@ -101,11 +101,19 @@ jobs:
           - id: native-audio
             name: Verify interface and combat audio levels, mute and reload in the compiled player
             run: node tools/native-audio-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAudio
-          - id: native-combat-tools-320x640
-            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=0/2
-          - id: native-combat-tools-1440x900
-            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=1/2
             evidence: TestResults/NativeAudio
+          - id: native-combat-tools-320x640
+            name: Verify solo combat inspection and keyboard controls (320x640)
+            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=0/2
+            evidence: TestResults/NativeCombatTools
+          - id: native-combat-tools-1440x900
+            name: Verify solo combat inspection and keyboard controls (1440x900)
+            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=1/2
+            evidence: TestResults/NativeCombatTools
+          - id: native-save-recovery
+            name: Verify compiled profile navigation, slot copies and checkpoint restoration
+            run: node tools/native-save-recovery-playtest.cjs http://127.0.0.1:8787 TestResults/NativeSaveRecovery
+            evidence: TestResults/NativeSaveRecovery
           - id: native-map-320x640
             name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
             run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
