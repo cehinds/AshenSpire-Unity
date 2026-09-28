@@ -191,6 +191,10 @@ Tests: `UnityTests/Domain`, `UnityTests/SpriteStyles`, `tools/NativeLan/Tests/St
 
 ### F03 — Combat core
 
+Build 24: solo pile inspection and saved keyboard controls pass 37 compiled
+browser checks per viewport (320×640 and 1440×900), plus 45 discard-choice
+callback fixtures. [Evidence](qa/unity-build-24/README.md). Owner acceptance remains open.
+
 **Goal:** a turn feels fast and legible: pick a card, pick a target, play; costs
 and shortages are obvious; the hand is readable on a phone.
 

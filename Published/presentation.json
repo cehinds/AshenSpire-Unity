@@ -1,9 +1,11 @@
 {
-  "guide": "Published/BuildReview23/Guide.md",
+  "guide": "Published/BuildReview24/Guide.md",
   "screenshots": [
-    "Published/BuildReview23/coop-host.png",
-    "Published/BuildReview23/coop-guest.png",
-    "Published/BuildReview23/01-audio-settings.png",
-    "Published/BuildReview23/02-persisted-audio.png"
+    "Published/BuildReview24/combat-0-01-draw-inspection.png",
+    "Published/BuildReview24/combat-0-02-played-discard.png",
+    "Published/BuildReview24/combat-0-03-restored-draw-pile.png",
+    "Published/BuildReview24/combat-1-01-draw-inspection.png",
+    "Published/BuildReview24/combat-1-02-played-discard.png",
+    "Published/BuildReview24/combat-1-03-restored-draw-pile.png"
   ]
 }

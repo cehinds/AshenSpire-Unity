@@ -1,29 +1,23 @@
 {
-  "version": "0.0.23.0",
-  "buildNumber": 23,
-  "sourceDigest": "2bc3124c0f7bb1e1fe875b6a479a2322a82dcb4205324a0375dada163db13600",
-  "builtAt": "2026-09-28T06:15:39.4631427Z",
+  "version": "0.0.24.0",
+  "buildNumber": 24,
+  "sourceDigest": "2314894d6014c76a489ef495002d10a051db5fd180b75465b745e5de3c3568fa",
+  "builtAt": "2026-09-28T20:47:46.8420589Z",
   "webCompiled": true,
   "windowsCompiled": true,
   "androidCompiled": true,
   "companionPackaged": true,
   "currentPlayerSuites": [
     {
-      "suite": "CooperativeBrowserHost",
+      "suite": "SoloCombatControls0",
       "success": true,
-      "checks": 8,
+      "checks": 37,
       "physicalDevice": false
     },
     {
-      "suite": "CooperativeBrowserGuest",
+      "suite": "SoloCombatControls1",
       "success": true,
-      "checks": 6,
-      "physicalDevice": false
-    },
-    {
-      "suite": "InterfaceAudio",
-      "success": true,
-      "checks": 32,
+      "checks": 37,
       "physicalDevice": false
     }
   ],

@@ -17,16 +17,17 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
 
-### Build 24 work in progress
+### Local build 24 candidate
 
-The current change adds solo draw/discard/exhaust inspection, the retained-card
-discard chooser, keyboard combat commands, rebinding and contextual help. The
-pre-build domain/parity/card/map checks, 172 hand-rule checks, 87 settings/mod
-checks and 64 save-slot checks have passed. Unity Web compilation and real-input
-browser validation are still in progress; do not call this a packaged build yet.
-`tools/native-combat-tools-playtest.cjs` exercises phone/desktop input, while
-`AshenSpire.Editor.CombatToolsValidation.Run` covers optional and forced choices
-with modified saved-rule fixtures. These fixtures are not normal-run playthroughs.
+Build 24 is compiled and packaged for Web, Windows, Android and the companion.
+Solo piles, keyboard controls and rebinding pass **37 checks at each of 320×640
+and 1440×900** using normal input in the compiled player. Retained-card choice
+fixtures pass **45 Unity-compiled callback checks**; they use modified hand
+rules, not a normal-run acceptance claim. See [build-24 QA](qa/unity-build-24/README.md).
+
+The next local change addresses profile corruption and failed save retries.
+Owner acceptance and physical-device checks remain open. This candidate has
+not been promoted; build 22's owner merge still gates the successive versions.
 
 ### Previous local build 23 candidate
 
