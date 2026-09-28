@@ -21,10 +21,13 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 Profile recovery now uses one journal across solo, co-op, results and map
 preferences. Failed writes retain progress for retry, report a visible warning,
-and preserve existing records. Storage checks pass 99 assertions and compiled
-controller/view fixtures pass 36 checks. Exports and browser validation are next.
-No save format, key or game rule changed. Build 24 remains the packaged player
-until the build-25 export succeeds.
+and preserve existing records. Storage checks pass 148 assertions and compiled
+controller/view fixtures pass 36 checks. The first compiled browser check found
+that copying a full slot exceeded Web PlayerPrefs' 1 MiB budget. The corrected
+source adds compact Web storage and transactional legacy-record compaction;
+all-three-slot browser validation and matching exports are next. Logical keys
+and game rules are unchanged, but older players cannot read compact Web saves.
+Build 24 is the last fully validated candidate until the corrected build 25 passes.
 
 ### Local build 24 candidate
 

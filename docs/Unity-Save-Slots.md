@@ -2,11 +2,13 @@
 
 **Integration status: build 25 save-recovery implementation; acceptance remains open.**
 
-The current storage suite passes 99 checks, including thrown I/O failures,
-partial writes, recovery and repeated result saves. The Unity-compiled
+The current storage suite passes 148 checks, including thrown I/O failures,
+partial writes, recovery, repeated result saves, real authored-record capacity,
+legacy compaction and interrupted encoding upgrades. The Unity-compiled
 controller/view fixtures pass 36 checks using isolated storage. Build 24's
-compiled browser checks already cover combat checkpoint restoration; build 25
-exports and browser checks are being prepared. These checks do not prove
+compiled browser checks already cover combat checkpoint restoration. The first
+build-25 browser test reproduced a slot-copy failure at the Web storage limit;
+the corrected compact-storage player is being rebuilt. These checks do not prove
 physical-device durability or asynchronous browser storage quota handling.
 
 ## What this is, in plain words
@@ -48,9 +50,10 @@ What the new code already does:
   that already holds a run unless you explicitly ask it to.
 - **Your existing run is kept.** The first time the new code starts on a device,
   the one run saved by the current build is copied into slot 0 exactly as it
-  was, together with its previous checkpoint. The old save is left in place, so
-  an older build can still open it. This happens once; deleting slot 0 later
-  does not bring the old run back.
+  was, together with its previous checkpoint. Historical records stay under
+  their old keys. On Web, validated records can be compacted without changing
+  their decoded bytes; compact records require this build or a newer compatible
+  player. Migration happens once; deleting slot 0 later does not bring it back.
 - **Saves are checked after writing.** Every save is read back and compared. If
   the stored bytes do not match or storage throws, the journal reports failure
   and attempts to restore the old primary. A surviving backup is not rolled
@@ -69,7 +72,28 @@ What the new code already does:
 - **One profile journal.** Solo, co-op, result recording and map preferences
   share the same journal instance, preserving the recovery state. A primary
   rejected for an unsupported schema is quarantined even if its checksum is
-  valid. No save format, schema version or key changed in build 25.
+  valid. Logical record schemas and keys are unchanged.
+
+### Web storage encoding and compatibility
+
+Unity limits Web PlayerPrefs to [1 MiB](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/PlayerPrefs.html).
+One actual authored slot, backup and copy occupied 1,078,215 UTF-8 bytes before
+compression, reproducing the compiled failure. Web native storage now uses an
+`ASZ1:` gzip/base64 encoding for large values, with bounded decoding. Plain
+records remain readable. Native Windows and Android storage is unchanged.
+
+The capacity fixture stores three complete slots and backups plus 20 results
+in **454,286 bytes**. A migration fixture retains both historical records along
+with all three slots/backups and a profile in **604,163 bytes**. Validated
+historical records use a verified temporary encoding copy before replacement;
+interrupted upgrades retry, unreadable records stay untouched, and conflicting
+valid copies are preserved instead of choosing one. These are representative
+authored fixtures, not an unlimited-storage guarantee.
+
+**Older players cannot decode compact Web records.** Keep using this corrected
+build or a newer compatible player after it updates Web saves. This changes
+the storage encoding, not gameplay snapshots, checksums or profile rules. It
+does not import saves from the original JavaScript game.
 
 ## For developers
 

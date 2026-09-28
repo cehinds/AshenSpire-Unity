@@ -194,6 +194,7 @@ try
     }
 
     SaveFailureChecks.Run(catalog, Check);
+    SaveCapacityChecks.Run(root, catalog, Check);
     Console.WriteLine($"SaveSlots: {passed} checks passed");
     return 0;
 }

@@ -59,6 +59,22 @@ namespace AshenSpire.Domain.Original
         private static int Check(int slot) { if (slot < 0 || slot >= SlotCount) throw new ArgumentOutOfRangeException(nameof(slot), "Save slots are numbered 0 to " + (SlotCount - 1) + "."); return slot; }
 
         // ---- migration ----------------------------------------------------------
+        // Web can retain its historical single-run pair within the storage budget
+        // by changing only the outer encoding. Logical envelope bytes are preserved.
+        // Unreadable records are not rewritten; interrupted compaction keeps a
+        // verified temporary copy which the next call can recover.
+        public bool CompactLegacyRecords(Action<JObject> validate)
+        {
+            if (!(_storage is OriginalCompressedSaveStorage compact)) return true;
+            if (validate == null) throw new ArgumentNullException(nameof(validate));
+            void ValidateEnvelope(string envelope)
+            {
+                var candidate = new OriginalSaveJournal("candidate", _ => envelope, (_, __) => { }, () => { });
+                candidate.Load(validate, out _);
+            }
+            return compact.TryCompact(LegacyRunKey + ".backup", ValidateEnvelope)
+                && compact.TryCompact(LegacyRunKey, ValidateEnvelope);
+        }
         // Copies the one-run save into an empty slot 0: legacy backup first, then legacy
         // primary, so slot 0 ends with the same current and previous snapshots. The
         // legacy keys are left in place for older builds. Runs once per channel.

@@ -22,12 +22,17 @@ let browser,ui;
  await ui.click('native-slot-0-copy');ui.check(ui.has('native-slot-1-continue'),'copy creates a second saved slot');
  await ui.click('native-slot-1-delete');ui.check(ui.has('native-slot-confirm'),'delete requires the existing confirmation');
  await ui.click('native-slot-cancel');ui.check(ui.has('native-slot-1-continue'),'cancelling delete preserves the copied climb');
+ await ui.click('native-slot-0-copy');ui.check(ui.has('native-slot-2-continue'),'a third complete saved slot fits the real Web storage budget');
+ for(const slot of [1,2]){
+  await ui.command('native-slot-'+slot+'-continue');ui.check(state()===original,'copied slot restores the exact checkpoint: '+slot);
+  await ui.click('native-menu');await ui.click('native-slots');
+ }
  await ui.shot('02-saved-slots');await ui.click('native-slots-back');
  console.log('Save recovery: profile, creation and slot copy passed; checking reload.');
  ui.controls=null;ui.state=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await ui.until(()=>ui.has('native-slots'),'reloaded title');
  await ui.click('native-profile');ui.check(ui.has('native-profile-back')&&healthy(),'saved profile loads after browser reload');
  await ui.shot('03-restored-profile');await ui.click('native-profile-back');await ui.click('native-slots');
- ui.check(ui.has('native-slot-0-continue')&&ui.has('native-slot-1-continue'),'both slots survive reload');
+ ui.check(ui.has('native-slot-0-continue')&&ui.has('native-slot-1-continue')&&ui.has('native-slot-2-continue'),'all three slots and their updated backups survive reload');
  await ui.command('native-slot-0-continue');ui.check(state()===original,'the original saved climb restores exactly');
  await ui.command('native-route-'+ui.state.legalNodes[0]);ui.check(ui.state.phase==='Combat'&&healthy(),'resumed climb can enter combat and save again');
  const combat=state();await ui.click('native-menu');await ui.click('native-profile');await ui.click('native-profile-back');await ui.click('native-slots');

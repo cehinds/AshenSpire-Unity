@@ -23,10 +23,15 @@ namespace AshenSpire.Application
         private string _slotNotice;
         private void InitSaveSlots(string channel)
         {
-            var storage = new OriginalDelegateSaveStorage(key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save, PlayerPrefs.DeleteKey);
+            IOriginalSaveStorage storage = new OriginalDelegateSaveStorage(key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save, PlayerPrefs.DeleteKey);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            storage = new OriginalCompressedSaveStorage(storage);
+#endif
             _slotSaves = new OriginalSaveSlots(storage, channel, UnityEngine.Application.version);
             try
             {
+                if (!_slotSaves.CompactLegacyRecords(value => OriginalGameSession.Restore(value)))
+                    Debug.LogWarning("Historical native records could not be compacted; existing and recovery records are retained.");
                 var outcome = _slotSaves.MigrateLegacy();
                 if (outcome != OriginalLegacyMigration.AlreadyDone) Debug.Log("ASHENSPIRE_SAVE_MIGRATION " + outcome);
             }

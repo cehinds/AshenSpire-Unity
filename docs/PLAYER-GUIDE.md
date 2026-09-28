@@ -1,7 +1,7 @@
 # Ashen Spire: player guide
 
 A friendly guide to playing the Unity version of Ashen Spire. It describes
-what the game does today (source **0.0.24.0 · build 24**, local candidate). Where the original
+what the game does today (source **0.0.25.0 · build 25**, local candidate). Where the original
 HTML game has something the Unity version does not have yet, this guide says so.
 The embedded screenshots below are historical examples; the build page identifies
 the version actually available to play.
@@ -190,7 +190,16 @@ been, teal = nearest shrine, bright ring = you can go here).
 ## Saving
 
 - The game **saves automatically** after every accepted move.
-- **Save and return to title** stops safely; **Continue** resumes exactly.
+- **Save and return to title** keeps your place; **Continue** resumes the saved checkpoint.
+- If the game reports a failed save, keep it open while freeing storage. Your
+  current progress stays in memory and saving retries as you play. The warning
+  clears after a verified save; closing before that can lose recent progress.
+- If the game recovers a previous profile backup, it tells you that more recent
+  progress may be missing. An unreadable profile is preserved instead of being
+  silently replaced with a fresh one.
+- Web saves now use less space so all three slots can fit. Existing Unity saves
+  remain readable; once this build compacts them, continue using this build or
+  a newer compatible player. Older builds cannot read the compact records.
 - Saves live on this device and browser (and are separate for each build
   channel). Clearing site data or switching browsers starts fresh.
 - There are three native run slots. Continue resumes the most recently saved
@@ -283,4 +292,4 @@ browser, a private window or cleared site data won't have it.
 controls are available; see the table above. Gamepad support is unfinished.
 
 **Which build am I playing?** The build page shows the version and build
-number; the Unity candidate currently in source is 0.0.24.0, build 24.
+number; the Unity candidate currently in source is 0.0.25.0, build 25.
