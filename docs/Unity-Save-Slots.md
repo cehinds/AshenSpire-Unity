@@ -1,6 +1,6 @@
 # Unity save slots and profile archive (F10)
 
-**Integration status: build 25 save-recovery implementation; acceptance remains open.**
+**Integration status: build 25 compiled save-recovery candidate; acceptance remains open.**
 
 The current storage suite passes 148 checks, including thrown I/O failures,
 partial writes, recovery, repeated result saves, real authored-record capacity,
@@ -8,7 +8,7 @@ legacy compaction and interrupted encoding upgrades. The Unity-compiled
 controller/view fixtures pass 36 checks using isolated storage. Build 24's
 compiled browser checks already cover combat checkpoint restoration. The first
 build-25 browser test reproduced a slot-copy failure at the Web storage limit;
-the corrected compact-storage player is being rebuilt. These checks do not prove
+the corrected compact-storage player passes the all-three-slot browser check. See [build-25 QA](qa/unity-build-25/README.md). These checks do not prove
 physical-device durability or asynchronous browser storage quota handling.
 
 ## What this is, in plain words
@@ -83,8 +83,8 @@ compression, reproducing the compiled failure. Web native storage now uses an
 records remain readable. Native Windows and Android storage is unchanged.
 
 The capacity fixture stores three complete slots and backups plus 20 results
-in **454,286 bytes**. A migration fixture retains both historical records along
-with all three slots/backups and a profile in **604,163 bytes**. Validated
+in **454,290 bytes**. A migration fixture retains both historical records along
+with all three slots/backups and a profile in **604,139 bytes**. Validated
 historical records use a verified temporary encoding copy before replacement;
 interrupted upgrades retry, unreadable records stay untouched, and conflicting
 valid copies are preserved instead of choosing one. These are representative

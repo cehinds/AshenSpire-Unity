@@ -1,11 +1,29 @@
 {
-  "guide": "Published/BuildReview24/Guide.md",
+  "guide": "Published/BuildReview25/Guide.md",
   "screenshots": [
-    "Published/BuildReview24/combat-0-01-draw-inspection.png",
-    "Published/BuildReview24/combat-0-02-played-discard.png",
-    "Published/BuildReview24/combat-0-03-restored-draw-pile.png",
-    "Published/BuildReview24/combat-1-01-draw-inspection.png",
-    "Published/BuildReview24/combat-1-02-played-discard.png",
-    "Published/BuildReview24/combat-1-03-restored-draw-pile.png"
+    "Published/BuildReview25/enemy-wanderingSoldier.png",
+    "Published/BuildReview25/enemy-blightHound.png",
+    "Published/BuildReview25/enemy-graveWisp.png",
+    "Published/BuildReview25/enemy-wyrmAspirant.png",
+    "Published/BuildReview25/enemy-fellWarden.png",
+    "Published/BuildReview25/enemy-gildedKnight.png",
+    "Published/BuildReview25/enemy-courtSurgeon.png",
+    "Published/BuildReview25/enemy-livingArmor.png",
+    "Published/BuildReview25/enemy-courtDuelist.png",
+    "Published/BuildReview25/enemy-stitchedKing.png",
+    "Published/BuildReview25/enemy-valkyrieShade.png",
+    "Published/BuildReview25/enemy-wyrmLord.png",
+    "Published/BuildReview25/enemy-huskBrute.png",
+    "Published/BuildReview25/enemy-stitchedHound.png",
+    "Published/BuildReview25/enemy-courtMarionette.png",
+    "Published/BuildReview25/enemy-ashRevenant.png",
+    "Published/BuildReview25/enemy-emberStarvedPilgrim.png",
+    "Published/BuildReview25/enemy-charredColossus.png",
+    "Published/BuildReview25/enemy-blightedValkyrie.png",
+    "Published/BuildReview25/coop-host.png",
+    "Published/BuildReview25/coop-guest.png",
+    "Published/BuildReview25/01-fresh-profile.png",
+    "Published/BuildReview25/02-saved-slots.png",
+    "Published/BuildReview25/03-restored-profile.png"
   ]
 }

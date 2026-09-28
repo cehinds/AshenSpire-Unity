@@ -5,7 +5,7 @@ The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
 ## 0.0.25.0 · build 25 · 2026-09-28
 
-- F00/F10: Preserve damaged profiles, report storage failures and retry finished-run saves; compiled acceptance in progress.
+- F00/F10: Preserve damaged profiles, report storage failures and retry finished-run saves. Compact Web records fit all three slots and backups, with verified recovery during legacy Unity record conversion. Compact records require build 25 or newer; owner acceptance remains open.
 
 ## 0.0.24.0 · build 24 · 2026-09-28
 

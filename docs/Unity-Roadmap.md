@@ -330,6 +330,11 @@ Tests: `UnityTests/Parity` (run fixtures), `tools/native-features-playtest.cjs`;
 
 ### F10 — Run, seed & save slots
 
+Build 25: profile recovery, compact Web storage and verified save retries pass
+148 storage and 36 Unity-compiled controller/view checks, plus source-matched
+all-three-slot browser and two-player co-op smoke checks. [Evidence](qa/unity-build-25/README.md).
+Asynchronous browser quota, real-device durability and owner acceptance remain open.
+
 **Goal:** a run is never lost and can be shared by seed.
 
 - US-10.1 Enter or copy a seed; the same seed gives the same map and offers.

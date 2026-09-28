@@ -1,5 +1,4 @@
 {
-  "webBuildIncluded": false,
   "unitySources": [
     {
       "sha256": "34c4b39d3081984cac48fc34c745b018ec71883ffc874a9f87abeeeb187f22f7",
@@ -12,6 +11,64 @@
     {
       "sha256": "0bab240a2d88b6a5f4463994168789527503ecbb145774e8b6a21ce7bc9e1c49",
       "path": "tools/NativeLan/Build-Companion.ps1"
+    }
+  ],
+  "version": "0.0.25.0",
+  "sourceHashNormalization": "utf8-lf",
+  "buildNumber": 25,
+  "builtAtUtc": "2026-09-28T22:43:19.6851405Z",
+  "transportSources": [
+    {
+      "sha256": "7d788579e8286e68d2fb104000498c08789f0d94f6a74c27e26276e02056e922",
+      "path": "Transport/AshenSpire.Transport.csproj"
+    },
+    {
+      "sha256": "38fc5c15a5a23a42b96387b27c05662f8ee357ac04a6a820e211b553584ee232",
+      "path": "Transport/ILanGame.cs"
+    },
+    {
+      "sha256": "71b134ec80f56dde6567338d0fbadd8d34c9ae233a0ac22f334ab27f55a28685",
+      "path": "Transport/LanConnection.cs"
+    },
+    {
+      "sha256": "02429fad2ad6bd6138854d95d27633e143a20231e36cdc383d44d35a8f076fcf",
+      "path": "Transport/LanHost.cs"
+    },
+    {
+      "sha256": "3184239a9c03a7986c6db8ccf3081615a2a35512ba5eb415b91bcd7e0b47500d",
+      "path": "Transport/LanRoom.cs"
+    },
+    {
+      "sha256": "29f7f2cb4833be33d541e8fbc19bd7dd552ddd5a5e1b012706e1e6ca48fc1ef1",
+      "path": "Transport/LanStateStore.cs"
+    },
+    {
+      "sha256": "499bdba4b2511a6e464730ca1d5caafe1af76e71ef73d9be78b851eb10ec55a9",
+      "path": "Companion/AshenSpire.Companion.csproj"
+    },
+    {
+      "sha256": "7315ea02c6af36587143bb99987be6dc43257021b1c40f29735bfc39b7da5b3b",
+      "path": "Companion/OriginalLanGameFactory.cs"
+    },
+    {
+      "sha256": "654a7a6294b93b6fee34ba4b0de8b420d6fac98c8fe692927f18c443e8973051",
+      "path": "Companion/Program.cs"
+    },
+    {
+      "sha256": "0e28c9f915dd5515105a9a2a69634c54f9c0c3da269572ec2e1b3b10e771bab0",
+      "path": "Packaging/README.txt"
+    },
+    {
+      "sha256": "25136475d73ff328646b2261a681e2fce0f042b65a4313e8bb81d57be5387a58",
+      "path": "Packaging/Start-Companion.cmd"
+    },
+    {
+      "sha256": "142bd8a118864e1c00652344a6643ab5d4e80f8a82fe630d2af92cf3dd01917c",
+      "path": "Packaging/Start-Companion.ps1"
+    },
+    {
+      "sha256": "446af3b683a8eb9f7b70bf4a66f68fbfd86bc95964ee66dfcd4098d4b74df53a",
+      "path": "Domain/AshenSpire.NativeDomain.csproj"
     }
   ],
   "nativeSources": [
@@ -132,6 +189,10 @@
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCombatEquipment.cs"
     },
     {
+      "sha256": "ba3596dc67f56ccebeedc01bc21d043281cdab28b736ef85642f0a7052097307",
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCompressedSaveStorage.cs"
+    },
+    {
       "sha256": "b55c5071dc7092b936dca8b18d8d30994b9e1a24b13c0372aeb8ca5fe25f74e0",
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalContentCatalog.cs"
     },
@@ -212,11 +273,11 @@
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunSession.cs"
     },
     {
-      "sha256": "c1c143b8c340efab6a7f574ed37eaa3e12b53b20d8c4ede6305e739e140774ce",
+      "sha256": "b5d8a947caa63dbf59875112231354ee180cb79bf569f9ddc11bbf1b231a27f8",
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveJournal.cs"
     },
     {
-      "sha256": "a4b54d9178e9273d4e5da6f424d13bbeefbd89d0302e2bd8434207b039dfd4be",
+      "sha256": "62e157b5388bb586f696c3c8cae3c9b3dbe9350a5a1132f4f9d632bf8d5cad95",
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveSlots.cs"
     },
     {
@@ -260,29 +321,78 @@
       "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeightSystem.cs"
     }
   ],
+  "sourceCommit": "5ebcf61665461ed21c8834d2c15ae2a5613f9455",
+  "contentSources": [
+    {
+      "sha256": "4678606b911c01257910ec7cd28f5880634fcc2704f761c221fc5ca82f5101a2",
+      "path": "GameContent/Unity/Original/appearance-options.json"
+    },
+    {
+      "sha256": "8c3e868a04c9c38b2749bb659b3cb40356dbb0d824746a30118d7ab47b95ef67",
+      "path": "GameContent/Unity/Original/content.json"
+    },
+    {
+      "sha256": "5023162267baea42a9cbfd2f8c5a1c4bc6189995fb7c92cd96896cf9c36659a4",
+      "path": "GameContent/Unity/Original/custom-run-options.json"
+    },
+    {
+      "sha256": "365f53be4eb8f9e20d4b96d6f44a88b166e4e6b044be35bcc40a9cdbcccfd4b7",
+      "path": "GameContent/Unity/Original/enemy-art.json"
+    },
+    {
+      "sha256": "c32db4d93911f979ef4f174dce4467cb91f74bfccd2276a4dbf33296fa7109cf",
+      "path": "GameContent/Unity/Original/event-choices.json"
+    },
+    {
+      "sha256": "edea48b41304d940403116c3305b690981f1e68ba555fca4b9c12e9baeaadc18",
+      "path": "GameContent/Unity/Original/event-choices.receipt.json"
+    },
+    {
+      "sha256": "e4d6a5d400fba1550aec2b004762e11705096679421a89184831caac50324f1d",
+      "path": "GameContent/Unity/Original/manifest.json"
+    },
+    {
+      "sha256": "82a5a477d8eaa7ed05d4976f0b3e765ae45c0a08e4229b5bd25cd2076b85b935",
+      "path": "GameContent/Unity/Original/map-presentation.json"
+    },
+    {
+      "sha256": "559d5b45910720cb623d89f2b3eafa8ff7da2b978db97533c8046bffdfabafad",
+      "path": "GameContent/Unity/Original/mechanics.json"
+    },
+    {
+      "sha256": "6f2a417a49f108c61a064182edc8144b67b3bc93f8009268ed56062a409eb599",
+      "path": "GameContent/Unity/Original/progression.json"
+    },
+    {
+      "sha256": "93a1c580e8fbd52bc5d6c8a5d03371ce32c5ee21dea17cc7c7e041c26e6ddc1d",
+      "path": "GameContent/Unity/Original/sprite-styles.json"
+    },
+    {
+      "sha256": "02cc1ba95cac13b8c084f3f1b986da2d02d81d7969a01e57bf4a5582291f7d82",
+      "path": "GameContent/Unity/Original/sprites.receipt.json"
+    }
+  ],
+  "sourceWorktreeDirty": true,
   "runtime": "win-x64",
-  "selfContained": true,
-  "buildNumber": 24,
-  "sourceHashNormalization": "utf8-lf",
   "files": [
     {
-      "sha256": "21845ecff6cbded8185c7660f3056cecaf5f6c9ab11ac1fe00593a5eb9a27fc7",
+      "sha256": "eb8d58384cb5c780afcf13867289aad5335af246acec5fd22955534ad6e30042",
       "bytes": 51459,
       "path": "AshenSpire.Companion.deps.json"
     },
     {
-      "sha256": "e772a152210d3fb7225842c2ab84cb40145b5574cb7492bcee661b02ab2e9b0d",
+      "sha256": "5b8da9c14eb9f95e7cc92b5993677dac7c12be12e34f648771ebbfb9d69f1f3c",
       "bytes": 19968,
       "path": "AshenSpire.Companion.dll"
     },
     {
-      "sha256": "6ae51b6f852afe8896ee831c6187768768c9462d956c031398fa7e0b60110675",
+      "sha256": "c3ebcfac894c0c7684ac2c745c0a542baef17480af43ea7250f6d61c0e0820ec",
       "bytes": 152064,
       "path": "AshenSpire.Companion.exe"
     },
     {
-      "sha256": "6f8883291c8544dbc82a88645fa0872e79d87f64d1c2a108cb46d761e227d5d2",
-      "bytes": 24272,
+      "sha256": "62aab4060b71a2525909f2f2a553c10cc68e8a95f6f6a63774b4f0ac43efff11",
+      "bytes": 24276,
       "path": "AshenSpire.Companion.pdb"
     },
     {
@@ -296,22 +406,22 @@
       "path": "AshenSpire.Companion.staticwebassets.endpoints.json"
     },
     {
-      "sha256": "1b55ed91641c2ac3351851931fbda197018393c931afb7a3b683da369016c4db",
-      "bytes": 463872,
+      "sha256": "289b24b2fe3ea5407be0c091b7b567aff7f37a8ea7aa4570f5805d520e2990b4",
+      "bytes": 466944,
       "path": "AshenSpire.NativeDomain.dll"
     },
     {
-      "sha256": "09a1e7d97ec2199675d24d34222d6d0138af9bdd5306773615e46d463fbb8781",
-      "bytes": 140852,
+      "sha256": "6643d19b60b199ef617561bee2e3cb1c88f2d6add892267787d4964fa6abf59a",
+      "bytes": 142372,
       "path": "AshenSpire.NativeDomain.pdb"
     },
     {
-      "sha256": "5801ba0953dc603e01f07435d1af483ff076b07800f0aee5ea459096b25848a5",
+      "sha256": "963c5eea5f3709c6b3adf6f1a1836aef04ccc2c4b6027b7398103670a1dc0a7a",
       "bytes": 48640,
       "path": "AshenSpire.Transport.dll"
     },
     {
-      "sha256": "ac558ac824be60a0e78d39e3db136ff55410717c0da5f9383a0f68d87a4f3b16",
+      "sha256": "51f2c9dd64adc0403dd71a72f89a7c35603cfc30b89914e246c6a94be104b9ad",
       "bytes": 28564,
       "path": "AshenSpire.Transport.pdb"
     },
@@ -2016,112 +2126,6 @@
       "path": "WindowsBase.dll"
     }
   ],
-  "contentSources": [
-    {
-      "sha256": "4678606b911c01257910ec7cd28f5880634fcc2704f761c221fc5ca82f5101a2",
-      "path": "GameContent/Unity/Original/appearance-options.json"
-    },
-    {
-      "sha256": "8c3e868a04c9c38b2749bb659b3cb40356dbb0d824746a30118d7ab47b95ef67",
-      "path": "GameContent/Unity/Original/content.json"
-    },
-    {
-      "sha256": "5023162267baea42a9cbfd2f8c5a1c4bc6189995fb7c92cd96896cf9c36659a4",
-      "path": "GameContent/Unity/Original/custom-run-options.json"
-    },
-    {
-      "sha256": "365f53be4eb8f9e20d4b96d6f44a88b166e4e6b044be35bcc40a9cdbcccfd4b7",
-      "path": "GameContent/Unity/Original/enemy-art.json"
-    },
-    {
-      "sha256": "c32db4d93911f979ef4f174dce4467cb91f74bfccd2276a4dbf33296fa7109cf",
-      "path": "GameContent/Unity/Original/event-choices.json"
-    },
-    {
-      "sha256": "edea48b41304d940403116c3305b690981f1e68ba555fca4b9c12e9baeaadc18",
-      "path": "GameContent/Unity/Original/event-choices.receipt.json"
-    },
-    {
-      "sha256": "e4d6a5d400fba1550aec2b004762e11705096679421a89184831caac50324f1d",
-      "path": "GameContent/Unity/Original/manifest.json"
-    },
-    {
-      "sha256": "82a5a477d8eaa7ed05d4976f0b3e765ae45c0a08e4229b5bd25cd2076b85b935",
-      "path": "GameContent/Unity/Original/map-presentation.json"
-    },
-    {
-      "sha256": "559d5b45910720cb623d89f2b3eafa8ff7da2b978db97533c8046bffdfabafad",
-      "path": "GameContent/Unity/Original/mechanics.json"
-    },
-    {
-      "sha256": "6f2a417a49f108c61a064182edc8144b67b3bc93f8009268ed56062a409eb599",
-      "path": "GameContent/Unity/Original/progression.json"
-    },
-    {
-      "sha256": "93a1c580e8fbd52bc5d6c8a5d03371ce32c5ee21dea17cc7c7e041c26e6ddc1d",
-      "path": "GameContent/Unity/Original/sprite-styles.json"
-    },
-    {
-      "sha256": "02cc1ba95cac13b8c084f3f1b986da2d02d81d7969a01e57bf4a5582291f7d82",
-      "path": "GameContent/Unity/Original/sprites.receipt.json"
-    }
-  ],
-  "sourceCommit": "766a470e9cfc27c7aa6753c8717cbc12c452a95e",
-  "builtAtUtc": "2026-09-28T20:48:10.9556959Z",
-  "transportSources": [
-    {
-      "sha256": "7d788579e8286e68d2fb104000498c08789f0d94f6a74c27e26276e02056e922",
-      "path": "Transport/AshenSpire.Transport.csproj"
-    },
-    {
-      "sha256": "38fc5c15a5a23a42b96387b27c05662f8ee357ac04a6a820e211b553584ee232",
-      "path": "Transport/ILanGame.cs"
-    },
-    {
-      "sha256": "71b134ec80f56dde6567338d0fbadd8d34c9ae233a0ac22f334ab27f55a28685",
-      "path": "Transport/LanConnection.cs"
-    },
-    {
-      "sha256": "02429fad2ad6bd6138854d95d27633e143a20231e36cdc383d44d35a8f076fcf",
-      "path": "Transport/LanHost.cs"
-    },
-    {
-      "sha256": "3184239a9c03a7986c6db8ccf3081615a2a35512ba5eb415b91bcd7e0b47500d",
-      "path": "Transport/LanRoom.cs"
-    },
-    {
-      "sha256": "29f7f2cb4833be33d541e8fbc19bd7dd552ddd5a5e1b012706e1e6ca48fc1ef1",
-      "path": "Transport/LanStateStore.cs"
-    },
-    {
-      "sha256": "499bdba4b2511a6e464730ca1d5caafe1af76e71ef73d9be78b851eb10ec55a9",
-      "path": "Companion/AshenSpire.Companion.csproj"
-    },
-    {
-      "sha256": "7315ea02c6af36587143bb99987be6dc43257021b1c40f29735bfc39b7da5b3b",
-      "path": "Companion/OriginalLanGameFactory.cs"
-    },
-    {
-      "sha256": "654a7a6294b93b6fee34ba4b0de8b420d6fac98c8fe692927f18c443e8973051",
-      "path": "Companion/Program.cs"
-    },
-    {
-      "sha256": "0e28c9f915dd5515105a9a2a69634c54f9c0c3da269572ec2e1b3b10e771bab0",
-      "path": "Packaging/README.txt"
-    },
-    {
-      "sha256": "25136475d73ff328646b2261a681e2fce0f042b65a4313e8bb81d57be5387a58",
-      "path": "Packaging/Start-Companion.cmd"
-    },
-    {
-      "sha256": "142bd8a118864e1c00652344a6643ab5d4e80f8a82fe630d2af92cf3dd01917c",
-      "path": "Packaging/Start-Companion.ps1"
-    },
-    {
-      "sha256": "446af3b683a8eb9f7b70bf4a66f68fbfd86bc95964ee66dfcd4098d4b74df53a",
-      "path": "Domain/AshenSpire.NativeDomain.csproj"
-    }
-  ],
-  "version": "0.0.24.0",
-  "sourceWorktreeDirty": true
+  "selfContained": true,
+  "webBuildIncluded": false
 }

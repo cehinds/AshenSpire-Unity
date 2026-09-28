@@ -1,22 +1,26 @@
 {
   "Added": [
-    "Solo draw, discard and exhausted-card inspection, with hidden draw order.",
-    "Retained-card discard choices and saved solo combat keyboard controls."
+    "Visible profile recovery and save-failure messages."
   ],
   "Changed": [
-    "Combat help shows your saved bindings. Holding a combat key does not repeat turns.",
-    "Inspection text is sized for narrow phone layouts."
+    "Solo, co-op, result history and map preferences share one profile recovery journal.",
+    "Failed saves retain in-memory progress for retry. Web storage uses compact encoding while retaining logical schemas and keys.",
+    "Validated historical Unity Web records compact through verified recovery copies; older players cannot decode compact records."
   ],
   "Fixed": [
-    "Settings reports update when a binding is armed, cancelled or refused.",
-    "Discard selection preserves control focus and commits choices in hand order."
+    "Damaged profiles no longer let title actions fail without a useful message.",
+    "Three complete Web slots and their backups fit the save budget; the compiled copy failure is covered by a regression test.",
+    "Repeated finished-run saves retry storage instead of falsely reporting success.",
+    "Map preferences remain pending after a failed write.",
+    "Audio and combat-control CI captures use their correct evidence folders."
   ],
   "KnownIssues": [
     "Local candidate; owner acceptance and channel promotion remain pending.",
-    "Physical Android, graphical Windows, complete mode coverage and performance budgets remain unverified."
+    "Injected storage failures do not certify asynchronous Web quota handling or physical-device durability."
   ],
   "WhatToTest": [
-    "Inspect each combat pile, rebind End Turn, play a card with the keyboard, then reload and continue.",
-    "Review phone readability and the full game's remaining acceptance checklist."
+    "Review all 19 painted portraits and provide visual acceptance or specific changes.",
+    "Open Collection, create and copy a climb, reload, then continue either saved slot.",
+    "Review co-op rejoin and saving on your target devices."
   ]
 }

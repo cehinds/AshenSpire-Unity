@@ -17,17 +17,21 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
 
-### Build 25 in progress
+### Local build 25 candidate
 
-Profile recovery now uses one journal across solo, co-op, results and map
-preferences. Failed writes retain progress for retry, report a visible warning,
-and preserve existing records. Storage checks pass 148 assertions and compiled
-controller/view fixtures pass 36 checks. The first compiled browser check found
-that copying a full slot exceeded Web PlayerPrefs' 1 MiB budget. The corrected
-source adds compact Web storage and transactional legacy-record compaction;
-all-three-slot browser validation and matching exports are next. Logical keys
-and game rules are unchanged, but older players cannot read compact Web saves.
-Build 24 is the last fully validated candidate until the corrected build 25 passes.
+Build 25 is compiled and packaged for Web, Windows, Android and the companion.
+Profile recovery and failed-save retries pass **148 storage checks**, **36
+Unity-compiled controller/view checks**, **16 compiled profile/slot browser
+checks**, and **8 host / 6 guest checks** with the packaged companion.
+See [build-25 QA](qa/unity-build-25/README.md) for exact scope and receipts.
+
+Work is on `feature/unity-save-recovery`, stacked after the local build-24
+checkpoint. Build 22's PR #56 still needs owner merge before successive
+versions can pass the one-step dev gate. No own-PR merge or channel promotion.
+Keep profile/browser quota and physical-device acceptance open: injected C#
+I/O failures do not certify asynchronous browser storage durability. Web uses
+compact storage so three slots/backups fit; compact records require this build
+or a newer compatible player. Existing plain records remain readable.
 
 ### Local build 24 candidate
 
@@ -37,7 +41,7 @@ and 1440×900** using normal input in the compiled player. Retained-card choice
 fixtures pass **45 Unity-compiled callback checks**; they use modified hand
 rules, not a normal-run acceptance claim. See [build-24 QA](qa/unity-build-24/README.md).
 
-The next local change addresses profile corruption and failed save retries.
+The build-25 change above addresses profile corruption and failed save retries.
 Owner acceptance and physical-device checks remain open. This candidate has
 not been promoted; build 22's owner merge still gates the successive versions.
 
@@ -143,8 +147,8 @@ Known gaps carried over:
 
 1. **US-0.1** Review the 19-enemy compiled compendium gallery and obtain owner
    visual acceptance; then extend actual encounter/solo/co-op coverage.
-   Build 22 renders all 19 portraits at phone and desktop sizes (78 checks).
-   The catalog gallery is not every encounter. See [build-22 QA](qa/unity-build-22/README.md),
+   Build 25 renders all 19 portraits at phone and desktop sizes (78 checks).
+   The catalog gallery is not every encounter. See [build-25 QA](qa/unity-build-25/README.md),
    `tools/native-enemy-catalog-playtest.cjs` and `native-enemy-art-playtest.cjs`.
 2. **US-0.2** Current-source compiled Custom/Sealed/Draft/Endless interaction and
    save/resume checks. Start from `tools/native-features-playtest.cjs` and

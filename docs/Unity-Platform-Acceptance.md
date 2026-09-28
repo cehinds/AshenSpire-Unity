@@ -1,5 +1,15 @@
 # Platform acceptance
 
+## Current build-25 candidate
+
+Build 25 has matching Web, Windows, Android and companion packages. Its Web
+player passes the three-slot save/reload and two-player fight/rejoin checks;
+see [build-25 evidence](qa/unity-build-25/README.md). These are desktop Edge
+checks with emulated phone dimensions, not physical-device passes. The
+2026-09-28 Android device check still found no connected device. No current
+graphical Windows or iOS device acceptance is claimed. The device procedures
+and iOS delivery plan below remain the outstanding platform gates.
+
 ## Build-22 validation scope
 
 The local Windows machine has Unity 6000.6.0f1 and Web/Windows/Android build

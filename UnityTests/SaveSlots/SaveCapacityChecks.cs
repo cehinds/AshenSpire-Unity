@@ -10,6 +10,7 @@ internal static class SaveCapacityChecks
     public static void Run(string root, OriginalContentCatalog catalog, Action<bool,string> check)
     {
         JObject Rules(string name) => JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original",name+".json")));
+        DateTime Now() => new DateTime(2026,9,28,12,0,0,DateTimeKind.Utc);
         var mechanics=Rules("mechanics");var progression=new AttributeProgression(Rules("progression"));
         var creator=new CreationModel(catalog,"reaver","leanStandard",progression);
         var kit=(string)catalog.Table("equipment.startingKits").First(row=>(string)row["classId"]=="reaver"&&(bool?)row["baseline"]==true)["id"];
@@ -18,14 +19,14 @@ internal static class SaveCapacityChecks
         var game=OriginalGameSession.Start(catalog,Rules("event-choices"),mechanics,player,1);
         var snapshot=game.Snapshot();
         {
-            var quota=new QuotaStorage();var plain=new OriginalSaveSlots(quota,"web","0.0.25.0");
+            var quota=new QuotaStorage();var plain=new OriginalSaveSlots(quota,"web","0.0.25.0",Now);
             check(plain.Save(0,snapshot,0)&&plain.Save(0,snapshot,1),"one authored plain slot and its backup fit the Web budget");
             check(!plain.Copy(0,1),"baseline reproduces the compiled copy failure at the Web budget");
             check(plain.List()[1].State==OriginalSaveSlotState.Empty,"failed plain copy leaves the target empty");
         }
         {
             var quota=new QuotaStorage();var encoded=new OriginalCompressedSaveStorage(quota);
-            var slots=new OriginalSaveSlots(encoded,"web","0.0.25.0");
+            var slots=new OriginalSaveSlots(encoded,"web","0.0.25.0",Now);
             check(slots.Save(0,snapshot,0)&&slots.Save(0,snapshot,1),"encoded first slot and backup save successfully");
             check(slots.Copy(0,1)&&slots.Copy(0,2),"both additional authored slots copy within the Web budget");
             for(var slot=0;slot<3;slot++)check(slots.Save(slot,snapshot,2)&&slots.Save(slot,snapshot,3),"slot and backup update under Web quota: "+slot);
@@ -34,7 +35,7 @@ internal static class SaveCapacityChecks
             check(slots.LoadProfile(catalog,out _).ResultArchive().Count==20,"full result archive persists alongside all three slots and backups");
             Console.WriteLine("Complete three-slot Web store: "+quota.Bytes+" bytes");
             check(quota.Bytes<700000,"three complete slots, backups and full profile retain Web storage headroom");
-            var reloaded=new OriginalSaveSlots(new OriginalCompressedSaveStorage(quota),"web","0.0.25.0");
+            var reloaded=new OriginalSaveSlots(new OriginalCompressedSaveStorage(quota),"web","0.0.25.0",Now);
             for(var slot=0;slot<3;slot++){
                 var restored=reloaded.Load(slot,value=>OriginalGameSession.Restore(value),out _,out var recovered);
                 check(!recovered&&JToken.DeepEquals(restored,snapshot),"new storage instance restores exact authored snapshot and Unicode: "+slot);
@@ -52,7 +53,7 @@ internal static class SaveCapacityChecks
         }
         {
             var quota=new QuotaStorage();var encoded=new OriginalCompressedSaveStorage(quota);
-            var slots=new OriginalSaveSlots(encoded,"upgrade","0.0.25.0");
+            var slots=new OriginalSaveSlots(encoded,"upgrade","0.0.25.0",Now);
             var legacy=OriginalSaveJournal.Envelope(snapshot);
             quota.Write(slots.LegacyRunKey,legacy);quota.Write(slots.LegacyRunKey+".backup",legacy);
             check(slots.CompactLegacyRecords(value=>OriginalGameSession.Restore(value)),"historical records compact before migration with verified recovery copies");

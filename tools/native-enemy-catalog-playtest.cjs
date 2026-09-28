@@ -35,14 +35,16 @@ let browser, ui;
       const canvas = await page.locator('#unity-canvas').boundingBox();
       // The JSON inspector consumes its own wheel events. Use the outer gutter
       // so every screenshot shows the heading and the complete painted portrait.
+      // A visible back button alone can still leave the heading above the frame.
       await page.mouse.move(canvas.x + 6, canvas.y + canvas.height * .5);
       for(let step=0;step<20;step++){
         await page.mouse.wheel(0, -1200);
         await page.waitForTimeout(180);
-        if(ui.controls.Controls.find(row=>row.Id==='foundation-back')?.Y > 100)break;
+        await ui.frames();
+        if(ui.controls.Controls.find(row=>row.Id==='foundation-back')?.Y >= 180)break;
       }
       await page.waitForTimeout(400);
-      ui.check(ui.controls.Controls.find(row=>row.Id==='foundation-back')?.Y > 0, 'portrait header is on screen: '+id);
+      ui.check(ui.controls.Controls.find(row=>row.Id==='foundation-back')?.Y >= 180, 'portrait header is on screen: '+id);
       const name = viewport.name + '-' + id;
       await ui.shot(name); screenshots.push({id, viewport:viewport.name, file:name+'.png', asset});
       await ui.click('foundation-record-back');
