@@ -147,7 +147,9 @@ namespace AshenSpire.Presentation
             SettingSlider("volume-sfx", "Sound effects", 0, 100, Percent(s.SfxVolume), v => s.SfxVolume = v / 100.0);
             SettingSlider("volume-music", "Music volume", 0, 100, Percent(s.MusicVolume), v => s.MusicVolume = v / 100.0);
             SettingSlider("volume-ui", "Interface sounds", 0, 100, Percent(s.UiVolume), v => s.UiVolume = v / 100.0);
-            _body.Add(Text("Master volume controls music and sound effects. Music volume changes the playing track immediately.", "caption"));
+            AddButton("preview-interface-sound", "Preview interface sound", () => { });
+            AddButton("preview-sound-effect", "Preview combat sound", () => SoundPreviewRequested?.Invoke()).AddToClassList("no-interface-sound");
+            _body.Add(Text("Master volume controls all sound. Interface sounds and combat effects have separate levels. Music volume changes the playing track immediately. Mute silences previews too.", "caption"));
 
             // ACCESSIBILITY
             _body.Add(Text("ACCESSIBILITY", "heading"));

@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.23.0 · build 23 · 2026-09-28
+
+- Independent interface audio, live volume and sound previews
+
 ## 0.0.22.0 · build 22 · 2026-09-27
 
 - Connect live audio and feedback settings; import music and add compiled enemy portrait review

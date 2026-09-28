@@ -79,6 +79,7 @@ namespace AshenSpire.Presentation
         }
         private void RefreshTouchTargets()
         {
+            BindInterfaceSounds();
             var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight);
             foreach (var button in _root.Query<Button>().ToList())
             {
