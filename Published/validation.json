@@ -1,19 +1,13 @@
 {
-  "version": "0.0.22.0",
-  "buildNumber": 22,
-  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
-  "builtAt": "2026-09-27T19:42:30.2896717Z",
+  "version": "0.0.23.0",
+  "buildNumber": 23,
+  "sourceDigest": "2bc3124c0f7bb1e1fe875b6a479a2322a82dcb4205324a0375dada163db13600",
+  "builtAt": "2026-09-28T06:15:39.4631427Z",
   "webCompiled": true,
   "windowsCompiled": true,
   "androidCompiled": true,
   "companionPackaged": true,
   "currentPlayerSuites": [
-    {
-      "suite": "EnemyCatalog",
-      "success": true,
-      "checks": 78,
-      "physicalDevice": false
-    },
     {
       "suite": "CooperativeBrowserHost",
       "success": true,
@@ -27,22 +21,9 @@
       "physicalDevice": false
     },
     {
-      "suite": "EnemyCombat",
+      "suite": "InterfaceAudio",
       "success": true,
-      "checks": 66,
-      "physicalDevice": false
-    },
-    {
-      "suite": "PerformanceSampling",
-      "success": true,
-      "checks": 2,
-      "physicalDevice": false
-    },
-    {
-      "suite": "FoundationCampaignFull",
-      "success": true,
-      "fullRunVictory": true,
-      "resumeStateMatches": true,
+      "checks": 32,
       "physicalDevice": false
     }
   ],

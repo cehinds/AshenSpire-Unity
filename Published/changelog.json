@@ -1,31 +1,24 @@
 {
   "Added": [
-    "Original-style serif title and gold ornaments.",
-    "Authored card faces with licensed symbol fonts and resource medallions.",
-    "Shared simultaneous-enemy battlefield and responsive class preview."
+    "Interface feedback for button, toggle and dropdown activation, including keyboard submit.",
+    "Separate interface and combat sound preview buttons in Settings."
   ],
   "Changed": [
-    "Version 0.0.14.0, build 14; matching Web, Windows, Android and companion packages.",
-    "Warm brown/gold presentation and centered desktop or horizontally scrollable phone hands.",
-    "Long descriptions scroll within the hand; Play and End turn remain available."
+    "Version 0.0.23.0, build 23; interface and combat effects use independent audio sources and volume levels."
   ],
   "Fixed": [
-    "Missing authored symbols including crossed swords.",
-    "Unicode diagnostic chunks breaking on supplementary glyph boundaries.",
-    "Windows verifier path sorting disagreed with Unity export hashes.",
-    "Co-op escape remains outside command-disabled gameplay content."
+    "The saved Interface sounds slider now controls live playback.",
+    "Mute, zero volume and interruption handling apply to both transient sound sources.",
+    "Repeated control refreshes do not duplicate interface sound callbacks."
   ],
   "KnownIssues": [
-    "Foundation and complete HTML visual parity remain open.",
-    "Inventory, rewards, HUD arrangement and fanned-card motion need further reference matching.",
-    "Long card descriptions require vertical scrolling inside the hand.",
-    "Physical Android and graphical Windows play unverified; iOS not built.",
-    "Archive capacity must expand before publishing both retained builds 13 and 14."
+    "Foundation and full roadmap acceptance remain open.",
+    "Listening quality, physical Android and graphical Windows play are not accepted.",
+    "Local candidate awaiting owner review and channel promotion."
   ],
   "WhatToTest": [
-    "Compare title, creator and combat against the original reference.",
-    "Create Standard Reaver, seed 1; spend actions and inspect card shortages.",
-    "Scroll to the last card and read its full description; save/reload.",
-    "Use the matching companion for a shared fight and reconnect."
+    "Open Settings and try both sound previews with different Master, Interface and Sound effects levels.",
+    "Set each sound level to zero, toggle Mute, then reload and confirm saved settings.",
+    "Use keyboard submit and drag away from a button to check activation and cancellation."
   ]
 }

@@ -1,7 +1,7 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.22.0 · build 22 ·
+content while improving phone play. Current source: **0.0.23.0 · build 23 ·
 Foundation in progress** (`GameContent/Unity/version.json`). Published channels
 may still carry earlier checkpoints.
 
@@ -23,7 +23,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 
 | ID | Feature | Status | Version | Evidence |
 |---|---|---|---|---|
-| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.22.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
+| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.23.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
@@ -31,7 +31,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 | F05 | Branching map & fog | in-progress | — | `OriginalMapBoard.cs` · `OriginalMapKnowledge.cs` · [map](Unity-Map-Foundation.md) |
 | F06 | Rewards, cinders, relics, equipment & flasks | in-progress | — | `OriginalRunPanel.cs` (Reward/Deck) · `WeaponLoadout.cs` · `FlaskChargePool.cs` |
 | F07 | Juice pass (animation, hit feedback, transitions) | in-progress | — | `CombatFeedback.cs` · `NativeFeedbackProjection.cs` · `OriginalPlayerFigure.cs` · merged: [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) feel profile |
-| F08 | Audio & music | in-progress | — | `MusicPlayer.cs`, `MusicDirector.cs`, all 10 imported file tracks; build 22 connects live volume and co-op scene music; owner listening acceptance remains |
+| F08 | Audio & music | in-progress | — | `MusicPlayer.cs`, `MusicDirector.cs`, all 10 imported file tracks; build 22 connects music; build 23 connects independent interface audio and previews with 32 compiled browser checks; owner listening acceptance remains |
 | F09 | Merchant, shrine & events | in-progress | — | `OriginalRunServices.cs` · `OriginalRunPanel.cs` (Shop/Shrine/Event) |
 | F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` · merged: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) save slots |
 | F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` · merged: [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) run summary |

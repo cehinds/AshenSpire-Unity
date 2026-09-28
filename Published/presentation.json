@@ -1,29 +1,9 @@
 {
-  "guide": "Published/BuildReview/Guide.md",
+  "guide": "Published/BuildReview23/Guide.md",
   "screenshots": [
-    "Published/BuildReview/enemy-wanderingSoldier.png",
-    "Published/BuildReview/enemy-blightHound.png",
-    "Published/BuildReview/enemy-graveWisp.png",
-    "Published/BuildReview/enemy-wyrmAspirant.png",
-    "Published/BuildReview/enemy-fellWarden.png",
-    "Published/BuildReview/enemy-gildedKnight.png",
-    "Published/BuildReview/enemy-courtSurgeon.png",
-    "Published/BuildReview/enemy-livingArmor.png",
-    "Published/BuildReview/enemy-courtDuelist.png",
-    "Published/BuildReview/enemy-stitchedKing.png",
-    "Published/BuildReview/enemy-valkyrieShade.png",
-    "Published/BuildReview/enemy-wyrmLord.png",
-    "Published/BuildReview/enemy-huskBrute.png",
-    "Published/BuildReview/enemy-stitchedHound.png",
-    "Published/BuildReview/enemy-courtMarionette.png",
-    "Published/BuildReview/enemy-ashRevenant.png",
-    "Published/BuildReview/enemy-emberStarvedPilgrim.png",
-    "Published/BuildReview/enemy-charredColossus.png",
-    "Published/BuildReview/enemy-blightedValkyrie.png",
-    "Published/BuildReview/coop-host.png",
-    "Published/BuildReview/coop-guest.png",
-    "Published/BuildReview/title.png",
-    "Published/BuildReview/map.png",
-    "Published/BuildReview/combat.png"
+    "Published/BuildReview23/coop-host.png",
+    "Published/BuildReview23/coop-guest.png",
+    "Published/BuildReview23/01-audio-settings.png",
+    "Published/BuildReview23/02-persisted-audio.png"
   ]
 }

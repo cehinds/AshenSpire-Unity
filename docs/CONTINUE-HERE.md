@@ -8,7 +8,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.22.0 · build 22 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.23.0 · build 23 · Foundation in progress** (`GameContent/Unity/version.json`) |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -16,6 +16,21 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Local build 23 candidate
+
+Build 23 adds separate interface sounds and volume, plus interface/combat previews
+in Settings. Web, Windows, Android and companion exports match the current source.
+The compiled phone-sized audio test passes 32 checks, including real Web Audio
+PCM/gain, keyboard submit, cancelled drags, zero levels, mute and reload.
+See [build-23 QA](qa/unity-build-23/README.md).
+
+Work is on `feature/unity-interface-audio`. Build 22's [draft PR #56](https://github.com/cehinds/AshenSpire-Unity/pull/56)
+is fully green and remains unchanged for owner review. `dev` is still build 21:
+the one-step version gate passes for 22 → 23, but needs the owner to merge 22
+before 23 can pass against dev. Do not weaken the gate or merge your own PR.
+Build 23 has not been promoted; the public build-22 link below remains current.
+Owner feature/portrait acceptance and physical-device checks remain open.
 
 ### Last known-good build
 
