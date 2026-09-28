@@ -50,7 +50,11 @@ let browser, ui;
  });
  const count=bus=>sounds.filter(s=>s.bus===bus).length;
  const settled=()=>page.waitForTimeout(450);
- async function expectClick(id,bus,delta,label) {const before=count(bus);await ui.click(id,false);await settled();ui.check(count(bus)-before===delta,label);}
+ async function expectClick(id,bus,delta,label) {
+  const before=count(bus), sources=await page.evaluate(()=>window.__audioObservation.length);
+  await ui.click(id,false);await settled();ui.check(count(bus)-before===delta,label);
+  if(delta===0)ui.check(await page.evaluate(()=>window.__audioObservation.length)===sources,label+' (no Web Audio transient started)');
+ }
  const value=label=>Number((ui.controls.Labels||[]).find(s=>s.startsWith(label+' · '))?.match(/· (\d+)%/)?.[1]);
  async function endpoint(id,label,key,expected){await ui.click(id,false,.8);await ui.key(key);await ui.until(()=>value(label)===expected,label+' '+expected);}
  async function middle(id,label){await ui.click(id,false,.8);await ui.key('ArrowLeft');await settled();ui.check(value(label)>0&&value(label)<100,label+' has a nonzero intermediate value');return value(label)/100;}
@@ -104,6 +108,6 @@ let browser, ui;
  ui.check(Math.abs(sounds.filter(s=>s.bus==='ui').at(-1).gain-base*saved/100)<.0001,'reloaded setting controls actual playback gain');
  await ui.shot('02-persisted-audio');
  ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);
- fs.writeFileSync(path.join(output,'audio.json'),JSON.stringify({success:true,checks:ui.checks,observations:await page.evaluate(()=>window.__audioObservation),settingsPersisted:true,physicalDevice:false,listeningAccepted:false},null,2));
+ fs.writeFileSync(path.join(output,'audio.json'),JSON.stringify({success:true,checks:ui.checks,initialPcm:pcm,scaledPcm:scaled,volumeCalculation:{campaign:base,master,ui:level,observed:effective},observations:await page.evaluate(()=>window.__audioObservation),settingsPersisted:true,physicalDevice:false,listeningAccepted:false},null,2));
  console.log('Compiled audio: '+ui.checks.length+' checks passed.');await browser.close();
-})().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});
+})().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);const audio=await ui.page.evaluate(()=>window.__audioObservation).catch(()=>null);fs.writeFileSync(path.join(ui.output,'audio-failure.json'),JSON.stringify(audio,null,2));}if(browser)await browser.close();process.exitCode=1;});
