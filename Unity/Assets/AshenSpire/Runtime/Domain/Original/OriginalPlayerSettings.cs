@@ -25,10 +25,17 @@ namespace AshenSpire.Domain.Original
         /// <summary>Legacy "Quick animations" halved feedback duration (CombatFeedback: × .5), i.e. speed 2.</summary>
         public const double LegacyFastAnimationSpeed = 2;
 
-        /// <summary>Default key per action: exactly the keys OriginalMapBoard handles today (KeyCode names).</summary>
+        /// <summary>Default keys for map navigation and solo combat (Unity KeyCode names).</summary>
         public static readonly IReadOnlyDictionary<string, string> DefaultKeyBindings = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["mapScrollUp"] = "PageUp", ["mapScrollDown"] = "PageDown", ["mapTop"] = "Home", ["mapBottom"] = "End",
+            ["combatPlay"] = "Return", ["endTurn"] = "E", ["combatDeck"] = "D",
+            ["drawPile"] = "U", ["discardPile"] = "J", ["exhaustPile"] = "K",
+            ["flask1"] = "F", ["flask2"] = "G", ["flask3"] = "H",
+            ["targetPrevious"] = "LeftArrow", ["targetNext"] = "RightArrow",
+            ["card1"] = "Alpha1", ["card2"] = "Alpha2", ["card3"] = "Alpha3",
+            ["card4"] = "Alpha4", ["card5"] = "Alpha5", ["card6"] = "Alpha6",
+            ["card7"] = "Alpha7", ["card8"] = "Alpha8", ["card9"] = "Alpha9",
         };
 
         public double TextScale = 1, UiScale = 1, AnimationSpeed = 1;

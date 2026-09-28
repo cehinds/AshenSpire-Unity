@@ -8,7 +8,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.23.0 · build 23 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.24.0 · build 24 · Foundation in progress** (`GameContent/Unity/version.json`) |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -17,10 +17,21 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
 
-### Local build 23 candidate
+### Build 24 work in progress
+
+The current change adds solo draw/discard/exhaust inspection, the retained-card
+discard chooser, keyboard combat commands, rebinding and contextual help. The
+pre-build domain/parity/card/map checks, 172 hand-rule checks, 87 settings/mod
+checks and 64 save-slot checks have passed. Unity Web compilation and real-input
+browser validation are still in progress; do not call this a packaged build yet.
+`tools/native-combat-tools-playtest.cjs` exercises phone/desktop input, while
+`AshenSpire.Editor.CombatToolsValidation.Run` covers optional and forced choices
+with modified saved-rule fixtures. These fixtures are not normal-run playthroughs.
+
+### Previous local build 23 candidate
 
 Build 23 adds separate interface sounds and volume, plus interface/combat previews
-in Settings. Web, Windows, Android and companion exports match the current source.
+in Settings. Web, Windows, Android and companion exports match the recorded build-23 source.
 The compiled phone-sized audio test passes 32 checks, including real Web Audio
 PCM/gain, keyboard submit, cancelled drags, zero levels, mute and reload.
 See [build-23 QA](qa/unity-build-23/README.md).

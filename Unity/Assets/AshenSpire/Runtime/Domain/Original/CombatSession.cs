@@ -33,6 +33,12 @@ namespace AshenSpire.Domain.Original
         public JObject Player => (JObject)_player.DeepClone();
         public JArray Enemies => new JArray(_enemies.Select(e => e.DeepClone()));
         public JArray Hand => new JArray(_piles["hand"].Select(c => c.DeepClone()));
+        /// <summary>Read-only pile contents. Presentation must hide draw order.</summary>
+        public JArray Pile(string kind)
+        {
+            if (kind == null || !_piles.ContainsKey(kind)) throw new ArgumentException("Unknown combat pile.", nameof(kind));
+            return new JArray(_piles[kind].Select(c => c.DeepClone()));
+        }
         /// <summary>This fight's hand-rules snapshot, or null for a legacy/co-op fight.</summary>
         public JObject HandRulesSnapshot => (JObject)_handRules?.DeepClone();
         public int HandCapacity => HandMaximum;

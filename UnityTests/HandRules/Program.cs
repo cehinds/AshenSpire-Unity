@@ -188,6 +188,27 @@ List<string> Ids(JArray cards) => cards.Select(c => (string)c["instanceId"]!).To
   throw new Exception("no opening fight");
  }
  var fight = IntoFight(atMap);
+ var beforeInspect = fight.Snapshot();
+ foreach (var kind in new[] { "hand", "draw", "discard", "exhaust" })
+ {
+  var copy = fight.Pile(kind);
+  Equal(copy, beforeInspect["run"]!["room"]!["combatSnapshot"]!["piles"]![kind], "inspection exposes exact " + kind + " membership");
+  if (copy.Count > 0) copy[0]!["cardId"] = "mutated-observer";
+  copy.Clear();
+ }
+ Equal(fight.Snapshot(), beforeInspect, "pile observations are deep copies and leave all RNG streams untouched");
+ Throws(() => fight.Pile("unknown"), "unknown pile name");
+ var optionalSave = fight.Snapshot();
+ optionalSave["run"]!["room"]!["combatSnapshot"]!["handRules"]!["promptDiscard"] = true;
+ optionalSave["run"]!["room"]!["combatSnapshot"]!["handRules"]!["discardLimit"] = 2;
+ var optional = OriginalGameSession.Restore(optionalSave);
+ Check((bool)optional.DiscardPlan["prompt"]! && (int)optional.DiscardPlan["maximum"]! == 2, "restored optional-discard plan reaches the game session");
+ var optionalBefore = optional.Snapshot();
+ var chosenId = (string)optional.Hand[0]!["instanceId"]!;
+ Throws(() => optional.EndTurn(new[] { chosenId, chosenId }), "duplicate discard through session");
+ Equal(optional.Snapshot(), optionalBefore, "invalid discard through session preserves entire saved state");
+ optional.EndTurn(new[] { chosenId });
+ Check(optional.Turn == 2 && optional.LastEvents.Any(e => (string)e["type"] == "cardDiscarded" && (string)e["cardInstanceId"] == chosenId && (string)e["reason"] == "choice"), "session commits a chosen retained-card discard exactly once");
  var combat = (JObject)fight.Snapshot()["run"]!["room"]!["combatSnapshot"]!;
  Equal(combat["handRules"], HandRules.ForClass(shipped, "starseer"), "a new fight snapshots the run's frozen hand rules, resolved for its class");
  Check(combat["handRules"]!["classStarting"] == null, "the snapshot carries only the class's opening rule");

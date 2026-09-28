@@ -14,7 +14,10 @@ static class SettingsChecks
         Check(d.TextScale == 1 && d.UiScale == 1 && d.AnimationSpeed == 1 && !d.InstantAnimations && d.AnimationDurationScale == 1, "defaults: text/UI scale 1 and full-length feedback");
         Check(!d.ReducedMotion && !d.ScreenShake && d.ScreenShakeIntensity == 1 && !d.HitStop && d.ColorblindPalette == ColorblindPalette.None, "defaults: motion on, no shake or hit-stop, no palette");
         Check(d.MasterVolume == 1 && d.MusicVolume == 1 && d.SfxVolume == 1 && d.UiVolume == 1 && !d.Muted && d.Gain("sfx") == 1, "defaults: unattenuated, unmuted audio buses");
-        Check(d.KeyBindings.Count == 4 && d.KeyBindings["mapScrollUp"] == "PageUp" && d.KeyBindings["mapBottom"] == "End" && d.KeyConflicts().Count == 0, "defaults: map keys match OriginalMapBoard, no conflicts");
+        Check(d.KeyBindings.Count == 24 && d.KeyBindings["mapScrollUp"] == "PageUp" && d.KeyBindings["mapBottom"] == "End" && d.KeyBindings["endTurn"] == "E" && d.KeyBindings["card9"] == "Alpha9" && d.KeyConflicts().Count == 0, "defaults: map and combat keys have no conflicts");
+        var oldKeys = OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:1,keyBindings:{mapTop:'F1'}}"), out _);
+        Check(oldKeys.KeyBindings["mapTop"] == "F1" && oldKeys.KeyBindings["combatPlay"] == "Return", "keys: old saves retain map changes and gain combat defaults");
+        Check(oldKeys.TryBind("endTurn", "Z", out _) && OriginalPlayerSettings.LoadOrMigrate(oldKeys.ToJson().ToString(), Prefs(0,0,0), out _).KeyBindings["endTurn"] == "Z", "keys: combat rebinding persists without changing settings schema");
         var fresh = OriginalPlayerSettings.LoadOrMigrate(null, Prefs(0, 0, 0), out _);
         Check(JToken.DeepEquals(fresh.ToJson(), d.ToJson()), "defaults: a device with no saved preferences equals defaults");
         Check(JToken.DeepEquals(OriginalPlayerSettings.LoadOrMigrate("", (k, f) => f, out _).ToJson(), d.ToJson()), "defaults: absent legacy keys fall back to current defaults");
@@ -40,7 +43,7 @@ static class SettingsChecks
         var low = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"textScale\":0.2,\"animationSpeed\":0.1}"), out _);
         Check(low.TextScale == .8 && low.AnimationSpeed == .5, "clamp: lower bounds 0.8 text and 0.5 speed");
         var odd = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"colorblindPalette\":\"sepia\",\"hitStop\":\"yes\",\"keyBindings\":[]}"), out var oddNotes);
-        Check(odd.ColorblindPalette == ColorblindPalette.None && !odd.HitStop && odd.KeyBindings.Count == 4 && oddNotes.Count == 3, "bad values: unknown palette, non-bool and bad bindings fall back with notes");
+        Check(odd.ColorblindPalette == ColorblindPalette.None && !odd.HitStop && odd.KeyBindings.Count == 24 && oddNotes.Count == 3, "bad values: unknown palette, non-bool and bad bindings fall back with notes");
         Check(OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"animationSpeed\":\"instant\"}"), out _).AnimationDurationScale == 0, "instant animations: shorthand gives zero duration");
         var future = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":9,\"textScale\":1.4,\"newThing\":1}"), out var futureNotes);
         Check(future.TextScale == 1.4 && futureNotes.Any(n => n.Contains("newer")), "newer schema: known fields read, version noted");

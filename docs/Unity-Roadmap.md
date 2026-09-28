@@ -1,7 +1,7 @@
 # AshenSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.23.0 · build 23 ·
+content while improving phone play. Current source: **0.0.24.0 · build 24 ·
 Foundation in progress** (`GameContent/Unity/version.json`). Published channels
 may still carry earlier checkpoints.
 
@@ -23,7 +23,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 
 | ID | Feature | Status | Version | Evidence |
 |---|---|---|---|---|
-| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.23.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
+| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.24.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
@@ -173,7 +173,7 @@ Tests: `tools/native-visual-parity-playtest.cjs`, `tools/campaign-playtest.cjs
 starting kit and attributes are visible before committing.
 
 - US-2.1 Pick one of Reaver, Starseer, Rogue or Herald beside a framed preview.
-- US-2.2 Assign 35 points (all attributes start at 5, max 15) or use Standard presets, and see each point's benefit.
+- US-2.2 Use the current lean Standard class presets, or Assign points from attributes starting at 1 using the authored pool and bounds, and see each point's benefit. The older 35-point, 5-start creation rules are historical and must not be restored.
 - US-2.3 Choose discovered starting kits, alternate hands, wardrobe/relic and appearance (Animated/Rendered/Classic/Sigil, tint, sigil).
 - US-2.4 Enter a seed and start; phone layout keeps Begin reachable.
 

@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.24.0 · build 24 · 2026-09-28
+
+- F00 US-0.3: Combat pile inspection, retained-card discard choices and saved solo keyboard bindings; compiled acceptance in progress.
+
 ## 0.0.23.0 · build 23 · 2026-09-28
 
 - Independent interface audio, live volume and sound previews

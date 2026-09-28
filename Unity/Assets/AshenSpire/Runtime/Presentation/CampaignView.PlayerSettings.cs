@@ -167,28 +167,30 @@ namespace AshenSpire.Presentation
 
             // CONTROLS
             _body.Add(Text("CONTROLS", "heading"));
-            _body.Add(Text("Keyboard keys for the map. Choose an action, then press a key. Esc cancels.", "caption"));
+            _body.Add(Text("Keyboard keys for the map and solo combat. Choose an action, then press a key. Esc cancels or closes an inspection. Enter activates a focused button. Combat shortcuts wait until the key is released; inspection screens block combat actions.", "caption"));
             var keyMessage = Text("", "caption");
             var keyButtons = new Dictionary<string, Button>();
             void ShowKeys()
             {
                 foreach (var pair in keyButtons)
-                    pair.Value.text = OriginalKeyBindings.Label(pair.Key) + " · " + (pair.Key == _capturingAction ? "press a key…" : s.KeyBindings.TryGetValue(pair.Key, out var key) ? key : "unbound");
+                    pair.Value.text = OriginalKeyBindings.Label(pair.Key) + " · " + (pair.Key == _capturingAction ? "press a key…" : s.KeyBindings.TryGetValue(pair.Key, out var key) ? OriginalKeyBindings.DisplayKey(key) : "unbound");
             }
-            foreach (var action in OriginalKeyBindings.MapActions)
+            foreach (var action in OriginalKeyBindings.MapActions.Concat(OriginalKeyBindings.CombatActions))
             {
                 var id = action;
-                var button = AddButton("key-" + id, "", () => { _capturingAction = id; keyMessage.text = "Press a key for " + OriginalKeyBindings.Label(id) + ". Esc cancels."; ShowKeys(); keyButtons[id].Focus(); });
+                var button = AddButton("key-" + id, "", () => { _capturingAction = id; keyMessage.text = "Press a key for " + OriginalKeyBindings.Label(id) + ". Esc cancels."; ShowKeys(); keyButtons[id].Focus(); Report(); });
                 button.RegisterCallback<KeyDownEvent>(e =>
                 {
                     if (_capturingAction != id || e.keyCode == KeyCode.None) return;
                     e.StopImmediatePropagation();
                     _capturingAction = null;
                     if (e.keyCode == KeyCode.Escape) keyMessage.text = "Unchanged.";
+                    else if (e.keyCode == KeyCode.Tab || e.keyCode == KeyCode.LeftControl || e.keyCode == KeyCode.RightControl || e.keyCode == KeyCode.LeftAlt || e.keyCode == KeyCode.RightAlt || e.keyCode == KeyCode.LeftShift || e.keyCode == KeyCode.RightShift || e.keyCode == KeyCode.LeftCommand || e.keyCode == KeyCode.RightCommand)
+                        keyMessage.text = "Choose a key other than Tab or a modifier; these stay available for navigation.";
                     else if (s.TryBind(id, e.keyCode.ToString(), out var holder))
-                    { keyMessage.text = OriginalKeyBindings.Label(id) + " is now " + e.keyCode + "."; Changed(); }
-                    else keyMessage.text = e.keyCode + " is already used by " + OriginalKeyBindings.Label(holder) + ". Choose another key, or reset the keys.";
-                    ShowKeys();
+                    { keyMessage.text = OriginalKeyBindings.Label(id) + " is now " + OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + "."; Changed(); }
+                    else keyMessage.text = OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + " is already used by " + OriginalKeyBindings.Label(holder) + ". Choose another key, or reset the keys.";
+                    ShowKeys(); Report();
                 });
                 keyButtons[id] = button;
             }
@@ -196,7 +198,7 @@ namespace AshenSpire.Presentation
             keyMessage.text = conflicts.Count == 0 ? "" : string.Join("\n", conflicts.Select(c => c.Key + " is bound to " + string.Join(" and ", c.Actions.Select(OriginalKeyBindings.Label)) + ". Rebind one of them."));
             if (conflicts.Count > 0) keyMessage.AddToClassList("notice");
             _body.Add(keyMessage);
-            AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map keys reset to PageUp, PageDown, Home and End."; ShowKeys(); Changed(); });
+            AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
             ShowKeys();
 
             // CONTENT MODS (the HTML game files these under Advanced)

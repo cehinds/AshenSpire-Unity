@@ -1,7 +1,8 @@
 // Generate published review metadata from successful, source-matched captures.
 // Usage: node tools/unity-review-evidence.mjs <capture-config.json>
 // Config supplies the relevant gallery, coop, performance, enemyCombat, campaign
-// or audio folders. Omitted suites are not claimed as validated in this capture.
+// or audio folders, and a combatTools array of viewport folders. Omitted suites
+// are not claimed as validated in this capture.
 // Transport credentials and full state/control dumps are never published here.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -55,6 +56,13 @@ for(const scene of ['title','map','combat'])shot(config.performance,scene+'.png'
 if(config.audio){
  checks('InterfaceAudio',config.audio);
  for(const file of ['01-audio-settings','02-persisted-audio'])shot(config.audio,file+'.png',file);
+}
+if(config.combatTools){
+ if(!Array.isArray(config.combatTools)||!config.combatTools.length)throw Error('combatTools must list viewport capture folders.');
+ for(const [index,folder] of config.combatTools.entries()){
+  checks('SoloCombatControls'+index,folder);
+  for(const file of ['01-draw-inspection','02-played-discard','03-restored-draw-pile'])shot(folder,file+'.png','combat-'+index+'-'+file);
+ }
 }
 if(config.campaign){
 const campaign=read(path.join(config.campaign,'playtest.json'));

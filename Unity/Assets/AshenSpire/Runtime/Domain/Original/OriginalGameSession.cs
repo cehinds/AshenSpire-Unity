@@ -27,6 +27,7 @@ namespace AshenSpire.Domain.Original
         public int ActNumber => _run.ActNumber;
         public string[] LegalNodeIds => _run.LegalNodeIds();
         public JArray Hand => _combat?.Hand ?? new JArray();
+        public JArray Pile(string kind) => _combat?.Pile(kind) ?? new JArray();
         public JArray Enemies => _combat?.Enemies ?? new JArray();
         public int Turn => _combat?.Turn ?? 0;
         public System.Collections.Generic.IReadOnlyList<EnemyTelegraph> Telegraphs() => _combat != null ? _combat.Telegraphs() : Array.Empty<EnemyTelegraph>();

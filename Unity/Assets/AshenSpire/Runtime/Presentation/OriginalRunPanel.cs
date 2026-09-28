@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 namespace AshenSpire.Presentation
 {
-    public sealed class OriginalRunPanel
+    public sealed partial class OriginalRunPanel
     {
         private readonly VisualElement _root;
         private readonly OriginalGameSession _game;
@@ -30,10 +30,12 @@ namespace AshenSpire.Presentation
         public Image PlayerImage { get; private set; }
         public Image EnemyImage { get; private set; }
         public VisualElement Stage { get; private set; }
-        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null, RunSummary summary = null, Action history = null)
-        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; Render(); }
+        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null, RunSummary summary = null, Action history = null, OriginalPlayerSettings settings = null)
+        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; _settings = settings; BindCombatKeys(); Render(); }
         private void Render()
         {
+            _backAction = null;
+            _root.RemoveFromClassList("combat-inspection");
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             var combatSurface = _game.Phase == OriginalRunPhase.Combat;
             if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
@@ -65,6 +67,7 @@ namespace AshenSpire.Presentation
             }
             Button("native-deck", "Deck and equipment", Deck, _combatTools ?? _summaryButtons);
             Button("native-menu", _summaryButtons != null ? "Return to title" : "Save and return to title", _menu, _combatTools ?? _summaryButtons).EnableInClassList("primary", _summaryButtons != null);
+            if (combatSurface) _root.Focus();
             if (_diagnostics) ReportNativeState();
             _report();
         }
@@ -152,7 +155,13 @@ namespace AshenSpire.Presentation
             var shortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
             var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selectedCard["name"];
             Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
-            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), _game.EndTurn, _actions);
+            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), EndTurnChoice, _actions);
+            foreach (var kind in new[] { "draw", "discard", "exhaust" })
+            {
+                var pile = kind;
+                Button("native-pile-" + pile, PileName(pile) + " · " + _game.Pile(pile).Count, () => ShowPile(pile), _combatTools);
+            }
+            Button("native-combat-keys", "Keyboard controls", ShowCombatKeys, _combatTools);
             Button("native-hand-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report(); }, _combatTools);
             Button("native-hand-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report(); }, _combatTools);
             Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
@@ -292,6 +301,7 @@ namespace AshenSpire.Presentation
         }
         private void Deck()
         {
+            _backAction = Render;
             _mapView?.SetMapSurface?.Invoke(false);
             OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
@@ -302,6 +312,7 @@ namespace AshenSpire.Presentation
         }
         private void Equipment()
         {
+            _backAction = Deck;
             _mapView?.SetMapSurface?.Invoke(false);
             OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("EQUIPMENT", "heading"); _notice = Text("", "notice");
