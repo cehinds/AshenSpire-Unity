@@ -98,6 +98,10 @@ jobs:
       # style fails loudly until it has its own row here.
       matrix:
         include:
+          - id: native-audio
+            name: Verify interface and combat audio levels, mute and reload in the compiled player
+            run: node tools/native-audio-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAudio
+            evidence: TestResults/NativeAudio
           - id: native-map-320x640
             name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
             run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
