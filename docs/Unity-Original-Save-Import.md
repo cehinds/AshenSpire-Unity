@@ -11,6 +11,8 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [x] Browser file selection and explicit reads of the three original slot keys implemented; 12 browser-adapter checks pass.
   - [x] Build 28 compiled import flow: 36 phone/desktop checks, plus 16 native save/profile checks. See [build-28 QA](qa/unity-build-28/README.md).
   - [x] Build 29 CI repeats the 36 import and 16 native profile/slot checks against exactly matching packaged runtime hashes; [current receipt](qa/unity-build-29/ci.json).
+  - [x] Build-30 source: one-time additive original profile import, preserving lifetime totals, earned unlocks, equipment discovery, existing Unity progress and the original record. 66 focused profile checks pass; combined importer suite: 460.
+  - [ ] Compile and exercise profile preview, cancellation, import, duplicate refusal and Chronicle reload in build 30.
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
   - [ ] Active room conversion (combat, reward, merchant), newer content/rule schemas and mode compatibility.
   - [ ] Owner acceptance of the finished import experience.
@@ -32,6 +34,17 @@ missing/unknown references, incompatible frozen rules, duplicate JSON properties
 and files over 1 MiB. It does not reset a battle, skip a reward, grant unlocks,
 or convert an unknown skill tree. Finish active rooms in the original game and
 save on its map to use this initial route. Unsupported cases remain acceptance work.
+
+Build-30 source adds a separate **Import original profile** action. It reads raw
+original profile schemas 0–2 (including unversioned profiles), exported profiles
+and recovery archives. It adds original lifetime counters once, combines earned
+IDs, and places imported history before existing Unity history within the normal
+20-entry Chronicle. The complete original record remains inside a validated import
+receipt. Original browser settings are preserved there, while current Unity
+preferences remain active; applying compatible browser preferences is still open.
+Another profile import is refused to prevent double-counting profiles without
+stable original run IDs. Active run slots are not used or replaced. Confirmation
+also checks that Unity progress has not changed since the preview.
 
 Validation uses `tools/unity-web-save-fixtures.mjs` to produce saves and card
 oracles through the repository's original JavaScript engine. Run

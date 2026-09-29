@@ -29,6 +29,7 @@ namespace AshenSpire.Domain.Original
         public static OriginalProfile Restore(OriginalContentCatalog catalog, JObject snapshot)
         {
             if ((int?)snapshot?["schemaVersion"] != 1) throw new ArgumentException("Unsupported native profile schema version.");
+            OriginalWebProfileImport.ValidateReceipt(snapshot);
             var profile = new OriginalProfile(catalog); var draft = (JObject)snapshot.DeepClone();
             foreach (var key in new[] { "results", "completedRunIds", "found", "discoveredArmaments", "discoveryReceipts", "unlocked" })
                 if (!(draft[key] is JArray)) throw new ArgumentException("Missing profile array " + key);

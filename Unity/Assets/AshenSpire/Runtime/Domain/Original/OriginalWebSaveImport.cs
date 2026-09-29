@@ -16,9 +16,20 @@ namespace AshenSpire.Domain.Original
         private static JToken Canonical(JToken value) => value is JObject obj
             ? new JObject(obj.Properties().OrderBy(p => p.Name, StringComparer.Ordinal).Select(p => new JProperty(p.Name, Canonical(p.Value))))
             : value is JArray array ? new JArray(array.Select(Canonical)) : value.DeepClone();
-        private static string Hash(JObject source)
+        internal static string Hash(JObject source)
         {
             using (var sha = SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(Canonical(source).ToString(Formatting.None)))).Replace("-", "").ToLowerInvariant();
+        }
+        internal static JObject ParseOriginal(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) || Encoding.UTF8.GetByteCount(value) > MaximumBytes)
+                throw new ArgumentException("Choose original save JSON no larger than 1 MB.");
+            using (var reader = new JsonTextReader(new StringReader(value)) { MaxDepth = 64, DateParseHandling = DateParseHandling.None })
+            {
+                var result = JObject.Load(reader, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
+                if (reader.Read()) throw new ArgumentException("Unexpected data after the save.");
+                return result;
+            }
         }
         public static void ValidateReceipt(JObject run)
         {

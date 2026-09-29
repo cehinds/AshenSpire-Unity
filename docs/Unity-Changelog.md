@@ -3,6 +3,11 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.29.0 · build 30 · 2026-09-29
+
+- Original profile import previews and safely adds lifetime progress, history, unlocks and equipment once.
+- Preserve existing Unity settings, run slots and the complete original profile; refuse duplicate imports and changed destinations.
+
 ## 0.0.28.1 · build 29 · 2026-09-29
 
 - F00 US-0.3: keep the legacy combat flask and inspection content above the fixed action bar.

@@ -84,4 +84,5 @@ foreach(var failAt in new[]{"write","flush","truncate"}){
  Check(targets.List()[0].State==OriginalSaveSlotState.Empty&&store.Read("sote_run_v1")==input,"failed import leaves no partial save: "+failAt);
  armed=false;Check(targets.ImportWebRun(0,snapshot),"import can retry after storage recovers: "+failAt);
 }
+checks+=ProfileImportChecks.Run(args[0],catalog);
 Console.WriteLine("Web save import: "+checks+" checks passed");

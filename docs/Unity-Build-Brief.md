@@ -8,7 +8,7 @@ The result must be understandable and maintainable by Constantine: he should be 
 
 Create a new `cehinds/AshenSpire-Unity` repository starting from the current AshenSpire `dev`, and provide its verified GitHub link. Preserve the original repository, edits, assets, branches, and worktrees. Repository creation and the requested preview publication are authorized; branch promotion and product release remain distinct decisions.
 
-Refresh the source baseline and read its current repository guidance. The planning review inspected `cehinds/AshenSpire` at `d5c982e777df06221e181c437652b705d2f6abbc`; treat that as a dated baseline, not a permanent current ref.
+Refresh the source baseline for assets and current gameplay mechanics. Owner clarification (2026-09-29): original-game agent instructions and management documentation are not Unity requirements. The planning review inspected `cehinds/AshenSpire` at `d5c982e777df06221e181c437652b705d2f6abbc`; treat that as a dated baseline, not a permanent current ref.
 
 Reuse existing content definitions, stable IDs, tag relationships, rules, test cases, art, and animation metadata wherever useful. Port JavaScript behavior deliberately to C#; do not assume browser renderers are directly reusable in Unity. Preserve current names and map older vocabulary explicitly.
 

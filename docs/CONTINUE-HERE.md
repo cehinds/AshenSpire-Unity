@@ -12,6 +12,19 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
+Owner authorized merging PR #57 on 2026-09-29. It is merged into `dev` at
+`e107f87e97240b267f712df42609c9187a83d8f9`. Continue Phase 1 on
+`feature/ashenedspire-phase1`. Build-30 profile-import source is under compiled
+validation; build 29 remains the last packaged candidate until those exports
+and checks finish. Merge approval does not constitute gameplay acceptance.
+
+Owner scope correction (2026-09-29): the original AshenSpire supplies assets and
+current gameplay mechanics, not agent instructions or management requirements.
+The initial repository seed copied its Markdown too broadly. Root AGENTS.md now
+records Unity-specific guidance; old workflow prose is historical context, not
+an additional owner approval requirement. Existing remote protections and CI
+behavior still need to be handled as actual technical constraints.
+
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
 [original-game review](Unity-Upstream-Review.md). Build 29 fixes fixed-action clearance and passes its scoped Web checks. Build 28's initial original-save importer preserves compatible map checkpoints, with 879 scoped browser checks recorded for that build. Foundation acceptance remains open; see [build-29 QA](qa/unity-build-29/README.md) and [build-28 QA](qa/unity-build-28/README.md).

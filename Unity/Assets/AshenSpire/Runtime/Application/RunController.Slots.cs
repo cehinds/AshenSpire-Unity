@@ -22,6 +22,7 @@ namespace AshenSpire.Application
         private float _playtimeSince;
         private string _slotNotice;
         private Action<string> _previewWebImport;
+        private bool _profileImportVisible;
 #if UNITY_WEBGL && !UNITY_EDITOR
         [System.Runtime.InteropServices.DllImport("__Internal")] private static extern void AshenedSpire_ChooseOriginalSave(string owner);
         [System.Runtime.InteropServices.DllImport("__Internal")] private static extern void AshenedSpire_ReadOriginalSlot(string owner, int slot);
@@ -34,11 +35,12 @@ namespace AshenSpire.Application
             try
             {
                 var result = JObject.Parse(envelope);
-                if (result["error"] != null) { ShowWebImport((string)result["error"]); return; }
+                if (result["error"] != null) { ShowImportError((string)result["error"]); return; }
                 _previewWebImport((string)result["save"]);
             }
-            catch (Exception) { ShowWebImport("The selected save could not be read. Your saves are unchanged."); }
+            catch (Exception) { ShowImportError("The selected save could not be read. Your saves are unchanged."); }
         }
+        private void ShowImportError(string message) { if (_profileImportVisible) ShowWebProfileImport(message); else ShowWebImport(message); }
         private void InitSaveSlots(string channel)
         {
             IOriginalSaveStorage storage = new OriginalDelegateSaveStorage(key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save, PlayerPrefs.DeleteKey);
@@ -56,6 +58,7 @@ namespace AshenSpire.Application
             catch (Exception error) { Debug.LogWarning("The earlier native save was not moved into slot 1: " + error.Message); }
             _view.SlotsRequested += ShowSaveSlots;
             _view.WebImportRequested += ShowWebImport;
+            _view.WebProfileImportRequested += () => ShowWebProfileImport(null);
         }
         private static bool Loadable(OriginalSaveSlotInfo slot) => slot.State == OriginalSaveSlotState.Ready || slot.State == OriginalSaveSlotState.RecoveredBackup;
         private bool HasNativeSlotSave() => _slotSaves != null && _slotSaves.List().Any(Loadable);
@@ -119,6 +122,7 @@ namespace AshenSpire.Application
         private void ShowWebImport() => ShowWebImport(null);
         private void ShowWebImport(string notice)
         {
+            _profileImportVisible = false;
             if (!TryLoadOriginalProfile()) return;
             _previewWebImport = text =>
             {
@@ -152,9 +156,45 @@ namespace AshenSpire.Application
 #endif
             _view.WebSaveImport(notice, _previewWebImport, ShowSaveSlots, chooseFile, browserSlot);
         }
+        private void ShowWebProfileImport(string notice)
+        {
+            _profileImportVisible = true;
+            if (!TryLoadOriginalProfile()) return;
+            _previewWebImport = text =>
+            {
+                try
+                {
+                    var catalog = new OriginalContentCatalog(OriginalRules("content").ToString());
+                    var expected = _profile.Snapshot();
+                    var imported = OriginalWebProfileImport.Convert(text, catalog, _profile);
+                    var source = imported.Snapshot()["originalProfileImport"]["original"];
+                    var progress = imported.Snapshot()["progress"];
+                    var summary = source["results"].Count() + " recorded climbs · " + (source["unlocked"]?.Count() ?? 0) + " earned unlocks\nCombined totals: " + progress["runs"] + " climbs · " + progress["wins"] + " victories\nRun slots will not change.";
+                    _previewWebImport = null;
+                    _view.WebSaveImportPreview(summary, () =>
+                    {
+                        try
+                        {
+                            if (!JToken.DeepEquals(_profile.Snapshot(), expected)) throw new InvalidOperationException("Your profile changed. Check the import again.");
+                            if (!_slotSaves.ImportWebProfile(catalog, expected, imported)) { ShowWebProfileImport("Profile import could not be saved. Free some storage and retry. Your existing progress is unchanged."); return; }
+                            _profile = imported;
+                            ShowSaveSlots("Original profile progress imported. Open Chronicle or Collection to see it.");
+                        }
+                        catch (Exception error) { ShowWebProfileImport("Import refused: " + error.Message); }
+                    }, ShowSaveSlots, true);
+                }
+                catch (Exception error) { ShowWebProfileImport("Import refused: " + error.Message); }
+            };
+            Action chooseFile = null;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            chooseFile = () => AshenedSpire_ChooseOriginalSave(gameObject.name);
+#endif
+            _view.WebSaveImport(notice, _previewWebImport, ShowSaveSlots, chooseFile, null, true);
+        }
         private void ShowSaveSlots(string notice)
         {
             _previewWebImport = null;
+            _profileImportVisible = false;
             if (!TryLoadOriginalProfile()) return;
             _view.Slots(_slotSaves.List(), ClassName, notice ?? TakeSlotNotice(), ResumeSlot, CreateOriginal, DeleteSlot, CopySlot);
             _view.PersistenceNotice(_profileNotice);

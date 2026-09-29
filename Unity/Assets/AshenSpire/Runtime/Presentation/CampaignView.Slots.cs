@@ -11,6 +11,7 @@ namespace AshenSpire.Presentation
     {
         public event Action SlotsRequested;
         public event Action WebImportRequested;
+        public event Action WebProfileImportRequested;
         public bool WebSaveImportVisible => _body?.Q<TextField>("native-web-import-json") != null;
         public void Slots(IReadOnlyList<OriginalSaveSlotInfo> slots, Func<string, string> className, string notice,
             Action<int> load, Action<int> start, Action<int> delete, Action<int, int> copy)
@@ -18,13 +19,14 @@ namespace AshenSpire.Presentation
             Shell("ASHENEDSPIRE", "SAVED CLIMBS · THREE SLOTS");
             _body.AddToClassList("slots-screen");
             _body.Add(Control("native-web-import", "Import original-game save", () => WebImportRequested?.Invoke(), "secondary-button"));
+            _body.Add(Control("native-web-profile-import", "Import original profile", () => WebProfileImportRequested?.Invoke(), "secondary-button"));
             _ = new OriginalSlotPanel(_body, slots, className, notice, load, start, delete, copy,
                 () => MenuRequested?.Invoke(), (id, label, clicked, style) => Control(id, label, clicked, style), () => Report());
         }
-        public void WebSaveImport(string notice, Action<string> preview, Action back, Action chooseFile = null, Action<int> browserSlot = null)
+        public void WebSaveImport(string notice, Action<string> preview, Action back, Action chooseFile = null, Action<int> browserSlot = null, bool profile = false)
         {
-            Shell("ASHENEDSPIRE", "IMPORT AN ORIGINAL SAVE");
-            _body.Add(new Label("Paste the JSON from an original AshenSpire run save or exported run archive. Import supports compatible map checkpoints. Finish combat, rewards or shopping in the original game first. Your original file and existing slots stay untouched.") { style = { whiteSpace = WhiteSpace.Normal } });
+            Shell("ASHENEDSPIRE", profile ? "IMPORT YOUR ORIGINAL PROFILE" : "IMPORT AN ORIGINAL SAVE");
+            _body.Add(new Label(profile ? "Choose an exported AshenSpire profile or paste its JSON. Preview a one-time addition of its recorded climbs, unlocks and collected equipment to your Unity profile. Run slots and your original file stay untouched." : "Paste the JSON from an original AshenSpire run save or exported run archive. Import supports compatible map checkpoints. Finish combat, rewards or shopping in the original game first. Your original file and existing slots stay untouched.") { style = { whiteSpace = WhiteSpace.Normal } });
             if (chooseFile != null) _body.Add(Control("native-web-import-file", "Choose save file", chooseFile, "secondary-button"));
             if (browserSlot != null)
             {
@@ -38,12 +40,12 @@ namespace AshenSpire.Presentation
             _body.Add(Control("native-web-import-back", "Back", back, "secondary-button"));
             Report();
         }
-        public void WebSaveImportPreview(string summary, Action confirm, Action back)
+        public void WebSaveImportPreview(string summary, Action confirm, Action back, bool profile = false)
         {
             Shell("ASHENEDSPIRE", "REVIEW YOUR IMPORT");
             _body.Add(new Label(summary) { style = { whiteSpace = WhiteSpace.Normal } });
-            _body.Add(new Label("The original map, resources, card identities and random state are preserved. This copy will continue in AshenedSpire using its supported original rules. Profile history and unlocks are separate and are not replaced.") { style = { whiteSpace = WhiteSpace.Normal } });
-            _body.Add(Control("native-web-import-confirm", "Import into empty slot", confirm, "primary-button"));
+            _body.Add(new Label(profile ? "This adds original progress once. Your existing Unity progress and settings stay in place. Chronicle keeps the latest 20 combined entries, with imported history placed before Unity history. The full original profile, including browser settings, is preserved in the import record." : "The original map, resources, card identities and random state are preserved. This copy will continue in AshenedSpire using its supported original rules. Profile history and unlocks are separate and are not replaced.") { style = { whiteSpace = WhiteSpace.Normal } });
+            _body.Add(Control("native-web-import-confirm", profile ? "Add original profile progress" : "Import into empty slot", confirm, "primary-button"));
             _body.Add(Control("native-web-import-cancel", "Cancel", back, "secondary-button"));
             Report();
         }

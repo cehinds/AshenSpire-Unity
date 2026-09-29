@@ -164,6 +164,14 @@ namespace AshenSpire.Domain.Original
             return OriginalProfile.Restore(catalog, _profile.Load(value => OriginalProfile.Restore(catalog, value), out recovered));
         }
         public bool SaveProfile(OriginalProfile profile) => _profile.Save((profile ?? throw new ArgumentNullException(nameof(profile))).Snapshot());
+        public bool ImportWebProfile(OriginalContentCatalog catalog, JObject expected, OriginalProfile imported)
+        {
+            if (imported?.Snapshot()["originalProfileImport"] == null) throw new ArgumentException("Missing original profile import receipt.");
+            var current = LoadProfile(catalog, out _);
+            if (!JToken.DeepEquals(current.Snapshot(), expected)) throw new InvalidOperationException("Your Unity profile changed after preview. Check the import again before continuing.");
+            if (current.Snapshot()["originalProfileImport"] != null) throw new InvalidOperationException("An original profile has already been imported.");
+            return SaveProfile(imported);
+        }
         // Finishes the run in the profile (FIFO archive of 20, keyed by run ID) and persists it.
         public JObject RecordResult(OriginalProfile profile, JObject run, bool victory)
         {
