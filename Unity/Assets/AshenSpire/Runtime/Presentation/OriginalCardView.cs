@@ -75,7 +75,7 @@ namespace AshenSpire.Presentation
             var band = Text(typeName, "original-card-type");
             if (TryColor((string)type?["color"], out var typeColor))
             {
-                band.style.color = typeColor;
+                band.style.color = Color.Lerp(typeColor, new Color32(245, 231, 204, 255), .65f);
                 band.style.backgroundColor = Color.Lerp(new Color32(42, 36, 28, 255), typeColor, .15f);
             }
             Add(band);
@@ -101,7 +101,8 @@ namespace AshenSpire.Presentation
                 chip.tooltip = (string)tag["blurb"];
                 if (TryColor((string)tag["color"], out var color))
                 {
-                    chip.style.color = color; var edge = new Color(color.r, color.g, color.b, .45f);
+                    chip.style.color = Color.Lerp(color, new Color32(245, 231, 204, 255), .65f);
+                    var edge = new Color(color.r, color.g, color.b, .45f);
                     chip.style.borderTopColor = edge; chip.style.borderBottomColor = edge; chip.style.borderLeftColor = edge; chip.style.borderRightColor = edge;
                     chip.style.backgroundColor = new Color(color.r, color.g, color.b, .12f);
                 }

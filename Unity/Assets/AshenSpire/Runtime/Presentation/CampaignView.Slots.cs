@@ -13,6 +13,7 @@ namespace AshenSpire.Presentation
             Action<int> load, Action<int> start, Action<int> delete, Action<int, int> copy)
         {
             Shell("ASHEN SPIRE", "SAVED CLIMBS · THREE SLOTS");
+            _body.AddToClassList("slots-screen");
             _ = new OriginalSlotPanel(_body, slots, className, notice, load, start, delete, copy,
                 () => MenuRequested?.Invoke(), (id, label, clicked, style) => Control(id, label, clicked, style), () => Report());
         }

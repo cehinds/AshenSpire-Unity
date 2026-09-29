@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.26.0 · build 26 · 2026-09-29
+
+- Refine title, settings, collection and combat presentation for desktop and phone.
+
 ## 0.0.25.0 · build 25 · 2026-09-28
 
 - F00/F10: Preserve damaged profiles, report storage failures and retry finished-run saves. Compact Web records fit all three slots and backups, with verified recovery during legacy Unity record conversion. Compact records require build 25 or newer; owner acceptance remains open.

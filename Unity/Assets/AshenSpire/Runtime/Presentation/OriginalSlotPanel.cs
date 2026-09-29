@@ -55,7 +55,9 @@ namespace AshenSpire.Presentation
                 }
                 if (Occupied(slot))
                     row.Add(_control("native-slot-" + n + "-delete", "Delete", () => Confirm("Delete slot " + (n + 1) + "?", "This saved climb is removed. There is no way back.", "Delete", () => _delete(n)), null));
-                _content.Add(row);
+                var actions = new VisualElement(); actions.AddToClassList("slot-actions");
+                foreach (var button in row.Children().OfType<Button>().Where(button => !button.name.EndsWith("-continue", StringComparison.Ordinal)).ToList()) actions.Add(button);
+                row.Add(actions); _content.Add(row);
             }
             _content.Add(_control("native-slots-back", "Back to title", _back, null));
             _report?.Invoke();

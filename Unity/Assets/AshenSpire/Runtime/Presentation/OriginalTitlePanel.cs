@@ -17,13 +17,17 @@ namespace AshenSpire.Presentation
             RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .112f, 28, 62));
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
-            Add(Entry("native-continue", "Continue", resume, canResume));
-            if (saves != null) Add(Entry("native-slots", "Load", saves)); // three save slots (OriginalSlotPanel)
-            Add(Entry("native-new", "New", begin));
-            Add(Entry("native-profile", "Collection", collection));
-            Add(Entry("native-coop", "Climb together", cooperative));
-            Add(Entry("settings", "Settings", settings));
-            Add(Entry("title-extras", "Extras", extras));
+            var invitation = new Label(canResume ? "Your climb is waiting." : "Gather your cards. Brave the Spire.");
+            invitation.AddToClassList("original-title-invitation"); Add(invitation);
+            var primary = canResume ? Entry("native-continue", "Continue the climb", resume) : Entry("native-new", "Begin a new climb", begin);
+            primary.AddToClassList("title-primary"); Add(primary);
+            var menu = new VisualElement(); menu.AddToClassList("title-menu-grid"); Add(menu);
+            menu.Add(canResume ? Entry("native-new", "New climb", begin) : Entry("native-continue", "Continue", resume, false));
+            if (saves != null) menu.Add(Entry("native-slots", "Saved climbs", saves));
+            menu.Add(Entry("native-profile", "Collection", collection));
+            menu.Add(Entry("native-coop", "Climb together", cooperative));
+            menu.Add(Entry("settings", "Settings", settings));
+            menu.Add(Entry("title-extras", "Extras", extras));
             Add(Ornament());
             var tagline = new Label("THE EMBER FLOWS UPWARD. FOLLOW IT."); tagline.AddToClassList("original-tagline"); Add(tagline);
         }

@@ -130,7 +130,7 @@ namespace AshenSpire.Presentation
             });
             speed = SettingSlider("animation-speed", "Animation speed", 50, 200, Percent(s.AnimationSpeed), v => { s.AnimationSpeed = v / 100.0; SyncQuick(); });
             instant = SettingToggle("instant-animations", "Instant animations", s.InstantAnimations, v => { s.InstantAnimations = v; SyncQuick(); });
-            _body.Add(Text("Below 100% uses slow pacing; 100–199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
+            _body.Add(Text("Below 100% uses slow pacing; 100 to 199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
@@ -211,6 +211,38 @@ namespace AshenSpire.Presentation
             _modStatusBox = new VisualElement { name = "content-mod-status" };
             _body.Add(_modStatusBox);
             RenderModStatus();
+        }
+
+        // Reparent the existing controls after construction; callbacks, IDs and
+        // saved values stay with the same elements. Every section remains open.
+        private void ComposeSettingsSections()
+        {
+            _body.AddToClassList("settings-screen");
+            var navigation = new VisualElement(); navigation.AddToClassList("settings-navigation");
+            VisualElement section = null; var index = 0;
+            foreach (var child in _body.Children().ToList())
+            {
+                if (child.name == "back") continue;
+                if (child.ClassListContains("heading"))
+                {
+                    section = new VisualElement { focusable = true }; section.AddToClassList("settings-section");
+                    _body.Add(section);
+                    var target = section;
+                    navigation.Add(Control("settings-section-" + index++, ((Label)child).text,
+                        () =>
+                        {
+                            target.Focus();
+                            // Align the heading, rather than merely exposing the
+                            // section's bottom edge as ScrollTo does for tall groups.
+                            var y = target.worldBound.y - _scroll.contentContainer.worldBound.y - 12;
+                            _scroll.scrollOffset = new Vector2(_scroll.scrollOffset.x, Mathf.Max(0, y));
+                            Report();
+                        }, "settings-jump"));
+                }
+                if (section != null) section.Add(child);
+            }
+            _body.Insert(2, navigation);
+            _body.Q<Button>("back")?.BringToFront();
         }
 
         private void RenderModStatus()

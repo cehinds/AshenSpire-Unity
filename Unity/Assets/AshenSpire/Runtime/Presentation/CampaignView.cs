@@ -69,6 +69,7 @@ namespace AshenSpire.Presentation
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
         {
+            _root.EnableInClassList("ui-wide", _root.contentRect.width >= 900);
             Report();
         }
         public void SetDisplayHeight(int height)
@@ -92,6 +93,11 @@ namespace AshenSpire.Presentation
                 dropdown.style.minHeight = Mathf.Max(52, minimum);
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
+            foreach (var tray in _root.Query<ScrollView>(className: "original-utility-rail").ToList())
+            {
+                var height = Mathf.Max(58, minimum + 8, 58f * (float)(_playerSettings?.TextScale ?? 1));
+                tray.style.height = height; tray.style.minHeight = height;
+            }
             ScheduleTextScale(); // CampaignView.PlayerSettings.cs; no-op at the default text size.
         }
         public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
@@ -186,11 +192,27 @@ namespace AshenSpire.Presentation
         public void Profile(AshenSpire.Domain.Original.OriginalProfile profile)
         {
             Shell("CHRONICLE", "YOUR WANDERERS AND DISCOVERIES");
+            _body.AddToClassList("profile-screen");
             var state = profile.Snapshot(); var progress = state["progress"];
             _body.Add(Text(progress["runs"] + " climbs · " + progress["wins"] + " victories · Act " + progress["maxAct"] + " reached", "lead"));
-            foreach (var row in profile.UnlockView()) _body.Add(Text(((bool)row["earned"] ? "Unlocked · " : "Locked · ") + ((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]) + "\n" + (string)row["hint"], "stat"));
+            var discoveries = new VisualElement(); discoveries.AddToClassList("profile-discoveries"); _body.Add(discoveries);
+            foreach (var row in profile.UnlockView())
+            {
+                var card = new VisualElement(); card.AddToClassList("profile-discovery");
+                card.EnableInClassList("earned", (bool)row["earned"]);
+                card.Add(Text((bool)row["earned"] ? "UNLOCKED" : "UNDISCOVERED", "eyebrow"));
+                card.Add(Text((string)row["name"] ?? (string)row["label"] ?? (string)row["id"], "node-title"));
+                card.Add(Text((string)row["hint"], "caption")); discoveries.Add(card);
+            }
             _body.Add(Text("Last " + AshenSpire.Domain.Original.OriginalProfile.ResultArchiveLimit + " climbs", "node-title"));
-            foreach (var result in profile.ResultArchive().Reverse().Select(entry => entry["result"])) _body.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat") + " · Act " + result["act"] + ", floor " + result["floor"] + "\n" + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+            if (profile.ResultArchive().Count == 0) _body.Add(Text("Your story begins with the first climb. Completed runs will appear here.", "caption"));
+            foreach (var result in profile.ResultArchive().Reverse().Select(entry => entry["result"]))
+            {
+                var entry = new VisualElement(); entry.AddToClassList("profile-history");
+                entry.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat"), "node-title"));
+                entry.Add(Text("Act " + result["act"] + ", floor " + result["floor"] + " · " + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+                _body.Add(entry);
+            }
             AddButton("native-profile-back", "Back to title", () => MenuRequested?.Invoke()); Report();
         }
         private void Heroes(CampaignDefinition content)
@@ -442,6 +464,7 @@ namespace AshenSpire.Presentation
             _body.Add(Text("HOW TO PLAY", "heading"));
             _body.Add(Text("Choose a card and its target, then confirm Play. Actions refresh each turn. MP and stamina pay the additional costs shown on cards; use Azure charges to restore MP or Catch Breath to recover stamina in a native solo fight.\n\nRead every enemy's intent before ending your turn. Guard absorbs damage. Status effects can change damage, resources and upcoming turns. Watch their counters and the results of each action.\n\nWeapons supply cards. Prepare equipment sets between battles; switching prepared sets during a solo fight pays the displayed cost. Shrines restore resources, reallocate flask charges and sell attribute improvements. Every attribute point has a benefit.\n\nIn a shared climb, vote for a route, play your own hand and end your own turn. The enemy phase starts when the active party finishes. You can target allies with supported cards and flasks.\n\nScroll or use More cards on smaller screens. Progress saves after accepted commands. Co-op progress belongs to the companion host; rejoin your saved seat after disconnecting.", "lead"));
             AddButton("back", "Back", back, "primary");
+            ComposeSettingsSections();
             Report();
         }
         private void Diagnostics(CampaignSession session)
