@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 namespace AshenSpire.Domain.Original
@@ -125,6 +126,17 @@ namespace AshenSpire.Domain.Original
             Check(slot); if (snapshot == null) throw new ArgumentNullException(nameof(snapshot));
             if (playtimeSeconds < 0) throw new ArgumentException("Playtime cannot be negative.");
             return _slots[slot].Save(Record(snapshot, playtimeSeconds, "slot"));
+        }
+        // Explicit import never overwrites a primary, backup or corrupt slot.
+        public bool ImportWebRun(int slot, JObject snapshot)
+        {
+            Check(slot);
+            if (_slots[slot].HasSave) throw new InvalidOperationException("Choose an empty save slot for import.");
+            var restored = OriginalGameSession.Restore(snapshot);
+            var run = restored.RunPlayer;
+            if ((int?)run["webImport"]?["version"] != 1 || string.IsNullOrEmpty((string)run["runId"])) throw new ArgumentException("Missing original-save import receipt.");
+            if (List().Any(s => s.Meta?.RunId == (string)run["runId"])) throw new InvalidOperationException("This original save has already been imported into a slot.");
+            return _slots[slot].Save(Record(restored.Snapshot(), 0, "original-web"));
         }
         // validate is the caller's restore path (e.g. OriginalGameSession.Restore); records it rejects fall back to the backup.
         public JObject Load(int slot, Action<JObject> validate, out OriginalSaveSlotMeta meta, out bool recovered)

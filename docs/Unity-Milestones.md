@@ -16,9 +16,11 @@ acceptance or physical-device certification.
   - [ ] US-0.5: complete multiplayer recovery and interaction acceptance.
     - [x] Build 27: two players, combat, rewards and rejoin with packaged companion (14 checks).
     - [ ] Wider recovery matrix, host restart and final multiplayer acceptance.
-  - [ ] US-0.6: complete profile/quota/upgrade checks and original-save decision.
+  - [ ] US-0.6: complete profile/quota/upgrade checks and original-save import.
     - [x] Actual build-26 browser save upgrades through the rename with exact state (8 checks).
-    - [ ] Complete quota/corruption matrix and decide original JavaScript save import.
+    - [x] Owner requires original JavaScript save import before Phase 1 completion (2026-09-28).
+    - [x] Initial map-checkpoint converter, preview and empty-slot commit implemented; 368 domain and 12 browser-adapter checks passed.
+    - [ ] Compiled import verification, broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
   - [ ] US-0.8–0.10: hosted artifacts, appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**
@@ -54,7 +56,7 @@ gallery does not cover every solo/co-op encounter.
 
 Still required for Foundation: the broader current-build campaign/custom-mode,
 inventory/services, multiplayer recovery, profile/quota/upgrade and authoring
-matrix; artwork and appearance acceptance; the original-save import decision;
+matrix; artwork and appearance acceptance; the required original-save importer;
 hosted artifact checks and the owner's final defect review.
 
 See [roadmap](Unity-Roadmap.md), [handoff](CONTINUE-HERE.md),

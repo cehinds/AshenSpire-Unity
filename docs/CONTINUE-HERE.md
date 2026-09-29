@@ -20,7 +20,7 @@ acceptance remains open; see [build-27 QA](qa/unity-build-27/README.md).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.27.0 · build 27 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.28.0 · build 28 · Foundation in progress** source; compiled verification pending (`GameContent/Unity/version.json`). Build 27 remains the latest verified package. |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -42,7 +42,8 @@ acceptance remains open; see [build-27 QA](qa/unity-build-27/README.md).
   - [x] 452 companion, 163 native-file and 20 package checks passed.
 - [x] Original-game change review recorded; owner-requested daily comparison active.
 - [ ] Complete full campaigns, encounter coverage, recovery/authoring matrices and owner acceptance.
-- [ ] Decide original JavaScript save import; the existing question remains unanswered.
+- [x] Owner decision (2026-09-28): implement original JavaScript save import before Phase 1 completion.
+- [ ] Complete [original-save import](Unity-Original-Save-Import.md): initial map-checkpoint converter and UI implemented; compiled verification and broader profile/active-room compatibility remain open.
 - [ ] Physical-device play, performance budgets and hosted channel promotion.
 
 Work is on `feature/ashenedspire-foundation`, stacked after local build 26.
@@ -355,7 +356,7 @@ editor: `node tools/unity-runtime-check.mjs`. It does not replace a play test.
 5. **Device and owner acceptance.** Windows player startup was observed, but
    desktop window capture timed out twice, preventing graphical play evidence.
    See [platform acceptance](Unity-Platform-Acceptance.md) for Android/iOS work.
-   Original JavaScript save import remains an unanswered product decision.
+   Original JavaScript save import is required by the owner's 2026-09-28 decision; complete the import checklist before Foundation acceptance.
 
 ## Resume checklist
 

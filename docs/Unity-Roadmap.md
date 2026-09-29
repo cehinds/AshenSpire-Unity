@@ -131,8 +131,10 @@ User stories (open work, from the detailed checklist below):
 - [ ] **US-0.4** Cover original settings/inventory flows not exercised by current commands.
 - [ ] **US-0.5** Current-source multi-browser co-op: friendly targets, catch-up, host
   restart, duplicate retry and rejoin via the packaged companion.
-- [ ] **US-0.6** Profile corruption, quota exhaustion and upgrade coverage; explicit
-  decision on original JavaScript save import.
+- [ ] **US-0.6** Profile corruption, quota exhaustion, upgrade coverage and original JavaScript save import.
+  - [x] Owner requires import before Phase 1 completion (2026-09-28).
+  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 368 domain and 12 browser-adapter checks passed.
+  - [ ] Compiled import verification and broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
   archive hosting capacity without deleting archived players.
@@ -648,8 +650,8 @@ all archived players and independently tested channel saves. See
 - [x] Pass 50 build 10 storage checks: 12 served-file hashes and 38 storage checks,
   exact backup recovery and preservation of 729,414 damaged bytes.
 - [ ] Complete profile corruption, quota exhaustion and upgrade coverage.
-- [ ] Decide original JavaScript save import explicitly. Existing legacy saves are
-  preserved; importing them into a native run is not implemented.
+- [x] Decide original JavaScript save import explicitly: owner requires it before Phase 1 completion.
+- [ ] Finish original-save import acceptance. Existing saves stay preserved; initial map-checkpoint conversion is implemented, with compiled and broader compatibility verification pending.
 - [x] Build matching-source build 10 Web, Windows, Android and companion packages; pass
   433 companion, 160 Windows/APK and 18 root-package checks, plus 22 self-contained restart checks.
 - [ ] Verify hosted build/history links, downloadable folders and current screenshots.

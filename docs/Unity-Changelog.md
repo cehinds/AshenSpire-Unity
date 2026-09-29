@@ -3,6 +3,11 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.28.0 · build 28 · 2026-09-28
+
+- Add original-game map-save import with preview, empty-slot protection, frozen rules and browser file/slot reads; broader import and Foundation acceptance remain open.
+- Add original-engine card parity, invalid-save, duplicate and failed-storage checks plus a compiled browser import test.
+
 ## 0.0.27.0 · build 27 · 2026-09-29
 
 - F00 US-0.4: AshenedSpire branding, welcome and in-game guide; current-build Foundation validation

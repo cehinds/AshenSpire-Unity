@@ -21,6 +21,24 @@ namespace AshenSpire.Application
         private long _playtimeBase;
         private float _playtimeSince;
         private string _slotNotice;
+        private Action<string> _previewWebImport;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [System.Runtime.InteropServices.DllImport("__Internal")] private static extern void AshenedSpire_ChooseOriginalSave(string owner);
+        [System.Runtime.InteropServices.DllImport("__Internal")] private static extern void AshenedSpire_ReadOriginalSlot(string owner, int slot);
+#endif
+        // The browser bridge returns only after an explicit file/slot selection.
+        // Ignore delayed file reads after the player leaves the import screen.
+        public void OnOriginalSaveRead(string envelope)
+        {
+            if (_previewWebImport == null || !_view.WebSaveImportVisible) return;
+            try
+            {
+                var result = JObject.Parse(envelope);
+                if (result["error"] != null) { ShowWebImport((string)result["error"]); return; }
+                _previewWebImport((string)result["save"]);
+            }
+            catch (Exception) { ShowWebImport("The selected save could not be read. Your saves are unchanged."); }
+        }
         private void InitSaveSlots(string channel)
         {
             IOriginalSaveStorage storage = new OriginalDelegateSaveStorage(key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save, PlayerPrefs.DeleteKey);
@@ -37,6 +55,7 @@ namespace AshenSpire.Application
             }
             catch (Exception error) { Debug.LogWarning("The earlier native save was not moved into slot 1: " + error.Message); }
             _view.SlotsRequested += ShowSaveSlots;
+            _view.WebImportRequested += ShowWebImport;
         }
         private static bool Loadable(OriginalSaveSlotInfo slot) => slot.State == OriginalSaveSlotState.Ready || slot.State == OriginalSaveSlotState.RecoveredBackup;
         private bool HasNativeSlotSave() => _slotSaves != null && _slotSaves.List().Any(Loadable);
@@ -97,8 +116,42 @@ namespace AshenSpire.Application
             return receipt;
         }
         private void ShowSaveSlots() => ShowSaveSlots(null);
+        private void ShowWebImport() => ShowWebImport(null);
+        private void ShowWebImport(string notice)
+        {
+            if (!TryLoadOriginalProfile()) return;
+            _previewWebImport = text =>
+            {
+                try
+                {
+                    var target = _slotSaves.List().FirstOrDefault(s => s.State == OriginalSaveSlotState.Empty);
+                    if (target == null) throw new InvalidOperationException("All slots are occupied. Free a slot from Saved climbs before importing.");
+                    var snapshot = OriginalWebSaveImport.Convert(text, _originalContent, OriginalRules("event-choices"), OriginalRules("mechanics"), OriginalRules("progression"));
+                    var run = snapshot["run"];
+                    var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\nDestination: Slot " + (target.Slot + 1);
+                    _previewWebImport = null;
+                    _view.WebSaveImportPreview(summary, () =>
+                    {
+                        try
+                        {
+                            if (!_slotSaves.ImportWebRun(target.Slot, snapshot)) { ShowWebImport("The import could not be saved. Free some storage and try again. Your original file is unchanged."); return; }
+                            ShowSaveSlots("Original save imported into slot " + (target.Slot + 1) + ". Choose Continue when ready.");
+                        }
+                        catch (Exception error) { ShowWebImport("Import refused: " + error.Message); }
+                    }, ShowSaveSlots);
+                }
+                catch (Exception error) { ShowWebImport("Import refused: " + error.Message); }
+            };
+            Action chooseFile = null; Action<int> browserSlot = null;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            chooseFile = () => AshenedSpire_ChooseOriginalSave(gameObject.name);
+            browserSlot = slot => AshenedSpire_ReadOriginalSlot(gameObject.name, slot);
+#endif
+            _view.WebSaveImport(notice, _previewWebImport, ShowSaveSlots, chooseFile, browserSlot);
+        }
         private void ShowSaveSlots(string notice)
         {
+            _previewWebImport = null;
             if (!TryLoadOriginalProfile()) return;
             _view.Slots(_slotSaves.List(), ClassName, notice ?? TakeSlotNotice(), ResumeSlot, CreateOriginal, DeleteSlot, CopySlot);
             _view.PersistenceNotice(_profileNotice);
