@@ -40,7 +40,12 @@ let browser,ui;
   ui.check(begin.x>begin.canvas.x&&begin.x<begin.canvas.x+begin.canvas.width&&begin.y>begin.canvas.y&&begin.y<begin.canvas.y+begin.canvas.height,'new climb remains reachable at maximum text size');
   const entries=['native-continue','native-slots','native-profile','native-coop','settings','title-extras'].map(id=>ui.controls.Controls.find(c=>c.Id===id));
   ui.check(entries.every((entry,index)=>entry&&entry.X>=0&&entry.X+entry.Width<=ui.controls.PanelWidth+.1&&Math.abs(entry.X-entries[0].X)<1&&(index===0||entry.Y>=entries[index-1].Y+entries[index-1].Height)),'every large-text menu action occupies its own row within the screen width');
-  await ui.click('title-extras');ui.check(ui.has('extras-back'),'bottom menu action is reachable with large text');
+  // Exercise normal vertical scrolling to the final row at the large text size.
+  await page.mouse.move(8,viewport.height/2);await page.mouse.wheel(0,700);await page.waitForTimeout(700);
+  await ui.shot('08-large-text-bottom');
+  fs.writeFileSync(path.join(ui.output,'large-menu-controls.json'),JSON.stringify(ui.controls,null,2));
+  await ui.click('title-extras');await ui.until(()=>ui.has('extras-back'),'Extras after large-text menu');
+  ui.check(ui.has('extras-back'),'bottom menu action is reachable with large text');
   await ui.click('extras-back');
   await ui.click('native-new');
   ui.check(ui.controls.Labels.includes('Prepare your Forsaken'),'maximum text size preserves creation navigation');

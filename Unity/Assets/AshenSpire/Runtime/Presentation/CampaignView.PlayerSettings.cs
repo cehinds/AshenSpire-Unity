@@ -108,6 +108,7 @@ namespace AshenSpire.Presentation
             }
             _textScaled = true;
             if (pending && ++_textScaleAttempts < 10) _textScaleJob = _root.schedule.Execute(ApplyTextScale).StartingIn(60);
+            else Report(false); // Measure after font sizes settle, without scheduling another scaling pass.
         }
 
         private void ExtendSettings(Toggle motion, Toggle fast, Toggle mute)
