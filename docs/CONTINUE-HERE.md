@@ -8,7 +8,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.25.0 · build 25 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.26.0 · build 26 · Foundation in progress** (`GameContent/Unity/version.json`) |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -16,6 +16,20 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Local build 26 interface candidate
+
+Build 26 refreshes the title, settings, collection, save slots and combat
+presentation. Enlarged text uses a vertical title menu; control reports now
+wait for text scaling so browser input targets the displayed positions.
+The final compiled Web player passes **337 browser checks** across menus,
+large text, settings, slots, combat, card reading, keyboard controls and co-op.
+Web, Windows, Android and companion packages match the final source and pass
+packaging checks; see [build-26 QA](qa/unity-build-26/README.md).
+
+Work is on `feature/unity-interface-polish`, stacked after local build 25.
+Owner visual acceptance and physical-device play remain open. No channel
+promotion or owner merge is implied by the local builds.
 
 ### Local build 25 candidate
 

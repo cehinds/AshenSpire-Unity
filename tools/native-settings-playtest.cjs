@@ -10,6 +10,7 @@ let browser,ui;
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});ui=new NativeUiDriver(page,output);
  await ui.open(url);await ui.click('settings',false);await ui.until(()=>ui.has('volume-master'),'settings controls');
  const labels=()=>ui.controls.Labels||[];
+ const back=async()=>{if(ui.has('settings-section-5'))await ui.click('settings-section-5',false);await ui.click('back',false);};
  ui.check(!ui.has('screen-shake-intensity'),'screen shake defaults off');
  await ui.click('screen-shake');ui.check(ui.has('screen-shake-intensity'),'enabling shake enables its intensity slider');
  await ui.click('screen-shake');
@@ -26,11 +27,11 @@ let browser,ui;
  }
  await ui.choose('colorblind-palette',2);
  await ui.click('reduced-motion',false);await ui.shot('01-accessibility-settings');
- await ui.click('back',false);await ui.until(()=>ui.has('settings'),'title');await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await ui.until(()=>ui.has('settings'),'title after reload');await ui.click('settings',false);await ui.until(()=>ui.has('volume-master'),'reloaded settings');
+ await back();await ui.until(()=>ui.has('settings'),'title');await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await ui.until(()=>ui.has('settings'),'title after reload');await ui.click('settings',false);await ui.until(()=>ui.has('volume-master'),'reloaded settings');
  for(const label of expected)ui.check(labels().includes(label),'setting persists through player reload: '+label);
  ui.check(ui.has('screen-shake-intensity'),'screen shake on persists through reload');
  await ui.shot('02-persisted-settings'); // Palette/checkmarks require visual review.
- await ui.click('back',false);await ui.until(()=>ui.has('native-new'),'title before creation');await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');
+ await back();await ui.until(()=>ui.has('native-new'),'title before creation');await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');
  const before=JSON.stringify(ui.state);await ui.click('native-deck');ui.check(!ui.has('native-map-fit'),'inventory replaces map');await ui.shot('03-inventory');await ui.click('native-deck-back');
  ui.check(JSON.stringify(ui.state)===before,'opening and closing inventory preserves run state');
  ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);
