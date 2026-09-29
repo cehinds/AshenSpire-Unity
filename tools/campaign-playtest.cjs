@@ -80,7 +80,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url='http://127.0.0.1:'+server.address().port+'/';
  }
  async function until(predicate,description,timeout=15000){const end=Date.now()+timeout;while(Date.now()<end){if(predicate())return;await page.waitForTimeout(100);}throw new Error('Timed out: '+description);}
- async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');}
+ async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');if(controls.Controls.some(c=>c.Id==='native-welcome-continue'&&c.Enabled))await click('native-welcome-continue');}
  // Unity applies browser resize and UI Toolkit geometry over separate frames.
  // Wait for the new aspect ratio and stable bounds, never for a passing size assertion.
  const viewportEvidence=[];
