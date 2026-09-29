@@ -7,6 +7,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const output=path.resolve(process.argv[3]||'TestResults/Native'); fs.mkdirSync(output,{recursive:true});
 const recorded=JSON.parse(fs.readFileSync(process.argv[4]||path.join(__dirname,'../UnityTests/Parity/native-browser-replay.json'),'utf8')).runs[0];
 const replay=recorded.trace;
+if(recorded.classId!=='reaver')throw Error('This compiled replay driver currently supports the Reaver creation route only.');
 const deviceScaleFactor=Number(process.env.ASHENSPIRE_PLAYTEST_DPR||2);
 if(![1,2,3].includes(deviceScaleFactor))throw Error('ASHENSPIRE_PLAYTEST_DPR must be 1, 2 or 3');
 // The replay must end where the domain run ended. Owner decision (2026-09-24): the bot gate records
@@ -54,8 +55,16 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  await until(()=>pointerDriver.has('native-new'),'title');await shot('00-phone-title');
  await click('native-new');await shot('01-phone-assign-points');
  check(controls.Labels.some(t=>t.trim()==='Unspent points: 0'),'Unspent points: 0 (Standard preset, the default)');
- await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-assigned-creation');await command('native-begin');
- check(state.phase==='Map','native three-act run starts');
+ await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await page.keyboard.type(String(recorded.seed),{delay:80});await key('Tab');
+ if(recorded.custom){
+  await click('native-custom-toggle');
+  await NativeUiDriver.prototype.choose.call(pointerDriver,'native-deck-mode',['standard','sealed','draft'].indexOf(recorded.custom.deckMode));
+  if(recorded.custom.ascension)await NativeUiDriver.prototype.choose.call(pointerDriver,'native-ascension',recorded.custom.ascension);
+  for(const [mod,enabled] of Object.entries(recorded.custom.mods||{}))if(enabled)await click('native-mod-'+mod);
+ }
+ await shot('02-phone-assigned-creation');await command('native-begin');
+ check(state.phase===(recorded.custom?.deckMode==='draft'?'Draft':'Map'),'native configured run starts');
+ if(recorded.custom)check(state.run.custom.deckMode===recorded.custom.deckMode&&state.run.custom.ascension===recorded.custom.ascension&&Object.entries(recorded.custom.mods).every(([key,value])=>state.run.custom.mods[key]===value),'compiled setup preserves replay mode and modifiers');
  for(let index=0;index<replay.length;index++){
   const action=replay[index];await capture();check(state.phase===action.beforePhase&&state.player.hp===action.beforeHp,'before command '+index+' '+action.command);
   const [kind,...parts]=action.command.split(':');const value=parts.join(':');
@@ -64,7 +73,8 @@ function report(success){return {success,checks,screenshots,errors,commands,last
    await click('native-target-'+action.targetId);
    for(let page=0;page<8&&!controls.Controls.some(c=>c.Id==='native-card-'+action.instanceId)&&controls.Controls.some(c=>c.Id==='native-hand-next'&&c.Enabled);page++)await click('native-hand-next');
    await click('native-card-'+action.instanceId);await command('native-play');
-  }else if(kind==='enter')await command('native-route-'+value);
+  }else if(kind==='draft')await command('native-draft-'+value);
+  else if(kind==='enter')await command('native-route-'+value);
   else if(kind==='charge')await command(value==='hp'?'native-crimson':'native-azure');
   else if(kind==='flask'){await click('native-target-'+action.targetId);await command('native-flask-0');}
   else if(kind==='reward')await command('native-reward-'+value+(value==='card'?'-'+action.cardId:''));

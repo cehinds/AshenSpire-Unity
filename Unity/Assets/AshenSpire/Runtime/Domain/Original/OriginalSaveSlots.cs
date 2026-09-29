@@ -168,7 +168,10 @@ namespace AshenSpire.Domain.Original
         {
             if (imported?.Snapshot()["originalProfileImport"] == null) throw new ArgumentException("Missing original profile import receipt.");
             var current = LoadProfile(catalog, out _);
-            if (!JToken.DeepEquals(current.Snapshot(), expected)) throw new InvalidOperationException("Your Unity profile changed after preview. Check the import again before continuing.");
+            // Compare the persisted representation: UI float values become doubles
+            // when the journal reads JSON back. This must not look like new progress.
+            var persistedExpected = JsonConvert.DeserializeObject<JObject>(expected.ToString(Formatting.None), new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
+            if (!JToken.DeepEquals(current.Snapshot(), persistedExpected)) throw new InvalidOperationException("Your Unity profile changed after preview. Check the import again before continuing.");
             if (current.Snapshot()["originalProfileImport"] != null) throw new InvalidOperationException("An original profile has already been imported.");
             return SaveProfile(imported);
         }

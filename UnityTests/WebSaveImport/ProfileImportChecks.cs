@@ -49,6 +49,29 @@ static class ProfileImportChecks
         Check(memory.Read("sote_meta_v1")==text,"original browser profile untouched");
         Check(slots.List().All(s=>s.State==OriginalSaveSlotState.Empty),"profile import uses no run slot");
         Refuse(()=>slots.ImportWebProfile(catalog,before,imported),"stale destination and duplicate commit refused");
+        // UI Toolkit map-camera coordinates are floats, serialized JSON reloads them
+        // as doubles. An unchanged saved preference must not look like a new profile.
+        var floatProfile=new OriginalProfile(catalog);
+        floatProfile.SetSettings(new JObject{["mapViewer"]=new JObject{["solo"]=new JObject{["x"]=123.45678f,["zoom"]=1.2345678f}}});
+        var floatSlots=new OriginalSaveSlots(new OriginalMemorySaveStorage(),"float-import","test");
+        Check(floatSlots.SaveProfile(floatProfile),"float map preferences persisted");
+        var floatImport=Import(text,floatProfile);
+        Check(floatSlots.ImportWebProfile(catalog,floatProfile.Snapshot(),floatImport),"serialized map-camera floats do not cause false stale-preview refusal");
+        var pendingProfile=new OriginalProfile(catalog);
+        var pendingSlots=new OriginalSaveSlots(new OriginalMemorySaveStorage(),"pending-import","test");
+        Check(pendingSlots.SaveProfile(pendingProfile),"pending-preferences baseline persisted");
+        var storedBaseline=pendingSlots.LoadProfile(catalog,out _).Snapshot();
+        pendingProfile.SetSettings(new JObject{["mapViewer"]=new JObject{["zoom"]=1.7}});
+        var pendingImport=Import(text,pendingProfile);
+        Check(pendingSlots.ImportWebProfile(catalog,storedBaseline,pendingImport),"unchanged durable baseline permits preserved pending local preferences");
+        Check((double)pendingSlots.LoadProfile(catalog,out _).Snapshot()["settings"]["mapViewer"]["zoom"]==1.7,"pending local preferences included in verified imported profile");
+        var conflictSlots=new OriginalSaveSlots(new OriginalMemorySaveStorage(),"conflict-import","test");
+        Check(conflictSlots.SaveProfile(current),"concurrent-change baseline persisted");
+        var changedProfile=OriginalProfile.Restore(catalog,before);
+        changedProfile.Finish("another-climb",new JObject{["classId"]="rogue",["actNumber"]=1},false);
+        Check(conflictSlots.SaveProfile(changedProfile),"genuine concurrent progress persisted");
+        Refuse(()=>conflictSlots.ImportWebProfile(catalog,before,imported),"genuine durable change still refuses stale import");
+        Check(JToken.DeepEquals(conflictSlots.LoadProfile(catalog,out _).Snapshot(),changedProfile.Snapshot()),"concurrent progress survives refusal");
         foreach(var failure in new[]{"write","flush","truncate"}){
             var store=new OriginalMemorySaveStorage();var armed=false;
             var faulty=new OriginalDelegateSaveStorage(store.Read,(key,value)=>{if(armed&&failure=="write")throw new IOException("full");store.Write(key,armed&&failure=="truncate"&&key.EndsWith("profile-import")?"bad":value);},()=>{if(armed&&failure=="flush")throw new IOException("full");store.Flush();},store.Delete);

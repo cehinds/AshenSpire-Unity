@@ -14,7 +14,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 Owner authorized merging PR #57 on 2026-09-29. It is merged into `dev` at
 `e107f87e97240b267f712df42609c9187a83d8f9`. Continue Phase 1 on
-`feature/ashenedspire-phase1`. Build-30 profile-import source is under compiled
+`feature/ashenedspire-phase1`. Build 29 is now live at https://cehinds.github.io/AshenSpire-Unity/dev/ after successful deployment and public browser verification; see [hosting](Unity-Archive-Hosting.md). Build-30 profile-import source is under compiled
 validation; build 29 remains the last packaged candidate until those exports
 and checks finish. Merge approval does not constitute gameplay acceptance.
 
@@ -53,16 +53,16 @@ remains AshenSpire. See [core phases](Unity-Milestones.md) and the
   - [x] Build-29 native campaign replay passes 749 checks and 306 real-input commands, exact reloads and its recorded Act-3 defeat. The browser/checkpoint pipeline passes; fast-gate jobs pass except the known version-sequence gate.
   - [ ] Wider original/native interaction coverage and owner acceptance remain open.
 
-The build-28 CI failures and corrected harness behavior are preserved in [regression notes](qa/unity-build-28/ci-regressions.md). The legal patch step from build 28 passes six version checks; the accumulated branch still cannot jump over the owner's preceding integrations from `dev` build 21. Draft [PR #57](https://github.com/cehinds/AshenSpire-Unity/pull/57) remains a development candidate.
+The build-28 CI failures and corrected harness behavior are preserved in [regression notes](qa/unity-build-28/ci-regressions.md). The historical build-21-to-29 version-sequence warning is recorded in the merged [PR #57](https://github.com/cehinds/AshenSpire-Unity/pull/57). Build 30 advances normally from the merged build-29 base and passes six version checks.
 
 ### Build 29 downloads and hosting
 
 - [ ] **US-0.8 — public hosting acceptance**
   - [x] All four build-29 public downloads verified against their SHA-256 receipts, pinned to `1b92c1d56a78c104dd9bdd996ac64892d4a2910e`.
   - [x] Revised archive library retains 31 players at 383.1 MiB; 3,458 navigation and 564 runtime/hash/CORS checks pass. Historical 30-player validation includes three sampled browser startups.
-  - [ ] Owner merge into `dev`, Pages deployment and public build-29 player verification.
+  - [x] Owner-authorized merge into `dev`, Pages deployment and public build-29 player verification: five compiled checks and nine page/image responses.
 
-The attempted public deployment failed its 950 MiB size guard and preserved the previous site. The tested capacity fix is on the feature branch. Pages permits deployment from `dev` only; repository rules reserve that merge for the owner. See [downloads, hosting evidence and limitations](Unity-Archive-Hosting.md).
+The earlier capacity failure is resolved by the merged archive layout. The public deployment retains 31 players at 393.8 MiB and passes 3,449 navigation checks across 583 pages. See [downloads, hosting evidence and limitations](Unity-Archive-Hosting.md).
 
 ### Local build 28 original-save candidate
 
@@ -80,7 +80,7 @@ Twelve current domain policy runs completed 160 fights with no errors, recording
 
 The current importer refuses unsupported saves explicitly and preserves their original bytes. See [import checklist](Unity-Original-Save-Import.md) and [QA](qa/unity-build-28/README.md).
 
-Pending owner scope decision (2026-09-29): whether the newer original-game skills/progression system must also be ported before Phase 1, or follows in Phase 2 after baseline import compatibility. No answer has been received and neither option is accepted by default. Original-game save import remains required; baseline profile and active-room compatibility are still open regardless of this decision.
+The owner clarified that current original-game mechanics and assets are the reference. Continue assessing newer skills/progression and save-schema compatibility as real implementation work; do not infer a waiver or an extra approval gate from inherited Markdown. Profile and active-room import verification remain open.
 
 ### Local build 27 foundation candidate
 

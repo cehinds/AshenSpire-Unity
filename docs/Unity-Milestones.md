@@ -32,7 +32,7 @@ acceptance or physical-device certification.
   - [ ] US-0.8: hosted artifacts and archive capacity.
     - [x] Four public build-29 downloads fetched and verified against packaged hashes.
     - [x] All 31 archived players retained at 383.1 MiB; 3,458 navigation checks pass. Earlier hosting validation includes three sampled player startups.
-    - [ ] Owner merge, Pages deployment and public player verification; see [hosting checklist](Unity-Archive-Hosting.md).
+    - [x] Owner-authorized merge, Pages deployment and public build-29 verification: five compiled checks and nine page/image responses; see [hosting checklist](Unity-Archive-Hosting.md).
   - [ ] US-0.9–0.10: appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**
   - [x] Build-26 UI redesign and its bounded compiled verification.

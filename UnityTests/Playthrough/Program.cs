@@ -13,7 +13,9 @@ var mechanics=JObject.Parse(File.ReadAllText(Path.Combine(directory,"mechanics.j
 var supplement=JObject.Parse(File.ReadAllText(Path.Combine(directory,"event-choices.json")));
 var seeds=args.Length>0?int.Parse(args[0]):3;
 var report=new JArray();var timer=Stopwatch.StartNew();
-var classes=new[]{"reaver","starseer","rogue","herald"};
+var mode=args.Length>2?args[2]:"standard";
+if(!new[]{"standard","custom","sealed","draft","endless"}.Contains(mode))throw new ArgumentException("Unknown playthrough mode");
+var classes=args.Length>3?new[]{args[3]}:new[]{"reaver","starseer","rogue","herald"};
 var sourceFiles=Directory.GetFiles(Path.Combine(root,"Unity/Assets/AshenSpire/Runtime/Domain/Original"),"*.cs").OrderBy(x=>x).ToArray();
 var digest=Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(string.Join("\n",sourceFiles.Select(p=>Path.GetRelativePath(root,p).Replace('\\','/')+":"+Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(p)))))))).ToLowerInvariant();
 foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
@@ -28,7 +30,13 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
   var creator=new CreationModel(catalog,classId,"leanStandard",progression);
   if(!creator.CanBegin)throw new Exception("Standard preset left points unspent");var kit=(string)catalog.Table("equipment.startingKits").First(x=>(string)x["classId"]==classId&&(bool?)x["baseline"]==true)["id"];
   var player=new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creator,kit);result["initialAttributes"]=player["attributes"].DeepClone();result["initialResources"]=new JObject{["hp"]=player["hp"],["mana"]=player["mana"],["stamina"]=player["stamina"],["actions"]=player["energy"],["draw"]=player["draw"]};
-  game=OriginalGameSession.Start(catalog,supplement,mechanics,player,seed);
+  if(mode=="standard")game=OriginalGameSession.Start(catalog,supplement,mechanics,player,seed);
+  else {
+   var custom=new JObject{["ascension"]=mode=="custom"?1:0,["deckMode"]=mode=="sealed"||mode=="draft"?mode:"standard",["mods"]=new JObject()};
+   if(mode=="custom")custom["mods"]["hoarder"]=true;if(mode=="endless")custom["mods"]["endless"]=true;
+   result["custom"]=custom.DeepClone();game=OriginalGameSession.StartConfigured(catalog,supplement,mechanics,player,seed,new JObject{["custom"]=custom});
+  }
+  result["mode"]=mode;
   void Act(string name,Action<OriginalGameSession> command)
   {
    lastCommand=name;var before=game.Snapshot();var testResume=commands%25==0||name.StartsWith("enter")||name=="continueRewards";OriginalGameSession resumed=null;
@@ -61,6 +69,8 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
    }
    switch(phase)
    {
+    case OriginalRunPhase.Draft:
+     var draftCard=game.DraftChoices.Values<string>().OrderByDescending(card=>RewardScore(catalog.Record("cards",card))).First();Act("draft:"+draftCard,s=>s.PickDraft(draftCard));break;
     case OriginalRunPhase.Map:
      var map=game.Map;var id=game.LegalNodeIds.OrderBy(n=>RouteScore((string)map["nodes"][n]["type"],game.Player)).ThenBy(n=>n,StringComparer.Ordinal).First();Act("enter:"+id,s=>s.Enter(id));break;
     case OriginalRunPhase.Combat:

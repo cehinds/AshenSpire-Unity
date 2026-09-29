@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "buildNumber": 29,
+  "sourceDigest": "7717600e2683ae8c3eb39a37b9452ced96bab6d56a8ebbaf2daacc5dc8dde92f",
+  "observations": [
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/title-desktop.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/title-phone.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/390x844-flask-visible.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/740x320-flask-visible.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/15-campaign-victory.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/dev/BuildReview29/35-dense-settings.png",
+      "status": 200
+    },
+    {
+      "url": "https://cehinds.github.io/AshenSpire-Unity/builds/build-67f23b1003062ce36102/",
+      "status": 200
+    }
+  ],
+  "deployRun": 36571719910,
+  "verifiedAt": "2026-09-29T13:08:44.709Z",
+  "physicalDevice": false
+}

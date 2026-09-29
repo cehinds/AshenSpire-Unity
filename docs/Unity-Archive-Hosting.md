@@ -1,5 +1,16 @@
 # Archive hosting and build 29 publication
 
+## Public deployment — 2026-09-29
+
+- [x] Owner-authorized PR #57 merged into `dev` at `e107f87e97240b267f712df42609c9187a83d8f9`.
+- [x] [Deployment 36571719910](https://github.com/cehinds/AshenSpire-Unity/actions/runs/36571719910) passed on retry. The first attempt timed out checking a remote payload; its failure is preserved in attempt 1.
+- [x] Actual deployed assembly: 31 players, 393.8 MiB, 3,449 navigation checks across 583 pages.
+- [x] [Live dev player](https://cehinds.github.io/AshenSpire-Unity/dev/) verified against build 29: five compiled checks cover title branding, source identity, map entry, actual combat and no unexpected errors. Nine page/image responses passed; download links are present. See [public evidence](qa/unity-build-29/public/site.json) and [compiled checks](qa/unity-build-29/public/checks.json).
+
+The sections below preserve the pre-merge local assembly and download evidence.
+Their owner-integration blocker was resolved by the explicit merge authorization
+and successful deployment above. No environment policy or version gate was disabled.
+
 - [ ] **US-0.8 — public hosting acceptance**
   - [x] Build 29 Web, Windows, Android and companion downloads are public; all four downloaded files match their packaged SHA-256 receipts.
   - [x] Retain all 31 available archived players at 383.1 MiB, below the 950 MiB budget. The prior 30-player library exceeded the budget at 1,105.8 MiB before the hosting fix.
