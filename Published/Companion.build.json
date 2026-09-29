@@ -1,333 +1,294 @@
 {
-  "buildNumber": 27,
-  "sourceCommit": "10f4811005ead91aefd1fd06d26f26882d2a2a54",
+  "runtime": "win-x64",
   "nativeSources": [
     {
-      "sha256": "906c8e52f105a03538ca4391220c34f66c22146a1be899b889e497458646f1dd",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ActMapGenerator.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ActMapGenerator.cs",
+      "sha256": "906c8e52f105a03538ca4391220c34f66c22146a1be899b889e497458646f1dd"
     },
     {
-      "sha256": "e8c99f20df74a2f4dd318d097b82b97d48f77359f7b74b87ac0e0e824dac33c2",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/AttackDamageCalculator.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/AttackDamageCalculator.cs",
+      "sha256": "e8c99f20df74a2f4dd318d097b82b97d48f77359f7b74b87ac0e0e824dac33c2"
     },
     {
-      "sha256": "dce895de83b4bea77e09c7af265ae373b78d6b02a57f9c1f8a6511505825745e",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/AttributeProgression.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/AttributeProgression.cs",
+      "sha256": "dce895de83b4bea77e09c7af265ae373b78d6b02a57f9c1f8a6511505825745e"
     },
     {
-      "sha256": "90fa65b725e0b2b965c6a23ab74bc24b3792b67f111f1dc6a7ae89f874ce233c",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardMechanics.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardMechanics.cs",
+      "sha256": "90fa65b725e0b2b965c6a23ab74bc24b3792b67f111f1dc6a7ae89f874ce233c"
     },
     {
-      "sha256": "b885187f78225a548f42d1fbd8ada0f311bf1274a74d432b5854f9a6674ee080",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardMountService.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardMountService.cs",
+      "sha256": "b885187f78225a548f42d1fbd8ada0f311bf1274a74d432b5854f9a6674ee080"
     },
     {
-      "sha256": "d4eac745834bea1c93608674d45ac4031657b20969d62d415386578a0b1f4667",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardZoneLedger.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CardZoneLedger.cs",
+      "sha256": "d4eac745834bea1c93608674d45ac4031657b20969d62d415386578a0b1f4667"
     },
     {
-      "sha256": "49cc850d0316e8a5b4d651f94d000b22f23fadd752b0e534b23a3bdbc6a044cc",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatContext.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatContext.cs",
+      "sha256": "49cc850d0316e8a5b4d651f94d000b22f23fadd752b0e534b23a3bdbc6a044cc"
     },
     {
-      "sha256": "fe7fa62f6035a78186a1bfd93d19af8c9e46ec3428d1abf1257cefa5c97212bb",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.CoopBridge.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.CoopBridge.cs",
+      "sha256": "fe7fa62f6035a78186a1bfd93d19af8c9e46ec3428d1abf1257cefa5c97212bb"
     },
     {
-      "sha256": "af1cfe9c824eb0066337d11296dbb2751a263a3fab5640704d7a1bf73d26c458",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.cs",
+      "sha256": "af1cfe9c824eb0066337d11296dbb2751a263a3fab5640704d7a1bf73d26c458"
     },
     {
-      "sha256": "0194dda0cf60198ffd4a80746c8940d026f90f24205415593b66bb494beb8c17",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Effects.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Effects.cs",
+      "sha256": "0194dda0cf60198ffd4a80746c8940d026f90f24205415593b66bb494beb8c17"
     },
     {
-      "sha256": "48c0854928ccf3c59712e56f012fd480f023890d9eb8615e3f1c3ac99e8082df",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.EnemyAi.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.EnemyAi.cs",
+      "sha256": "48c0854928ccf3c59712e56f012fd480f023890d9eb8615e3f1c3ac99e8082df"
     },
     {
-      "sha256": "419e24a329453813b3940d6269863c8e9146a3bb5bd34eafe13b492ca4968209",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Equipment.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Equipment.cs",
+      "sha256": "419e24a329453813b3940d6269863c8e9146a3bb5bd34eafe13b492ca4968209"
     },
     {
-      "sha256": "6def0370183076fc0eb11232782b181120a8d9392351b146896b5f82cbdca455",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Flasks.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Flasks.cs",
+      "sha256": "6def0370183076fc0eb11232782b181120a8d9392351b146896b5f82cbdca455"
     },
     {
-      "sha256": "bc9fa058c297cc53480fd5ce4030050e526b981c61190dd2030cd368efe621e2",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.HandRules.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.HandRules.cs",
+      "sha256": "bc9fa058c297cc53480fd5ce4030050e526b981c61190dd2030cd368efe621e2"
     },
     {
-      "sha256": "1ddd92d1cb10fabcc6e37e82b2f67a199adfd483abcbf645f049e6794ea1195f",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Telegraphs.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Telegraphs.cs",
+      "sha256": "1ddd92d1cb10fabcc6e37e82b2f67a199adfd483abcbf645f049e6794ea1195f"
     },
     {
-      "sha256": "e9d2b7b3392baf646b9a02ca30c72b21f2c0e8a1288e8599a1094c623f91c42c",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Triggers.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CombatSession.Triggers.cs",
+      "sha256": "e9d2b7b3392baf646b9a02ca30c72b21f2c0e8a1288e8599a1094c623f91c42c"
     },
     {
-      "sha256": "133bd348d3b61834dadde4a8a53bfe659b88c1a17f45c20a918dd9ed5569e015",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CreationModel.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/CreationModel.cs",
+      "sha256": "133bd348d3b61834dadde4a8a53bfe659b88c1a17f45c20a918dd9ed5569e015"
     },
     {
-      "sha256": "807844cdaaa724835efbb1157d46b04a36fd8cef8a3075f522479fceb72409fa",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/DerivedStatCalculator.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/DerivedStatCalculator.cs",
+      "sha256": "807844cdaaa724835efbb1157d46b04a36fd8cef8a3075f522479fceb72409fa"
     },
     {
-      "sha256": "393beb8b1dbfa0727ec2a3588fc03df508e6fda05402a68b51a9c3cbb4ce41a2",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EnemyTelegraph.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EnemyTelegraph.cs",
+      "sha256": "393beb8b1dbfa0727ec2a3588fc03df508e6fda05402a68b51a9c3cbb4ce41a2"
     },
     {
-      "sha256": "07d95ef8eefb70d63f804f9960a8e0d813ef3da5a0b51fa75f7348c8bc2a24d0",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EquipmentInventory.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EquipmentInventory.cs",
+      "sha256": "07d95ef8eefb70d63f804f9960a8e0d813ef3da5a0b51fa75f7348c8bc2a24d0"
     },
     {
-      "sha256": "3c278eaa6987d2a9330ec7647d8ce707508f086eb8677ac666f93758b626ece5",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EquipmentRunModifiers.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/EquipmentRunModifiers.cs",
+      "sha256": "3c278eaa6987d2a9330ec7647d8ce707508f086eb8677ac666f93758b626ece5"
     },
     {
-      "sha256": "04aa8f5e650420f69c356fa0628a6609a849d82d9e7521d94f35ce889f4ee13a",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/FlaskChargePool.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/FlaskChargePool.cs",
+      "sha256": "04aa8f5e650420f69c356fa0628a6609a849d82d9e7521d94f35ce889f4ee13a"
     },
     {
-      "sha256": "9c16029ff4ead29a8c09b4cac62d92b28edfc8cc221ff79885e9f5785f7b42ad",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/FormulaEvaluator.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/FormulaEvaluator.cs",
+      "sha256": "9c16029ff4ead29a8c09b4cac62d92b28edfc8cc221ff79885e9f5785f7b42ad"
     },
     {
-      "sha256": "b617f2690e9bbea86fa143b1f7fcb49ca58b7d9d5a6b9df42db957b5af4232c3",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/HandRules.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/HandRules.cs",
+      "sha256": "b617f2690e9bbea86fa143b1f7fcb49ca58b7d9d5a6b9df42db957b5af4232c3"
     },
     {
-      "sha256": "eb086e49abec2be7368142c84cd98498916bc0655e96368c1c25da9aca04a771",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ItemUpgradeService.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ItemUpgradeService.cs",
+      "sha256": "eb086e49abec2be7368142c84cd98498916bc0655e96368c1c25da9aca04a771"
     },
     {
-      "sha256": "772d7d7a90032b62a70ee209cb50ca051efc02eb9e18a2061f57fdd19ebd3f91",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCardCostText.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCardCostText.cs",
+      "sha256": "772d7d7a90032b62a70ee209cb50ca051efc02eb9e18a2061f57fdd19ebd3f91"
     },
     {
-      "sha256": "f3d66a6c1c6f9a3771e112004dc00992c4dc69319913bd83924b4c854369beb9",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCardText.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCardText.cs",
+      "sha256": "f3d66a6c1c6f9a3771e112004dc00992c4dc69319913bd83924b4c854369beb9"
     },
     {
-      "sha256": "085adb1721c324af9a6a4646acf55d8366bc5e2c7199fe991ea457fbf166ad43",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCharacterBuilder.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCharacterBuilder.cs",
+      "sha256": "085adb1721c324af9a6a4646acf55d8366bc5e2c7199fe991ea457fbf166ad43"
     },
     {
-      "sha256": "586ebea1c83146dea734c1aef3c460c120ed48777490fc9a0e63d9125f0573b5",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCombatEquipment.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCombatEquipment.cs",
+      "sha256": "586ebea1c83146dea734c1aef3c460c120ed48777490fc9a0e63d9125f0573b5"
     },
     {
-      "sha256": "ba3596dc67f56ccebeedc01bc21d043281cdab28b736ef85642f0a7052097307",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCompressedSaveStorage.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCompressedSaveStorage.cs",
+      "sha256": "ba3596dc67f56ccebeedc01bc21d043281cdab28b736ef85642f0a7052097307"
     },
     {
-      "sha256": "b55c5071dc7092b936dca8b18d8d30994b9e1a24b13c0372aeb8ca5fe25f74e0",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalContentCatalog.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalContentCatalog.cs",
+      "sha256": "b55c5071dc7092b936dca8b18d8d30994b9e1a24b13c0372aeb8ca5fe25f74e0"
     },
     {
-      "sha256": "f457100f02ddb382fe4703351399b93f4ae8bf5f30a1ffb82f4420a4f3162646",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalContentValidation.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalContentValidation.cs",
+      "sha256": "f457100f02ddb382fe4703351399b93f4ae8bf5f30a1ffb82f4420a4f3162646"
     },
     {
-      "sha256": "a10da3f15426c5369acddff62f6f9461c2b8ce3bf821581ea018bd6166a3b88d",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopCombat.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopCombat.cs",
+      "sha256": "a10da3f15426c5369acddff62f6f9461c2b8ce3bf821581ea018bd6166a3b88d"
     },
     {
-      "sha256": "fcf73f7b4e9ee53e408dca7c244c1f84b133663a9cf83bc87a56541f8cecac08",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopRun.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopRun.cs",
+      "sha256": "fcf73f7b4e9ee53e408dca7c244c1f84b133663a9cf83bc87a56541f8cecac08"
     },
     {
-      "sha256": "0a793495758c71f9c56086f2c05d393e713ed025ad05debf05ffb0a5e53821b6",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopRun.Rooms.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCoopRun.Rooms.cs",
+      "sha256": "0a793495758c71f9c56086f2c05d393e713ed025ad05debf05ffb0a5e53821b6"
     },
     {
-      "sha256": "c407e631ee6ab48c2a3f732e01cb7f916330712b819b992ee47ab7b5b2a6bc4c",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCustomRunRules.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalCustomRunRules.cs",
+      "sha256": "c407e631ee6ab48c2a3f732e01cb7f916330712b819b992ee47ab7b5b2a6bc4c"
     },
     {
-      "sha256": "f2cc5e92d5fd81d59d7f768b7dae1d79228c4de31d0ad37bc43a8e5e34bd7f25",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalGameSession.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalGameSession.cs",
+      "sha256": "d805a5a035f8a55a81cea749339bf5cff4ee500d554b12789fdb4271b4f7e48d"
     },
     {
-      "sha256": "2e6855d854e085298e793a420f7fb34e6dda29424366be4f893b444a26bf60c9",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapKnowledge.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapKnowledge.cs",
+      "sha256": "2e6855d854e085298e793a420f7fb34e6dda29424366be4f893b444a26bf60c9"
     },
     {
-      "sha256": "53eac4817ce5c2d69b1f8fca911ed1e467fd5f6e57273b47b51fc98f094ea9dd",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapShape.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapShape.cs",
+      "sha256": "53eac4817ce5c2d69b1f8fca911ed1e467fd5f6e57273b47b51fc98f094ea9dd"
     },
     {
-      "sha256": "9d1487a0bca953af57532f1fa9e8f7441d4bd50d3756af6c7d40aaef67d92ed9",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapViewport.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalMapViewport.cs",
+      "sha256": "9d1487a0bca953af57532f1fa9e8f7441d4bd50d3756af6c7d40aaef67d92ed9"
     },
     {
-      "sha256": "744c9c57ce3e2657e4c033acba7ec8a27382854325a760bd18e765a2559f812d",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalModPacks.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalModPacks.cs",
+      "sha256": "744c9c57ce3e2657e4c033acba7ec8a27382854325a760bd18e765a2559f812d"
     },
     {
-      "sha256": "49f7a0e9564993980e4e31f3b358c15b61cdf4e89ade45eb206a13c2a4883780",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalModSources.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalModSources.cs",
+      "sha256": "49f7a0e9564993980e4e31f3b358c15b61cdf4e89ade45eb206a13c2a4883780"
     },
     {
-      "sha256": "e1febb0bc1437c101ae2c3c76462b89a2f05fe97d16d610438fdcce8bc2c0f78",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalPlayerProjection.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalPlayerProjection.cs",
+      "sha256": "e1febb0bc1437c101ae2c3c76462b89a2f05fe97d16d610438fdcce8bc2c0f78"
     },
     {
-      "sha256": "259a875fa38089f8fab6a0d4b918d3b70df348d9e9e3bd6d693c7667625a150c",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalPlayerSettings.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalPlayerSettings.cs",
+      "sha256": "259a875fa38089f8fab6a0d4b918d3b70df348d9e9e3bd6d693c7667625a150c"
     },
     {
-      "sha256": "37ced251c9aee660268a1e821840aaefcfa35c8239b0153ee6d09fa8da22d88d",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalProfile.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalProfile.cs",
+      "sha256": "37ced251c9aee660268a1e821840aaefcfa35c8239b0153ee6d09fa8da22d88d"
     },
     {
-      "sha256": "7102d4bced86241b1078338fa6386ebeed37f947028609692c7e10e70aa84126",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRewardAvailability.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRewardAvailability.cs",
+      "sha256": "7102d4bced86241b1078338fa6386ebeed37f947028609692c7e10e70aa84126"
     },
     {
-      "sha256": "0ef0b3f4affb7249857db9c112b891beb91747ccb20d0c151bfdea3722c3db68",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunContent.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunContent.cs",
+      "sha256": "0ef0b3f4affb7249857db9c112b891beb91747ccb20d0c151bfdea3722c3db68"
     },
     {
-      "sha256": "644da3f06a222e555a8764386836ca8c92e08370244468d6e6b31144b2a2d2e6",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunRules.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunRules.cs",
+      "sha256": "644da3f06a222e555a8764386836ca8c92e08370244468d6e6b31144b2a2d2e6"
     },
     {
-      "sha256": "db905a2fcc28e030600abf531227758ad2d887c47def97ed6b0955e626c374e8",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunServices.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunServices.cs",
+      "sha256": "db905a2fcc28e030600abf531227758ad2d887c47def97ed6b0955e626c374e8"
     },
     {
-      "sha256": "ac92a22a055a6cb13e9c237e8b0dcd6dfb2d4b06722d542c9a587be169ab8a70",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunSession.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalRunSession.cs",
+      "sha256": "ac92a22a055a6cb13e9c237e8b0dcd6dfb2d4b06722d542c9a587be169ab8a70"
     },
     {
-      "sha256": "b5d8a947caa63dbf59875112231354ee180cb79bf569f9ddc11bbf1b231a27f8",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveJournal.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveJournal.cs",
+      "sha256": "b5d8a947caa63dbf59875112231354ee180cb79bf569f9ddc11bbf1b231a27f8"
     },
     {
-      "sha256": "62e157b5388bb586f696c3c8cae3c9b3dbe9350a5a1132f4f9d632bf8d5cad95",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveSlots.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveSlots.cs",
+      "sha256": "84643c5fae6ce07462e91a548afcf709d3ff63c8f5ba4c2369fc356346ccb011"
     },
     {
-      "sha256": "79bcfe70308be1f695b8f6699cdbb36eafb033d5dd97d7e29beb101908c18016",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveStorage.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalSaveStorage.cs",
+      "sha256": "79bcfe70308be1f695b8f6699cdbb36eafb033d5dd97d7e29beb101908c18016"
     },
     {
-      "sha256": "cdbf08cc4c7ec1f79ab5a28e9ac5ad5610f1444a8e7195d2bc432af259222c1b",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalStartingOptions.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalStartingOptions.cs",
+      "sha256": "cdbf08cc4c7ec1f79ab5a28e9ac5ad5610f1444a8e7195d2bc432af259222c1b"
     },
     {
-      "sha256": "fb9c2b73090bc97202bef794e8f662073f6ec422dcb09e25847b4852558f9543",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/RandomStreams.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/OriginalWebSaveImport.cs",
+      "sha256": "1d59fd40c1ac5d288bf7524c1982af6081b2f41a6a0c378bc4b75f3840790ec2"
     },
     {
-      "sha256": "0fc5af48ff628d9fb598e47cdd3708b9ca9a062fde4a0be99bae44d8c1bcd729",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ResourceWallet.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/RandomStreams.cs",
+      "sha256": "fb9c2b73090bc97202bef794e8f662073f6ec422dcb09e25847b4852558f9543"
     },
     {
-      "sha256": "3870294db1320e20b18439ad76f2e6ed247883b272efa2aec82c7e6cd36975cb",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/StatusSystem.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/ResourceWallet.cs",
+      "sha256": "0fc5af48ff628d9fb598e47cdd3708b9ca9a062fde4a0be99bae44d8c1bcd729"
     },
     {
-      "sha256": "d13e858c5c170127226c66be550c4e65306119236fcdc4c01fe6c4a652002024",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/TagCatalog.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/StatusSystem.cs",
+      "sha256": "3870294db1320e20b18439ad76f2e6ed247883b272efa2aec82c7e6cd36975cb"
     },
     {
-      "sha256": "ec19e4b6e2e76c0eb2862c1a6d134c87abffc76ea01b0dc8e2649a21950b7f62",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponCardComposer.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/TagCatalog.cs",
+      "sha256": "d13e858c5c170127226c66be550c4e65306119236fcdc4c01fe6c4a652002024"
     },
     {
-      "sha256": "8fd5de0d20bf317dfb14dccc888b8a388d1b264a74945c00b7c8f09b3e4ded7c",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponCardProjection.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponCardComposer.cs",
+      "sha256": "ec19e4b6e2e76c0eb2862c1a6d134c87abffc76ea01b0dc8e2649a21950b7f62"
     },
     {
-      "sha256": "18eff84656de2c7d4f9efb42a8a2cde7caeca4ee11474189b7961aaa1ea77fef",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponLoadout.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponCardProjection.cs",
+      "sha256": "8fd5de0d20bf317dfb14dccc888b8a388d1b264a74945c00b7c8f09b3e4ded7c"
     },
     {
-      "sha256": "55f165bdde064a9379ca18ae4470a39fa93e1eba1a807fa79959e4245d8acab4",
-      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeightSystem.cs"
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeaponLoadout.cs",
+      "sha256": "18eff84656de2c7d4f9efb42a8a2cde7caeca4ee11474189b7961aaa1ea77fef"
+    },
+    {
+      "path": "Unity/Assets/AshenSpire/Runtime/Domain/Original/WeightSystem.cs",
+      "sha256": "55f165bdde064a9379ca18ae4470a39fa93e1eba1a807fa79959e4245d8acab4"
     }
   ],
-  "builtAtUtc": "2026-09-29T03:29:54.9083509Z",
-  "version": "0.0.27.0",
+  "unitySources": [
+    {
+      "path": "Unity/Assets/AshenSpire/Runtime/Presentation/Networking/NativeLanClient.cs",
+      "sha256": "34c4b39d3081984cac48fc34c745b018ec71883ffc874a9f87abeeeb187f22f7"
+    },
+    {
+      "path": "Unity/Assets/AshenSpire/Plugins/WebGL/NativeLan.jslib",
+      "sha256": "2aae39e529a00a87ea324ec1b68d945d209d03396b061621c6784609b2074633"
+    },
+    {
+      "path": "tools/NativeLan/Build-Companion.ps1",
+      "sha256": "0bab240a2d88b6a5f4463994168789527503ecbb145774e8b6a21ce7bc9e1c49"
+    }
+  ],
   "sourceHashNormalization": "utf8-lf",
-  "transportSources": [
-    {
-      "sha256": "7d788579e8286e68d2fb104000498c08789f0d94f6a74c27e26276e02056e922",
-      "path": "Transport/AshenSpire.Transport.csproj"
-    },
-    {
-      "sha256": "38fc5c15a5a23a42b96387b27c05662f8ee357ac04a6a820e211b553584ee232",
-      "path": "Transport/ILanGame.cs"
-    },
-    {
-      "sha256": "71b134ec80f56dde6567338d0fbadd8d34c9ae233a0ac22f334ab27f55a28685",
-      "path": "Transport/LanConnection.cs"
-    },
-    {
-      "sha256": "02429fad2ad6bd6138854d95d27633e143a20231e36cdc383d44d35a8f076fcf",
-      "path": "Transport/LanHost.cs"
-    },
-    {
-      "sha256": "3184239a9c03a7986c6db8ccf3081615a2a35512ba5eb415b91bcd7e0b47500d",
-      "path": "Transport/LanRoom.cs"
-    },
-    {
-      "sha256": "29f7f2cb4833be33d541e8fbc19bd7dd552ddd5a5e1b012706e1e6ca48fc1ef1",
-      "path": "Transport/LanStateStore.cs"
-    },
-    {
-      "sha256": "499bdba4b2511a6e464730ca1d5caafe1af76e71ef73d9be78b851eb10ec55a9",
-      "path": "Companion/AshenSpire.Companion.csproj"
-    },
-    {
-      "sha256": "7315ea02c6af36587143bb99987be6dc43257021b1c40f29735bfc39b7da5b3b",
-      "path": "Companion/OriginalLanGameFactory.cs"
-    },
-    {
-      "sha256": "654a7a6294b93b6fee34ba4b0de8b420d6fac98c8fe692927f18c443e8973051",
-      "path": "Companion/Program.cs"
-    },
-    {
-      "sha256": "dd48ba699d058aba4d7a8ab0de7e0d4067b7c476a873b9b5f9d2671ac10ced1f",
-      "path": "Packaging/README.txt"
-    },
-    {
-      "sha256": "25136475d73ff328646b2261a681e2fce0f042b65a4313e8bb81d57be5387a58",
-      "path": "Packaging/Start-Companion.cmd"
-    },
-    {
-      "sha256": "142bd8a118864e1c00652344a6643ab5d4e80f8a82fe630d2af92cf3dd01917c",
-      "path": "Packaging/Start-Companion.ps1"
-    },
-    {
-      "sha256": "446af3b683a8eb9f7b70bf4a66f68fbfd86bc95964ee66dfcd4098d4b74df53a",
-      "path": "Domain/AshenSpire.NativeDomain.csproj"
-    }
-  ],
   "files": [
     {
       "path": "AshenSpire.Companion.deps.json",
-      "sha256": "0b1bdd520f106a3bde5a47dd0d9751ffa4344af50f148a22815396090c789cf6",
+      "sha256": "ed2895a7a7f82a2c414348ada7feffd35c1a68854133770c1c5ad210b2889c16",
       "bytes": 51459
     },
     {
       "path": "AshenSpire.Companion.dll",
-      "sha256": "c1ca6f425af63d6f32f8e78cb19952824d9a292407cbc3a39fc5e712cc91d72d",
+      "sha256": "4fd74bd609d440706445f1c4af176b61e0ee623b86136802e10996b826544d9f",
       "bytes": 19968
     },
     {
       "path": "AshenSpire.Companion.exe",
-      "sha256": "ce05b3952c885d3ef8f70dd564574f50a0849726fbeeac02d4acbbc99d1c8145",
+      "sha256": "7127651b1dfec70637c44bc87ecb701238874ca9764254b4b66c92c31ecc6363",
       "bytes": 152064
     },
     {
       "path": "AshenSpire.Companion.pdb",
-      "sha256": "f9520c189580137f5da56d1df6574faf38eefc2c4643ce7d7787a318d123241e",
-      "bytes": 24272
+      "sha256": "472194d89c19a5a7db405b7cee4299aeb68cf422f2ce1800876c4041bfff8387",
+      "bytes": 24276
     },
     {
       "path": "AshenSpire.Companion.runtimeconfig.json",
@@ -341,23 +302,23 @@
     },
     {
       "path": "AshenSpire.NativeDomain.dll",
-      "sha256": "124235db4f2d372c635b6b4baf38158ff342b39f13e92a8ea94539f2901b05dd",
-      "bytes": 466944
+      "sha256": "38d7ed0af2d25b3eb4cb97510b63de0994c744440c7dcd1a9355202794d4d78f",
+      "bytes": 480768
     },
     {
       "path": "AshenSpire.NativeDomain.pdb",
-      "sha256": "a69607ec89815a029edb554d789678ce29e433eac30fc69c889c8d18d25bf9f6",
-      "bytes": 142368
+      "sha256": "4e399cdf738be99fd229895dfdffab79347012630be0b87e645ab5cf8771d8aa",
+      "bytes": 145008
     },
     {
       "path": "AshenSpire.Transport.dll",
-      "sha256": "73b23553612319d54e642889f963d9b7b97a31c44ec1057ba62900fe6fc3c3c4",
+      "sha256": "0e816972e912716956c6e8120b2875a4ef01965fffebf517c5718f1669f3a22d",
       "bytes": 48640
     },
     {
       "path": "AshenSpire.Transport.pdb",
-      "sha256": "6c2d1b8ab388d458c26a5b8ef853cdb999f45ba34ae8cc572b12e17ee0a2253a",
-      "bytes": 28560
+      "sha256": "fd4dd652ad64665cc709b97055c68a77510215201c365b114d1c8c1e234e2847",
+      "bytes": 28564
     },
     {
       "path": "aspnetcorev2_inprocess.dll",
@@ -2061,71 +2022,114 @@
     }
   ],
   "selfContained": true,
+  "sourceCommit": "4ce548942703636519d0ff093b8f95bbda6362c4",
+  "version": "0.0.28.0",
+  "buildNumber": 28,
+  "transportSources": [
+    {
+      "path": "Transport/AshenSpire.Transport.csproj",
+      "sha256": "7d788579e8286e68d2fb104000498c08789f0d94f6a74c27e26276e02056e922"
+    },
+    {
+      "path": "Transport/ILanGame.cs",
+      "sha256": "38fc5c15a5a23a42b96387b27c05662f8ee357ac04a6a820e211b553584ee232"
+    },
+    {
+      "path": "Transport/LanConnection.cs",
+      "sha256": "71b134ec80f56dde6567338d0fbadd8d34c9ae233a0ac22f334ab27f55a28685"
+    },
+    {
+      "path": "Transport/LanHost.cs",
+      "sha256": "02429fad2ad6bd6138854d95d27633e143a20231e36cdc383d44d35a8f076fcf"
+    },
+    {
+      "path": "Transport/LanRoom.cs",
+      "sha256": "3184239a9c03a7986c6db8ccf3081615a2a35512ba5eb415b91bcd7e0b47500d"
+    },
+    {
+      "path": "Transport/LanStateStore.cs",
+      "sha256": "29f7f2cb4833be33d541e8fbc19bd7dd552ddd5a5e1b012706e1e6ca48fc1ef1"
+    },
+    {
+      "path": "Companion/AshenSpire.Companion.csproj",
+      "sha256": "499bdba4b2511a6e464730ca1d5caafe1af76e71ef73d9be78b851eb10ec55a9"
+    },
+    {
+      "path": "Companion/OriginalLanGameFactory.cs",
+      "sha256": "7315ea02c6af36587143bb99987be6dc43257021b1c40f29735bfc39b7da5b3b"
+    },
+    {
+      "path": "Companion/Program.cs",
+      "sha256": "654a7a6294b93b6fee34ba4b0de8b420d6fac98c8fe692927f18c443e8973051"
+    },
+    {
+      "path": "Packaging/README.txt",
+      "sha256": "dd48ba699d058aba4d7a8ab0de7e0d4067b7c476a873b9b5f9d2671ac10ced1f"
+    },
+    {
+      "path": "Packaging/Start-Companion.cmd",
+      "sha256": "25136475d73ff328646b2261a681e2fce0f042b65a4313e8bb81d57be5387a58"
+    },
+    {
+      "path": "Packaging/Start-Companion.ps1",
+      "sha256": "142bd8a118864e1c00652344a6643ab5d4e80f8a82fe630d2af92cf3dd01917c"
+    },
+    {
+      "path": "Domain/AshenSpire.NativeDomain.csproj",
+      "sha256": "446af3b683a8eb9f7b70bf4a66f68fbfd86bc95964ee66dfcd4098d4b74df53a"
+    }
+  ],
+  "builtAtUtc": "2026-09-29T07:39:21.7288054Z",
+  "sourceWorktreeDirty": true,
+  "webBuildIncluded": false,
   "contentSources": [
     {
-      "sha256": "4678606b911c01257910ec7cd28f5880634fcc2704f761c221fc5ca82f5101a2",
-      "path": "GameContent/Unity/Original/appearance-options.json"
+      "path": "GameContent/Unity/Original/appearance-options.json",
+      "sha256": "4678606b911c01257910ec7cd28f5880634fcc2704f761c221fc5ca82f5101a2"
     },
     {
-      "sha256": "8c3e868a04c9c38b2749bb659b3cb40356dbb0d824746a30118d7ab47b95ef67",
-      "path": "GameContent/Unity/Original/content.json"
+      "path": "GameContent/Unity/Original/content.json",
+      "sha256": "8c3e868a04c9c38b2749bb659b3cb40356dbb0d824746a30118d7ab47b95ef67"
     },
     {
-      "sha256": "5023162267baea42a9cbfd2f8c5a1c4bc6189995fb7c92cd96896cf9c36659a4",
-      "path": "GameContent/Unity/Original/custom-run-options.json"
+      "path": "GameContent/Unity/Original/custom-run-options.json",
+      "sha256": "5023162267baea42a9cbfd2f8c5a1c4bc6189995fb7c92cd96896cf9c36659a4"
     },
     {
-      "sha256": "365f53be4eb8f9e20d4b96d6f44a88b166e4e6b044be35bcc40a9cdbcccfd4b7",
-      "path": "GameContent/Unity/Original/enemy-art.json"
+      "path": "GameContent/Unity/Original/enemy-art.json",
+      "sha256": "365f53be4eb8f9e20d4b96d6f44a88b166e4e6b044be35bcc40a9cdbcccfd4b7"
     },
     {
-      "sha256": "c32db4d93911f979ef4f174dce4467cb91f74bfccd2276a4dbf33296fa7109cf",
-      "path": "GameContent/Unity/Original/event-choices.json"
+      "path": "GameContent/Unity/Original/event-choices.json",
+      "sha256": "c32db4d93911f979ef4f174dce4467cb91f74bfccd2276a4dbf33296fa7109cf"
     },
     {
-      "sha256": "edea48b41304d940403116c3305b690981f1e68ba555fca4b9c12e9baeaadc18",
-      "path": "GameContent/Unity/Original/event-choices.receipt.json"
+      "path": "GameContent/Unity/Original/event-choices.receipt.json",
+      "sha256": "edea48b41304d940403116c3305b690981f1e68ba555fca4b9c12e9baeaadc18"
     },
     {
-      "sha256": "e4d6a5d400fba1550aec2b004762e11705096679421a89184831caac50324f1d",
-      "path": "GameContent/Unity/Original/manifest.json"
+      "path": "GameContent/Unity/Original/manifest.json",
+      "sha256": "e4d6a5d400fba1550aec2b004762e11705096679421a89184831caac50324f1d"
     },
     {
-      "sha256": "82a5a477d8eaa7ed05d4976f0b3e765ae45c0a08e4229b5bd25cd2076b85b935",
-      "path": "GameContent/Unity/Original/map-presentation.json"
+      "path": "GameContent/Unity/Original/map-presentation.json",
+      "sha256": "82a5a477d8eaa7ed05d4976f0b3e765ae45c0a08e4229b5bd25cd2076b85b935"
     },
     {
-      "sha256": "559d5b45910720cb623d89f2b3eafa8ff7da2b978db97533c8046bffdfabafad",
-      "path": "GameContent/Unity/Original/mechanics.json"
+      "path": "GameContent/Unity/Original/mechanics.json",
+      "sha256": "559d5b45910720cb623d89f2b3eafa8ff7da2b978db97533c8046bffdfabafad"
     },
     {
-      "sha256": "6f2a417a49f108c61a064182edc8144b67b3bc93f8009268ed56062a409eb599",
-      "path": "GameContent/Unity/Original/progression.json"
+      "path": "GameContent/Unity/Original/progression.json",
+      "sha256": "6f2a417a49f108c61a064182edc8144b67b3bc93f8009268ed56062a409eb599"
     },
     {
-      "sha256": "93a1c580e8fbd52bc5d6c8a5d03371ce32c5ee21dea17cc7c7e041c26e6ddc1d",
-      "path": "GameContent/Unity/Original/sprite-styles.json"
+      "path": "GameContent/Unity/Original/sprite-styles.json",
+      "sha256": "93a1c580e8fbd52bc5d6c8a5d03371ce32c5ee21dea17cc7c7e041c26e6ddc1d"
     },
     {
-      "sha256": "02cc1ba95cac13b8c084f3f1b986da2d02d81d7969a01e57bf4a5582291f7d82",
-      "path": "GameContent/Unity/Original/sprites.receipt.json"
+      "path": "GameContent/Unity/Original/sprites.receipt.json",
+      "sha256": "02cc1ba95cac13b8c084f3f1b986da2d02d81d7969a01e57bf4a5582291f7d82"
     }
-  ],
-  "runtime": "win-x64",
-  "sourceWorktreeDirty": true,
-  "unitySources": [
-    {
-      "sha256": "34c4b39d3081984cac48fc34c745b018ec71883ffc874a9f87abeeeb187f22f7",
-      "path": "Unity/Assets/AshenSpire/Runtime/Presentation/Networking/NativeLanClient.cs"
-    },
-    {
-      "sha256": "2aae39e529a00a87ea324ec1b68d945d209d03396b061621c6784609b2074633",
-      "path": "Unity/Assets/AshenSpire/Plugins/WebGL/NativeLan.jslib"
-    },
-    {
-      "sha256": "0bab240a2d88b6a5f4463994168789527503ecbb145774e8b6a21ce7bc9e1c49",
-      "path": "tools/NativeLan/Build-Companion.ps1"
-    }
-  ],
-  "webBuildIncluded": false
+  ]
 }

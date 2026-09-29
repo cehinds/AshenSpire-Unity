@@ -123,7 +123,7 @@ build and verify it. Completion selects `0.1.0.0`.
 User stories (open work, from the detailed checklist below):
 
 - [ ] **US-0.1** Obtain owner acceptance of the compiled 19-enemy portrait gallery and
-  extend actual solo/co-op encounter coverage. The build-22 catalog passes 78 checks.
+  extend actual solo/co-op encounter coverage. The build-28 catalog passes 78 checks with 38 phone/desktop captures; this does not replace encounter coverage or owner acceptance.
 - [ ] **US-0.2** Run current-source compiled Custom/Sealed/Draft/Endless interaction
   and save/resume checks.
 - [ ] **US-0.3** Check card numbers, target availability, affordability, rejection
@@ -134,7 +134,8 @@ User stories (open work, from the detailed checklist below):
 - [ ] **US-0.6** Profile corruption, quota exhaustion, upgrade coverage and original JavaScript save import.
   - [x] Owner requires import before Phase 1 completion (2026-09-28).
   - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 394 domain and 12 browser-adapter checks passed.
-  - [ ] Compiled import verification and broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
+  - [x] Build 28 compiled import verification: 36 phone/desktop checks and 16 native profile/slot regression checks.
+  - [ ] Broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
   archive hosting capacity without deleting archived players.

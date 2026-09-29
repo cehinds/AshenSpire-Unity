@@ -6,8 +6,9 @@ acceptance or physical-device certification.
 
 - [ ] **Phase 1 — Foundation (F00), target 0.1.0.0**
   - [x] Implement the native content/rules, save-slot and companion foundations.
-  - [x] Package build 27 and pass its 186 scoped compiled browser checks (build 26 has 337 historical checks).
+  - [x] Package build 28 and pass its 130 scoped compiled browser checks (build 27 has 186 historical checks).
   - [ ] US-0.1: complete encounter-art coverage and owner visual acceptance.
+    - [x] Build 28: all 19 painted portraits load in the compiled phone/desktop gallery (78 checks, 38 captures).
   - [ ] US-0.2: complete current-build custom-mode play and save/resume coverage.
     - [x] Build 27: Custom, Sealed, Draft and Endless setup, opening combat and exact reload (44 checks).
     - [ ] Full playthroughs and Endless later-act transition.
@@ -20,7 +21,8 @@ acceptance or physical-device certification.
     - [x] Actual build-26 browser save upgrades through the rename with exact state (8 checks).
     - [x] Owner requires original JavaScript save import before Phase 1 completion (2026-09-28).
     - [x] Initial map-checkpoint converter, preview and empty-slot commit implemented; 394 domain and 12 browser-adapter checks passed.
-    - [ ] Compiled import verification, broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
+    - [x] Build 28 compiled file/browser-slot import, preview, cancellation, duplicate refusal, exact reload and combat continuation: 36 checks; native profile/slot regression: 16 checks.
+    - [ ] Broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
   - [ ] US-0.8–0.10: hosted artifacts, appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**
@@ -45,8 +47,8 @@ acceptance or physical-device certification.
 
 No whole phase is currently signed off. The content/rules port, native runtime,
 save slots and companion pipeline are implemented components of Foundation.
-Build 27 is now the latest locally verified checkpoint, with 186 scoped compiled
-browser checks and all four matching packages; see [QA](qa/unity-build-27/README.md).
+Build 28 is the latest locally verified checkpoint, with 130 scoped compiled
+browser checks and all four matching packages; see [QA](qa/unity-build-28/README.md).
 
 The next milestone is Foundation acceptance. Build 27 completes the rename,
 first-visit guidance and focused opening-mode/upgrade checks. Continue the

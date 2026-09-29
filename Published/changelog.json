@@ -1,26 +1,23 @@
 {
   "Added": [
-    "Visible profile recovery and save-failure messages."
+    "Preview and import compatible original-game map checkpoints into an empty AshenedSpire slot.",
+    "Choose an exported JSON file or explicitly read one of the original browser slots."
   ],
   "Changed": [
-    "Solo, co-op, result history and map preferences share one profile recovery journal.",
-    "Failed saves retain in-memory progress for retry. Web storage uses compact encoding while retaining logical schemas and keys.",
-    "Validated historical Unity Web records compact through verified recovery copies; older players cannot decode compact records."
+    "Public download pages use the AshenedSpire name.",
+    "Original saved resources and supported equipment/stat rules remain attached to imported runs."
   ],
   "Fixed": [
-    "Damaged profiles no longer let title actions fail without a useful message.",
-    "Three complete Web slots and their backups fit the save budget; the compiled copy failure is covered by a regression test.",
-    "Repeated finished-run saves retry storage instead of falsely reporting success.",
-    "Map preferences remain pending after a failed write.",
-    "Audio and combat-control CI captures use their correct evidence folders."
+    "Duplicate, corrupt, oversized and unsupported imports are refused before replacing any saved climb."
   ],
   "KnownIssues": [
-    "Local candidate; owner acceptance and channel promotion remain pending.",
-    "Injected storage failures do not certify asynchronous Web quota handling or physical-device durability."
+    "Initial schema-5 map-save import only; profile, active-room and newer original schemas remain incomplete.",
+    "No owner acceptance or physical-device certification.",
+    "Other Foundation acceptance stories remain open."
   ],
   "WhatToTest": [
-    "Review all 19 painted portraits and provide visual acceptance or specific changes.",
-    "Open Collection, create and copy a climb, reload, then continue either saved slot.",
-    "Review co-op rejoin and saving on your target devices."
+    "Open Saved climbs, choose Import original-game save and preview a compatible schema-5 map checkpoint.",
+    "Cancel once, then import into an empty slot; reload and continue the climb.",
+    "Keep newer original saves in the original game until their expanded progression schema is supported."
   ]
 }

@@ -14,13 +14,11 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
-[original-game review](Unity-Upstream-Review.md). Build 27 is compiled, packaged and locally verified for branding, first-visit
-guidance, opening-mode/save upgrade and interaction checks. Foundation
-acceptance remains open; see [build-27 QA](qa/unity-build-27/README.md).
+[original-game review](Unity-Upstream-Review.md). Build 28 is compiled and packaged with 130 scoped browser checks. Its initial original-save importer preserves compatible map checkpoints. Foundation acceptance remains open; see [build-28 QA](qa/unity-build-28/README.md).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.28.0 · build 28 · Foundation in progress** source; compiled verification pending (`GameContent/Unity/version.json`). Build 27 remains the latest verified package. |
+| Version / build / stage | **0.0.28.0 · build 28 · Foundation in progress**, compiled and packaged (`GameContent/Unity/version.json`). |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -28,6 +26,21 @@ acceptance remains open; see [build-27 QA](qa/unity-build-27/README.md).
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Local build 28 original-save candidate
+
+- [ ] **Phase 1 — Foundation / US-0.6 original-save acceptance**
+  - [x] Schema-5 map-checkpoint import for all four baseline classes, preview and empty-slot commit.
+  - [x] Real original save-manager fixtures: 394 domain checks; browser adapter: 12 checks.
+  - [x] Compiled file/browser-slot import: 36 checks; native profile/slot persistence: 16 checks.
+  - [x] Four matching packages, source digest `f3de4f1487e5653fbc87932d05623326255e252d11275ebb5f654835c17ab05f`.
+  - [ ] Profile import, active rooms, newer original schemas and broader progressed-save compatibility.
+  - [ ] Full custom modes, multiplayer recovery, authoring/appearance matrices and owner acceptance.
+
+Original-game regression: 136 checks; original shipped/version checks: 6 and 8.
+Twelve current domain policy runs completed 160 fights with no errors, recording 12 defeats and zero victories. This is not balance or fun acceptance.
+
+The current importer refuses unsupported saves explicitly and preserves their original bytes. See [import checklist](Unity-Original-Save-Import.md) and [QA](qa/unity-build-28/README.md).
 
 ### Local build 27 foundation candidate
 
