@@ -72,6 +72,9 @@ static class ProfileImportChecks
         Check(conflictSlots.SaveProfile(changedProfile),"genuine concurrent progress persisted");
         Refuse(()=>conflictSlots.ImportWebProfile(catalog,before,imported),"genuine durable change still refuses stale import");
         Check(JToken.DeepEquals(conflictSlots.LoadProfile(catalog,out _).Snapshot(),changedProfile.Snapshot()),"concurrent progress survives refusal");
+        var latePreview=Import(text,current);
+        Refuse(()=>conflictSlots.ImportWebProfile(catalog,before,latePreview),"storage changed before preview still conflicts with the last loaded baseline");
+        Check(JToken.DeepEquals(conflictSlots.LoadProfile(catalog,out _).Snapshot(),changedProfile.Snapshot()),"pre-preview external progress is preserved");
         foreach(var failure in new[]{"write","flush","truncate"}){
             var store=new OriginalMemorySaveStorage();var armed=false;
             var faulty=new OriginalDelegateSaveStorage(store.Read,(key,value)=>{if(armed&&failure=="write")throw new IOException("full");store.Write(key,armed&&failure=="truncate"&&key.EndsWith("profile-import")?"bad":value);},()=>{if(armed&&failure=="flush")throw new IOException("full");store.Flush();},store.Delete);

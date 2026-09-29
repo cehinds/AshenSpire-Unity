@@ -2,6 +2,7 @@
 // co-op. One OriginalSaveSlots journal owns load, backup recovery and every write.
 using System;
 using AshenSpire.Domain.Original;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace AshenSpire.Application
@@ -11,6 +12,7 @@ namespace AshenSpire.Application
         private const string ProfileWriteFailure = "Your progress could not be saved. Keep this game open, free some storage, and try again. Saving will retry as you play.";
         private string _profileNotice;
         private bool _profileWritePending;
+        private JObject _profileStoredBaseline;
 
         private bool TryLoadOriginalProfile()
         {
@@ -19,6 +21,7 @@ namespace AshenSpire.Application
                 if (_originalContent == null) _originalContent = ModdedCatalog() ?? new OriginalContentCatalog(OriginalRules("content").ToString());
                 if (_profile != null) return true;
                 _profile = _slotSaves.LoadProfile(_originalContent, out var recovered);
+                _profileStoredBaseline = _profile.Snapshot();
                 if (recovered) _profileNotice = "Recovered your previous profile backup. More recent progress may be missing; the original record is preserved for recovery.";
                 return true;
             }
@@ -41,6 +44,7 @@ namespace AshenSpire.Application
 
         private void ProfileSaveResult(bool saved)
         {
+            if (saved && _profile != null) _profileStoredBaseline = _profile.Snapshot();
             if (!saved) _profileNotice = ProfileWriteFailure;
             else if (_profileWritePending) _profileNotice = null;
             _profileWritePending = !saved;

@@ -168,7 +168,9 @@ namespace AshenSpire.Application
                     var expected = _profile.Snapshot();
                     // Memory may include camera preferences awaiting a save retry.
                     // Guard both baselines separately; do not discard local changes.
-                    var expectedStored = _slotSaves.LoadProfile(catalog, out _).Snapshot();
+                    // Use the last successful load/write, not a fresh baseline
+                    // that could hide progress changed before this preview opened.
+                    var expectedStored = (JObject)(_profileStoredBaseline ?? throw new InvalidOperationException("Reopen your profile before importing.")).DeepClone();
                     var imported = OriginalWebProfileImport.Convert(text, catalog, _profile);
                     var source = imported.Snapshot()["originalProfileImport"]["original"];
                     var progress = imported.Snapshot()["progress"];
@@ -181,6 +183,7 @@ namespace AshenSpire.Application
                             if (!JToken.DeepEquals(_profile.Snapshot(), expected)) throw new InvalidOperationException("Your profile changed. Check the import again.");
                             if (!_slotSaves.ImportWebProfile(catalog, expectedStored, imported)) { ShowWebProfileImport("Profile import could not be saved. Free some storage and retry. Your existing progress is unchanged."); return; }
                             _profile = imported;
+                            ProfileSaveResult(true);
                             ShowSaveSlots("Original profile progress imported. Open Chronicle or Collection to see it.");
                         }
                         catch (Exception error) { ShowWebProfileImport("Import refused: " + error.Message); }
