@@ -192,6 +192,10 @@ jobs:
             name: Exercise the packaged game with real pointer input
             run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
             evidence: TestResults/Browser
+          - id: legacy-footer
+            name: Reach and use the legacy flask above the action bar in portrait and landscape
+            run: node tools/legacy-footer-playtest.cjs http://127.0.0.1:8787 TestResults/LegacyFooter
+            evidence: TestResults/LegacyFooter
           - id: foundation
             name: Exercise original foundation controls and compiled map parity
             run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
