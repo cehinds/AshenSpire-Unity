@@ -1,10 +1,22 @@
-# Continue here: Unity port handoff
+# Continue here: AshenedSpire Unity handoff
+
+Owner reporting preference (2026-09-28): use nested checkbox lists for progress
+and status, grouped by core phase with user-story subitems. Check only the
+specific completed item; keep a parent phase unchecked until all its acceptance
+is complete. Distinguish implemented source, compiled validation and owner
+acceptance. Carry this format into future updates and handoffs.
 
 Read this first if you are an agent (or person) picking up the Unity port with
 no other context. Then read [AGENTS.md](../AGENTS.md) (one page, the rules) and
 the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
+
+The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
+remains AshenSpire. See [core phases](Unity-Milestones.md) and the
+[original-game review](Unity-Upstream-Review.md). Build 27 is being compiled and
+validated for the rename and first-visit guidance; build 26 remains the last
+fully packaged checkpoint until the new receipts pass.
 
 | | |
 |---|---|
