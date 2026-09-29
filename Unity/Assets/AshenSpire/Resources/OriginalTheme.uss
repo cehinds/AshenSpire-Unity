@@ -31,7 +31,9 @@
 .original-menu-entry.title-primary:hover { background-color: #f0cc8c; }
 .title-menu-grid { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
 .title-menu-grid > .button { width: 48.5%; min-width: 0; }
-.large-text .title-menu-grid { flex-direction: column; }
+.large-text .body.title-screen { flex-grow: 0; flex-shrink: 0; justify-content: flex-start; }
+.large-text .original-title { flex-shrink: 0; }
+.large-text .title-menu-grid { flex-direction: column; flex-wrap: nowrap; flex-shrink: 0; }
 .large-text .title-menu-grid > .button { width: 100%; }
 .original-ornament { flex-direction: row; align-items: center; margin: 18px 0; }
 .original-rule { height: 1px; background-color: #5f6349; flex-grow: 1; }
