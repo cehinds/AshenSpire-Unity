@@ -126,7 +126,10 @@ namespace AshenSpire.Application
                 {
                     var target = _slotSaves.List().FirstOrDefault(s => s.State == OriginalSaveSlotState.Empty);
                     if (target == null) throw new InvalidOperationException("All slots are occupied. Free a slot from Saved climbs before importing.");
-                    var snapshot = OriginalWebSaveImport.Convert(text, _originalContent, OriginalRules("event-choices"), OriginalRules("mechanics"), OriginalRules("progression"));
+                    // An imported checkpoint freezes the shipped original catalog;
+                    // currently selected desktop mods must not retune it implicitly.
+                    var importCatalog = new OriginalContentCatalog(OriginalRules("content").ToString());
+                    var snapshot = OriginalWebSaveImport.Convert(text, importCatalog, OriginalRules("event-choices"), OriginalRules("mechanics"), OriginalRules("progression"));
                     var run = snapshot["run"];
                     var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\nDestination: Slot " + (target.Slot + 1);
                     _previewWebImport = null;
