@@ -14,7 +14,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
-[original-game review](Unity-Upstream-Review.md). Build 28 is compiled and packaged with 130 scoped browser checks. Its initial original-save importer preserves compatible map checkpoints. Foundation acceptance remains open; see [build-28 QA](qa/unity-build-28/README.md).
+[original-game review](Unity-Upstream-Review.md). Build 28 is compiled and packaged with 879 scoped browser checks. Its initial original-save importer preserves compatible map checkpoints. Foundation acceptance remains open; see [build-28 QA](qa/unity-build-28/README.md).
 
 | | |
 |---|---|
@@ -42,6 +42,7 @@ The attempted public deployment failed its 950 MiB size guard and preserved the 
   - [x] Schema-5 map-checkpoint import for all four baseline classes, preview and empty-slot commit.
   - [x] Real original save-manager fixtures: 394 domain checks; browser adapter: 12 checks.
   - [x] Compiled file/browser-slot import: 36 checks; native profile/slot persistence: 16 checks.
+  - [x] Full compiled standard campaign replay: 749 checks, ending at its recorded terminal result.
   - [x] Four matching packages, source digest `f3de4f1487e5653fbc87932d05623326255e252d11275ebb5f654835c17ab05f`.
   - [ ] Profile import, active rooms, newer original schemas and broader progressed-save compatibility.
   - [ ] Full custom modes, multiplayer recovery, authoring/appearance matrices and owner acceptance.

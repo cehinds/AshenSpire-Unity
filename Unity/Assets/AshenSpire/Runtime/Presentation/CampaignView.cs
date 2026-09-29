@@ -401,6 +401,7 @@ namespace AshenSpire.Presentation
             flask.SetEnabled(s.Potions > 0 && s.Health < s.MaxHealth);
             var actions = new VisualElement();
             actions.AddToClassList("actions");
+            _body.AddToClassList("has-fixed-actions");
             actions.Add(play);
             actions.Add(Control("end-turn", "End turn", () => EndTurnRequested?.Invoke()));
             _root.Add(actions);
@@ -432,6 +433,7 @@ namespace AshenSpire.Presentation
         {
             var actions = new VisualElement();
             actions.AddToClassList("actions");
+            _body.AddToClassList("has-fixed-actions");
             actions.Add(Control("inspection-back", "Return to combat", () => Render(session), "primary"));
             _root.Add(actions);
             Report();

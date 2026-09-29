@@ -33,9 +33,12 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  async function scroll(distance){
   const beforeScroll=layout;
   const box=await page.locator('#unity-canvas').boundingBox();
-  if(!touch){await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
+  // Scroll the outer gutter. Sliders and nested control groups consume wheel
+  // or drag input at the centre, changing a setting or trapping navigation.
+  const x=box.x+6;
+  if(!touch){await page.mouse.move(x,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
   const contentHeight=box.height-(controls?.Controls.some(c=>c.Id==='end-turn'||c.Id==='inspection-back')?110:0);
-  const x=box.x+box.width/2,start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
+  const start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start}]});
   await renderedTouchFrame();
   for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await renderedTouchFrame();}
@@ -95,7 +98,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  async function click(id,changesState=false,playEnabled=true){
   if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
-  for(let attempt=0;attempt<24;attempt++){
+  for(let attempt=0;attempt<64;attempt++){
    const canvas=await page.locator('#unity-canvas').boundingBox();
    const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
    const x=canvas.x+(control.X+control.Width/2)*canvas.width/controls.PanelWidth;const y=canvas.y+(control.Y+control.Height/2)*canvas.height/controls.PanelHeight;

@@ -7,6 +7,7 @@ Foundation development candidate, version **0.0.28.0**. Phase 1 is not complete.
   - [x] 394 import/parity/storage checks, 12 browser-adapter checks and 126 Unity-reference checks (three documented reference API gaps).
   - [x] Original-save file and browser-slot import: 36 compiled browser checks.
   - [x] Native profile and three-slot persistence: 16 compiled browser checks.
+  - [x] Compiled full campaign replay: 749 compiled browser checks.
   - [x] Compiled 19-enemy portrait gallery: 78 compiled browser checks.
   - [x] Four matching download packages, verified against SHA-256 receipts.
   - [ ] Original profile and active-room import; newer original-game schemas and broader progressed-save compatibility.

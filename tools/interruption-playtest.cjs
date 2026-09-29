@@ -26,10 +26,10 @@ async function tap(p){
 async function click(id,changesState=false){
   if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
  await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled),'enabled '+id);
- for(let i=0;i<24;i++){
+ for(let i=0;i<64;i++){
   const p=await point(id),box=await canvas();
   const bottom=box.y+box.height-(['play','end-turn','inspection-back','return-to-game'].includes(id)?5:controls.Controls.some(x=>x.Id==='end-turn'||x.Id==='inspection-back')?105:20);
-  if(p.y<box.y+25||p.y>bottom){const old=layout;await game('Input.dispatchMouseEvent',{type:'mouseWheel',x:box.x+box.width/2,y:box.y+box.height/2,deltaX:0,deltaY:p.y<box.y+25?-400:400});await until(()=>layout>old,'scroll');await sleep(300);continue;}
+  if(p.y<box.y+25||p.y>bottom){const old=layout;await game('Input.dispatchMouseEvent',{type:'mouseWheel',x:box.x+6,y:box.y+box.height/2,deltaX:0,deltaY:p.y<box.y+25?-400:400});await until(()=>layout>old,'scroll');await sleep(300);continue;}
   const old=changesState?revision:layout;lastInput={id,...p};await tap(p);await until(()=>(changesState?revision:layout)>old,'response '+id);await sleep(250);return;
  }throw Error('Cannot reach '+id);
 }
@@ -105,7 +105,9 @@ function evidence(success){return {success,checks,seedPixels,seedCampaigns,layou
  if(process.argv.includes('--slow-input'))await game('Emulation.setCPUThrottlingRate',{rate:6});
  await game('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:seedOnly?3:1,mobile:false});
  await game('Page.navigate',{url:process.argv[2]||'http://127.0.0.1:8787/'});
- await until(()=>controls?.Controls.some(x=>x.Id==='native-new'),'Unity ready',120000);
+ await until(()=>controls?.Controls.some(x=>x.Id==='native-welcome-continue'||x.Id==='native-new'),'Unity welcome or title',120000);
+ if(controls.Controls.some(x=>x.Id==='native-welcome-continue'))await click('native-welcome-continue');
+ await until(()=>controls?.Controls.some(x=>x.Id==='native-new'),'Unity title');
  const other=(await send('Target.createTarget',{url:'about:blank',background:true})).targetId;
  async function hide(){await send('Target.activateTarget',{targetId:other});await until(async()=>await read('document.visibilityState')==='hidden','real hidden document');visibility.push('hidden');}
  async function foreground(){await send('Target.activateTarget',{targetId:target});await game('Page.bringToFront');await until(async()=>await read('document.visibilityState')==='visible','real visible document');visibility.push('visible');}
