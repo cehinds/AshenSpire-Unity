@@ -56,6 +56,7 @@ function result(success) { return { success, checks, screenshots, errors, creati
   await page.goto(process.argv[2] || 'http://127.0.0.1:8792/');
   await page.waitForFunction(() => !!window.unityInstance, null, { timeout: 120000 });
   await until(() => controls?.Controls.length, 'Unity controls');
+  if (controls.Controls.some(c => c.Id === 'native-welcome-continue' && c.Enabled)) await click('native-welcome-continue');
   await shot('01-phone-title'); await click('foundation'); await until(() => creations.length > 0, 'original creation');
   // Owner, 2026-09-24: two modes on the lean scale. Standard (the default) opens on the class preset
   // with nothing unspent; Assign points opens at all 1s with the configured pool (3) to place.

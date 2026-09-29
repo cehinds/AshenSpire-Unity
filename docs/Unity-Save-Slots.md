@@ -1,6 +1,15 @@
 # Unity save slots and profile archive (F10)
 
-**Integration status: wired; compile-verified against Unity reference assemblies; needs editor play test.**
+**Integration status: build 25 compiled save-recovery candidate; acceptance remains open.**
+
+The current storage suite passes 148 checks, including thrown I/O failures,
+partial writes, recovery, repeated result saves, real authored-record capacity,
+legacy compaction and interrupted encoding upgrades. The Unity-compiled
+controller/view fixtures pass 36 checks using isolated storage. Build 24's
+compiled browser checks already cover combat checkpoint restoration. The first
+build-25 browser test reproduced a slot-copy failure at the Web storage limit;
+the corrected compact-storage player passes the all-three-slot browser check. See [build-25 QA](qa/unity-build-25/README.md). These checks do not prove
+physical-device durability or asynchronous browser storage quota handling.
 
 ## What this is, in plain words
 
@@ -10,8 +19,8 @@ kept only one run per channel (Web, Dev, Test, desktop).
 
 The Unity build now has three run slots and the result archive. The title
 screen has a **Load** entry that opens the slot picker; **Continue** and **New**
-work as before when you only have one run. It compiles against Unity's reference
-assemblies but has not yet been played in the Unity editor or a built player.
+work as before when you only have one run. Normal save/reload has been exercised
+in compiled browser players; see the source-specific receipts in `docs/qa`.
 
 On screen:
 
@@ -26,7 +35,12 @@ On screen:
   ask for confirmation first.
 - **Collection** (the existing profile view) lists the last 20 finished climbs,
   newest first.
-- If a save does not verify, the next title or slot screen says so.
+- If a save fails, the current game shows a warning and retains in-memory
+  progress for retry. Keep the game open while freeing storage. A verified
+  retry clears the failure warning.
+- An unreadable profile leaves its records untouched and returns a useful
+  title message. A recovered backup is identified explicitly; recent progress
+  may be missing.
 
 What the new code already does:
 
@@ -36,13 +50,15 @@ What the new code already does:
   that already holds a run unless you explicitly ask it to.
 - **Your existing run is kept.** The first time the new code starts on a device,
   the one run saved by the current build is copied into slot 0 exactly as it
-  was, together with its previous checkpoint. The old save is left in place, so
-  an older build can still open it. This happens once; deleting slot 0 later
-  does not bring the old run back.
+  was, together with its previous checkpoint. Historical records stay under
+  their old keys. On Web, validated records can be compacted without changing
+  their decoded bytes; compact records require this build or a newer compatible
+  player. Migration happens once; deleting slot 0 later does not bring it back.
 - **Saves are checked after writing.** Every save is read back and compared. If
-  the stored bytes do not match (full storage, interrupted write), the slot keeps
-  its previous good save and the save reports failure instead of pretending it
-  worked.
+  the stored bytes do not match or storage throws, the journal reports failure
+  and attempts to restore the old primary. A surviving backup is not rolled
+  back or deleted. Restoration can itself fail while storage is unavailable;
+  the in-memory snapshot remains available for retry.
 - **Damaged saves are never thrown away.** A slot whose latest save is damaged
   opens its previous checkpoint. A damaged save that gets overwritten is first
   set aside under its own key. A slot with nothing readable says so and keeps the
@@ -50,9 +66,34 @@ What the new code already does:
 - **Last 20 results.** Finishing a run adds its result to the profile. Only the
   20 newest results are kept (oldest leaves first), each labelled with its run
   ID. Win/run totals and unlocks keep counting past 20. Recording the same run
-  twice does nothing.
+  twice does not count it again, but still retries the verified profile write.
 - **Your profile carries over.** The profile uses the same storage key as
   before, so existing unlocks and history are unaffected.
+- **One profile journal.** Solo, co-op, result recording and map preferences
+  share the same journal instance, preserving the recovery state. A primary
+  rejected for an unsupported schema is quarantined even if its checksum is
+  valid. Logical record schemas and keys are unchanged.
+
+### Web storage encoding and compatibility
+
+Unity limits Web PlayerPrefs to [1 MiB](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/PlayerPrefs.html).
+One actual authored slot, backup and copy occupied 1,078,215 UTF-8 bytes before
+compression, reproducing the compiled failure. Web native storage now uses an
+`ASZ1:` gzip/base64 encoding for large values, with bounded decoding. Plain
+records remain readable. Native Windows and Android storage is unchanged.
+
+The capacity fixture stores three complete slots and backups plus 20 results
+in **454,290 bytes**. A migration fixture retains both historical records along
+with all three slots/backups and a profile in **604,139 bytes**. Validated
+historical records use a verified temporary encoding copy before replacement;
+interrupted upgrades retry, unreadable records stay untouched, and conflicting
+valid copies are preserved instead of choosing one. These are representative
+authored fixtures, not an unlimited-storage guarantee.
+
+**Older players cannot decode compact Web records.** Keep using this corrected
+build or a newer compatible player after it updates Web saves. This changes
+the storage encoding, not gameplay snapshots, checksums or profile rules. It
+does not import saves from the original JavaScript game.
 
 ## For developers
 

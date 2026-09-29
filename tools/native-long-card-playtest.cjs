@@ -16,7 +16,20 @@ let browser,ui;
   const consolePath=path.join(ui.output,'console.ndjson');page.on('console',m=>fs.appendFileSync(consolePath,JSON.stringify({type:m.type(),text:m.text()})+'\n'));
   await ui.open(url);const stamp=JSON.parse(fs.readFileSync(path.join(ui.output,'build-source.json')));ui.check(stamp.sourceDigest===expectedDigest,'source matches designated compiled build');
   await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
-  const card=ui.state.cards.find(row=>row.card.id==='gorefireSlash'||row.card.name==='Gorefire Slash');ui.check(!!card,'authored Gorefire Slash is in starting hand');
+  const signature=()=>ui.state.cards.find(row=>row.card.id==='gorefireSlash'||row.card.name==='Gorefire Slash');
+  ui.check(ui.state.run.deck.some(row=>row.cardId==='gorefireSlash'),'authored Gorefire Slash is in the real starting deck');
+  // The current starting draw is smaller than the old fixture's. Reach the
+  // signature through actual defensive play and draws, never an injected hand.
+  for(let turn=0;turn<3&&!signature();turn++){
+   for(let action=0;action<3&&!signature();action++){
+    const guard=ui.state.cards.find(row=>row.card.id==='technique'||row.card.id==='defend');
+    if(!guard)break;await ui.click('native-card-'+guard.instance.instanceId);
+    if(!ui.has('native-play'))break;await ui.command('native-play');
+   }
+   if(signature())break;await ui.command('native-end-turn');
+   ui.check(ui.state.phase==='Combat','defensive draw sequence stays in combat');
+  }
+  const card=signature();ui.check(!!card,'normal play draws the authored Gorefire Slash');
   const id='native-card-'+card.instance.instanceId;await ui.click(id);ui.check(ui.has('native-play'),'selected Gorefire Slash is affordable');
   const initialState=JSON.stringify(ui.state),snapshots=[];
   const measure=async label=>{

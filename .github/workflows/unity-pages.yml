@@ -98,6 +98,28 @@ jobs:
       # style fails loudly until it has its own row here.
       matrix:
         include:
+          - id: native-audio
+            name: Verify interface and combat audio levels, mute and reload in the compiled player
+            run: node tools/native-audio-playtest.cjs http://127.0.0.1:8787 TestResults/NativeAudio
+            evidence: TestResults/NativeAudio
+          - id: native-combat-tools-320x640
+            name: Verify solo combat inspection and keyboard controls (320x640)
+            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=0/2
+            evidence: TestResults/NativeCombatTools
+          - id: native-combat-tools-1440x900
+            name: Verify solo combat inspection and keyboard controls (1440x900)
+            run: node tools/native-combat-tools-playtest.cjs http://127.0.0.1:8787 TestResults/NativeCombatTools --case=1/2
+            evidence: TestResults/NativeCombatTools
+          - id: native-save-recovery
+            name: Verify compiled profile navigation, slot copies and checkpoint restoration
+            run: node tools/native-save-recovery-playtest.cjs http://127.0.0.1:8787 TestResults/NativeSaveRecovery
+            evidence: TestResults/NativeSaveRecovery
+          - id: native-original-save-import
+            name: Verify original-save file and browser-slot import in the compiled player
+            run: |
+              node tools/unity-web-save-fixtures.mjs TestResults/WebImportFixtures
+              node tools/native-web-import-playtest.cjs http://127.0.0.1:8787 TestResults/NativeWebImport TestResults/WebImportFixtures
+            evidence: TestResults/NativeWebImport
           - id: native-map-320x640
             name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
             run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
@@ -170,6 +192,10 @@ jobs:
             name: Exercise the packaged game with real pointer input
             run: node tools/campaign-playtest.cjs http://127.0.0.1:8787 TestResults/Browser --full
             evidence: TestResults/Browser
+          - id: legacy-footer
+            name: Reach and use the legacy flask above the action bar in portrait and landscape
+            run: node tools/legacy-footer-playtest.cjs http://127.0.0.1:8787 TestResults/LegacyFooter
+            evidence: TestResults/LegacyFooter
           - id: foundation
             name: Exercise original foundation controls and compiled map parity
             run: node tools/foundation-playtest.cjs http://127.0.0.1:8787 TestResults/Foundation
@@ -309,6 +335,8 @@ jobs:
         run: node tools/unity-package.mjs --check
       - name: Verify immutable build history and channel membership
         run: node tools/unity-build-history.test.mjs
+      - name: Verify source-matched later review evidence
+        run: node tools/unity-build-reviews.test.mjs
       - name: Verify shared channel runtime and evidence storage
         run: node tools/unity-channel-storage.test.mjs
       - name: Verify immutable archive hosting

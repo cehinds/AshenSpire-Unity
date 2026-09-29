@@ -3,6 +3,39 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.28.1 · build 29 · 2026-09-29
+
+- F00 US-0.3: keep the legacy combat flask and inspection content above the fixed action bar.
+
+## 0.0.28.0 · build 28 · 2026-09-28
+
+- Add original-game map-save import with preview, empty-slot protection, frozen rules and browser file/slot reads; broader import and Foundation acceptance remain open.
+- Add original-engine card parity, invalid-save, duplicate and failed-storage checks plus a compiled browser import test.
+
+## 0.0.27.0 · build 27 · 2026-09-29
+
+- F00 US-0.4: AshenedSpire branding, welcome and in-game guide; current-build Foundation validation
+
+## 0.0.26.0 · build 26 · 2026-09-29
+
+- Refine title, settings, collection and combat presentation for desktop and phone.
+
+## 0.0.25.0 · build 25 · 2026-09-28
+
+- F00/F10: Preserve damaged profiles, report storage failures and retry finished-run saves. Compact Web records fit all three slots and backups, with verified recovery during legacy Unity record conversion. Compact records require build 25 or newer; owner acceptance remains open.
+
+## 0.0.24.0 · build 24 · 2026-09-28
+
+- F00 US-0.3: Combat pile inspection, retained-card discard choices and saved solo keyboard bindings; compiled acceptance in progress.
+
+## 0.0.23.0 · build 23 · 2026-09-28
+
+- Independent interface audio, live volume and sound previews
+
+## 0.0.22.0 · build 22 · 2026-09-27
+
+- Connect live audio and feedback settings; import music and add compiled enemy portrait review
+
 ## 0.0.21.0 · build 21 · 2026-09-25
 
 - F02 US-2.2 / F03: lean stat scale (ruleset 6, ratings, item weight scale), Standard and Assign-points creation modes, web solo hand rules with per-class opening hands of 4-6 (owner 2026-09-24/25)

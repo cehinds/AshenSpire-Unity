@@ -32,10 +32,14 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  }
  async function scroll(distance){
   const beforeScroll=layout;
+  const settingsLabels=controls?.Controls.some(c=>c.Id==='volume-master')?JSON.stringify(controls.Labels):null;
   const box=await page.locator('#unity-canvas').boundingBox();
-  if(!touch){await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
+  // Scroll the outer gutter. Sliders and nested control groups consume wheel
+  // or drag input at the centre, changing a setting or trapping navigation.
+  const x=box.x+6;
+  if(!touch){await page.mouse.move(x,box.y+box.height/2);await page.mouse.wheel(0,distance);return;}
   const contentHeight=box.height-(controls?.Controls.some(c=>c.Id==='end-turn'||c.Id==='inspection-back')?110:0);
-  const x=box.x+box.width/2,start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
+  const start=box.y+contentHeight*(distance>0?.8:.2),end=box.y+contentHeight*(distance>0?.2:.8);
   await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start}]});
   await renderedTouchFrame();
   for(let step=1;step<=10;step++){await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*step/10}]});await renderedTouchFrame();}
@@ -60,7 +64,8 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   let signature=JSON.stringify(controls),stableSince=Date.now();
   await until(()=>{const next=JSON.stringify(controls);if(next!==signature){signature=next;stableSince=Date.now();}return Date.now()-stableSince>=500;},'settled touch scroll');
   assert(JSON.stringify(state)===beforeStop&&controls.Controls.map(c=>c.Id).join('|')===beforeIds,'padding stop changed game state or navigation');
-  scrollStops.push({x:stopX,y:stopY,stateUnchanged:true,controlsUnchanged:true});
+  if(settingsLabels!==null)assert(JSON.stringify(controls.Labels)===settingsLabels,'touch scrolling changed a setting');
+  scrollStops.push({x:stopX,y:stopY,stateUnchanged:true,controlsUnchanged:true,settingsUnchanged:settingsLabels!==null?true:null});
  }
  let controls,state,revision=0,layout=0,layoutAtState=0;const errors=[],shots=[],feedbackEvents=[],soundEvents=[],impactCaptures=[];let captureNextImpact=null;
  const normalizeControls=controlReportsForPage(page,e=>errors.push(e));
@@ -80,7 +85,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url='http://127.0.0.1:'+server.address().port+'/';
  }
  async function until(predicate,description,timeout=15000){const end=Date.now()+timeout;while(Date.now()<end){if(predicate())return;await page.waitForTimeout(100);}throw new Error('Timed out: '+description);}
- async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');}
+ async function load(){controls=null;await page.goto(url);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:90000});await until(()=>controls?.Controls.length,'control layout');if(controls.Controls.some(c=>c.Id==='native-welcome-continue'&&c.Enabled))await click('native-welcome-continue');}
  // Unity applies browser resize and UI Toolkit geometry over separate frames.
  // Wait for the new aspect ratio and stable bounds, never for a passing size assertion.
  const viewportEvidence=[];
@@ -95,7 +100,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  async function click(id,changesState=false,playEnabled=true){
   if (["new","continue","gallery","foundation"].includes(id) && controls?.Controls.some(c=>c.Id==="title-extras")) await click("title-extras");
   await until(()=>controls?.Controls.some(x=>x.Id===id&&x.Enabled&&x.Width>0&&x.Height>0),'enabled control '+id);
-  for(let attempt=0;attempt<24;attempt++){
+  for(let attempt=0;attempt<64;attempt++){
    const canvas=await page.locator('#unity-canvas').boundingBox();
    const control=controls.Controls.find(x=>x.Id===id);if(!control?.Enabled)throw new Error('Disabled control: '+id);
    const x=canvas.x+(control.X+control.Width/2)*canvas.width/controls.PanelWidth;const y=canvas.y+(control.Y+control.Height/2)*canvas.height/controls.PanelHeight;
@@ -117,7 +122,17 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
   assert(JSON.stringify(state)===before&&revision===beforeRevision,id+' changed campaign state');
  }
  const firstLoadStarted=Date.now();await load();const firstLoadMilliseconds=Date.now()-firstLoadStarted;
- const expectedVersion=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../Published/build.json'),'utf8')).version;
+ // The source version is authoritative for both a fresh preview and its later
+ // matching package. Published can still contain the previous build during export.
+ const expectedBuild=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../GameContent/Unity/version.json'),'utf8'));
+ const expectedVersion=expectedBuild.Version;
+ if(upgradeIndex<0){
+  const source=await page.request.get(new URL('build-source.json',url).href);
+  assert(source.ok(),'compiled campaign source receipt is available');
+  const stamp=await source.json();
+  assert(stamp.version===expectedVersion&&stamp.buildNumber===expectedBuild.BuildNumber,'compiled campaign receipt differs from the declared source version');
+  fs.writeFileSync(path.join(output,'build-source.json'),await source.body());
+ }
  const previousVisibleVersion=await page.locator('#channel').innerText();
  if(upgradeIndex<0)assert(previousVisibleVersion.endsWith('UNITY '+expectedVersion),'visible build version differs from package');
  const downloadedResourceBytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,item)=>sum+(item.encodedBodySize||0),0));
@@ -215,7 +230,7 @@ let browser,activePage,evidenceDirectory,lastEvidence,server,lastInput;const scr
  await shot('21-draw-pile');await click('inspection-back');assert(JSON.stringify(state)===beforePile&&revision===beforePileRevision,'draw grouping changed state');
  await inspect('draw-pile','Draw order stays hidden.');
  await resize(390,844);
- const beforePlay=JSON.stringify(state);const first=controls.Controls.find(x=>x.Id.startsWith('card-')&&x.Enabled);await click(first.Id);await shot('05-card-selected');if(upgradeIndex<0)captureNextImpact='26-action-impact';await click('play',true);if(upgradeIndex<0){await until(()=>feedbackEvents.some(e=>e.Status==='completed'),'first feedback settled');await Promise.all(impactCaptures);assert(feedbackEvents.some(e=>e.Status==='impact'&&Math.abs(e.PlayerX)>0),'normal feedback did not move');}
+ const beforePlay=JSON.stringify(state);const attackIndex=state.Hand.findIndex(id=>authoredContent.Cards.find(c=>c.Id===id).Tags.includes('attack'));assert(attackIndex>=0,'movement probe needs an attack card');await click('card-'+attackIndex);await shot('05-card-selected');if(upgradeIndex<0)captureNextImpact='26-action-impact';await click('play',true);if(upgradeIndex<0){await until(()=>feedbackEvents.some(e=>e.Status==='completed'),'first feedback settled');await Promise.all(impactCaptures);assert(feedbackEvents.some(e=>e.Status==='impact'&&Math.abs(e.PlayerX)+Math.abs(e.EnemyX)>0),'normal feedback did not move');}
  const commandsChangedState=beforePlay!==JSON.stringify(state);await shot('06-card-played');
  await inspect('discard-pile','cards · grouped by name','22-discard-pile');
  await inspect('action-history','energy spent.','23-action-history');

@@ -5,8 +5,8 @@
 // restore path before accepting a record. Corrupt bytes remain untouched;
 // recovery never replaces the surviving backup.
 // VERIFIED WRITE: every Save reads the primary back and compares it byte-for-byte.
-// On mismatch the previous primary bytes are put back, the backup (previous good
-// record) is left alone and Save returns false. A corrupt primary about to be
+// On mismatch or storage exception restoration of the previous primary is tried,
+// the backup is left alone and Save returns false. A corrupt primary about to be
 // overwritten is first copied to "<key>.corrupt" so the evidence survives.
 using System;
 using System.IO;
@@ -31,18 +31,36 @@ namespace AshenSpire.Domain.Original
         public bool HasSave => !string.IsNullOrEmpty(_storage.Read(_key)) || !string.IsNullOrEmpty(_storage.Read(BackupKey));
         public bool Save(JObject snapshot)
         {
+            if (snapshot == null) throw new ArgumentNullException(nameof(snapshot));
             var envelope = Envelope(snapshot);
-            var previous = _storage.Read(_key);
-            var previousValid = Read(previous) != null;
-            if (!_recoveredBackup && previousValid) _storage.Write(BackupKey, previous);
-            else if (!previousValid && !string.IsNullOrEmpty(previous)) _storage.Write(CorruptKey, previous);
-            _storage.Write(_key, envelope); _storage.Flush();
-            if (_storage.Read(_key) != envelope)
+            string previous = null; var readPrevious = false;
+            try
+            {
+                previous = _storage.Read(_key); readPrevious = true;
+                var previousValid = Read(previous) != null;
+                if (!_recoveredBackup && previousValid) _storage.Write(BackupKey, previous);
+                else if ((!previousValid || _recoveredBackup) && !string.IsNullOrEmpty(previous)) _storage.Write(CorruptKey, previous);
+                _storage.Write(_key, envelope); _storage.Flush();
+                if (_storage.Read(_key) != envelope) { RestorePrevious(previous); return false; }
+                _recoveredBackup = false; return true;
+            }
+            catch (Exception error) when (!(error is OutOfMemoryException))
+            {
+                // A full/unavailable store can throw on write, flush or read-back.
+                // Keep the validated backup and attempt to restore the old primary.
+                // The caller retains its in-memory snapshot and reports/retries failure.
+                if (readPrevious) RestorePrevious(previous);
+                return false;
+            }
+        }
+        private void RestorePrevious(string previous)
+        {
+            try
             {
                 if (string.IsNullOrEmpty(previous)) _storage.Delete(_key); else _storage.Write(_key, previous);
-                _storage.Flush(); return false;
+                _storage.Flush();
             }
-            _recoveredBackup = false; return true;
+            catch (Exception error) when (!(error is OutOfMemoryException)) { /* Storage is still unavailable; the backup was not rolled back or deleted. */ }
         }
         public JObject Load(Action<JObject> validate, out bool recovered)
         {

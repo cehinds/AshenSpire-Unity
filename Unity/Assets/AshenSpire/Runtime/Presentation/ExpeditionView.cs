@@ -37,7 +37,7 @@ namespace AshenSpire.Presentation
             Shell("THE GOLDBOUGH EXPEDITION", "A spark survives the fall.");
             var hero = new VisualElement(); hero.AddToClassList("title-art");
             hero.Add(Picture("reaver_idle", "hero")); _body.Add(hero);
-            _body.Add(Text("ASHEN SPIRE", "title"));
+            _body.Add(Text("ASHENEDSPIRE", "title"));
             _body.Add(Text("Choose your cards. Read their intent.\nCarry your cinders into the next fight.", "lead"));
             _body.Add(Button("Begin expedition", () => StartRequested?.Invoke(), "primary"));
             if (canResume) _body.Add(Button("Continue expedition", () => ContinueRequested?.Invoke()));

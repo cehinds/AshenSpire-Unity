@@ -40,7 +40,6 @@ namespace AshenSpire.Application
         private AshenSpire.Domain.Original.OriginalContentCatalog _originalContent;
         private OriginalGameSession _originalGame;
         private OriginalProfile _profile;
-        private OriginalSaveJournal _profileSaves;
         public void Configure(PanelSettings settings) => _panelSettings = settings;
         private void OnEnable()
         {
@@ -76,7 +75,6 @@ namespace AshenSpire.Application
                 _audio.SetMuted(PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 AttachMusic();
                 _saves = new CampaignSaveStore("AshenSpire.Unity.Campaign.v1." + channel);
-                _profileSaves = new OriginalSaveJournal("AshenSpire.Unity.Profile.v1." + channel, key => PlayerPrefs.GetString(key, ""), (key, value) => PlayerPrefs.SetString(key, value), PlayerPrefs.Save);
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.MapView.Read = ReadMapView; _view.MapView.Write = WriteMapView;
                 InstallPlayerSettings(); // RunController.Settings.cs: settings v1, UI size, volume, mods.
@@ -101,6 +99,15 @@ namespace AshenSpire.Application
                 _view.CoopRequested += OpenCoop;
                 InitSaveSlots(channel); // RunController.Slots.cs: three run slots + legacy migration
                 Menu();
+                ApplyPlayerWindowTitle();
+                const string welcomeKey = "AshenSpire.Unity.Welcome.v1";
+                if (PlayerPrefs.GetInt(welcomeKey, 0) == 0)
+                    _view.Welcome(() =>
+                    {
+                        try { PlayerPrefs.SetInt(welcomeKey, 1); PlayerPrefs.Save(); }
+                        catch (Exception error) { Debug.LogWarning("Could not remember the welcome screen: " + error.Message); }
+                        Menu();
+                    });
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
                 BrowserVisibility.Install(gameObject.name);
@@ -128,7 +135,7 @@ namespace AshenSpire.Application
         }
         private void CreateOriginal(int slot)
         {
-            LoadOriginalProfile();
+            if (!TryLoadOriginalProfile()) return;
             var progression = new AttributeProgression(OriginalRules("progression")); var mechanics = OriginalRules("mechanics");
             _view.NativeCreation(_originalContent, progression, mechanics, (player, seed) =>
             {
@@ -138,6 +145,7 @@ namespace AshenSpire.Application
                 BeginSlot(slot); BindOriginal(game);
                 RefreshOriginal();
             }, _profile.Snapshot());
+            _view.PersistenceNotice(_profileNotice);
         }
         private void BindOriginal(OriginalGameSession value)
         {
@@ -153,20 +161,19 @@ namespace AshenSpire.Application
                 foreach (var id in run["foundArmaments"] ?? new JArray()) _profile.CollectArmament(run, (string)id, (string)run["room"]?["source"] ?? "run");
                 if (_originalGame.Phase == OriginalRunPhase.Victory || _originalGame.Phase == OriginalRunPhase.Defeat)
                     AttachSummaryUnlocks(RecordOriginalResult(run, _originalGame.Phase == OriginalRunPhase.Victory));
-                _profileSaves.Save(_profile.Snapshot());
+                else SaveOriginalProfile();
             }
             _view.NativeSummary = CurrentSummary;
             var feedbackCue = _view.Native(_originalGame, _content.Feedback);
+            _view.PersistenceNotice(_slotNotice ?? _profileNotice);
             if (feedbackCue != null) _audio.Play(feedbackCue);
             MusicNative();
         }
-        private void LoadOriginalProfile()
+        private void ShowOriginalProfile()
         {
-            if (_originalContent == null) _originalContent = ModdedCatalog() ?? new OriginalContentCatalog(OriginalRules("content").ToString());
-            if (_profile != null) return;
-            _profile = _profileSaves.HasSave ? OriginalProfile.Restore(_originalContent, _profileSaves.Load(value => OriginalProfile.Restore(_originalContent, value), out _)) : new OriginalProfile(_originalContent);
+            if (!TryLoadOriginalProfile()) return;
+            _view.Profile(_profile); _view.PersistenceNotice(_profileNotice);
         }
-        private void ShowOriginalProfile() { LoadOriginalProfile(); _view.Profile(_profile); }
         private void StartRun(string hero, uint seed)
         {
             Bind(new CampaignSession(_content, hero, seed));
@@ -244,6 +251,7 @@ namespace AshenSpire.Application
             Save();
             _view.NativeSaveAvailable = HasNativeSlotSave();
             _view.Title(_content, _saves.HasSave, TakeSlotNotice());
+            _view.PersistenceNotice(_profileNotice);
             MusicTitle();
         }
         private void Settings(bool reduced, bool fast)
@@ -266,6 +274,7 @@ namespace AshenSpire.Application
             if (_session != null && _saves != null)
                 _saves.Save(_session.State);
             SaveOriginalSlot();
+            SaveOriginalProfile();
         }
         private void OnApplicationPause(bool paused)
         {
@@ -275,12 +284,44 @@ namespace AshenSpire.Application
         }
         private void OnApplicationFocus(bool focused)
         {
+            if (focused) ApplyPlayerWindowTitle();
 #if !UNITY_WEBGL || UNITY_EDITOR
             // Android soft keyboards emit focus loss without backgrounding the game.
             if (!UnityEngine.Application.isMobilePlatform)
                 Interrupt(InterruptionSource.DesktopFocus, !focused);
 #endif
         }
+        // Keep the existing product/company identity: Windows PlayerPrefs are
+        // stored under it. Only the visible native window caption changes.
+        private static void ApplyPlayerWindowTitle()
+        {
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            using (var process = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                var processId = (uint)process.Id;
+                EnumPlayerWindows((window, _) =>
+                {
+                    GetWindowThreadProcessId(window, out var owner);
+                    if (owner != processId) return true;
+                    var className = new System.Text.StringBuilder(128);
+                    GetClassName(window, className, className.Capacity);
+                    if (className.ToString() == "UnityWndClass") SetWindowText(window, "AshenedSpire");
+                    return true;
+                }, IntPtr.Zero);
+            }
+#endif
+        }
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+        private delegate bool PlayerWindowVisitor(IntPtr window, IntPtr state);
+        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "EnumWindows")]
+        private static extern bool EnumPlayerWindows(PlayerWindowVisitor visitor, IntPtr state);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr window, out uint processId);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr window, System.Text.StringBuilder name, int capacity);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern bool SetWindowText(IntPtr window, string title);
+#endif
         // Called only by the Web lifecycle adapter, not a gameplay command endpoint.
         [UnityEngine.Scripting.Preserve]
         public void OnBrowserVisibilityChanged(int hidden)

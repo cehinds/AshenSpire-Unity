@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "checks": [
+    "the Standard preset can begin at once (owner, 2026-09-24)",
+    "Assign points: unspent points cannot start a run",
+    "Tuned is absent",
+    "legacy Standard and Assign points modes are not offered",
+    "returning to Standard can begin",
+    "custom service fixture has authored merchant weight",
+    "Draft starts before the map",
+    "chosen deck mode retained",
+    "draft offers and selected cards survive page reload",
+    "three choices complete the ten-card drafted deck",
+    "cancelled level purchase preserves attributes and cinders",
+    "one CON point purchases real HP improvement (ruleset 6: +4 per CON, +2 per level)",
+    "flask allocation can dedicate every charge to MP",
+    "merchant offers an affordable item",
+    "merchant purchase spends cinders",
+    "purchased item can be offered for resale",
+    "resale returns actual cinders",
+    "drafted climb reaches and uses both paid service rooms",
+    "purchases and custom state persist through reload",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "scope": "Draft and paid services through a seven-floor Custom Climb with merchant weights, not campaign balance",
+  "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+  "physicalDevice": false
+}

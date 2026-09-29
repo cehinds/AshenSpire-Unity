@@ -45,7 +45,7 @@ class NativeUiDriver {
  check(value,label){if(!value)throw Error(label);this.checks.push(label);}
  has(id){return this.controls?.Controls.some(c=>c.Id===id&&c.Enabled);}
  async until(test,label,timeout=30000){const end=Date.now()+timeout;while(Date.now()<end){if(test())return;await this.page.waitForTimeout(80);}throw Error('Timed out: '+label);}
- async open(url){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.controls?.Controls.length,'title');}
+ async open(url,{dismissWelcome=true}={}){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.has('native-new')||this.has('native-welcome-continue'),'welcome or title');if(dismissWelcome&&this.has('native-welcome-continue')){await this.click('native-welcome-continue');await this.until(()=>this.has('native-new'),'title after welcome');}}
  async frames(){await this.page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
  async key(value){if(value.includes('+')){const [mod,key]=value.split('+');await this.page.keyboard.down(mod);try{await this.key(key);}finally{await this.page.keyboard.up(mod);}return;}await this.page.keyboard.down(value);await this.frames();await this.page.waitForTimeout(100);await this.page.keyboard.up(value);await this.frames();}
  point(id,fraction){return pointOf(this,id,fraction);}
@@ -105,7 +105,10 @@ class NativeUiDriver {
    if(stagnant>=5)throw Error('Cannot reach '+id+': no movement after bounded '+lastReason+' scroll; '+JSON.stringify({rect,boundary}));
    if(vertical){
     // Use a point within the visible rail when possible, otherwise outer body.
-    const x=Math.max(boundary.left+8,Math.min(boundary.right-8,rect.left+rect.width/2));
+    // Settings sliders consume wheel input and change their values. Scroll from
+    // the surrounding gutter instead, so navigation never edits a setting.
+    const settings=report.Controls.some(control=>control.Id==='volume-master');
+    const x=settings?canvas.x+6:Math.max(boundary.left+8,Math.min(boundary.right-8,rect.left+rect.width/2));
     const y=exposed.bottom<=exposed.top?canvas.y+canvas.height*.5:Math.max(boundary.top+20,Math.min(boundary.bottom-20,(rect.top+rect.bottom)/2));
     await this.page.mouse.move(x,y);await this.page.mouse.wheel(0,rect.top<boundary.top?-260:260);lastReason='vertical';
    }else{
@@ -139,7 +142,7 @@ class NativeUiDriver {
   if(left.length)throw Error('Creation points remain after assignment: '+left.join(', '));
  }
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
- async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
+ async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();const tap=async key=>{await this.page.keyboard.press(key,{delay:40});await this.page.waitForTimeout(160);};await tap('Home');for(let n=0;n<index;n++)await tap('ArrowDown');await tap('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
  async coopCommand(id){const before=this.coopRevision;await this.click(id);await this.until(()=>this.coopRevision>before,'shared command '+id);}
  async shot(name){await this.page.waitForTimeout(250);await this.page.screenshot({path:path.join(this.output,name+'.png')});}

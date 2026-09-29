@@ -1,0 +1,364 @@
+{
+  "version": "0.0.27.0",
+  "buildNumber": 27,
+  "sourceCommit": "10f4811005ead91aefd1fd06d26f26882d2a2a54",
+  "sourceDigest": "81a2af8ce111515dc38343e374c7fc5d47cde4ae2dbccc1181016043077dac76",
+  "compiledBrowserChecks": 186,
+  "results": [
+    {
+      "id": "onboarding",
+      "name": "Welcome, guide and About",
+      "passed": true,
+      "checks": 36,
+      "cases": [
+        {
+          "case": "1440x900",
+          "checks": 18,
+          "assertions": [
+            "first visit shows welcome before any new-climb action",
+            "welcome uses the Unity game name",
+            "browser tab uses the Unity game name",
+            "guide begins with card and target selection",
+            "guide explains resources",
+            "previous restores the previous lesson",
+            "guide ends at the shared-climb lesson",
+            "finishing guide returns to welcome without starting a climb",
+            "entering opens a fresh title without creating a save",
+            "About is reachable from Extras",
+            "About acknowledges AI-assisted development",
+            "About describes the imported soundtrack accurately",
+            "About explains runtime AI behavior",
+            "welcome acknowledgement persists through reload",
+            "field guide remains available from Settings",
+            "guide returns to Settings",
+            "normal character creation remains reachable after onboarding",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "320x640",
+          "checks": 18,
+          "assertions": [
+            "first visit shows welcome before any new-climb action",
+            "welcome uses the Unity game name",
+            "browser tab uses the Unity game name",
+            "guide begins with card and target selection",
+            "guide explains resources",
+            "previous restores the previous lesson",
+            "guide ends at the shared-climb lesson",
+            "finishing guide returns to welcome without starting a climb",
+            "entering opens a fresh title without creating a save",
+            "About is reachable from Extras",
+            "About acknowledges AI-assisted development",
+            "About describes the imported soundtrack accurately",
+            "About explains runtime AI behavior",
+            "welcome acknowledgement persists through reload",
+            "field guide remains available from Settings",
+            "guide returns to Settings",
+            "normal character creation remains reachable after onboarding",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "upgrade",
+      "name": "Actual build-26 save upgrade",
+      "passed": true,
+      "checks": 8,
+      "cases": [
+        {
+          "case": "default",
+          "checks": 8,
+          "assertions": [
+            "previous build creates an actual saved combat",
+            "upgraded player has the new name",
+            "existing save remains available after the rename",
+            "upgrade preserves complete run, combat, hand and RNG state",
+            "new acknowledgement survives another reload",
+            "upgraded save remains exact on the second reload",
+            "fixture serves the expected final source",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modes",
+      "name": "Custom, Sealed, Draft and Endless openings/resume",
+      "passed": true,
+      "checks": 44,
+      "cases": [
+        {
+          "case": "Custom",
+          "checks": 10,
+          "assertions": [
+            "Custom retains chosen deck mode",
+            "Custom reaches the map",
+            "Custom has a real starting deck",
+            "custom ascension and modifier retained",
+            "Custom exact reload in Map",
+            "Custom enters a normal opening encounter",
+            "Custom resolves one enemy turn",
+            "Custom exact reload in Combat",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "Draft",
+          "checks": 15,
+          "assertions": [
+            "Draft retains chosen deck mode",
+            "Draft opens with actual offers",
+            "Draft exact reload in Draft",
+            "Draft has an available offer",
+            "Draft exact reload in Draft",
+            "Draft has an available offer",
+            "Draft has an available offer",
+            "Draft reaches the map",
+            "Draft has a real starting deck",
+            "Draft exact reload in Map",
+            "Draft enters a normal opening encounter",
+            "Draft resolves one enemy turn",
+            "Draft exact reload in Combat",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "Endless",
+          "checks": 10,
+          "assertions": [
+            "Endless retains chosen deck mode",
+            "Endless reaches the map",
+            "Endless has a real starting deck",
+            "Endless rule retained",
+            "Endless exact reload in Map",
+            "Endless enters a normal opening encounter",
+            "Endless resolves one enemy turn",
+            "Endless exact reload in Combat",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "Sealed",
+          "checks": 9,
+          "assertions": [
+            "Sealed retains chosen deck mode",
+            "Sealed reaches the map",
+            "Sealed has a real starting deck",
+            "Sealed exact reload in Map",
+            "Sealed enters a normal opening encounter",
+            "Sealed resolves one enemy turn",
+            "Sealed exact reload in Combat",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interface",
+      "name": "Menus and 160% text",
+      "passed": true,
+      "checks": 32,
+      "cases": [
+        {
+          "case": "1440",
+          "checks": 16,
+          "assertions": [
+            "settings section is reachable: 0",
+            "settings section is reachable: 1",
+            "settings section is reachable: 2",
+            "settings section is reachable: 3",
+            "settings section is reachable: 4",
+            "settings section is reachable: 5",
+            "Audio navigation puts volume controls near the top",
+            "Accessibility navigation puts text size near the top",
+            "collection has a working return control",
+            "all empty save slots remain available",
+            "menu navigation returns to the new climb action",
+            "new climb remains reachable at maximum text size",
+            "every large-text menu action occupies its own row within the screen width",
+            "bottom menu action is reachable with large text",
+            "maximum text size preserves creation navigation",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "390",
+          "checks": 16,
+          "assertions": [
+            "settings section is reachable: 0",
+            "settings section is reachable: 1",
+            "settings section is reachable: 2",
+            "settings section is reachable: 3",
+            "settings section is reachable: 4",
+            "settings section is reachable: 5",
+            "Audio navigation puts volume controls near the top",
+            "Accessibility navigation puts text size near the top",
+            "collection has a working return control",
+            "all empty save slots remain available",
+            "menu navigation returns to the new climb action",
+            "new climb remains reachable at maximum text size",
+            "every large-text menu action occupies its own row within the screen width",
+            "bottom menu action is reachable with large text",
+            "maximum text size preserves creation navigation",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "long-cards",
+      "name": "Full card descriptions and reachable actions",
+      "passed": true,
+      "checks": 32,
+      "cases": [
+        {
+          "case": "1440x900",
+          "checks": 16,
+          "assertions": [
+            "source matches designated compiled build",
+            "authored Gorefire Slash is in the real starting deck",
+            "normal play draws the authored Gorefire Slash",
+            "selected Gorefire Slash is affordable",
+            "real vertical wheel moves long card upwards",
+            "entire lower card edge and description end are above Play",
+            "description end remains inside the actual canvas",
+            "full authored long description remains in read-only labels",
+            "action remains enabled and fully on canvas: native-play",
+            "action keeps44CSS target: native-play",
+            "action remains enabled and fully on canvas: native-end-turn",
+            "action keeps44CSS target: native-end-turn",
+            "scroll stays inside hand and leaves action row stationary",
+            "inspection and wheel do not mutate game state",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        },
+        {
+          "case": "320x640",
+          "checks": 16,
+          "assertions": [
+            "source matches designated compiled build",
+            "authored Gorefire Slash is in the real starting deck",
+            "normal play draws the authored Gorefire Slash",
+            "selected Gorefire Slash is affordable",
+            "real vertical wheel moves long card upwards",
+            "entire lower card edge and description end are above Play",
+            "description end remains inside the actual canvas",
+            "full authored long description remains in read-only labels",
+            "action remains enabled and fully on canvas: native-play",
+            "action keeps44CSS target: native-play",
+            "action remains enabled and fully on canvas: native-end-turn",
+            "action keeps44CSS target: native-end-turn",
+            "scroll stays inside hand and leaves action row stationary",
+            "inspection and wheel do not mutate game state",
+            "served source remains unchanged",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "services",
+      "name": "Draft, shrine and merchant journey",
+      "passed": true,
+      "checks": 20,
+      "cases": [
+        {
+          "case": "default",
+          "checks": 20,
+          "assertions": [
+            "the Standard preset can begin at once (owner, 2026-09-24)",
+            "Assign points: unspent points cannot start a run",
+            "Tuned is absent",
+            "legacy Standard and Assign points modes are not offered",
+            "returning to Standard can begin",
+            "custom service fixture has authored merchant weight",
+            "Draft starts before the map",
+            "chosen deck mode retained",
+            "draft offers and selected cards survive page reload",
+            "three choices complete the ten-card drafted deck",
+            "cancelled level purchase preserves attributes and cinders",
+            "one CON point purchases real HP improvement (ruleset 6: +4 per CON, +2 per level)",
+            "flask allocation can dedicate every charge to MP",
+            "merchant offers an affordable item",
+            "merchant purchase spends cinders",
+            "purchased item can be offered for resale",
+            "resale returns actual cinders",
+            "drafted climb reaches and uses both paid service rooms",
+            "purchases and custom state persist through reload",
+            "no browser or Unity errors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "coop",
+      "name": "Two-player fight, reward and rejoin",
+      "passed": true,
+      "checks": 14,
+      "cases": [
+        {
+          "case": "Guest",
+          "checks": 6
+        },
+        {
+          "case": "Host",
+          "checks": 8
+        }
+      ]
+    }
+  ],
+  "windows": {
+    "build": 27,
+    "sourceDigest": "81a2af8ce111515dc38343e374c7fc5d47cde4ae2dbccc1181016043077dac76",
+    "uiReady": true,
+    "windowCaptionVerified": true,
+    "graphicalPlaythrough": false,
+    "physicalDevice": false
+  },
+  "android": {
+    "passed": true,
+    "build": 27,
+    "sourceDigest": "81a2af8ce111515dc38343e374c7fc5d47cde4ae2dbccc1181016043077dac76",
+    "package": "package: name='com.ashenspire.expedition' versionCode='27' versionName='0.0.27.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
+    "label": "application-label:'AshenedSpire'",
+    "physicalDevice": false
+  },
+  "packaging": {
+    "companionChecks": 452,
+    "nativeFileChecks": 163,
+    "packageChecks": 20
+  },
+  "downloads": [
+    {
+      "name": "Web.zip",
+      "bytes": 86574968,
+      "sha256": "6727b8fa8867533fcbce04cbf4e5dafeca0dc1699d427939e64f5b0b88894dc2"
+    },
+    {
+      "name": "Windows.zip",
+      "bytes": 103778211,
+      "sha256": "2865d9b686a94868fd36b69587b9b6738de10f10bbf68ceeb0ec13fc2bcb55dc"
+    },
+    {
+      "name": "Android.apk",
+      "bytes": 93056232,
+      "sha256": "ebc85256040c8bce58647d2680bc1a8c5c7ddd3a7f05ba140395c455422e17e7"
+    },
+    {
+      "name": "Companion.zip",
+      "bytes": 47543543,
+      "sha256": "7f0b0fda98b5fe03939fa57672ff28711f56a7d48681043e88848f7063f83ae4"
+    }
+  ],
+  "physicalDevice": false,
+  "ownerAccepted": false,
+  "published": false,
+  "scope": "Local compiled candidate. Phone viewports are simulated. Mode tests cover setup, opening combat and exact resume, not full campaigns or Endless Act 4."
+}

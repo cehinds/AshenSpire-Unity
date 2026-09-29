@@ -1,5 +1,16 @@
 # Unity specification — faithful rebuild with preserved campaign checkpoints
 
+## Original-game save import (owner decision, 2026-09-28)
+
+Phase 1 requires original JavaScript-game save import. Import must preview its
+destination, preserve the original save, refuse incompatible state explicitly,
+and write only after confirmation into an empty native slot through verified
+storage. Preserve the saved map, random streams, card identities, resources and
+supported frozen original rules. Do not silently replay an active room or drop
+profile progression. The current compatibility/validation checklist is in
+[Unity-Original-Save-Import.md](Unity-Original-Save-Import.md). Partial support
+does not complete this acceptance requirement or authorize a feature-version bump.
+
 ## Owner-requested creation defaults (four-part versioning)
 
 Owner, 2026-09-24: "why are the numbers so high, rebase because the numbers

@@ -29,7 +29,7 @@ namespace AshenSpire.Presentation
         {
             Cancel();
             _player = player; _enemy = enemy; _host = host;
-            var settings = FeelSettings.FromToggles(reduced, fast);
+            var settings = FeelDriver.Settings;
             var beat = FeelBeat.Plan(FeelDriver.Profile, settings, enemyTurn, cue.Id == "attack", outcome.Damage, outcome.Hurt);
             _idle = _player is OriginalPlayerFigure ? null : Texture(art + "_idle");
             var originalFigure = _player as OriginalPlayerFigure;
@@ -52,6 +52,7 @@ namespace AshenSpire.Presentation
             var impacted = false; var baseFont = 0f;
             _timeline = FeelTween.Run(host, beat.TotalMs, ms =>
             {
+                ms = beat.VisualTime(ms);
                 if (!impacted && ms >= beat.ImpactMs)
                 {
                     impacted = true;
@@ -89,7 +90,7 @@ namespace AshenSpire.Presentation
                     Tint(_enemy, Color.Lerp(Color.white, color, Flash(Bright(_enemy)) * .7f));
                 }
                 // Screen shake on the combat stage: heavy hits only, ±4 px, decays to rest in 200 ms.
-                if (beat.Shake.Play) FeelDriver.Place(host, hitMs >= 0 ? (float)beat.Shake.SampleAt(FeelProperty.X, hitMs) : 0, hitMs >= 0 ? (float)beat.Shake.SampleAt(FeelProperty.Y, hitMs) : 0);
+                if (beat.Shake.Play) FeelDriver.Place(host, hitMs >= 0 ? (float)(beat.Shake.SampleAt(FeelProperty.X, hitMs) * settings.ScreenShakeIntensity) : 0, hitMs >= 0 ? (float)(beat.Shake.SampleAt(FeelProperty.Y, hitMs) * settings.ScreenShakeIntensity) : 0);
                 // Label: ENEMY TURN banner first (letter spacing closes in, fades), then the number pop.
                 if (!impacted)
                 {

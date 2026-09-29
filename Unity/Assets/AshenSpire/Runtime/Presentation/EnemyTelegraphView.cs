@@ -23,9 +23,9 @@ namespace AshenSpire.Presentation
         private static JObject _glyphFonts;
         private static readonly Dictionary<string, Font> Fonts = new Dictionary<string, Font>(StringComparer.Ordinal);
 
-        /// <summary>Co-op has no live CombatSession on the client: build from the snapshot (authored damage).</summary>
+        /// <summary>Co-op uses the host's per-seat preview; older companions explicitly show base damage.</summary>
         public static EnemyTelegraph FromSnapshot(JObject enemy, JObject hero, JObject balance)
-            => EnemyTelegraphViewModel.Build(enemy, hero, null, "each hero", (double?)balance?["poise"]?["growthMult"] ?? 1.25);
+            => EnemyTelegraphViewModel.FromSnapshot(enemy, hero, (double?)balance?["poise"]?["growthMult"] ?? 1.25);
 
         /// <summary>Replaces the slot's text intent with the badge and adds the Poise meter below the HP pool.</summary>
         public static void Attach(VisualElement slot, EnemyTelegraph telegraph)

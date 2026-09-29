@@ -307,7 +307,7 @@ namespace AshenSpire.Domain.Original
             var map = (JObject)_state["mapGraph"].DeepClone(); if (map["nodes"] is JObject nodes) foreach (var node in nodes.Properties()) ((JObject)node.Value).Remove("resolved");
             var scene = (JObject)Scene.DeepClone();
             foreach (var key in new[] { "offers","choices","rooms" }) if (scene[key] is JObject privateRows) foreach (var property in privateRows.Properties().ToArray()) if (property.Name != memberId) property.Remove();
-            if (_combat != null) { scene["players"] = _combat.Players; foreach (var row in (JArray)scene["players"]) ((JObject)row).Remove("piles"); scene["enemies"] = _combat.Enemies; scene["turn"] = _combat.Turn; scene["phase"] = _combat.Phase; }
+            if (_combat != null) { scene["players"] = _combat.Players; foreach (var row in (JArray)scene["players"]) ((JObject)row).Remove("piles"); scene["enemies"] = _combat.EnemyViewsFor(memberId); scene["turn"] = _combat.Turn; scene["phase"] = _combat.Phase; }
             var party = new JArray(Members.OfType<JObject>().Select(m => new JObject { ["id"] = Id(m), ["name"] = m["name"].DeepClone(), ["index"] = m["index"].DeepClone(), ["connected"] = m["connected"].DeepClone(), ["alive"] = m["alive"].DeepClone(), ["classId"] = Run(m)["classId"].DeepClone(), ["hp"] = Run(m)["hp"].DeepClone(), ["maxHp"] = Run(m)["maxHp"].DeepClone(), ["catchupCount"] = Queue(m).Count, ["sequence"] = m["sequence"].DeepClone() }));
             var view = new JObject { ["schemaVersion"] = 1, ["seed"] = _state["seed"].DeepClone(), ["seedString"] = _state["seedString"].DeepClone(), ["endless"] = _state["endless"].DeepClone(), ["scene"] = scene, ["actNumber"] = Act, ["floor"] = _state["floor"].DeepClone(), ["cursorId"] = _state["cursorId"].DeepClone(), ["reachableIds"] = _state["reachableIds"].DeepClone(), ["map"] = map, ["party"] = party };
             view["refusedMembers"] = new JArray(((JArray)_state["refusedMembers"]).Select(m => new JObject { ["id"] = m["id"]?.DeepClone(), ["name"] = m["name"]?.DeepClone(), ["reason"] = m["reason"]?.DeepClone() }));
@@ -328,4 +328,3 @@ namespace AshenSpire.Domain.Original
         }
     }
 }
-

@@ -35,6 +35,16 @@ namespace AshenSpire.Presentation
 
         public static void Configure(bool reducedMotion, bool quickAnimations) => Settings = FeelSettings.FromToggles(reducedMotion, quickAnimations);
 
+        public static void Configure(AshenSpire.Domain.Original.OriginalPlayerSettings settings)
+        {
+            Settings = FeelSettings.FromToggles(settings.ReducedMotion, settings.QuickAnimations);
+            if (settings.InstantAnimations) Settings.Speed = "instant";
+            else if (settings.AnimationSpeed < 1) Settings.Speed = "slow";
+            Settings.ScreenShake = settings.ScreenShake;
+            Settings.ScreenShakeIntensity = settings.ScreenShakeIntensity;
+            Settings.HitStop = settings.HitStop;
+        }
+
         /// <summary>Writes a sampled transform. Rest values (0, 0, 1, 0°) clear the inline style.</summary>
         public static void Place(VisualElement element, float x, float y, float scale = 1, float rotate = 0)
         {

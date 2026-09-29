@@ -27,6 +27,7 @@ namespace AshenSpire.Domain.Original
         public int ActNumber => _run.ActNumber;
         public string[] LegalNodeIds => _run.LegalNodeIds();
         public JArray Hand => _combat?.Hand ?? new JArray();
+        public JArray Pile(string kind) => _combat?.Pile(kind) ?? new JArray();
         public JArray Enemies => _combat?.Enemies ?? new JArray();
         public int Turn => _combat?.Turn ?? 0;
         public System.Collections.Generic.IReadOnlyList<EnemyTelegraph> Telegraphs() => _combat != null ? _combat.Telegraphs() : Array.Empty<EnemyTelegraph>();
@@ -64,6 +65,7 @@ namespace AshenSpire.Domain.Original
                 throw new ArgumentException("Native save is missing its frozen content or rule configuration.");
             _catalog = new OriginalContentCatalog(snapshot["content"].ToString());
             snapshot = (JObject)snapshot.DeepClone();
+            OriginalWebSaveImport.ValidateReceipt((JObject)snapshot["run"]);
             // Early native v1 saves predate kit identity. Only the complete absence
             // of both fields admits the explicit baseline migration; partial IDs fail.
             new OriginalStartingOptions(_catalog).ValidateSaved((JObject)snapshot["run"], snapshot["run"]["profileMeta"] as JObject, legacy: true);
@@ -75,7 +77,7 @@ namespace AshenSpire.Domain.Original
         {
             _projectionPlayer = _run.Player();
             _progression = new AttributeProgression((JObject)_projectionPlayer["progression"]);
-            _profileOverrides = _progression.BaselineProfiles(_catalog);
+            _profileOverrides = (int?)_projectionPlayer["webImport"]?["version"] == 1 ? null : _progression.BaselineProfiles(_catalog);
             _projection = new WeaponCardProjection(_catalog);
         }
         public JObject Snapshot() => _run.Snapshot();
@@ -83,6 +85,7 @@ namespace AshenSpire.Domain.Original
         {
             var run = _projectionPlayer;
             var projection = _projection.Resolve(instance, (JObject)run["loadout"], (string)run["classId"], (JObject)run["attributes"], _profileOverrides);
+            if ((int?)run["webImport"]?["version"] == 1) return (JObject)projection["card"];
             return (JObject)_progression.ResolveCard(projection, (JObject)run["attributes"], _catalog)["card"];
         }
         public JObject Cost(JObject instance) => _combat != null ? _combat.CardCost(instance) : CardMechanics.CostProfile(Resolve(instance));

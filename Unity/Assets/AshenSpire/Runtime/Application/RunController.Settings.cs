@@ -5,7 +5,7 @@
 // touching the file system, so the shipped catalog is built exactly as before.
 // SAVE: AshenSpire.Settings.v1 (OriginalPlayerSettings.ToJson) plus the three legacy ints
 // AshenSpire.ReducedMotion / FastMotion / Muted, which older builds and code paths read.
-// APPLY: UI size -> PanelSettings.scale (restored on disable), master × SFX -> GameAudio.
+// APPLY: UI size -> PanelSettings.scale (restored on disable); separate SFX/UI/music buses.
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
 // WebGL (and Android, whose StreamingAssets sit inside the APK) need web requests, which are
 // not wired; the player sees why in Settings and the shipped content is used.
@@ -45,6 +45,8 @@ namespace AshenSpire.Application
             _view.ContentModStatus = ModStatus();
             _view.PlayerSettingsChanged += SavePlayerSettings;
             _view.ContentModsChanged += ToggleContentMods;
+            _view.InterfaceSoundRequested += PlayInterfaceSound;
+            _view.SoundPreviewRequested += PreviewSound;
             ApplyPlayerSettings();
         }
         private void UninstallPlayerSettings()
@@ -53,6 +55,8 @@ namespace AshenSpire.Application
             {
                 _view.PlayerSettingsChanged -= SavePlayerSettings;
                 _view.ContentModsChanged -= ToggleContentMods;
+                _view.InterfaceSoundRequested -= PlayInterfaceSound;
+                _view.SoundPreviewRequested -= PreviewSound;
             }
             // PanelSettings is a shared asset; never leave the player's size in it.
             if (_panelSettings != null && !float.IsNaN(_panelScaleBase)) _panelSettings.scale = _panelScaleBase;
@@ -66,7 +70,13 @@ namespace AshenSpire.Application
                 if (_panelSettings.scale != scale) _panelSettings.scale = scale;
             }
             _audio?.SetVolumeScale((float)(_playerSettings.MasterVolume * _playerSettings.SfxVolume));
+            _audio?.SetInterfaceVolumeScale((float)(_playerSettings.MasterVolume * _playerSettings.UiVolume));
+            _audio?.SetMuted(_playerSettings.Muted);
+            _music?.ApplySettings((int)Math.Round(_playerSettings.MasterVolume * 100), (int)Math.Round(_playerSettings.MusicVolume * 100), true);
+            _music?.SetMuted(_playerSettings.Muted);
         }
+        private void PlayInterfaceSound() => _audio?.PlayInterface();
+        private void PreviewSound() => _audio?.Play("guard");
         private void SavePlayerSettings()
         {
             if (_playerSettings == null) return;

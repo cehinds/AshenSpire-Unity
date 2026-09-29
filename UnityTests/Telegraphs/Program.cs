@@ -90,27 +90,27 @@ try
     Equal(single.ValueText, "7", "single-hit attack value");
     Equal(single.BadgeText, "⚔ 7", "single-hit badge is glyph + number");
     Equal(single.TooltipTitle, "Intent: Attack", "attack tooltip title");
-    Equal(single.TooltipBody, "Attacking you for 7 damage (modifiers included).", "single-hit tooltip wording");
+    Equal(single.TooltipBody, "Attacking you for 7 base damage (before modifiers).", "single-hit tooltip wording");
     Equal(single.CssClasses, "intent lg attack", "attack USS classes");
     Equal(single.Icon.Tone, "danger", "attack tone");
     Equal(single.Severity, TelegraphSeverity.Attack, "attack severity");
     var multi = Show(JObject.Parse("{kind:'attack',moveId:'flurry',damage:6,hits:3,delayed:false,pending:false}"));
     Equal(multi.ValueText, "6×3", "multi-hit value is 6×3");
     Equal(multi.TotalDamage, (int?)18, "multi-hit total");
-    Equal(multi.TooltipBody, "Attacking you for 6 × 3 (18 total) damage (modifiers included).", "multi-hit tooltip wording");
+    Equal(multi.TooltipBody, "Attacking you for 6 × 3 (18 total) base damage (before modifiers).", "multi-hit tooltip wording");
     Equal(EnemyTelegraphViewModel.FormatDamage(3, 6), "3×6", "six-hit formatting");
     Equal(EnemyTelegraphViewModel.FormatDamage(0, 2), "0×2", "zero-damage multi-hit formatting");
     Equal(EnemyTelegraphViewModel.FormatDamage(12, 1), "12", "one hit shows no multiplier");
     Equal(EnemyTelegraphViewModel.FormatDamage(12, 0), "12", "zero hits never shows a multiplier");
     var coop = Show(JObject.Parse("{kind:'attack',moveId:'flurry',damage:4,hits:2}"), "each hero");
-    Equal(coop.TooltipBody, "Attacking each hero for 4 × 2 (8 total) damage (modifiers included).", "co-op victim wording");
+    Equal(coop.TooltipBody, "Attacking each hero for 4 × 2 (8 total) base damage (before modifiers).", "co-op victim wording");
     var delayed = Show(JObject.Parse("{kind:'attack',moveId:'heldBlade',damage:14,hits:1,delayed:true,pending:false}"));
     Equal(delayed.ValueText, "14 ⌛", "delayed attack shows hourglass");
     Check(delayed.Dashed && delayed.CssClasses == "intent lg attack delayed", "delayed attack is dashed with .delayed class");
-    Equal(delayed.TooltipBody, "Attacking you for 14 damage (modifiers included).\nDelayed: it holds this turn and strikes the next. Stagger cancels it.", "delayed tooltip wording");
+    Equal(delayed.TooltipBody, "Attacking you for 14 base damage (before modifiers).\nDelayed: it holds this turn and strikes the next. Stagger cancels it.", "delayed tooltip wording");
     var pending = Show(JObject.Parse("{kind:'attack',moveId:'heldBlade',damage:14,hits:1,delayed:true,pending:true}"));
     Check(pending.Pending, "pending flag carried");
-    Equal(pending.TooltipBody, "Attacking you for 14 damage (modifiers included).\nCommitted: this delayed attack lands this coming turn — Stagger cancels it.", "committed tooltip wording");
+    Equal(pending.TooltipBody, "Attacking you for 14 base damage (before modifiers).\nCommitted: this delayed attack lands this coming turn — Stagger cancels it.", "committed tooltip wording");
     var block = Show(JObject.Parse("{kind:'block',moveId:'guard',damage:null,hits:null,block:6}"));
     Equal(block.BadgeText, "🛡 6", "block badge");
     Equal(block.TooltipText, "Intent: Defend\nGaining Block.", "block tooltip wording");
@@ -206,6 +206,26 @@ try
     Equal(filled.Intent.Kind, "staggered", "live staggered enemy shows the Staggered intent");
     Check(!attacking.Telegraphs().Any(t => t.Intent == null), "living enemies always have an intent");
     try { attacking.PreviewEnemyAttack("missing", 1); Check(false, "unknown enemy preview refused"); } catch (ArgumentException) { Check(true, "unknown enemy preview refused"); }
+
+    var coopOracle = JObject.Parse(Read("UnityTests/Parity/coop-reference.json"));
+    var coopCatalog = new OriginalContentCatalog(coopOracle["content"].ToString());
+    var inputs = (JArray)coopOracle["fixtures"][0]["players"].DeepClone();
+    inputs[0]["startStatuses"] = JArray.Parse("[{status:'vulnerable',stacks:2}]");
+    inputs[1]["startStatuses"] = new JArray();
+    var cooperative = new OriginalCoopCombat(coopCatalog, mechanics, new RandomStreams(1), inputs.OfType<JObject>(), new[] { "blightHound" },
+        (member, card) => (JObject)coopOracle["definitions"][(string)card["cardId"] + ":" + ((bool?)card["upgraded"] == true ? "true" : "false")].DeepClone());
+    var coopBefore = cooperative.Snapshot();
+    var vulnerableView = (JObject)cooperative.EnemyViewsFor((string)inputs[0]["id"])[0];
+    var normalView = (JObject)cooperative.EnemyViewsFor((string)inputs[1]["id"])[0];
+    Check(vulnerableView["intent"]["previewDamage"] != null && normalView["intent"]["previewDamage"] != null, "host supplies an attack preview to each seat");
+    Equal((int)vulnerableView["intent"]["previewDamage"], (int)Math.Floor((int)normalView["intent"]["previewDamage"] * 1.5), "co-op preview includes only the viewing hero's Vulnerable");
+    Check(JToken.DeepEquals(coopBefore, cooperative.Snapshot()), "co-op previews preserve state and RNG");
+    Check(cooperative.Enemies.All(enemy => enemy["intent"]?["previewDamage"] == null), "projection does not leak into authoritative enemy records");
+    var projected = EnemyTelegraphViewModel.FromSnapshot(vulnerableView, null);
+    Equal(projected.Intent.Damage, (int?)vulnerableView["intent"]["previewDamage"], "client badge uses the host preview");
+    Check(projected.Intent.TooltipBody.Contains("modifiers included"), "host preview is identified as modifier-inclusive");
+    ((JObject)vulnerableView["intent"]).Remove("previewDamage");
+    Check(EnemyTelegraphViewModel.FromSnapshot(vulnerableView, null).Intent.TooltipBody.Contains("base damage"), "old companion fallback is explicitly labelled base damage");
 }
 catch (Exception error)
 {

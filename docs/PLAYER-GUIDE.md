@@ -1,10 +1,18 @@
-# Ashen Spire: player guide
+# AshenedSpire: player guide
 
-A friendly guide to playing the Unity version of Ashen Spire. It describes
-what the game does today (source **0.0.14.0 · build 14**). Where the original
+A friendly guide to playing AshenedSpire, the Unity adaptation of AshenSpire. It describes
+what the game does today (source **0.0.27.0 · build 27**, local candidate). Where the original
 HTML game has something the Unity version does not have yet, this guide says so.
+The embedded screenshots below are historical examples; the build page identifies
+the version actually available to play.
 
 > Editing or building the game? See the [owner guide](Unity-Owner-Guide.md).
+
+On your first visit, choose **Enter AshenedSpire** to reach the title menu.
+This does not start or overwrite a climb. The **Field guide** explains combat,
+resources, routes, saves and co-op in four pages; reopen it through Extras or
+Settings. Extras also contains **About** with the game's development and audio
+acknowledgements. Existing Unity saves remain available after the name change.
 
 ## What is Ashen Spire?
 
@@ -55,36 +63,42 @@ The Unity version is built for **tap first**. A mouse click works the same as a 
 
 | What | Touch / mouse | Keyboard |
 |---|---|---|
-| Choose a card | Tap the card | — |
-| Choose a target | Tap the enemy (or an ally, in co-op) | — |
-| Play the chosen card | Tap **Play** | — |
-| End your turn | Tap **End turn** | — |
+| Choose a card | Tap the card | 1–9 select the corresponding hand card (solo) |
+| Choose a target | Tap the enemy (or an ally, in co-op) | Left / Right choose an enemy (solo) |
+| Play the chosen card | Tap **Play** | Enter (solo; activates a focused button when navigating with Tab) |
+| End your turn | Tap **End turn** | E (solo) |
+| Read combat piles | **Draw pile / Discard pile / Exhausted** in the utility row | U / J / K (solo) |
+| Drink a flask | Tap its utility button | F Crimson / G Azure / H first utility flask (solo) |
+| Open deck and equipment | Tap **Deck and equipment** | D (solo combat) |
+| Cancel selection or close combat inspection | Use the Back or Cancel button | Esc |
 | See more cards | Swipe or scroll the hand sideways, or tap **Previous cards / Next cards** | — |
 | Read a long card | Scroll up and down inside the hand | — |
 | Move around the map | Drag the map; mouse wheel scrolls | PageUp / PageDown / Home / End (map selected) |
 | Zoom the map | **−**, **Fit**, **+**, **Recenter** buttons | Ctrl + mouse wheel |
 | Pick a room | Tap a lit room | — |
 
-Keyboard shortcuts and gamepad support from the HTML game (E to end turn,
-F/G/H flasks, M menu, rebinding, and so on) are **not in the Unity version
-yet**. They are planned (roadmap F15).
+Change map and solo combat bindings under **Settings → Controls**. Combat
+shortcuts act on key release, so holding a key does not repeat an action.
+Inspecting a pile, inventory or keyboard help blocks combat shortcuts. Tab and
+Enter still navigate the visible controls. Co-op shortcut parity and gamepad
+support remain unfinished (roadmap F15).
 
 ## Classes
 
 You choose one of four classes. Each has its own cards, starting relic and style.
 
-| Class | Health | Play style |
-|---|---|---|
-| **Reaver** | 84 | Fights up close and switches stance mid-battle: one stance hits harder, the other holds the line. Wounds keep bleeding, and heavy blows stagger. Good first pick. |
-| **Starseer** | 72 | A spellcaster. The second spell each turn hits harder than the first, so card order matters. Fragile early on. |
-| **Rogue** | 74 | Sets up an opening, then uses speed, poison and opportunism for big strikes. |
-| **Herald** | 78 | Spends its own health to act, then heals it back. Spreads a blight that hurts enemies over time. |
+| Class | Play style |
+|---|---|
+| **Reaver** | Fights up close and switches stance mid-battle: one stance hits harder, the other holds the line. Wounds keep bleeding, and heavy blows stagger. Good first pick. |
+| **Starseer** | A spellcaster. The second spell each turn hits harder than the first, so card order matters. Fragile early on. |
+| **Rogue** | Sets up an opening, then uses speed, poison and opportunism for big strikes. |
+| **Herald** | Spends its own health to act, then heals it back. Spreads a blight that hurts enemies over time. |
 
-**Stats.** There are five attributes (STR, DEX, INT, WIS, CON). All start at 5
-and you get **35 points** to spend (max 15 each). Every point helps: STR, DEX,
-INT and WIS add damage to matching attacks, WIS also adds healing, and CON adds
-health. At every 5 points, DEX gives an extra action and INT an extra card
-drawn. Prefer presets? Switch to **Standard**.
+**Stats.** There are five attributes (STR, DEX, INT, WIS, CON). **Standard**
+starts with the class preset ready to play. **Assign points** starts each at 1
+with three additional points to distribute, up to 4 in an attribute under the
+shipped rules. Creation previews show the resulting health, resources, ratings
+and cards before you commit. These lean rules replace the historical 35-point setup.
 
 You can also choose an **appearance style** (Animated, Rendered, Classic or
 Sigil), a tint and a sigil, and later unlock more starting kits.
@@ -102,6 +116,10 @@ Sigil), a tint and a sigil, and later unlock more starting kits.
 - **Catch Breath** (solo only): spend 1 action to get 1 stamina, once per turn.
 - Cards you play go to the discard pile. When your draw pile runs out, the
   discard pile is shuffled back in.
+- Use the combat pile buttons to read cards without revealing draw order.
+  Exhausted cards remain out for this fight. Shipped solo rules retain unplayed
+  cards; a saved or authored ruleset that requests discards opens a chooser
+  before End turn commits. Select within its stated limits, or cancel to keep playing.
 
 **Guard.** Guard (block) soaks up damage before your health. It goes away at
 the start of your next turn, so use it for the hit that's coming.
@@ -110,10 +128,9 @@ the start of your next turn, so use it for the hit that's coming.
 like "8 × 2" for two hits), guard, buff, debuff and so on. Read them before
 ending your turn. "Committed" means the move is locked in.
 
-**Poise and Stagger.** Enemies have hidden **Poise**. Heavy blows and some
+**Poise and Stagger.** Enemy **Poise** appears beneath its health. Heavy blows and some
 statuses wear it down. When it breaks, the enemy is **Staggered**: it loses
-its next turn and takes extra damage for a short while. The Unity version shows
-the Staggered status but does not draw a Poise bar yet.
+its next turn and takes extra damage for a short while.
 
 **Statuses** (small labels next to a fighter, with a number):
 
@@ -179,11 +196,22 @@ been, teal = nearest shrine, bright ring = you can go here).
 ## Saving
 
 - The game **saves automatically** after every accepted move.
-- **Save and return to title** stops safely; **Continue** resumes exactly.
+- **Save and return to title** keeps your place; **Continue** resumes the saved checkpoint.
+- If the game reports a failed save, keep it open while freeing storage. Your
+  current progress stays in memory and saving retries as you play. The warning
+  clears after a verified save; closing before that can lose recent progress.
+- If the game recovers a previous profile backup, it tells you that more recent
+  progress may be missing. An unreadable profile is preserved instead of being
+  silently replaced with a fresh one.
+- Web saves now use less space so all three slots can fit. Existing Unity saves
+  remain readable; once this build compacts them, continue using this build or
+  a newer compatible player. Older builds cannot read the compact records.
 - Saves live on this device and browser (and are separate for each build
   channel). Clearing site data or switching browsers starts fresh.
-- There is one saved run at a time. Multiple save slots from the HTML game are
-  not in the Unity version yet.
+- There are three native run slots. Continue resumes the most recently saved
+  climb; New uses an empty slot, or opens the slot picker when all three are full.
+  Earlier single-slot Unity saves migrate automatically. Importing original
+  JavaScript saves is still undecided.
 
 ## Other ways to play
 
@@ -223,10 +251,14 @@ Title → **Settings**. Your choices save on this device.
 - **Reduced motion**: less movement on screen.
 - **Quick animations**: faster feedback.
 - **Mute sound**.
+- **Master, music, combat effects and interface volume**, with sound previews.
+- **Interface size, text size and colorblind palette**.
+- **Screen shake, shake intensity and hit-stop**; reduced motion disables both effects.
+- **Map and solo combat keyboard bindings**, with conflict detection and reset.
 
-Settings also has a short **How to play** section. Music, volume sliders, text
-size, high contrast and colorblind options from the HTML game are planned
-(roadmap F08, F13, F15).
+Settings also has a short **How to play** section. Music changes with the scene.
+The combat utility row includes **Keyboard controls** with your current bindings.
+Full accessibility and controls parity still need acceptance (roadmap F13, F15).
 
 ## Glossary
 
@@ -262,7 +294,8 @@ actions, MP or stamina, or the card can't be played.
 **I lost my run.** Runs are saved in the browser for that channel. A different
 browser, a private window or cleared site data won't have it.
 
-**Can I play with a keyboard or controller?** Not yet in Unity; use mouse or touch.
+**Can I play with a keyboard or controller?** Solo combat and map keyboard
+controls are available; see the table above. Gamepad support is unfinished.
 
 **Which build am I playing?** The build page shows the version and build
-number; the Unity build currently in source is 0.0.14.0, build 14.
+number; the Unity candidate currently in source is 0.0.25.0, build 25.

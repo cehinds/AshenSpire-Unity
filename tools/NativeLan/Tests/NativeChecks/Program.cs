@@ -63,7 +63,14 @@ await using var rejoined=await Peer.Open(endpoint);await rejoined.Send("hello",n
 File.WriteAllText(Path.Combine(LanTestPaths.OutputRoot,"native-receipt.json"),new JObject{["checks"]=checks,["acceptedCommands"]=commands,["scene"]=hv["scene"]!["kind"]!.DeepClone(),["transport"]="two real ClientWebSocket peers",["gameRules"]="OriginalCoopRun + OriginalCoopCombat",["browserEvidence"]=false}.ToString());
 Console.WriteLine($"PASS {checks} real native co-op WebSocket checks; {commands} accepted/retry commands; encounter rewards reached.");
 await host.DisposeAsync();await rejoined.DisposeAsync();await late.DisposeAsync();
-await Task.Delay(150); var start = new System.Diagnostics.ProcessStartInfo("node") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true }; start.ArgumentList.Add(LanTestPaths.BridgeHarness); start.Environment["AS_LAN_JSLIB"] = LanTestPaths.JsLib; start.Environment["LAN_URL"] = endpoint.ToString(); start.Environment["HOST_RESUME"] = (string)hw["resumeToken"]!; start.Environment["GUEST_RESUME"] = (string)gw["resumeToken"]!; using var bridge = System.Diagnostics.Process.Start(start)!; var output = await bridge.StandardOutput.ReadToEndAsync(); var errors = await bridge.StandardError.ReadToEndAsync(); await bridge.WaitForExitAsync(); Check(bridge.ExitCode == 0,"Bridge harness failed: " + errors); Console.Write(output);
+// Closing the client is not the server's disconnect receipt. Wait for the room
+// to release every seat before the bridge tries to reclaim those same tokens.
+using var statusClient = new HttpClient { BaseAddress = new Uri(app.Urls.Single()) };
+var disconnectDeadline = DateTime.UtcNow.Add(LanTestPaths.ReplyTimeout);
+var connections = -1;
+do { connections = (int)JObject.Parse(await statusClient.GetStringAsync("/api/lan/info"))["connections"]!; if (connections == 0) break; await Task.Delay(50); } while (DateTime.UtcNow < disconnectDeadline);
+Check(connections == 0, "previous native peers are released before bridge rejoin");
+var start = new System.Diagnostics.ProcessStartInfo("node") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true }; start.ArgumentList.Add(LanTestPaths.BridgeHarness); start.Environment["AS_LAN_JSLIB"] = LanTestPaths.JsLib; start.Environment["LAN_URL"] = endpoint.ToString(); start.Environment["HOST_RESUME"] = (string)hw["resumeToken"]!; start.Environment["GUEST_RESUME"] = (string)gw["resumeToken"]!; using var bridge = System.Diagnostics.Process.Start(start)!; var output = await bridge.StandardOutput.ReadToEndAsync(); var errors = await bridge.StandardError.ReadToEndAsync(); await bridge.WaitForExitAsync(); Check(bridge.ExitCode == 0,"Bridge harness failed: " + errors); Console.Write(output);
 await app.StopAsync();
 
 

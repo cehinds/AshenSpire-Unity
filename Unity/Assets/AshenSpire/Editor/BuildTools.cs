@@ -104,7 +104,49 @@ namespace AshenSpire.Editor
                 File.WriteAllText(target, json);
             AssetDatabase.Refresh();
             OriginalSpriteImport.Configure();
+            ImportMusic();
             Debug.Log($"Content import: {content.Cards.Length} cards and {content.Enemies.Length} enemies validated.");
+        }
+
+        private static void ImportMusic()
+        {
+            var manifest = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(Repository, "music/manifest.json")));
+            var catalog = JsonUtility.FromJson<MusicCatalog>(File.ReadAllText(Root + "/Resources/Audio/music-catalog.json"));
+            foreach (var track in catalog.Tracks.Where(track => track.Kind == MusicCatalog.KindFile))
+            {
+                const string prefix = "Audio/Music/";
+                if (track.ResourcePath == null || !track.ResourcePath.StartsWith(prefix, StringComparison.Ordinal))
+                    throw new InvalidDataException("Invalid music resource: " + track.Id);
+                var relative = track.ResourcePath.Substring(prefix.Length);
+                var listed = manifest.Properties().Where(property => property.Value is Newtonsoft.Json.Linq.JArray)
+                    .SelectMany(property => property.Value.Values<string>()).SingleOrDefault(file => Path.ChangeExtension(file, null).Replace('\\', '/') == relative);
+                if (listed == null || listed.Contains("..") || Path.IsPathRooted(listed))
+                    throw new InvalidDataException("Music track is missing from the credited manifest: " + track.Id);
+                var source = Path.Combine(Repository, "music", listed);
+                var destination = Root + "/Resources/" + track.ResourcePath + Path.GetExtension(listed);
+                if (!File.Exists(source)) throw new FileNotFoundException("Missing authored music file", source);
+                Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                var copied = !File.Exists(destination) || !File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(destination));
+                if (copied)
+                    File.Copy(source, destination, true);
+                if (copied || AssetImporter.GetAtPath(destination) == null) AssetDatabase.ImportAsset(destination);
+                var importer = AssetImporter.GetAtPath(destination) as AudioImporter;
+                if (importer == null) throw new InvalidDataException("Music did not import as audio: " + destination);
+                var sample = importer.defaultSampleSettings;
+                // Keep the credited originals untouched. Native Vorbis encoding at
+                // 0.5 avoids shipping a >100 MiB Windows ZIP after adding the score.
+                // Listening acceptance is separate from import/package validation.
+                if (sample.loadType != AudioClipLoadType.Streaming || sample.preloadAudioData ||
+                    !Mathf.Approximately(sample.quality, .5f) || !importer.loadInBackground)
+                {
+                    sample.loadType = AudioClipLoadType.Streaming;
+                    sample.preloadAudioData = false;
+                    sample.quality = .5f;
+                    importer.defaultSampleSettings = sample;
+                    importer.loadInBackground = true;
+                    importer.SaveAndReimport();
+                }
+            }
         }
 
         [MenuItem("AshenSpire/2. Prepare Playable Scene")]
@@ -168,13 +210,26 @@ namespace AshenSpire.Editor
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.template = "PROJECT:Mobile";
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            // Android stores preferences by the unchanged package ID, so its
+            // launcher label can use the new name. Windows/Web retain their
+            // product storage identity; their visible captions are branded separately.
+            BuildReport report;
+            try
             {
-                scenes = new[] { ScenePath },
-                target = target,
-                locationPathName = Path.Combine(Repository, "Builds", suffix),
-                options = BuildOptions.None
-            });
+                if (target == BuildTarget.Android) PlayerSettings.productName = "AshenedSpire";
+                report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+                {
+                    scenes = new[] { ScenePath },
+                    target = target,
+                    locationPathName = Path.Combine(Repository, "Builds", suffix),
+                    options = BuildOptions.None
+                });
+            }
+            finally
+            {
+                PlayerSettings.productName = "AshenSpire Unity";
+                AssetDatabase.SaveAssets();
+            }
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException($"{target} build failed: {report.summary.totalErrors} errors.");
             // The exporter, rather than a later copy command, records the source it built.
@@ -216,7 +271,7 @@ namespace AshenSpire.Editor
                     stream.Write(name, 0, name.Length);
                     var bytes = File.ReadAllBytes(Path.Combine(Repository, path));
                     var extension = Path.GetExtension(path).ToLowerInvariant();
-                    if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf" }.Contains(extension))
+                    if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf", ".mp3", ".ogg", ".wav", ".aiff", ".aif", ".flac" }.Contains(extension))
                         bytes = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace("\r\n", "\n"));
                     stream.Write(bytes, 0, bytes.Length);
                 }

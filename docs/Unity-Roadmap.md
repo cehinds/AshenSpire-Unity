@@ -1,7 +1,7 @@
-# AshenSpire Unity roadmap
+# AshenedSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.14.0 · build 14 ·
+content while improving phone play. Current source: **0.0.28.1 · build 29 ·
 Foundation in progress** (`GameContent/Unity/version.json`). Published channels
 may still carry earlier checkpoints.
 
@@ -13,6 +13,8 @@ in `Runtime/Presentation`, UI Toolkit). Version numbers follow
 this tracker, **C** counts user stories inside the feature in progress.
 Handoff for a fresh agent: [CONTINUE-HERE.md](CONTINUE-HERE.md). How to play:
 [PLAYER-GUIDE.md](PLAYER-GUIDE.md).
+The [core-phase checkbox summary](Unity-Milestones.md) groups this tracker by
+milestone, with user-story subitems and separate verification/acceptance status.
 
 ## Feature tracker
 
@@ -23,7 +25,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 
 | ID | Feature | Status | Version | Evidence |
 |---|---|---|---|---|
-| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.14.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
+| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.28.1 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
@@ -31,18 +33,26 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 | F05 | Branching map & fog | in-progress | — | `OriginalMapBoard.cs` · `OriginalMapKnowledge.cs` · [map](Unity-Map-Foundation.md) |
 | F06 | Rewards, cinders, relics, equipment & flasks | in-progress | — | `OriginalRunPanel.cs` (Reward/Deck) · `WeaponLoadout.cs` · `FlaskChargePool.cs` |
 | F07 | Juice pass (animation, hit feedback, transitions) | in-progress | — | `CombatFeedback.cs` · `NativeFeedbackProjection.cs` · `OriginalPlayerFigure.cs` · merged: [#51](https://github.com/cehinds/AshenSpire-Unity/pull/51) feel profile |
-| F08 | Audio & music | in-progress | — | `Runtime/Application/GameAudio.cs` (procedural cues only; no music) · merged: [#46](https://github.com/cehinds/AshenSpire-Unity/pull/46) music director |
+| F08 | Audio & music | in-progress | — | `MusicPlayer.cs`, `MusicDirector.cs`, all 10 imported file tracks; build 22 connects music; build 23 connects independent interface audio and previews with 32 compiled browser checks; owner listening acceptance remains |
 | F09 | Merchant, shrine & events | in-progress | — | `OriginalRunServices.cs` · `OriginalRunPanel.cs` (Shop/Shrine/Event) |
 | F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` · merged: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) save slots |
 | F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` · merged: [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) run summary |
 | F12 | Acts 1–3 & bosses (plus Custom Climb/Endless) | in-progress | — | `OriginalRunRules.cs` · `OriginalCustomRunRules.cs` · full-climb 657 checks |
 | F13 | Accessibility & phone layout | in-progress | — | `ViewportLayout.cs` · `DisplayViewport.cs` · reduced-motion toggle |
 | F14 | Co-op (LAN companion) | in-progress | — | `OriginalCoopRun*.cs` · `OriginalCoopPanel.cs` · `tools/NativeLan/` |
-| F15 | Customization settings & controls | in-progress | — | HTML `src/ui/screens/settings.js`, `controls.js`; Unity has 3 toggles only · merged: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) settings model |
+| F15 | Customization settings & controls | in-progress | — | `CampaignView.PlayerSettings.cs`, `OriginalPlayerSettings.cs`; build 22 consumes shake/intensity and optional hit-stop; full controls parity remains |
 | F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` · merged: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) mod packs |
-| F17 | Performance & platform polish | todo | — | no budgets measured; no physical device/iOS evidence |
+| F17 | Performance & platform polish | in-progress | — | `native-performance-playtest.cjs`; [platform acceptance and iOS plan](Unity-Platform-Acceptance.md); no target-phone budget or physical-device acceptance |
 
 ### Parity diff summary (HTML reference → Unity build 14)
+
+This is a **historical build-14 survey**, not a current list of missing code.
+Builds 15–22 add save slots, detailed settings, music, telegraphs, run summaries,
+feel integration and lean creation/hand rules. Build 22 additionally connects
+music volume and co-op music, imports the 10 tracks, consumes shake/hit-stop
+settings and provides per-seat co-op damage previews. The developer compendium
+now renders every enemy portrait for compiled review. Full product acceptance
+and the remaining visual/interaction parity work are still open.
 
 Evidence-based survey of `src/ui/screens/*.js`, `src/ui/components/*.js`,
 `src/engine/*.js`, `src/content/*` and `SPEC.md` against
@@ -96,6 +106,8 @@ is not owner acceptance.
 
 ## Feature detail
 
+User-story checkboxes below track full acceptance, not merely whether code exists. Specific verified subitems and current-build evidence are summarized in [core phases](Unity-Milestones.md).
+
 Each section lists the player-facing goal, user stories (US-x.y), acceptance
 criteria, reference files and tests. "Reference" paths are the HTML game;
 "Unity" paths are relative to `Unity/Assets/AshenSpire/Runtime`. Test lists name
@@ -110,22 +122,30 @@ build and verify it. Completion selects `0.1.0.0`.
 
 User stories (open work, from the detailed checklist below):
 
-- US-0.1 Extend compiled painted-enemy coverage from hounds/wisp to all 19
-  enemies and obtain owner visual acceptance.
-- US-0.2 Run current-source compiled Custom/Sealed/Draft/Endless interaction
+- [ ] **US-0.1** Obtain owner acceptance of the compiled 19-enemy portrait gallery and
+  extend actual solo/co-op encounter coverage. The build-28 catalog passes 78 checks with 38 phone/desktop captures; this does not replace encounter coverage or owner acceptance.
+- [ ] **US-0.2** Run current-source compiled Custom/Sealed/Draft/Endless interaction
   and save/resume checks.
-- US-0.3 Check card numbers, target availability, affordability, rejection
+- [ ] **US-0.3** Check card numbers, target availability, affordability, rejection
   recovery and result feedback in phone and desktop flows.
-- US-0.4 Cover original settings/inventory flows not exercised by current commands.
-- US-0.5 Current-source multi-browser co-op: friendly targets, catch-up, host
+  - [x] Build 29 fixes the legacy flask hidden by the action bar; nine portrait/landscape checks verify full visibility, touch size and exact charge/healing effects.
+  - [x] Build 29 reference campaign completes all nine encounters with rewards, equipment and exact reload; high-density touch covers 12 layouts and six landscape inspections. See [scoped QA](qa/unity-build-29/README.md).
+- [ ] **US-0.4** Cover original settings/inventory flows not exercised by current commands.
+- [ ] **US-0.5** Current-source multi-browser co-op: friendly targets, catch-up, host
   restart, duplicate retry and rejoin via the packaged companion.
-- US-0.6 Profile corruption, quota exhaustion and upgrade coverage; explicit
-  decision on original JavaScript save import.
-- US-0.7 Finish field/schema/runtime authoring coverage.
-- US-0.8 Verify hosted build/history links, downloads and screenshots; expand
+- [ ] **US-0.6** Profile corruption, quota exhaustion, upgrade coverage and original JavaScript save import.
+  - [x] Owner requires import before Phase 1 completion (2026-09-28).
+  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 394 domain and 12 browser-adapter checks passed.
+  - [x] Build 28 compiled import verification: 36 phone/desktop checks and 16 native profile/slot regression checks.
+  - [ ] Broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
+- [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
+- [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
   archive hosting capacity without deleting archived players.
-- US-0.9 Armour/tint visual acceptance and co-op pose feedback.
-- US-0.10 Record remaining defects and owner acceptance, then select `0.1.0.0`.
+  - [x] Build-28 Web, Windows, Android and companion public downloads verified against their packaged SHA-256 receipts.
+  - [x] Locally validated capacity fix retains all 30 archived players at 382.5 MiB; 3,447 navigation and 545 runtime/hash/CORS checks, plus three sampled compiled player startups.
+  - [ ] Owner merge into `dev`, successful Pages deployment and public build-28 player verification. See [hosting checklist](Unity-Archive-Hosting.md).
+- [ ] **US-0.9** Armour/tint visual acceptance and co-op pose feedback.
+- [ ] **US-0.10** Record remaining defects and owner acceptance, then select `0.1.0.0`.
 
 Acceptance: every unchecked item in
 [Foundation (F00) detailed acceptance](#foundation-f00-detailed-acceptance) is
@@ -142,11 +162,11 @@ Tests: all `UnityTests/*` projects run in `.github/workflows/unity-pages.yml`;
 **Goal:** opening the game feels like the original: a painted, calm title, a
 clear Continue, and a settings screen that saves.
 
-- US-1.1 As a returning player I see Continue first and resume my run in one tap.
-- US-1.2 As a player I open Collection/Chronicle and see my wanderers, runs and unlocks.
-- US-1.3 As a player I change sound, motion and animation speed and it persists.
-- US-1.4 As a first-time player a startup gate/press-to-begin avoids an accidental menu tap (SPEC §7.1).
-- US-1.5 As a player I can read an About screen with the AI-use acknowledgement (SPEC §2.1).
+- [ ] **US-1.1** As a returning player I see Continue first and resume my run in one tap.
+- [ ] **US-1.2** As a player I open Collection/Chronicle and see my wanderers, runs and unlocks.
+- [ ] **US-1.3** As a player I change sound, motion and animation speed and it persists.
+- [ ] **US-1.4** As a first-time player a startup gate/press-to-begin avoids an accidental menu tap (SPEC §7.1).
+- [ ] **US-1.5** As a player I can read an About screen with the AI-use acknowledgement (SPEC §2.1).
 
 Acceptance: title matches the reference composition at 320×640, 390×844 and
 1440×900 with no clipped wordmark; Continue disabled when no run exists;
@@ -164,10 +184,10 @@ Tests: `tools/native-visual-parity-playtest.cjs`, `tools/campaign-playtest.cjs
 **Goal:** choosing a class is inviting and informative: portrait, resources,
 starting kit and attributes are visible before committing.
 
-- US-2.1 Pick one of Reaver, Starseer, Rogue or Herald beside a framed preview.
-- US-2.2 Assign 35 points (all attributes start at 5, max 15) or use Standard presets, and see each point's benefit.
-- US-2.3 Choose discovered starting kits, alternate hands, wardrobe/relic and appearance (Animated/Rendered/Classic/Sigil, tint, sigil).
-- US-2.4 Enter a seed and start; phone layout keeps Begin reachable.
+- [ ] **US-2.1** Pick one of Reaver, Starseer, Rogue or Herald beside a framed preview.
+- [ ] **US-2.2** Use the current lean Standard class presets, or Assign points from attributes starting at 1 using the authored pool and bounds, and see each point's benefit. The older 35-point, 5-start creation rules are historical and must not be restored.
+- [ ] **US-2.3** Choose discovered starting kits, alternate hands, wardrobe/relic and appearance (Animated/Rendered/Classic/Sigil, tint, sigil).
+- [ ] **US-2.4** Enter a seed and start; phone layout keeps Begin reachable.
 
 Acceptance: all four classes render at phone/desktop sizes; allocation bounds
 and remaining budget are enforced; the chosen kit, relic and appearance are
@@ -183,15 +203,19 @@ Tests: `UnityTests/Domain`, `UnityTests/SpriteStyles`, `tools/NativeLan/Tests/St
 
 ### F03 — Combat core
 
+Build 24: solo pile inspection and saved keyboard controls pass 37 compiled
+browser checks per viewport (320×640 and 1440×900), plus 45 discard-choice
+callback fixtures. [Evidence](qa/unity-build-24/README.md). Owner acceptance remains open.
+
 **Goal:** a turn feels fast and legible: pick a card, pick a target, play; costs
 and shortages are obvious; the hand is readable on a phone.
 
-- US-3.1 Select a card and target, see the exact cost (actions/MP/stamina) and play it.
-- US-3.2 An unaffordable card stays inspectable and Play explains the shortage.
-- US-3.3 Browse a long hand and read long descriptions without losing Play/End turn.
-- US-3.4 Inspect draw, discard and exhaust piles.
-- US-3.5 Use Catch Breath (solo) and paid set switches with visible costs.
-- US-3.6 Keyboard shortcuts for Play, End turn, flasks and cancel (see F15 for rebinding).
+- [ ] **US-3.1** Select a card and target, see the exact cost (actions/MP/stamina) and play it.
+- [ ] **US-3.2** An unaffordable card stays inspectable and Play explains the shortage.
+- [ ] **US-3.3** Browse a long hand and read long descriptions without losing Play/End turn.
+- [ ] **US-3.4** Inspect draw, discard and exhaust piles.
+- [ ] **US-3.5** Use Catch Breath (solo) and paid set switches with visible costs.
+- [ ] **US-3.6** Keyboard shortcuts for Play, End turn, flasks and cancel (see F15 for rebinding).
 
 Acceptance: card numbers match `OriginalCardText` for all 364 definitions; the
 same `Resolve/Cost` source drives cards, Play label and HUD; no action is lost
@@ -210,10 +234,10 @@ Tests: `UnityTests/Parity`, `CardText`, `CardCosts`, `tools/native-card-cost-pla
 **Goal:** you always know what every enemy will do next and how close it is to
 breaking.
 
-- US-4.1 Each enemy shows its intent (attack total incl. multi-hit, block, buff, debuff, unknown, staggered).
-- US-4.2 Each enemy shows a Poise meter under HP; filling it Staggers the enemy (skip turn, +50% damage).
-- US-4.3 Intents use icons plus numbers, recomputed live when statuses change.
-- US-4.4 Tapping an enemy shows its statuses and what they do.
+- [ ] **US-4.1** Each enemy shows its intent (attack total incl. multi-hit, block, buff, debuff, unknown, staggered).
+- [ ] **US-4.2** Each enemy shows a Poise meter under HP; filling it Staggers the enemy (skip turn, +50% damage).
+- [ ] **US-4.3** Intents use icons plus numbers, recomputed live when statuses change.
+- [ ] **US-4.4** Tapping an enemy shows its statuses and what they do.
 
 Acceptance: intent numbers equal the engine's damage preview; Poise meter and
 Stagger state are visible and correct in solo and co-op; icons readable at 320×640.
@@ -230,10 +254,10 @@ Poise meter/intent icons: to write.
 **Goal:** the map is a place you want to read: branching routes, fog you push
 back, shrines that glow.
 
-- US-5.1 See the act's branching graph, current node, travelled path and lit choices.
-- US-5.2 Solo fog hides unseen rooms; a Sealstone Key reveals rooms; the nearest shrine can glow.
-- US-5.3 Pan, zoom, Fit and Recenter by touch, mouse wheel or keys; preferences persist.
-- US-5.4 Open a Routes list and a Key legend.
+- [ ] **US-5.1** See the act's branching graph, current node, travelled path and lit choices.
+- [ ] **US-5.2** Solo fog hides unseen rooms; a Sealstone Key reveals rooms; the nearest shrine can glow.
+- [ ] **US-5.3** Pan, zoom, Fit and Recenter by touch, mouse wheel or keys; preferences persist.
+- [ ] **US-5.4** Open a Routes list and a Key legend.
 
 Acceptance: 558-check map suite and minimum-zoom rerun pass on the current
 build; parchment styling matches the reference.
@@ -250,10 +274,10 @@ Tests: `UnityTests/MapKnowledge`, `MapViewport`, `MapShape`, `tools/native-map-p
 **Goal:** winning feels rewarding: clear spoils, meaningful equipment choices,
 flasks you plan around.
 
-- US-6.1 After a fight collect cinders, a relic, a flask or an armament individually.
-- US-6.2 Equip prepared sets, improve (smith) and extract/install weapon cards between fights.
-- US-6.3 Drink Crimson/Azure charges and utility flasks in combat, with friendly targets in co-op.
-- US-6.4 Reward and inventory screens match the reference layout.
+- [ ] **US-6.1** After a fight collect cinders, a relic, a flask or an armament individually.
+- [ ] **US-6.2** Equip prepared sets, improve (smith) and extract/install weapon cards between fights.
+- [ ] **US-6.3** Drink Crimson/Azure charges and utility flasks in combat, with friendly targets in co-op.
+- [ ] **US-6.4** Reward and inventory screens match the reference layout.
 
 Acceptance: every reward kind claims exactly once and survives reload; equipment
 changes preserve resource deficits; flask charges match the shared pool.
@@ -270,10 +294,10 @@ Tests: `UnityTests/Parity`, `tools/native-features-playtest.cjs`; reward-layout 
 **Goal:** hits land: anticipation, impact, recovery, damage numbers and
 transitions make each action satisfying, without slowing the game.
 
-- US-7.1 Attacks play anticipation/impact/recovery poses for all four renderer styles.
-- US-7.2 Damage, guard, healing and status numbers float from actual result receipts.
-- US-7.3 Screen and room transitions; enemy hit/death reactions.
-- US-7.4 Reduced motion and Quick animations respected everywhere.
+- [ ] **US-7.1** Attacks play anticipation/impact/recovery poses for all four renderer styles.
+- [ ] **US-7.2** Damage, guard, healing and status numbers float from actual result receipts.
+- [ ] **US-7.3** Screen and room transitions; enemy hit/death reactions.
+- [ ] **US-7.4** Reduced motion and Quick animations respected everywhere.
 
 Acceptance: feedback never changes simulation results; reduced motion removes
 meaningful motion; no dropped frames on target phones (see F17).
@@ -288,10 +312,10 @@ Tests: `UnityTests/NativeFeedback`, `tools/native-appearance-playtest.cjs`; tran
 **Goal:** the Spire sounds alive: per-screen music and distinct combat sounds,
 with volume control.
 
-- US-8.1 Distinct SFX for attack, guard, hit, reward, UI (procedural cues exist).
-- US-8.2 Per-context music (title, map, combat, boss) with smooth transitions.
-- US-8.3 Separate music and SFX volume sliders; mute persists.
-- US-8.4 Owner can drop replacement tracks into a folder (reference `music/`).
+- [ ] **US-8.1** Distinct SFX for attack, guard, hit, reward, UI (procedural cues exist).
+- [ ] **US-8.2** Per-context music (title, map, combat, boss) with smooth transitions.
+- [ ] **US-8.3** Separate music and SFX volume sliders; mute persists.
+- [ ] **US-8.4** Owner can drop replacement tracks into a folder (reference `music/`).
 
 Acceptance: audible on Web after first interaction, Windows and Android; pauses
 on backgrounding; volume persists.
@@ -304,9 +328,9 @@ Tests: `UnityTests/AudioPreview`, `tools/campaign-playtest.cjs --feedback-only`;
 
 **Goal:** non-combat rooms offer real decisions.
 
-- US-9.1 Merchant: buy cards, relics and flasks; sell eligible relics/utility flasks; remove a card.
-- US-9.2 Shrine: refill flasks on arrival, rest, reallocate Crimson/Azure, buy level points, or leave without resting.
-- US-9.3 Events: all 22 events and 62 choices reachable with results shown.
+- [ ] **US-9.1** Merchant: buy cards, relics and flasks; sell eligible relics/utility flasks; remove a card.
+- [ ] **US-9.2** Shrine: refill flasks on arrival, rest, reallocate Crimson/Azure, buy level points, or leave without resting.
+- [ ] **US-9.3** Events: all 22 events and 62 choices reachable with results shown.
 
 Acceptance: prices/refusals match the domain; every event choice reachable in a
 compiled run; purchases survive reload.
@@ -318,12 +342,17 @@ Tests: `UnityTests/Parity` (run fixtures), `tools/native-features-playtest.cjs`;
 
 ### F10 — Run, seed & save slots
 
+Build 25: profile recovery, compact Web storage and verified save retries pass
+148 storage and 36 Unity-compiled controller/view checks, plus source-matched
+all-three-slot browser and two-player co-op smoke checks. [Evidence](qa/unity-build-25/README.md).
+Asynchronous browser quota, real-device durability and owner acceptance remain open.
+
 **Goal:** a run is never lost and can be shared by seed.
 
-- US-10.1 Enter or copy a seed; the same seed gives the same map and offers.
-- US-10.2 Autosave after each accepted command; Continue restores exact state.
-- US-10.3 Multiple save slots with a load/new picker.
-- US-10.4 Recover from corrupted or full storage without losing the backup.
+- [ ] **US-10.1** Enter or copy a seed; the same seed gives the same map and offers.
+- [ ] **US-10.2** Autosave after each accepted command; Continue restores exact state.
+- [ ] **US-10.3** Multiple save slots with a load/new picker.
+- [ ] **US-10.4** Recover from corrupted or full storage without losing the backup.
 
 Acceptance: exact resume comparisons pass; slots isolated per channel; quota
 and corruption cases handled.
@@ -338,9 +367,9 @@ Tests: `UnityTests/Interruption`, `UnityTests/Playthrough`, `tools/interruption-
 
 **Goal:** a run ends with a moment and a story: what you reached and why.
 
-- US-11.1 Death screen ("ash returns to ash") and victory screen with art and motion.
-- US-11.2 Run summary: class, seed, floor, cinders, kills, deck, cause of death.
-- US-11.3 Chronicle records the run and shows new unlocks immediately.
+- [ ] **US-11.1** Death screen ("ash returns to ash") and victory screen with art and motion.
+- [ ] **US-11.2** Run summary: class, seed, floor, cinders, kills, deck, cause of death.
+- [ ] **US-11.3** Chronicle records the run and shows new unlocks immediately.
 
 Acceptance: summary numbers match the saved run; unlocks earned appear on the
 next creation screen.
@@ -354,9 +383,9 @@ Tests: `tools/native-playtest.cjs` (victory + Chronicle); run summary: to write.
 **Goal:** three distinct acts with escalating enemies and memorable bosses, plus
 Custom Climb, Sealed/Draft and Endless.
 
-- US-12.1 Act backgrounds and encounters for all three acts; bosses The Fell Warden (Act 1), The Stitched King (Act 2) and The Blighted Valkyrie (Act 3), and elites Wyrm Aspirant, Duelist of the Court and Wyrm Lord, on screen.
-- US-12.2 Custom Climb with Ascension 0–6 and modifiers; Sealed and Draft starts.
-- US-12.3 Endless cycles past Act 3.
+- [ ] **US-12.1** Act backgrounds and encounters for all three acts; bosses The Fell Warden (Act 1), The Stitched King (Act 2) and The Blighted Valkyrie (Act 3), and elites Wyrm Aspirant, Duelist of the Court and Wyrm Lord, on screen.
+- [ ] **US-12.2** Custom Climb with Ascension 0–6 and modifiers; Sealed and Draft starts.
+- [ ] **US-12.3** Endless cycles past Act 3.
 
 Acceptance: compiled three-act victory on the current build; each boss rendered
 and fought in a compiled check; custom modes save/resume.
@@ -371,10 +400,10 @@ Tests: `UnityTests/Playthrough`, `MapShape`, `tools/native-playtest.cjs`,
 
 **Goal:** comfortable one-handed phone play and readable text for everyone.
 
-- US-13.1 Every flow fits 320×640 to 1440×900 with safe areas and reachable controls.
-- US-13.2 Text size, high contrast, colorblind-friendly palette, reduce flashes.
-- US-13.3 Minimum tap size and hold-to-confirm for destructive actions.
-- US-13.4 No hover-only information; tooltips have tap equivalents.
+- [ ] **US-13.1** Every flow fits 320×640 to 1440×900 with safe areas and reachable controls.
+- [ ] **US-13.2** Text size, high contrast, colorblind-friendly palette, reduce flashes.
+- [ ] **US-13.3** Minimum tap size and hold-to-confirm for destructive actions.
+- [ ] **US-13.4** No hover-only information; tooltips have tap equivalents.
 
 Acceptance: all screens pass layout checks at four viewports; accessibility
 options persist and apply globally.
@@ -387,10 +416,10 @@ Tests: `UnityTests/Viewport`, `tools/campaign-playtest.cjs --mobile-layout`; acc
 
 **Goal:** two to four friends climb together on a LAN, each with their own hand.
 
-- US-14.1 Host via the companion; guests join with an invitation code; lobby, ready and seed.
-- US-14.2 Vote on routes; private rewards, shops and events; catch-up.
-- US-14.3 Shared combat with friendly targets; downed/disconnected seats.
-- US-14.4 Rejoin a saved seat after disconnect or host restart.
+- [ ] **US-14.1** Host via the companion; guests join with an invitation code; lobby, ready and seed.
+- [ ] **US-14.2** Vote on routes; private rewards, shops and events; catch-up.
+- [ ] **US-14.3** Shared combat with friendly targets; downed/disconnected seats.
+- [ ] **US-14.4** Rejoin a saved seat after disconnect or host restart.
 
 Acceptance: multi-browser fight/reward/rejoin, host restart and duplicate retry
 pass on the packaged companion; phone/LAN hardware check.
@@ -406,9 +435,9 @@ Tests: `UnityTests/CoopRun`, `tools/NativeLan/Tests/*`, `tools/native-coop-ci.cj
 
 **Goal:** players tune the game to taste and input device.
 
-- US-15.1 Display options: fullscreen, UI size, accent colour, card motif, map header, control hints.
-- US-15.2 Gameplay options: combat pacing, reward collection, merchant buy-back, weapon swap cost display.
-- US-15.3 Keyboard and gamepad bindings with rebinding.
+- [ ] **US-15.1** Display options: fullscreen, UI size, accent colour, card motif, map header, control hints.
+- [ ] **US-15.2** Gameplay options: combat pacing, reward collection, merchant buy-back, weapon swap cost display.
+- [ ] **US-15.3** Keyboard and gamepad bindings with rebinding.
 
 Acceptance: each option persists per channel and changes the named behaviour
 only; defaults match the reference.
@@ -421,10 +450,10 @@ Tests: to write.
 
 **Goal:** the owner (and later modders) change content without C#.
 
-- US-16.1 Export/import any table as CSV with validation, stale-edit refusal and backups.
-- US-16.2 Add a card, weapon, enemy and encounter that work in real combat.
-- US-16.3 Full original schema validation with file/row/field error messages.
-- US-16.4 Optional data packs layered over base content.
+- [ ] **US-16.1** Export/import any table as CSV with validation, stale-edit refusal and backups.
+- [ ] **US-16.2** Add a card, weapon, enemy and encounter that work in real combat.
+- [ ] **US-16.3** Full original schema validation with file/row/field error messages.
+- [ ] **US-16.4** Optional data packs layered over base content.
 
 Acceptance: authoring checks pass; invalid imports never replace valid content.
 Reference: `content/framework/*.json`, `src/framework/importer.js`, `validate.js`,
@@ -438,10 +467,10 @@ Tests: `UnityTests/Authoring`, `UnityTests/OriginalAuthoring`,
 
 **Goal:** fast start, smooth frames and a real install on target devices.
 
-- US-17.1 Measure startup, download size, memory and frame time on reference phones.
-- US-17.2 Physical Android and graphical Windows play-through.
-- US-17.3 iOS build/device path.
-- US-17.4 Hosted Pages archive capacity for continued builds.
+- [ ] **US-17.1** Measure startup, download size, memory and frame time on reference phones.
+- [ ] **US-17.2** Physical Android and graphical Windows play-through.
+- [ ] **US-17.3** iOS build/device path.
+- [ ] **US-17.4** Hosted Pages archive capacity for continued builds.
 
 Acceptance: budgets recorded and met; device receipts per build.
 Reference: [Unity-Build-Brief.md](Unity-Build-Brief.md) §2–3, `tools/unity-archive-hosting.mjs`.
@@ -457,6 +486,18 @@ checkmarks do not certify every interaction or platform. See
 [Unity-Parity.md](Unity-Parity.md) for receipts.
 
 ### Build history
+
+Build 22 integrates live music/feedback settings, file music imports, co-op
+scene music and damage previews, and compiled catalog/performance/settings
+test tools. F00–F16 remain in progress until compiled criteria and owner
+acceptance are both recorded. F17 has started with measurement tooling and an
+iOS/device plan; software-browser measurements cannot close its device gates.
+
+On 2026-09-27 the build-20 exports were verified and pushed in `4707586`.
+Pages workflow 36337567712 published 22 archived players within 816.5 MiB,
+including builds 13, 14 and 20, with no archive deletion. Versions 15–19 have
+no compiled exports in history. Archive availability is separate from channel
+promotion. The old capacity blocker below is historical.
 
 Build 14 prioritizes matching the HTML reference visually: title composition, serif display type, warm palette, class preview, compact combat HUD, simultaneous enemies and framed horizontal cards. See [visual parity](Unity-Visual-Parity.md) for evidence and remaining gaps.
 
@@ -575,8 +616,18 @@ all archived players and independently tested channel saves. See
 - [x] Pass 217 source/art checks across all 19 painted mappings, 31 compiled solo
   checks on hounds/wisp with nine screenshots, and eight host/six guest co-op
   fight/reward/rejoin checks with nine non-lobby screenshots; zero browser errors.
-- [ ] Extend build 11 compiled art coverage beyond hounds/wisp and obtain owner
-  visual acceptance. Source mapping coverage does not prove every enemy on screen.
+- [x] Render all 19 painted portraits in the build-22 compiled compendium at
+  phone and desktop sizes: 78 checks and 38 screenshots. All phone portraits
+  visually inspected; [QA receipts](qa/unity-build-22/README.md).
+- [ ] Obtain owner visual acceptance and complete every solo/co-op encounter's
+  art coverage. A compendium portrait is not an exercised encounter.
+- [x] Rebuild build 22 for Web/Windows/Android and companion; 451 companion,
+  163 native exported-file and 20 package checks. Corrected source digest:
+  `54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60376a11e3ea`.
+- [x] Build-22 phone/desktop visual flow (148 checks), card costs (152),
+  settings persistence/inventory navigation, Draft/paid services (20), and
+  corrected two-client packaged-companion fight/reward/exact-hand rejoin
+  (eight host/six guest checks). These are bounded flows, not complete acceptance.
 - [x] Complete the build 10 scripted native browser run: 657 checks, 280
   commands, 22 fights, three acts, two reloads and Chronicle checks.
 - [ ] Complete owner acceptance and the broader profile unlock/new-creation,
@@ -605,8 +656,8 @@ all archived players and independently tested channel saves. See
 - [x] Pass 50 build 10 storage checks: 12 served-file hashes and 38 storage checks,
   exact backup recovery and preservation of 729,414 damaged bytes.
 - [ ] Complete profile corruption, quota exhaustion and upgrade coverage.
-- [ ] Decide original JavaScript save import explicitly. Existing legacy saves are
-  preserved; importing them into a native run is not implemented.
+- [x] Decide original JavaScript save import explicitly: owner requires it before Phase 1 completion.
+- [ ] Finish original-save import acceptance. Existing saves stay preserved; initial map-checkpoint conversion is implemented, with compiled and broader compatibility verification pending.
 - [x] Build matching-source build 10 Web, Windows, Android and companion packages; pass
   433 companion, 160 Windows/APK and 18 root-package checks, plus 22 self-contained restart checks.
 - [ ] Verify hosted build/history links, downloadable folders and current screenshots.

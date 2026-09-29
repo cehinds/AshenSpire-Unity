@@ -1,0 +1,36 @@
+{
+  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+  "packagedCompanion": true,
+  "players": 2,
+  "physicalDevice": false,
+  "seats": [
+    {
+      "seat": "Host",
+      "success": true,
+      "checks": [
+        "different authenticated seats",
+        "one vote waits for other connected player",
+        "both actual hands contain an affordable card after reconnect",
+        "host selected card is playable before peer action",
+        "peer action preserves host selected card and its hand page",
+        "two Unity clients defeat actual encounter",
+        "real fight counted once",
+        "no browser or Unity errors"
+      ],
+      "errors": []
+    },
+    {
+      "seat": "Guest",
+      "success": true,
+      "checks": [
+        "page reload rejoins same exact hand without extra draw",
+        "original disconnect semantics end this turn until the next player phase",
+        "rejoined guest becomes active on exactly the next player turn",
+        "rejoined guest plays an accepted card on the next turn",
+        "real fight counted once",
+        "no browser or Unity errors"
+      ],
+      "errors": []
+    }
+  ]
+}

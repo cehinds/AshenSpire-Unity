@@ -115,6 +115,16 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('UnityTests/**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
+      - uses: actions/setup-node@v4
+        if: matrix.shard == 'features'
+        with:
+          node-version: '22'
+      - name: Original-game save import and browser adapter
+        if: matrix.shard == 'features'
+        run: |
+          node tools/unity-web-save-fixtures.mjs TestResults/WebSaveImport/fixtures
+          dotnet run --project UnityTests/WebSaveImport -- TestResults/WebSaveImport/fixtures
+          node tools/unity-web-save-bridge.test.mjs
       - name: Run ${{ matrix.shard }} suites
         env:
           SUITES: ${{ matrix.suites }}

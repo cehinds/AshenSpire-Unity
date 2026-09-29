@@ -193,6 +193,8 @@ try
         Check(profileStore.Read(profileSlots.ProfileKey) == "corrupt-profile", "the unreadable profile bytes are preserved");
     }
 
+    SaveFailureChecks.Run(catalog, Check);
+    SaveCapacityChecks.Run(root, catalog, Check);
     Console.WriteLine($"SaveSlots: {passed} checks passed");
     return 0;
 }

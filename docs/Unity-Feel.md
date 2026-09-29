@@ -87,6 +87,20 @@ These rules come from SPEC §7.4 and `src/ui/fx.js`.
   HTML `fast` speed. `CombatFeedback` used to halve durations. It now uses this
   model instead. A four-way speed choice is F15's job.
 
+### Build 22 settings wiring
+
+`FeelDriver.Configure(OriginalPlayerSettings)` now consumes the saved settings
+directly. Animation speed below 100% selects slow pacing, 100–199% selects normal,
+and 200% selects fast; Instant overrides pacing. Screen shake respects its toggle
+and intensity. Reduced motion suppresses both shake and hit-stop.
+
+The HTML reference has no hit-stop. Unity's optional setting now holds only the
+visual timeline at impact for 40 ms; it defaults off and never pauses simulation
+or changes damage. This is an intentional Unity presentation extension, not a
+timing copied from the reference. The pure beat tests cover the hold and resume,
+default-off behavior and reduced-motion suppression. Owner feel acceptance is
+still required.
+
 ## How Presentation should consume it
 
 ```csharp
@@ -382,7 +396,7 @@ the HTML, so if one is added there later, the test will catch it.
 
 | Id | What the HTML actually does |
 |---|---|
-| `hitStop` | No hit-stop or freeze frame. `Pacing.HitStopMs` is 0. The weight of a hit comes from the recoil, the flash and the shake. |
+| `hitStop` | The HTML reference has no hit-stop or freeze frame. Unity provides an optional 40 ms presentation hold, disabled by default; see Build 22 settings wiring. |
 | `intentReveal` | Enemy intents are static StatePills (`styles/kit.css`). They appear when the HUD re-renders, with no animation. |
 | `cardDraw` | No draw animation. The draws come as their own paced beat (`groupBeats` kind `draw`, `BeatMs`), and then the hand re-renders. |
 | `cardDiscard` | No discard animation. The hand re-renders. |

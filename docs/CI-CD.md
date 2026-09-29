@@ -24,6 +24,9 @@ feature branch ──► draft PR ──► dev ──► promotion PR ──►
 
 ## The workflows
 
+Archive payload retention, storage limits, and the build-28 publication status
+are documented in [Archive hosting](Unity-Archive-Hosting.md).
+
 | File | Runs on | What it does |
 |---|---|---|
 | `unity-ci.yml` — *Unity fast gate* | PRs to `dev`/`test`/`main`, manual | Quick answer: version-bump gate, .NET console tests in parallel, optional GameCI build. |

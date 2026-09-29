@@ -69,6 +69,7 @@ namespace AshenSpire.Presentation
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
         {
+            _root.EnableInClassList("ui-wide", _root.contentRect.width >= 900);
             Report();
         }
         public void SetDisplayHeight(int height)
@@ -79,6 +80,7 @@ namespace AshenSpire.Presentation
         }
         private void RefreshTouchTargets()
         {
+            BindInterfaceSounds();
             var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight);
             foreach (var button in _root.Query<Button>().ToList())
             {
@@ -91,6 +93,11 @@ namespace AshenSpire.Presentation
                 dropdown.style.minHeight = Mathf.Max(52, minimum);
             foreach (var field in _root.Query<TextField>().ToList())
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
+            foreach (var tray in _root.Query<ScrollView>(className: "original-utility-rail").ToList())
+            {
+                var height = Mathf.Max(58, minimum + 8, 58f * (float)(_playerSettings?.TextScale ?? 1));
+                tray.style.height = height; tray.style.minHeight = height;
+            }
             ScheduleTextScale(); // CampaignView.PlayerSettings.cs; no-op at the default text size.
         }
         public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
@@ -150,7 +157,9 @@ namespace AshenSpire.Presentation
         // putting implementation navigation in the reference game's main menu.
         private void TitleExtras(CampaignDefinition content, bool canResume)
         {
-            Shell("ASHEN SPIRE", "EXTRAS");
+            Shell("ASHENEDSPIRE", "EXTRAS");
+            AddButton("native-guide", "Field guide", () => Guide(() => TitleExtras(content, canResume)));
+            AddButton("native-about", "About AshenedSpire", () => About(() => TitleExtras(content, canResume)));
             if (canResume) AddButton("continue", "Continue earlier campaign", () => ContinueRequested?.Invoke());
             AddButton("new", "Play earlier campaign", () => Heroes(content));
             if (_diagnostics)
@@ -160,21 +169,63 @@ namespace AshenSpire.Presentation
             }
             AddButton("extras-back", "Back", () => Title(content, canResume)); Report();
         }
+        public void Welcome(Action proceed)
+        {
+            Shell("ASHENEDSPIRE", "WELCOME, WANDERER");
+            _body.Add(Text("Gather your cards. Brave the Spire.", "lead"));
+            _body.Add(Text("Build a hand from your weapons, read your enemies and choose a path through three acts. Every climb begins with a choice.", "lead"));
+            _body.Add(Text("New here? The field guide explains turns, resources, routes and shared climbs. You can find it again in Settings or Extras.", "caption"));
+            AddButton("native-welcome-guide", "Read the field guide", () => Guide(() => Welcome(proceed)));
+            AddButton("native-welcome-continue", "Enter AshenedSpire", proceed, "primary");
+            _body.Add(Text("Entering opens the title menu. Your saved climbs stay available.", "caption"));
+            Report();
+        }
+        private void Guide(Action back, int page = 0)
+        {
+            var titles = new[] { "READ THE BATTLE", "SPEND YOUR RESOURCES", "CHOOSE YOUR PATH", "CLIMB TOGETHER" };
+            var lessons = new[] {
+                "Read each enemy's intent before you act. Select a card, choose an eligible target, then press Play. Selecting a card never spends resources. Guard absorbs incoming damage; statuses can change the result.\n\nScroll the hand to find more cards. Long descriptions scroll vertically inside the hand, while Play and End turn remain available. Draw, discard and exhausted piles can be inspected without ending your turn.",
+                "Cards show their action, MP and stamina costs. Play pays the displayed cost only when the action is accepted. When you cannot afford a card, select it to read the shortage.\n\nCrimson charges restore health; Azure charges restore MP. In solo combat, Catch Breath trades an action for stamina. End turn when you are ready for the enemies to act. Your available actions refresh on the next turn.",
+                "Choose a connected route on the map. Pan, zoom or use Fit to see the branches. Fog hides unexplored rooms. Rewards, merchants and shrines help prepare you for the next fight.\n\nWeapons supply your cards. Manage equipment and prepared sets between battles. Progress saves after accepted actions; return through Continue or Saved climbs. Custom Climb offers additional rules and deck modes.",
+                "The host runs the companion and shares its address and invitation code. Each player has a separate hand and votes for the next route.\n\nPlay your own cards, use supported friendly targets and end your own turn. The enemies act when the active party finishes. The companion host stores the shared climb; reconnect to the same host to rejoin your saved seat.\n\nSettings includes sound, text size, motion and keyboard controls. Start with a comfortable layout and change it whenever you need."
+            };
+            Shell("FIELD GUIDE", (page + 1) + " OF " + titles.Length);
+            _body.Add(Text(titles[page], "heading"));
+            _body.Add(Text(lessons[page], "lead"));
+            if (page > 0) AddButton("native-guide-previous", "Previous", () => Guide(back, page - 1));
+            if (page < titles.Length - 1) AddButton("native-guide-next", "Next", () => Guide(back, page + 1), "primary");
+            AddButton("native-guide-back", page == titles.Length - 1 ? "Finish guide" : "Back", back);
+            Report();
+        }
+        private void About(Action back)
+        {
+            Shell("ASHENEDSPIRE", "ABOUT THE GAME");
+            _body.Add(Text("A Unity adaptation of AshenSpire, directed by Constantine.", "lead"));
+            _body.Add(Text("HOW IT IS MADE", "heading"));
+            _body.Add(Text("AI assistants have been used to write and adapt code, design, text and art under human direction. The Unity adaptation includes AI-generated artwork and AI-assisted development. Final creative and release decisions belong to the human developer.", "lead"));
+            _body.Add(Text("AUDIO", "heading"));
+            _body.Add(Text("The soundtrack uses recorded music. Combat and interface cues include synthesized sounds.", "lead"));
+            _body.Add(Text("WHILE YOU PLAY", "heading"));
+            _body.Add(Text("The game uses authored content and local game rules. It does not contact an AI service or generate content with AI while you play. Shared climbs connect to the companion host you choose.", "lead"));
+            _body.Add(Text("AshenedSpire · " + UnityEngine.Application.version, "caption"));
+            AddButton("native-about-back", "Back", back, "primary");
+            Report();
+        }
         public void Foundation(AshenSpire.Domain.Original.OriginalContentCatalog catalog, AshenSpire.Domain.Original.AttributeProgression progression, Newtonsoft.Json.Linq.JObject mechanics)
         {
             if (!_diagnostics) return;
-            Shell("ASHEN SPIRE", "FAITHFUL UNITY REBUILD");
+            Shell("ASHENEDSPIRE", "FAITHFUL UNITY REBUILD");
             _ = new OriginalFoundationPanel(_body, catalog, progression, mechanics, () => Report(), () => MenuRequested?.Invoke());
         }
         public void NativeCreation(AshenSpire.Domain.Original.OriginalContentCatalog catalog, AshenSpire.Domain.Original.AttributeProgression progression, Newtonsoft.Json.Linq.JObject mechanics, Action<Newtonsoft.Json.Linq.JObject,uint> start, Newtonsoft.Json.Linq.JObject profile)
         {
-            Shell("ASHEN SPIRE", "CHOOSE YOUR WANDERER");
+            Shell("ASHENEDSPIRE", "CHOOSE YOUR WANDERER");
             _ = new OriginalFoundationPanel(_body, catalog, progression, mechanics, () => Report(), () => MenuRequested?.Invoke(), start, profile);
         }
         public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
         {
-            Shell("ASHEN SPIRE", "THE ORIGINAL CLIMB");
-            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke());
+            Shell("ASHENEDSPIRE", "THE ORIGINAL CLIMB");
+            var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke(), PlayerSettings);
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
             if (panel.Stage == null || projection == null) return null;
             var cue = feedback.Cue(projection.CueId);
@@ -185,11 +236,27 @@ namespace AshenSpire.Presentation
         public void Profile(AshenSpire.Domain.Original.OriginalProfile profile)
         {
             Shell("CHRONICLE", "YOUR WANDERERS AND DISCOVERIES");
+            _body.AddToClassList("profile-screen");
             var state = profile.Snapshot(); var progress = state["progress"];
             _body.Add(Text(progress["runs"] + " climbs · " + progress["wins"] + " victories · Act " + progress["maxAct"] + " reached", "lead"));
-            foreach (var row in profile.UnlockView()) _body.Add(Text(((bool)row["earned"] ? "Unlocked · " : "Locked · ") + ((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]) + "\n" + (string)row["hint"], "stat"));
+            var discoveries = new VisualElement(); discoveries.AddToClassList("profile-discoveries"); _body.Add(discoveries);
+            foreach (var row in profile.UnlockView())
+            {
+                var card = new VisualElement(); card.AddToClassList("profile-discovery");
+                card.EnableInClassList("earned", (bool)row["earned"]);
+                card.Add(Text((bool)row["earned"] ? "UNLOCKED" : "UNDISCOVERED", "eyebrow"));
+                card.Add(Text((string)row["name"] ?? (string)row["label"] ?? (string)row["id"], "node-title"));
+                card.Add(Text((string)row["hint"], "caption")); discoveries.Add(card);
+            }
             _body.Add(Text("Last " + AshenSpire.Domain.Original.OriginalProfile.ResultArchiveLimit + " climbs", "node-title"));
-            foreach (var result in profile.ResultArchive().Reverse().Select(entry => entry["result"])) _body.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat") + " · Act " + result["act"] + ", floor " + result["floor"] + "\n" + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+            if (profile.ResultArchive().Count == 0) _body.Add(Text("Your story begins with the first climb. Completed runs will appear here.", "caption"));
+            foreach (var result in profile.ResultArchive().Reverse().Select(entry => entry["result"]))
+            {
+                var entry = new VisualElement(); entry.AddToClassList("profile-history");
+                entry.Add(Text((string)result["className"] + " · " + ((bool)result["victory"] ? "Victory" : "Defeat"), "node-title"));
+                entry.Add(Text("Act " + result["act"] + ", floor " + result["floor"] + " · " + result["fightsWon"] + " fights · " + result["damageDealt"] + " damage dealt · Seed " + result["seed"], "caption"));
+                _body.Add(entry);
+            }
             AddButton("native-profile-back", "Back to title", () => MenuRequested?.Invoke()); Report();
         }
         private void Heroes(CampaignDefinition content)
@@ -231,7 +298,7 @@ namespace AshenSpire.Presentation
             _selected = -1;
             _heroArt = session.Hero.Art;
             var s = session.State;
-            Shell("ASHEN SPIRE", session.Hero.Name.ToUpperInvariant() + " · ACT " + session.Encounter.Act + " · " + s.Cinders + " CINDERS");
+            Shell("ASHENEDSPIRE", session.Hero.Name.ToUpperInvariant() + " · ACT " + session.Encounter.Act + " · " + s.Cinders + " CINDERS");
             var stats = new VisualElement();
             stats.AddToClassList("stats");
             stats.Add(Text(s.Health + " / " + s.MaxHealth + " VITALITY", "stat"));
@@ -334,6 +401,7 @@ namespace AshenSpire.Presentation
             flask.SetEnabled(s.Potions > 0 && s.Health < s.MaxHealth);
             var actions = new VisualElement();
             actions.AddToClassList("actions");
+            _body.AddToClassList("has-fixed-actions");
             actions.Add(play);
             actions.Add(Control("end-turn", "End turn", () => EndTurnRequested?.Invoke()));
             _root.Add(actions);
@@ -365,6 +433,7 @@ namespace AshenSpire.Presentation
         {
             var actions = new VisualElement();
             actions.AddToClassList("actions");
+            _body.AddToClassList("has-fixed-actions");
             actions.Add(Control("inspection-back", "Return to combat", () => Render(session), "primary"));
             _root.Add(actions);
             Report();
@@ -439,15 +508,18 @@ namespace AshenSpire.Presentation
             fast.RegisterValueChangedCallback(e => { _fast = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             ExtendSettings(motion, fast, mute); // CampaignView.PlayerSettings.cs: grouped OriginalPlayerSettings sections.
             _body.Add(Text("HOW TO PLAY", "heading"));
+            AddButton("native-guide", "Open the field guide", () => Guide(() => Settings(back)));
+            AddButton("native-about", "About AshenedSpire", () => About(() => Settings(back)));
             _body.Add(Text("Choose a card and its target, then confirm Play. Actions refresh each turn. MP and stamina pay the additional costs shown on cards; use Azure charges to restore MP or Catch Breath to recover stamina in a native solo fight.\n\nRead every enemy's intent before ending your turn. Guard absorbs damage. Status effects can change damage, resources and upcoming turns. Watch their counters and the results of each action.\n\nWeapons supply cards. Prepare equipment sets between battles; switching prepared sets during a solo fight pays the displayed cost. Shrines restore resources, reallocate flask charges and sell attribute improvements. Every attribute point has a benefit.\n\nIn a shared climb, vote for a route, play your own hand and end your own turn. The enemy phase starts when the active party finishes. You can target allies with supported cards and flasks.\n\nScroll or use More cards on smaller screens. Progress saves after accepted commands. Co-op progress belongs to the companion host; rejoin your saved seat after disconnecting.", "lead"));
             AddButton("back", "Back", back, "primary");
+            ComposeSettingsSections();
             Report();
         }
         private void Diagnostics(CampaignSession session)
         {
             Shell("EXPEDITION INSPECTOR", "Development only · read-only state");
             _body.Add(Text("Seed " + session.State.Seed + " · RNG " + session.State.RandomState + "\nEncounter " + session.Encounter.Id + " · Phase " + session.State.Phase + "\nHero tags: " + string.Join(", ", session.Hero.Tags), "lead"));
-            var report = new TextField("Bug report preview") { multiline = true, value = "AshenSpire " + UnityEngine.Application.version + " / Unity " + UnityEngine.Application.unityVersion + "\nSteps: describe what you did\nExpected: \nActual: \nState: " + JsonUtility.ToJson(session.State), isReadOnly = false };
+            var report = new TextField("Bug report preview") { multiline = true, value = "AshenedSpire " + UnityEngine.Application.version + " / Unity " + UnityEngine.Application.unityVersion + "\nSteps: describe what you did\nExpected: \nActual: \nState: " + JsonUtility.ToJson(session.State), isReadOnly = false };
             report.AddToClassList("report-field");
             _body.Add(report);
             AddButton("copy-report", "Copy report", () => { GUIUtility.systemCopyBuffer = report.value; });

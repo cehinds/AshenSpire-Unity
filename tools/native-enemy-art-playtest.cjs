@@ -47,8 +47,10 @@ let captureImpact=false;
   for(let n=0;n<enemies.length;n++){
    const enemy=enemies[n],before=JSON.stringify(ui.state),first=art.length;
    await ui.click('native-target-'+enemy.id);
-   const row=art.slice(first).at(-1);
-   if(row){ui.check(row.enemyId===enemy.enemyId,'selected body reports selected enemy '+enemy.id+' on '+viewport);validateArt(row);}
+   // Selecting a target redraws every arena body. The last load report belongs
+   // to the last body, not necessarily the selected one.
+   const redrawn=art.slice(first),row=redrawn.find(asset=>asset.enemyId===enemy.enemyId);
+   if(redrawn.length){ui.check(!!row,'redrawn arena contains selected enemy '+enemy.id+' on '+viewport);validateArt(row);}
    ui.check(!!catalog[enemy.enemyId]&&!catalog[enemy.enemyId].resource.startsWith('Original/enemy_'),'selected enemy has a painted catalog binding: '+enemy.enemyId);
    ui.check(JSON.stringify(ui.state)===before,'target selection does not mutate combat '+enemy.id+' on '+viewport);
    selections.push({viewport,instanceId:enemy.id,enemyId:enemy.enemyId,expectedResource:catalog[enemy.enemyId].resource,observedAsset:row||null});await top();

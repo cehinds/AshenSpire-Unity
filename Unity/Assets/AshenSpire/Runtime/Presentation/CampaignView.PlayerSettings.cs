@@ -56,7 +56,7 @@ namespace AshenSpire.Presentation
             if (settings == null) return;
             _reducedMotion = settings.ReducedMotion;
             _fast = settings.QuickAnimations;
-            FeelDriver.Configure(_reducedMotion, _fast); // F07: settings screen drives motion timing too
+            FeelDriver.Configure(settings);
             _muted = settings.Muted;
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
             ApplyPalette();
@@ -82,6 +82,7 @@ namespace AshenSpire.Presentation
         {
             if (_disposed) return;
             var scale = (float)(_playerSettings?.TextScale ?? 1);
+            _root.EnableInClassList("large-text", scale > 1.25f);
             if (Mathf.Approximately(scale, 1) && !_textScaled) return;
             _textScaleAttempts = 0;
             _textScaleJob?.Pause();
@@ -107,6 +108,7 @@ namespace AshenSpire.Presentation
             }
             _textScaled = true;
             if (pending && ++_textScaleAttempts < 10) _textScaleJob = _root.schedule.Execute(ApplyTextScale).StartingIn(60);
+            else Report(false); // Measure after font sizes settle, without scheduling another scaling pass.
         }
 
         private void ExtendSettings(Toggle motion, Toggle fast, Toggle mute)
@@ -130,14 +132,14 @@ namespace AshenSpire.Presentation
             });
             speed = SettingSlider("animation-speed", "Animation speed", 50, 200, Percent(s.AnimationSpeed), v => { s.AnimationSpeed = v / 100.0; SyncQuick(); });
             instant = SettingToggle("instant-animations", "Instant animations", s.InstantAnimations, v => { s.InstantAnimations = v; SyncQuick(); });
-            _body.Add(Text("Combat feedback plays quick at 200% or with Instant on. Other speeds are saved and apply when feedback timing supports them.", "caption"));
+            _body.Add(Text("Below 100% uses slow pacing; 100 to 199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
             intensity = SettingSlider("screen-shake-intensity", "Shake intensity", 0, 100, Percent(s.ScreenShakeIntensity), v => s.ScreenShakeIntensity = v / 100.0);
             intensity.SetEnabled(s.ScreenShake);
             SettingToggle("hit-stop", "Hit-stop", s.HitStop, v => s.HitStop = v);
-            _body.Add(Text("Screen shake and hit-stop are saved now and used when those combat effects are added.", "caption"));
+            _body.Add(Text("Reduced motion disables screen shake and hit-stop.", "caption"));
 
             // AUDIO
             _body.Add(Text("AUDIO", "heading"));
@@ -147,7 +149,9 @@ namespace AshenSpire.Presentation
             SettingSlider("volume-sfx", "Sound effects", 0, 100, Percent(s.SfxVolume), v => s.SfxVolume = v / 100.0);
             SettingSlider("volume-music", "Music volume", 0, 100, Percent(s.MusicVolume), v => s.MusicVolume = v / 100.0);
             SettingSlider("volume-ui", "Interface sounds", 0, 100, Percent(s.UiVolume), v => s.UiVolume = v / 100.0);
-            _body.Add(Text("Combat sounds follow Master × Sound effects. Music and interface volumes apply when those sounds are added.", "caption"));
+            AddButton("preview-interface-sound", "Preview interface sound", () => { });
+            AddButton("preview-sound-effect", "Preview combat sound", () => SoundPreviewRequested?.Invoke()).AddToClassList("no-interface-sound");
+            _body.Add(Text("Master volume controls all sound. Interface sounds and combat effects have separate levels. Music volume changes the playing track immediately. Mute silences previews too.", "caption"));
 
             // ACCESSIBILITY
             _body.Add(Text("ACCESSIBILITY", "heading"));
@@ -165,28 +169,30 @@ namespace AshenSpire.Presentation
 
             // CONTROLS
             _body.Add(Text("CONTROLS", "heading"));
-            _body.Add(Text("Keyboard keys for the map. Choose an action, then press a key. Esc cancels.", "caption"));
+            _body.Add(Text("Keyboard keys for the map and solo combat. Choose an action, then press a key. Esc cancels or closes an inspection. Enter activates a focused button. Combat shortcuts wait until the key is released; inspection screens block combat actions.", "caption"));
             var keyMessage = Text("", "caption");
             var keyButtons = new Dictionary<string, Button>();
             void ShowKeys()
             {
                 foreach (var pair in keyButtons)
-                    pair.Value.text = OriginalKeyBindings.Label(pair.Key) + " · " + (pair.Key == _capturingAction ? "press a key…" : s.KeyBindings.TryGetValue(pair.Key, out var key) ? key : "unbound");
+                    pair.Value.text = OriginalKeyBindings.Label(pair.Key) + " · " + (pair.Key == _capturingAction ? "press a key…" : s.KeyBindings.TryGetValue(pair.Key, out var key) ? OriginalKeyBindings.DisplayKey(key) : "unbound");
             }
-            foreach (var action in OriginalKeyBindings.MapActions)
+            foreach (var action in OriginalKeyBindings.MapActions.Concat(OriginalKeyBindings.CombatActions))
             {
                 var id = action;
-                var button = AddButton("key-" + id, "", () => { _capturingAction = id; keyMessage.text = "Press a key for " + OriginalKeyBindings.Label(id) + ". Esc cancels."; ShowKeys(); keyButtons[id].Focus(); });
+                var button = AddButton("key-" + id, "", () => { _capturingAction = id; keyMessage.text = "Press a key for " + OriginalKeyBindings.Label(id) + ". Esc cancels."; ShowKeys(); keyButtons[id].Focus(); Report(); });
                 button.RegisterCallback<KeyDownEvent>(e =>
                 {
                     if (_capturingAction != id || e.keyCode == KeyCode.None) return;
                     e.StopImmediatePropagation();
                     _capturingAction = null;
                     if (e.keyCode == KeyCode.Escape) keyMessage.text = "Unchanged.";
+                    else if (e.keyCode == KeyCode.Tab || e.keyCode == KeyCode.LeftControl || e.keyCode == KeyCode.RightControl || e.keyCode == KeyCode.LeftAlt || e.keyCode == KeyCode.RightAlt || e.keyCode == KeyCode.LeftShift || e.keyCode == KeyCode.RightShift || e.keyCode == KeyCode.LeftCommand || e.keyCode == KeyCode.RightCommand)
+                        keyMessage.text = "Choose a key other than Tab or a modifier; these stay available for navigation.";
                     else if (s.TryBind(id, e.keyCode.ToString(), out var holder))
-                    { keyMessage.text = OriginalKeyBindings.Label(id) + " is now " + e.keyCode + "."; Changed(); }
-                    else keyMessage.text = e.keyCode + " is already used by " + OriginalKeyBindings.Label(holder) + ". Choose another key, or reset the keys.";
-                    ShowKeys();
+                    { keyMessage.text = OriginalKeyBindings.Label(id) + " is now " + OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + "."; Changed(); }
+                    else keyMessage.text = OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + " is already used by " + OriginalKeyBindings.Label(holder) + ". Choose another key, or reset the keys.";
+                    ShowKeys(); Report();
                 });
                 keyButtons[id] = button;
             }
@@ -194,7 +200,7 @@ namespace AshenSpire.Presentation
             keyMessage.text = conflicts.Count == 0 ? "" : string.Join("\n", conflicts.Select(c => c.Key + " is bound to " + string.Join(" and ", c.Actions.Select(OriginalKeyBindings.Label)) + ". Rebind one of them."));
             if (conflicts.Count > 0) keyMessage.AddToClassList("notice");
             _body.Add(keyMessage);
-            AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map keys reset to PageUp, PageDown, Home and End."; ShowKeys(); Changed(); });
+            AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
             ShowKeys();
 
             // CONTENT MODS (the HTML game files these under Advanced)
@@ -209,6 +215,38 @@ namespace AshenSpire.Presentation
             RenderModStatus();
         }
 
+        // Reparent the existing controls after construction; callbacks, IDs and
+        // saved values stay with the same elements. Every section remains open.
+        private void ComposeSettingsSections()
+        {
+            _body.AddToClassList("settings-screen");
+            var navigation = new VisualElement(); navigation.AddToClassList("settings-navigation");
+            VisualElement section = null; var index = 0;
+            foreach (var child in _body.Children().ToList())
+            {
+                if (child.name == "back") continue;
+                if (child.ClassListContains("heading"))
+                {
+                    section = new VisualElement { focusable = true }; section.AddToClassList("settings-section");
+                    _body.Add(section);
+                    var target = section;
+                    navigation.Add(Control("settings-section-" + index++, ((Label)child).text,
+                        () =>
+                        {
+                            target.Focus();
+                            // Align the heading, rather than merely exposing the
+                            // section's bottom edge as ScrollTo does for tall groups.
+                            var y = target.worldBound.y - _scroll.contentContainer.worldBound.y - 12;
+                            _scroll.scrollOffset = new Vector2(_scroll.scrollOffset.x, Mathf.Max(0, y));
+                            Report();
+                        }, "settings-jump"));
+                }
+                if (section != null) section.Add(child);
+            }
+            _body.Insert(2, navigation);
+            _body.Q<Button>("back")?.BringToFront();
+        }
+
         private void RenderModStatus()
         {
             if (_modStatusBox == null || _modStatusBox.panel == null) return;
@@ -220,6 +258,7 @@ namespace AshenSpire.Presentation
 
         private void Changed()
         {
+            ApplyPlayerSettings();
             PlayerSettingsChanged?.Invoke();
             Report();
         }

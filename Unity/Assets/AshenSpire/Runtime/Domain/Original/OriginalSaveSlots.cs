@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 namespace AshenSpire.Domain.Original
@@ -59,6 +60,22 @@ namespace AshenSpire.Domain.Original
         private static int Check(int slot) { if (slot < 0 || slot >= SlotCount) throw new ArgumentOutOfRangeException(nameof(slot), "Save slots are numbered 0 to " + (SlotCount - 1) + "."); return slot; }
 
         // ---- migration ----------------------------------------------------------
+        // Web can retain its historical single-run pair within the storage budget
+        // by changing only the outer encoding. Logical envelope bytes are preserved.
+        // Unreadable records are not rewritten; interrupted compaction keeps a
+        // verified temporary copy which the next call can recover.
+        public bool CompactLegacyRecords(Action<JObject> validate)
+        {
+            if (!(_storage is OriginalCompressedSaveStorage compact)) return true;
+            if (validate == null) throw new ArgumentNullException(nameof(validate));
+            void ValidateEnvelope(string envelope)
+            {
+                var candidate = new OriginalSaveJournal("candidate", _ => envelope, (_, __) => { }, () => { });
+                candidate.Load(validate, out _);
+            }
+            return compact.TryCompact(LegacyRunKey + ".backup", ValidateEnvelope)
+                && compact.TryCompact(LegacyRunKey, ValidateEnvelope);
+        }
         // Copies the one-run save into an empty slot 0: legacy backup first, then legacy
         // primary, so slot 0 ends with the same current and previous snapshots. The
         // legacy keys are left in place for older builds. Runs once per channel.
@@ -110,6 +127,17 @@ namespace AshenSpire.Domain.Original
             if (playtimeSeconds < 0) throw new ArgumentException("Playtime cannot be negative.");
             return _slots[slot].Save(Record(snapshot, playtimeSeconds, "slot"));
         }
+        // Explicit import never overwrites a primary, backup or corrupt slot.
+        public bool ImportWebRun(int slot, JObject snapshot)
+        {
+            Check(slot);
+            if (_slots[slot].HasSave) throw new InvalidOperationException("Choose an empty save slot for import.");
+            var restored = OriginalGameSession.Restore(snapshot);
+            var run = restored.RunPlayer;
+            if ((int?)run["webImport"]?["version"] != 1 || string.IsNullOrEmpty((string)run["runId"])) throw new ArgumentException("Missing original-save import receipt.");
+            if (List().Any(s => s.Meta?.RunId == (string)run["runId"])) throw new InvalidOperationException("This original save has already been imported into a slot.");
+            return _slots[slot].Save(Record(restored.Snapshot(), 0, "original-web"));
+        }
         // validate is the caller's restore path (e.g. OriginalGameSession.Restore); records it rejects fall back to the backup.
         public JObject Load(int slot, Action<JObject> validate, out OriginalSaveSlotMeta meta, out bool recovered)
         {
@@ -141,7 +169,9 @@ namespace AshenSpire.Domain.Original
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             var receipt = profile.Finish((string)run?["runId"], run, victory);
-            receipt["saved"] = (bool)receipt["duplicate"] || SaveProfile(profile); return receipt;
+            // Finish is idempotent in memory; a previous persistence attempt may
+            // still have failed. A duplicate result must retry the verified write.
+            receipt["saved"] = SaveProfile(profile); return receipt;
         }
 
         // ---- record format ------------------------------------------------------

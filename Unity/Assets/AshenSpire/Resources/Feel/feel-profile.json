@@ -38,7 +38,7 @@
     "WindupLungeFraction": 0.55,
     "WatchdogBaseMs": 2000,
     "WatchdogStepsPerBeat": 4,
-    "HitStopMs": 0
+    "HitStopMs": 40
   },
   "Thresholds": {
     "HeavyHitDamage": 15,

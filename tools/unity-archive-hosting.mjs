@@ -1,6 +1,7 @@
-// Pure hosting plan for immutable Unity archives. Only the data fetch location
-// changes; wasm stays on Pages for the correct streaming MIME type. Loader,
-// framework, product identity and save configuration also stay local.
+// Pure hosting plan for immutable Unity archives. Data and optionally historical
+// WebAssembly fetch from their exact Git commit. Current players retain Pages'
+// streaming MIME type; older players use Unity's array-buffer compile fallback.
+// Loader, framework, product identity and save configuration remain local.
 // Receipts identify original and derived HTML plus exact committed payload hashes.
 // This does not establish remote availability/CORS or fetch/modify any artifact.
 import {createHash} from 'node:crypto';
@@ -10,11 +11,19 @@ const objectId=/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/;
 const sha256=/^[a-f0-9]{64}$/;
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const remoteRoot='https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/';
-const payloads=[['dataUrl','Web.data']];
 const plainObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const propertyPattern=(name,file)=>new RegExp('(\\b'+name+'\\s*:\\s*)(["\'])(Build\\/'+file.replaceAll('.','\\.')+'(?:[?#][^"\'<>\\\\\\x00-\\x20]*)?)\\2(?=\\s*[,}])','g');
 
-export function planArchiveHosting(originalHtml,build){
+export function retainedCodeBuildIds(builds,channelIds,limit=4){
+ if(!Array.isArray(builds)||!Array.isArray(channelIds)||!Number.isSafeInteger(limit)||limit<1)throw Error('Invalid code retention plan');
+ const date=b=>Number.isFinite(Date.parse(b.builtAt))?Date.parse(b.builtAt):-1;
+ const ids=[...channelIds,...[...builds].sort((a,b)=>date(b)-date(a)||a.id.localeCompare(b.id)).slice(0,limit).map(b=>b.id)];
+ if(ids.some(id=>!/^build-[a-f0-9]{20}$/.test(id)||!builds.some(b=>b.id===id)))throw Error('Unknown retained archive');
+ return new Set(ids);
+}
+
+export function planArchiveHosting(originalHtml,build,{remoteCode=false}={}){
+ if(typeof remoteCode!=='boolean')throw Error('Remote code selection must be explicit');
  if(typeof originalHtml!=='string'||!plainObject(build)||!objectId.test(build.commit))throw Error('Archive hosting requires HTML and a complete commit ID');
  if(/<base\b/i.test(originalHtml))throw Error('Unsupported archive player: base element');
  if(!Array.isArray(build.tree)||!plainObject(build.manifest?.files))throw Error('Archive hosting requires its exact artifact tree and manifest');
@@ -54,7 +63,7 @@ export function planArchiveHosting(originalHtml,build){
  const loader=/(<script\b[^>]*\bsrc\s*=\s*)(["'])(Build\/Web\.loader\.js(?:[?#][^"'<>\\\x00-\x20]*)?)\2/gi;
  if([...originalHtml.matchAll(loader)].length!==1)throw Error('Unsupported archive player: expected one local loader');
  let html=originalHtml;const dataUrls={},omittedPaths=[],runtime=[];
- for(const [name,file] of payloads){
+ for(const [name,file] of [['dataUrl','Web.data'],...(remoteCode?[['codeUrl','Web.wasm']]:[])]){
   const path='Published/Web/Build/'+file;
   html=html.replace(patterns[name],(_,prefix,quote,url)=>{
    const suffix=url.slice(('Build/'+file).length);
@@ -65,6 +74,6 @@ export function planArchiveHosting(originalHtml,build){
   omittedPaths.push(path);
   runtime.push({path,url:dataUrls[name],sha256:build.manifest.files[path.slice('Published/'.length)]});
  }
- return {html,omittedPaths,dataUrls,receipt:{schemaVersion:1,policy:'exact-commit-raw-data-v1',commit:build.commit,
+ return {html,omittedPaths,dataUrls,receipt:{schemaVersion:remoteCode?2:1,policy:remoteCode?'exact-commit-raw-data-code-v2':'exact-commit-raw-data-v1',commit:build.commit,
   originalIndexSha256,hostedIndexSha256:hash(html),runtime}};
 }

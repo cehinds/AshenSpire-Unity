@@ -33,6 +33,10 @@ namespace AshenSpire.Presentation
         public string NumberTier;
         public float NumberFontScale;
         public int TotalMs;
+        public int HoldMs;
+
+        // Pause only the presentation clock at impact; authoritative combat and audio keep running.
+        public double VisualTime(double elapsedMs) => elapsedMs <= ImpactMs ? elapsedMs : Math.Max(ImpactMs, elapsedMs - HoldMs);
 
         /// <summary>
         /// Plans one beat. `playerAttack` is an attack cue or damage dealt to the foe;
@@ -77,7 +81,8 @@ namespace AshenSpire.Presentation
             Extend(beat.ImpactMs, beat.Glow);
             Extend(beat.ImpactMs, beat.Shake);
             Extend(beat.ImpactMs, beat.Number);
-            beat.TotalMs = end;
+            beat.HoldMs = amount > 0 && settings.HitStop && !settings.ReducedMotion && !pace.Instant ? pace.HitStopMs : 0;
+            beat.TotalMs = end + beat.HoldMs;
             return beat;
         }
 
