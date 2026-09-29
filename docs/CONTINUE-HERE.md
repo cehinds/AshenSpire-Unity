@@ -27,6 +27,15 @@ remains AshenSpire. See [core phases](Unity-Milestones.md) and the
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
 
+### Build 28 downloads and hosting
+
+- [ ] **US-0.8 — public hosting acceptance**
+  - [x] All four build-28 public downloads verified against their SHA-256 receipts.
+  - [x] Revised archive library retains 30 players at 382.5 MiB; navigation, runtime hashes and three sampled browser startups pass.
+  - [ ] Owner merge into `dev`, Pages deployment and public build-28 player verification.
+
+The attempted public deployment failed its 950 MiB size guard and preserved the previous site. The tested capacity fix is on the feature branch. Pages permits deployment from `dev` only; repository rules reserve that merge for the owner. See [downloads, hosting evidence and limitations](Unity-Archive-Hosting.md).
+
 ### Local build 28 original-save candidate
 
 - [ ] **Phase 1 — Foundation / US-0.6 original-save acceptance**
@@ -56,7 +65,7 @@ The current importer refuses unsupported saves explicitly and preserves their or
 - [x] Original-game change review recorded; owner-requested daily comparison active.
 - [ ] Complete full campaigns, encounter coverage, recovery/authoring matrices and owner acceptance.
 - [x] Owner decision (2026-09-28): implement original JavaScript save import before Phase 1 completion.
-- [ ] Complete [original-save import](Unity-Original-Save-Import.md): initial map-checkpoint converter and UI implemented; compiled verification and broader profile/active-room compatibility remain open.
+- [ ] Complete [original-save import](Unity-Original-Save-Import.md): initial map-checkpoint converter and UI pass compiled build-28 verification; broader profile/active-room compatibility remains open.
 - [ ] Physical-device play, performance budgets and hosted channel promotion.
 
 Work is on `feature/ashenedspire-foundation`, stacked after local build 26.

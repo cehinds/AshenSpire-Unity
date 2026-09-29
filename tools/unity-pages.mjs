@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
 import {collectHistory,resolvePullRequests,materializeHistory,publicHistory} from './unity-build-history.mjs';
 import {materializePublished} from './unity-git-blobs.mjs';
 import {planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
-import {planArchiveHosting} from './unity-archive-hosting.mjs';
+import {planArchiveHosting,retainedCodeBuildIds} from './unity-archive-hosting.mjs';
 import {createHash} from 'node:crypto';
 import {attachBuildReviews} from './unity-build-reviews.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
@@ -42,7 +42,8 @@ for(const selected of selectedChannels){
 }
 const selectedByChannel=new Map(selectedChannels.map(selected=>[selected.channel,selected]));
 await resolvePullRequests(history.builds,'cehinds/AshenSpire-Unity');
-materializeHistory(root,out,history,{remoteRuntime:true});
+const localCodeBuildIds=retainedCodeBuildIds(history.builds,Object.values(storage.channels).map(channel=>channel.archiveId));
+materializeHistory(root,out,history,{remoteRuntime:true,localCodeBuildIds:[...localCodeBuildIds]});
 const buildById=new Map(history.builds.map(build=>[build.id,build]));
 const dateLabel=value=>value&&!Number.isNaN(Date.parse(value))?new Date(value).toISOString().slice(0,16).replace('T',' ')+' UTC':'Build date unknown';
 const prLinks=build=>build.pullRequests.length?build.pullRequests.map(pr=>`<a href="${escape(pr.url)}">PR #${pr.number}${pr.state?' · '+escape(pr.state):''}</a>`).join(', '):'<span class="muted">Associated PR unknown</span>';
@@ -85,7 +86,7 @@ for(const channel of channels){
   const copied=materializePublished(root,commit,plan.copyPaths,dir);
   if(plan.player.rewritten){
    const archive=buildById.get(plan.archiveId);
-   const hosted=planArchiveHosting(git(['show',`${archive.commit}:Published/Web/index.html`]),archive);
+   const hosted=planArchiveHosting(git(['show',`${archive.commit}:Published/Web/index.html`]),archive,{remoteCode:!localCodeBuildIds.has(archive.id)});
    let launch=plan.player.html;
    for(const [name,url] of Object.entries(hosted.dataUrls)){
     const pattern=new RegExp('(\\b'+name+'\\s*:\\s*)([\"\'])([^\"\']+)\\2','g');

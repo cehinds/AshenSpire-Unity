@@ -24,7 +24,11 @@ acceptance or physical-device certification.
     - [x] Build 28 compiled file/browser-slot import, preview, cancellation, duplicate refusal, exact reload and combat continuation: 36 checks; native profile/slot regression: 16 checks.
     - [ ] Broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
-  - [ ] US-0.8–0.10: hosted artifacts, appearance, final defects and owner acceptance.
+  - [ ] US-0.8: hosted artifacts and archive capacity.
+    - [x] Four public build-28 downloads fetched and verified against packaged hashes.
+    - [x] All 30 archived players retained at 382.5 MiB; local hosting checks and three sampled player startups pass.
+    - [ ] Owner merge, Pages deployment and public player verification; see [hosting checklist](Unity-Archive-Hosting.md).
+  - [ ] US-0.9–0.10: appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**
   - [x] Build-26 UI redesign and its bounded compiled verification.
   - [ ] US-1.4: first-visit welcome acceptance.

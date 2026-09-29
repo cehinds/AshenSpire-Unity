@@ -1,11 +1,14 @@
 // Play a full native Unity climb through real pointer and keyboard input.
 // Read-only diagnostics assert state; no JavaScript game commands or state writes.
 const {controlReportsForPage}=require('./control-report.cjs');
+const {hasRecordedClimb}=require('./native-chronicle-check.cjs');
 const fs=require('node:fs'), path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const output=path.resolve(process.argv[3]||'TestResults/Native'); fs.mkdirSync(output,{recursive:true});
 const recorded=JSON.parse(fs.readFileSync(process.argv[4]||path.join(__dirname,'../UnityTests/Parity/native-browser-replay.json'),'utf8')).runs[0];
 const replay=recorded.trace;
+const deviceScaleFactor=Number(process.env.ASHENSPIRE_PLAYTEST_DPR||2);
+if(![1,2,3].includes(deviceScaleFactor))throw Error('ASHENSPIRE_PLAYTEST_DPR must be 1, 2 or 3');
 // The replay must end where the domain run ended. Owner decision (2026-09-24): the bot gate records
 // wins instead of requiring them, so the recorded run may be a Defeat; balance is tuned separately.
 if(!['Victory','Defeat'].includes(recorded.result)||!Number.isInteger(recorded.act))throw Error('Replay fixture must record a terminal Victory or Defeat and its act');
@@ -34,10 +37,10 @@ async function shot(name) { await page.waitForTimeout(300); await page.screensho
 async function command(id){const previous=revision;await click(id);await until(()=>revision>previous,'native state '+id);}
 const seen=new Set();
 async function capture(){const key=state.act+'-'+state.phase;if(!seen.has(key)){seen.add(key);await shot(String(screenshots.length+1).padStart(2,'0')+'-phone-act'+key);}}
-function report(success){return {success,checks,screenshots,errors,commands,lastState:state,controls,viewport:{width:390,height:844},physicalDevice:false};}
+function report(success){return {success,checks,screenshots,errors,commands,lastState:state,controls,viewport:{width:390,height:844,deviceScaleFactor},physicalDevice:false};}
 (async()=>{
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
- page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2});
+ page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor});
  const normalizeControls=controlReportsForPage(page,e=>errors.push(e));
  page.on('pageerror',e=>errors.push(e.message));
  page.on('console',m=>{const value=normalizeControls(m.text());if(value===null)return;if(m.type()==='error')errors.push(value);for(const [prefix,receive] of [['ASHENSPIRE_CONTROLS ',d=>{controls=d;layout++;}],['ASHENSPIRE_NATIVE_STATE_CHUNK ',d=>{let parts=chunks.get(d.sequence);if(!parts){parts=[];chunks.set(d.sequence,parts);}parts[d.index]=d.text;if(parts.filter(x=>x!==undefined).length===d.count){state=JSON.parse(parts.join(''));revision++;chunks.delete(d.sequence);}}]]){const at=value.indexOf(prefix);if(at>=0)receive(JSON.parse(value.slice(at+prefix.length)));}});
@@ -77,7 +80,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  }
  await capture();check(state.phase===recorded.result&&state.act===recorded.act,'recorded terminal '+recorded.result+' in act '+recorded.act+' through actual player controls');
  await click('native-menu');await click('native-profile');await shot('99-phone-chronicle');
- check(controls.Labels.some(t=>t.includes(' · '+recorded.result+' · Act '+recorded.act+',')),'completed climb recorded in chronicle as '+recorded.result);
+ check(hasRecordedClimb(controls.Labels,recorded),'completed climb recorded in chronicle as '+recorded.result);
  check(controls.Labels.some(t=>t.trim().startsWith('1 climbs · '+(recorded.result==='Victory'?1:0)+' victories')),'chronicle totals count the one climb');
  await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(1200);await shot('100-desktop-chronicle');
  const finalReceipt=await page.request.get(new URL('build-source.json',playerUrl).href);

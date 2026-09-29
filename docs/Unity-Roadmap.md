@@ -139,6 +139,9 @@ User stories (open work, from the detailed checklist below):
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
   archive hosting capacity without deleting archived players.
+  - [x] Build-28 Web, Windows, Android and companion public downloads verified against their packaged SHA-256 receipts.
+  - [x] Locally validated capacity fix retains all 30 archived players at 382.5 MiB; 3,447 navigation and 545 runtime/hash/CORS checks, plus three sampled compiled player startups.
+  - [ ] Owner merge into `dev`, successful Pages deployment and public build-28 player verification. See [hosting checklist](Unity-Archive-Hosting.md).
 - [ ] **US-0.9** Armour/tint visual acceptance and co-op pose feedback.
 - [ ] **US-0.10** Record remaining defects and owner acceptance, then select `0.1.0.0`.
 

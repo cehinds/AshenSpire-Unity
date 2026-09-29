@@ -1,6 +1,13 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,STANDARD_MODE,ASSIGN_MODE}=require('./native-ui-driver.cjs');
+const {hasRecordedClimb}=require('./native-chronicle-check.cjs');
+
+test('Chronicle verifies the adjacent class/result and act row after the interface redesign',()=>{
+ const run={classId:'reaver',result:'Defeat',act:3};
+ assert.equal(hasRecordedClimb(['Reaver · Defeat','Act 3, floor 5 · 17 fights · Seed 1'],run),true);
+ for(const labels of [['Reaver · Victory','Act 3, floor 5'],['Rogue · Defeat','Act 3, floor 5'],['Reaver · Defeat','Act 2, floor 5'],['Reaver · Defeat','Other row','Act 3, floor 5'],['Act 3, floor 5']])assert.equal(hasRecordedClimb(labels,run),false);
+});
 
 function fixture(mode){
  const ui=Object.create(NativeUiDriver.prototype);
