@@ -1,12 +1,18 @@
-# Ashen Spire: player guide
+# AshenedSpire: player guide
 
-A friendly guide to playing the Unity version of Ashen Spire. It describes
-what the game does today (source **0.0.25.0 · build 25**, local candidate). Where the original
+A friendly guide to playing AshenedSpire, the Unity adaptation of AshenSpire. It describes
+what the game does today (source **0.0.27.0 · build 27**, local candidate). Where the original
 HTML game has something the Unity version does not have yet, this guide says so.
 The embedded screenshots below are historical examples; the build page identifies
 the version actually available to play.
 
 > Editing or building the game? See the [owner guide](Unity-Owner-Guide.md).
+
+On your first visit, choose **Enter AshenedSpire** to reach the title menu.
+This does not start or overwrite a climb. The **Field guide** explains combat,
+resources, routes, saves and co-op in four pages; reopen it through Extras or
+Settings. Extras also contains **About** with the game's development and audio
+acknowledgements. Existing Unity saves remain available after the name change.
 
 ## What is Ashen Spire?
 

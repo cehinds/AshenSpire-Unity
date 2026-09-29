@@ -14,13 +14,13 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
-[original-game review](Unity-Upstream-Review.md). Build 27 is being compiled and
-validated for the rename and first-visit guidance; build 26 remains the last
-fully packaged checkpoint until the new receipts pass.
+[original-game review](Unity-Upstream-Review.md). Build 27 is compiled, packaged and locally verified for branding, first-visit
+guidance, opening-mode/save upgrade and interaction checks. Foundation
+acceptance remains open; see [build-27 QA](qa/unity-build-27/README.md).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.26.0 · build 26 · Foundation in progress** (`GameContent/Unity/version.json`) |
+| Version / build / stage | **0.0.27.0 · build 27 · Foundation in progress** (`GameContent/Unity/version.json`) |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -28,6 +28,30 @@ fully packaged checkpoint until the new receipts pass.
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Local build 27 foundation candidate
+
+- [x] AshenedSpire branding, welcome, four-page guide and About implemented.
+- [x] **186 compiled browser checks** passed; see [QA](qa/unity-build-27/README.md).
+  - [x] Welcome/guide/About: 36; actual build-26 save upgrade: 8.
+  - [x] Custom/Sealed/Draft/Endless setup, opening combat and exact resume: 44.
+  - [x] Menus/160% text: 32; narrow/desktop card reading: 32.
+  - [x] Draft, shrine and merchant journey: 20; two-player packaged co-op: 14.
+- [x] All four packages match source digest `81a2af8ce111515dc38343e374c7fc5d47cde4ae2dbccc1181016043077dac76`.
+  - [x] Windows startup/window caption and Android launcher metadata verified.
+  - [x] 452 companion, 163 native-file and 20 package checks passed.
+- [x] Original-game change review recorded; owner-requested daily comparison active.
+- [ ] Complete full campaigns, encounter coverage, recovery/authoring matrices and owner acceptance.
+- [ ] Decide original JavaScript save import; the existing question remains unanswered.
+- [ ] Physical-device play, performance budgets and hosted channel promotion.
+
+Work is on `feature/ashenedspire-foundation`, stacked after local build 26.
+Source commit `10f4811` was frozen for the exports. No roadmap feature or phase
+is accepted merely because these scoped checks passed. The next major milestone
+remains **0.1.0.0 Foundation acceptance**. Follow the unchecked US-0.x items in
+the roadmap; opening-mode checks do not replace full mode playthroughs.
+The guide is not an interactive tutorial. The newer original skill-draft/class
+abilities still need a deliberate spec/content/schema review before porting.
 
 ### Local build 26 interface candidate
 

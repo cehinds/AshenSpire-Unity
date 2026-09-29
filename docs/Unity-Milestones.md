@@ -6,19 +6,31 @@ acceptance or physical-device certification.
 
 - [ ] **Phase 1 — Foundation (F00), target 0.1.0.0**
   - [x] Implement the native content/rules, save-slot and companion foundations.
-  - [x] Package build 26 and pass its 337 compiled browser checks.
+  - [x] Package build 27 and pass its 186 scoped compiled browser checks (build 26 has 337 historical checks).
   - [ ] US-0.1: complete encounter-art coverage and owner visual acceptance.
   - [ ] US-0.2: complete current-build custom-mode play and save/resume coverage.
+    - [x] Build 27: Custom, Sealed, Draft and Endless setup, opening combat and exact reload (44 checks).
+    - [ ] Full playthroughs and Endless later-act transition.
   - [ ] US-0.3–0.4: finish combat, settings, inventory and service interaction coverage.
+    - [x] Build 27: menus/large text (32), card reading (32), draft/shrine/merchant journey (20).
   - [ ] US-0.5: complete multiplayer recovery and interaction acceptance.
+    - [x] Build 27: two players, combat, rewards and rejoin with packaged companion (14 checks).
+    - [ ] Wider recovery matrix, host restart and final multiplayer acceptance.
   - [ ] US-0.6: complete profile/quota/upgrade checks and original-save decision.
+    - [x] Actual build-26 browser save upgrades through the rename with exact state (8 checks).
+    - [ ] Complete quota/corruption matrix and decide original JavaScript save import.
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
   - [ ] US-0.8–0.10: hosted artifacts, appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**
   - [x] Build-26 UI redesign and its bounded compiled verification.
-  - [ ] US-1.4: first-visit welcome — source implemented, compiled review pending.
-  - [ ] US-1.5: About/AI acknowledgement — source implemented, compiled review pending.
-  - [ ] Field guide and AshenedSpire branding — source implemented, compiled review pending.
+  - [ ] US-1.4: first-visit welcome acceptance.
+    - [x] Implemented and exercised in compiled build 27.
+    - [ ] Owner acceptance.
+  - [ ] US-1.5: About/AI acknowledgement acceptance.
+    - [x] Implemented and exercised in compiled build 27.
+    - [ ] Owner review of disclosure wording.
+  - [x] Field guide and AshenedSpire branding implemented; 36 combined welcome/guide/About browser checks passed.
+    - [x] Compiled Windows startup/window caption and Android launcher metadata verified.
   - [ ] Remaining controls, animation, visual/input parity and feature acceptance.
 - [ ] **Phase 3 — Platform and performance (F17)**
   - [ ] US-17.1: establish and meet reference-device performance budgets.
@@ -31,12 +43,12 @@ acceptance or physical-device certification.
 
 No whole phase is currently signed off. The content/rules port, native runtime,
 save slots and companion pipeline are implemented components of Foundation.
-The latest verified checkpoint on starting this milestone was build 26 with
-337 compiled browser checks and all four matching packages.
+Build 27 is now the latest locally verified checkpoint, with 186 scoped compiled
+browser checks and all four matching packages; see [QA](qa/unity-build-27/README.md).
 
-The next milestone is Foundation acceptance. The immediate work is the
-AshenedSpire rename, first-visit guidance, current custom-mode/save/upgrade
-checks, and review of changes in the original game. A guide is not an interactive
+The next milestone is Foundation acceptance. Build 27 completes the rename,
+first-visit guidance and focused opening-mode/upgrade checks. Continue the
+unaccepted foundation stories and review relevant changes in the original game. A guide is not an interactive
 tutorial, opening-mode checks are not full playthroughs, and a compiled portrait
 gallery does not cover every solo/co-op encounter.
 

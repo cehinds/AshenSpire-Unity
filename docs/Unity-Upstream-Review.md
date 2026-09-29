@@ -22,7 +22,7 @@ exposed tap target above a fanned hand and improves reachability checks. Unity
 uses a different hand layout with vertical description scrolling. Carry over
 the acceptance principle: the complete description must be readable and Play /
 End turn must remain reachable. Build 26 passed both narrow-phone and desktop
-reading checks; repeat them after onboarding/branding changes.
+reading checks. Build 27 repeats both layouts successfully (32 checks).
 
 Recent original changes also include more skill-draft cards, ten class abilities
 per class, developer-tool visibility, and Settings/fullscreen/save-load test
