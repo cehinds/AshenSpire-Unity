@@ -27,10 +27,12 @@
 .original-menu-entry { -unity-font: resource("Fonts/Cinzel-Regular"); font-size: 14px; letter-spacing: 1px; background-color: #20271f; border-color: #525540; padding: 12px 8px; margin: 4px 0; color: var(--ash-ink); }
 .original-menu-entry:hover, .original-menu-entry:focus { color: #ffebbf; background-color: #303728; border-color: var(--ash-gold); }
 .original-menu-entry:disabled { color: #8b927e; background-color: #191e18; border-color: #343c2e; opacity: 1; }
-.original-menu-entry.title-primary { min-height: 60px; height: 64px; background-color: var(--ash-gold); color: #181d16; font-size: 18px; -unity-font-style: bold; margin: 0 0 12px; }
+.original-menu-entry.title-primary { min-height: 60px; padding: 18px 8px; background-color: var(--ash-gold); color: #181d16; font-size: 18px; -unity-font-style: bold; margin: 0 0 12px; }
 .original-menu-entry.title-primary:hover { background-color: #f0cc8c; }
 .title-menu-grid { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
 .title-menu-grid > .button { width: 48.5%; min-width: 0; }
+.large-text .title-menu-grid { flex-direction: column; }
+.large-text .title-menu-grid > .button { width: 100%; }
 .original-ornament { flex-direction: row; align-items: center; margin: 18px 0; }
 .original-rule { height: 1px; background-color: #5f6349; flex-grow: 1; }
 .original-gem { width: 6px; height: 6px; flex-shrink: 0; margin: 0 12px; background-color: var(--ash-gold); rotate: 45deg; }

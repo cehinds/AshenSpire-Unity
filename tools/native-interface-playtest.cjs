@@ -29,6 +29,19 @@ let browser,ui;
   ui.check(ui.has('native-slot-0-new')&&ui.has('native-slot-1-new')&&ui.has('native-slot-2-new'),'all empty save slots remain available');
   await ui.shot('06-slots');await ui.click('native-slots-back');
   ui.check(ui.has('native-new'),'menu navigation returns to the new climb action');
+  await ui.click('settings');await ui.click('settings-section-2',false);
+  await ui.click('text-scale',false,.99);await ui.key('End');
+  await ui.until(()=>ui.controls.Labels.includes('Text size · 160%'),'maximum text size');
+  // At 160%, all settings plus the guide exceed the driver's bounded wheel
+  // budget. Exercise the real guide shortcut before returning to the title.
+  await ui.click('settings-section-5',false);
+  await ui.click('back');await ui.shot('07-large-text-title');
+  const begin=await ui.stablePoint('native-new',.5);
+  ui.check(begin.x>begin.canvas.x&&begin.x<begin.canvas.x+begin.canvas.width&&begin.y>begin.canvas.y&&begin.y<begin.canvas.y+begin.canvas.height,'new climb remains reachable at maximum text size');
+  const collection=ui.controls.Controls.find(c=>c.Id==='native-profile'),together=ui.controls.Controls.find(c=>c.Id==='native-coop');
+  ui.check(Math.abs(collection.X-together.X)<1&&together.Y>=collection.Y+collection.Height,'large text puts secondary menu actions in separate full-width rows');
+  await ui.click('native-new');
+  ui.check(ui.controls.Labels.includes('Prepare your Forsaken'),'maximum text size preserves creation navigation');
   ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);
   summary.push({viewport,checks:ui.checks.length});await context.close();
  }

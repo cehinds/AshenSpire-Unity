@@ -82,6 +82,7 @@ namespace AshenSpire.Presentation
         {
             if (_disposed) return;
             var scale = (float)(_playerSettings?.TextScale ?? 1);
+            _root.EnableInClassList("large-text", scale > 1.25f);
             if (Mathf.Approximately(scale, 1) && !_textScaled) return;
             _textScaleAttempts = 0;
             _textScaleJob?.Pause();
