@@ -76,6 +76,29 @@ let browser,players=[];
  await guest.until(()=>guest.coop.game.scene.kind==='rewards','shared reward room');host.check(host.coop.game.scene.kind==='rewards','two Unity clients defeat actual encounter');
  for(const ui of players){await ui.shot('04-rewards');await ui.coopCommand('coop-reward-confirm');}
  await host.until(()=>host.coop.game.scene.kind==='map','party rewards complete');
+ await guest.until(()=>guest.coop.game.scene.kind==='map','guest rewards complete');
+ if(credentials.restartRequest){
+  const before=players.map(ui=>({id:ui.coop.game.local.id,run:JSON.stringify(ui.coop.game.local.run),sequence:ui.coop.game.local.sequence}));
+  fs.writeFileSync(credentials.restartRequest,'restart owned test companion');
+  for(const ui of players)await ui.until(()=>ui.has('coop-rejoin'),'host disconnect exposes saved-seat recovery',45000);
+  const deadline=Date.now()+45000;
+  while(!fs.existsSync(credentials.restartAck)){if(Date.now()>deadline)throw Error('Owned test companion restart timed out');await new Promise(resolve=>setTimeout(resolve,250));}
+  for(let index=0;index<players.length;index++){
+   const ui=players[index],revision=ui.coopRevision;
+   await ui.click('coop-rejoin');
+   await ui.until(()=>ui.coopRevision>revision&&ui.coop?.game?.scene?.kind==='map'&&ui.has('coop-menu'),'saved seat rejoins restarted host');
+   ui.check(ui.coop.game.local.id===before[index].id,'host restart preserves authenticated seat');
+   ui.check(JSON.stringify(ui.coop.game.local.run)===before[index].run,'host restart preserves exact run, inventory and reward state');
+   ui.check(ui.coop.game.local.sequence===before[index].sequence,'host restart does not replay an accepted action');
+   await ui.shot('06-host-restart-rejoined');
+  }
+  const next=host.coop.game.reachableIds[0];
+  await host.coopCommand('coop-route-'+next);await guest.coopCommand('coop-route-'+next);
+  for(let index=0;index<players.length;index++){
+   const ui=players[index];await ui.until(()=>ui.coop.game.local.sequence===before[index].sequence+1,'post-restart vote accepted exactly once');
+   ui.check(ui.coop.game.local.sequence===before[index].sequence+1,'normal route input works after companion restart');
+  }
+ }
  for(const ui of players){ui.check(ui.coop.game.local.run.fightsWon===1,'real fight counted once');ui.check(ui.errors.length===0,'no browser or Unity errors');await ui.shot('05-shared-route');ui.save(true);}
  console.log('Two native Unity players completed a shared fight, rewards, and exact-hand rejoin.');await browser.close();
 })().catch(async e=>{console.error(e);for(const ui of players){ui.errors.push(e.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

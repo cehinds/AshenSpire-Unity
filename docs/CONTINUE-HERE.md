@@ -18,6 +18,14 @@ Owner authorized merging PR #57 on 2026-09-29. It is merged into `dev` at
 validation; build 29 remains the last packaged candidate until those exports
 and checks finish. Merge approval does not constitute gameplay acceptance.
 
+Build 30 update: source `e3cecca` fixes the compiled profile preview's false
+stale-record refusal. The updated importer passes 469 domain checks; the first
+compiled failure and interrupted exports remain recorded in [build-30 QA](qa/unity-build-30/README.md).
+The Windows restart workflow is the task workspace's `work/finish-build30.ps1`.
+Do not run a second Unity Editor against this project while it is active.
+Codex Process Jobs is unavailable on Windows (controller reports unsupported
+platform), so do not rely on a completion notification from that plugin.
+
 Owner scope correction (2026-09-29): the original AshenSpire supplies assets and
 current gameplay mechanics, not agent instructions or management requirements.
 The initial repository seed copied its Markdown too broadly. Root AGENTS.md now

@@ -1,0 +1,1096 @@
+{
+  "sourceSha256": "8c3e868a04c9c38b2749bb659b3cb40356dbb0d824746a30118d7ab47b95ef67",
+  "tables": [
+    {
+      "table": "balance.flaskGrowth",
+      "records": 1,
+      "fields": [
+        "amount",
+        "id",
+        "kind",
+        "source"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.poise.onFill",
+      "records": 1,
+      "fields": [
+        "op",
+        "stacks",
+        "status",
+        "target"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.roleSources.attack",
+      "records": 1,
+      "fields": [
+        "slot"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.roleSources.guard",
+      "records": 2,
+      "fields": [
+        "slot"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.roleSources.technique",
+      "records": 2,
+      "fields": [
+        "slot"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.swapCostRules",
+      "records": 3,
+      "fields": [
+        "base",
+        "gear",
+        "id",
+        "label"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.swapCostByCategory",
+      "records": 2,
+      "fields": [
+        "cost",
+        "tag"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "balance.equipment.views",
+      "records": 3,
+      "fields": [
+        "figure",
+        "id",
+        "slots"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "cards",
+      "records": 182,
+      "fields": [
+        "class",
+        "cost",
+        "damageSchool",
+        "effects",
+        "exposureBuildupPerHit",
+        "flavor",
+        "icon",
+        "id",
+        "keywords",
+        "manaCost",
+        "name",
+        "rarity",
+        "staminaCost",
+        "textTemplate",
+        "type",
+        "upgrade"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "relics",
+      "records": 55,
+      "fields": [
+        "flavor",
+        "icon",
+        "id",
+        "name",
+        "passives",
+        "pool",
+        "rarity",
+        "textTemplate",
+        "triggers"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "statuses",
+      "records": 50,
+      "fields": [
+        "decay",
+        "hooks",
+        "icon",
+        "id",
+        "instancePresentation",
+        "modifiers",
+        "name",
+        "proc",
+        "resists",
+        "schoolDamageVulnerability",
+        "stackMode",
+        "taggedVulnerability",
+        "tint",
+        "tooltip"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "stances",
+      "records": 2,
+      "fields": [
+        "hooks",
+        "icon",
+        "id",
+        "name",
+        "onEnter",
+        "tooltip"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "resources",
+      "records": 4,
+      "fields": [
+        "domainMax",
+        "glyph",
+        "id",
+        "name",
+        "order",
+        "source",
+        "surfaces",
+        "tint",
+        "weight"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "keywords",
+      "records": 5,
+      "fields": [
+        "id",
+        "name",
+        "tooltip"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "enemies",
+      "records": 19,
+      "fields": [
+        "arcaneExposure",
+        "art",
+        "artFaces",
+        "damageResistanceBySchool",
+        "firstMove",
+        "hp",
+        "id",
+        "levelProfile",
+        "moves",
+        "name",
+        "phases",
+        "poiseMax",
+        "size",
+        "tint"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "encounters",
+      "records": 21,
+      "fields": [
+        "act",
+        "enemies",
+        "floorBand",
+        "id",
+        "pool",
+        "targetBand",
+        "weight"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "events",
+      "records": 22,
+      "fields": [
+        "art",
+        "choices",
+        "id",
+        "name",
+        "text"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "eventHistoryRequirements.namelessKeeper.any",
+      "records": 2,
+      "fields": [
+        "choiceId",
+        "eventId"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "eventHistoryRequirements.namelessRest.any",
+      "records": 3,
+      "fields": [
+        "choiceId",
+        "eventId"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "flasks",
+      "records": 7,
+      "fields": [
+        "artAsset",
+        "artKey",
+        "effects",
+        "icon",
+        "id",
+        "name",
+        "rarity",
+        "targeted",
+        "textTemplate",
+        "tint"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "classes",
+      "records": 4,
+      "fields": [
+        "cardPool",
+        "cardTint",
+        "description",
+        "eligibleStartingKitIds",
+        "glyph",
+        "id",
+        "maxHp",
+        "name",
+        "startingFlaskAllocation",
+        "startingRelic",
+        "startingSignatureCard"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "mapConfigs.1.floorRules.fixed",
+      "records": 2,
+      "fields": [
+        "at",
+        "of",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "mapConfigs.2.floorRules.fixed",
+      "records": 2,
+      "fields": [
+        "at",
+        "of",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "mapConfigs.3.floorRules.fixed",
+      "records": 2,
+      "fields": [
+        "at",
+        "of",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.cardPlay",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.hit",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.block",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.procBurst",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.procBurst_bleed",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.procBurst_frost",
+      "records": 3,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "t0",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.procBurst_insanity",
+      "records": 3,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "t0",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.beat",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "t0",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.holdTick",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.holdCommit",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "t0",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.stagger",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "hp",
+        "kind",
+        "lp",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.enemyDeath",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.heal",
+      "records": 2,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "t0",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.stance",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.relic",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.flask",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.shrine",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.buy",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.rewardTake",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.nodeTravel",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.victory",
+      "records": 4,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "t0",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.youDied",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "sfx.default",
+      "records": 1,
+      "fields": [
+        "dur",
+        "freq",
+        "kind",
+        "peak",
+        "to",
+        "type"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.title.variants",
+      "records": 4,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.map.variants",
+      "records": 4,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.combat.variants",
+      "records": 6,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.elite.variants",
+      "records": 4,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.boss.variants",
+      "records": 5,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.shop.variants",
+      "records": 3,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.rest.variants",
+      "records": 3,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "music.beds.victory.variants",
+      "records": 3,
+      "fields": [
+        "cadence",
+        "lift",
+        "root",
+        "scale",
+        "wave"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.armaments",
+      "records": 25,
+      "fields": [
+        "accent",
+        "artKey",
+        "attackProfile",
+        "attackRating",
+        "blurb",
+        "defenseRating",
+        "dropWeight",
+        "geom",
+        "guardProfile",
+        "hand",
+        "id",
+        "kind",
+        "metal",
+        "mods",
+        "name",
+        "poiseThreshold",
+        "rarity",
+        "requirements",
+        "scale",
+        "techniqueProfile",
+        "uniqueSkillStaminaCost",
+        "unlock",
+        "weaponArtManaCost",
+        "weight"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.armour",
+      "records": 16,
+      "fields": [
+        "artKey",
+        "blurb",
+        "classId",
+        "id",
+        "kind",
+        "leather",
+        "mods",
+        "name",
+        "plate",
+        "plateLt",
+        "poiseThreshold",
+        "under",
+        "unlock"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.slots",
+      "records": 4,
+      "fields": [
+        "blurb",
+        "hand",
+        "id",
+        "kinds",
+        "label",
+        "order",
+        "positionCode",
+        "positionLabel",
+        "sets",
+        "storage",
+        "swap"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.targets",
+      "records": 6,
+      "fields": [
+        "cardId",
+        "classId",
+        "target"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.basicCardProfiles",
+      "records": 16,
+      "fields": [
+        "baseCardId",
+        "baseValue",
+        "cap",
+        "compatibility",
+        "damageSchool",
+        "displayName",
+        "exposureBuildupPerHit",
+        "flavor",
+        "gainPerTier",
+        "icon",
+        "id",
+        "mods",
+        "pointsPerTier",
+        "role",
+        "rounding",
+        "scalingStat"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.cardExposure",
+      "records": 79,
+      "fields": [
+        "cardId",
+        "damageSchool",
+        "exposureBuildupPerHit"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.startingKits",
+      "records": 8,
+      "fields": [
+        "baseline",
+        "classId",
+        "id",
+        "label",
+        "leftHand",
+        "rightHand"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.equipmentRequirements",
+      "records": 4,
+      "fields": [
+        "attributeId",
+        "itemId",
+        "minimum"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.itemUpgradeChanges",
+      "records": 137,
+      "fields": [
+        "itemRef",
+        "nextTier",
+        "tag",
+        "value"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.cardEquipmentExceptions",
+      "records": 1,
+      "fields": [
+        "cardId",
+        "weaponId"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.cardTagging",
+      "records": 59,
+      "fields": [
+        "cardId",
+        "tags"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "equipment.armouryUi.layout.combatPower.cards",
+      "records": 3,
+      "fields": [
+        "fullLabel",
+        "id",
+        "label",
+        "role"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "unlocks",
+      "records": 18,
+      "fields": [
+        "condition",
+        "hint",
+        "id",
+        "kind",
+        "name",
+        "param",
+        "ref",
+        "reveal"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "tagDomains",
+      "records": 6,
+      "fields": [
+        "blurb",
+        "id",
+        "label"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "tags",
+      "records": 33,
+      "fields": [
+        "blurb",
+        "color",
+        "domain",
+        "glyph",
+        "id",
+        "label"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "tagFamilies",
+      "records": 16,
+      "fields": [
+        "blurb",
+        "family",
+        "label",
+        "scopeField",
+        "source"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "tagFamilyDomains",
+      "records": 20,
+      "fields": [
+        "domain",
+        "family"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "tagging",
+      "records": 278,
+      "fields": [
+        "family",
+        "objectId",
+        "scope",
+        "tagId"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "attributes",
+      "records": 5,
+      "fields": [
+        "disclosure",
+        "id",
+        "label",
+        "order",
+        "sense",
+        "shortLabel"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "creationModes",
+      "records": 4,
+      "fields": [
+        "baseline",
+        "belowBaseline",
+        "bonusPool",
+        "id",
+        "label",
+        "maximum",
+        "minimum",
+        "redistribution"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "characterCreation.equipmentSections",
+      "records": 5,
+      "fields": [
+        "id",
+        "kind",
+        "label",
+        "slot"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    },
+    {
+      "table": "characterCreation.keepsakes",
+      "records": 4,
+      "fields": [
+        "desc",
+        "effects",
+        "icon",
+        "id",
+        "name"
+      ],
+      "csvRoundTrip": true,
+      "candidateValidation": true
+    }
+  ],
+  "scope": "Every shipped record-table field preserved by real CSV transactions; runtime coverage remains separate."
+}

@@ -1,5 +1,6 @@
 """Exercise real CSV file transactions on isolated copies, not the game source."""
 import csv
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -24,6 +25,33 @@ with tempfile.TemporaryDirectory(prefix='AshenSpire-Original-') as folder:
     source = root / 'content.json'
     original = (ROOT / 'GameContent/Unity/Original/content.json').read_bytes()
     source.write_bytes(original)
+    # Exercise every shipped record-table field through the actual CSV writer,
+    # reader, C# candidate validator and atomic file transaction. This proves
+    # lossless authoring, not every field's rendered gameplay behavior.
+    baseline = json.loads(original)
+    def tables(value, prefix=''):
+        for key, item in value.items():
+            name = prefix + key
+            if isinstance(item, dict):
+                yield from tables(item, name + '.')
+            elif isinstance(item, list) and item and all(isinstance(row, dict) for row in item):
+                yield name, item
+    coverage = []
+    for name, records in tables(baseline):
+        table_source = root / ('table-' + name + '.json')
+        table_source.write_bytes(original)
+        table_csv = root / ('table-' + name + '.csv')
+        check(tool.execute('export', name, table_csv, table_source) == len(records))
+        check(tool.execute('import', name, table_csv, table_source) == len(records))
+        check(json.loads(table_source.read_text(encoding='utf-8')) == baseline)
+        coverage.append({'table': name, 'records': len(records),
+                         'fields': sorted({key for row in records for key in row}),
+                         'csvRoundTrip': True, 'candidateValidation': True})
+    report = ROOT / 'TestResults/Authoring/original-field-coverage.json'
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(json.dumps({'sourceSha256': hashlib.sha256(original).hexdigest(),
+                                 'tables': coverage,
+                                 'scope': 'Every shipped record-table field preserved by real CSV transactions; runtime coverage remains separate.'}, indent=2) + '\n', encoding='utf-8')
     sheet = root / 'Cards.csv'
     tool.execute('export', 'cards', sheet, source)
     check(len(list(csv.DictReader(sheet.open(encoding='utf-8', newline='')))) == 182)

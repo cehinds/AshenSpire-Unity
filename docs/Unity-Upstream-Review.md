@@ -8,7 +8,7 @@ ID and archive filenames remain stable to preserve installed saves and links.
 ## Latest inspected reference
 
 - Checked: 2026-09-29 (America/Anchorage).
-- Heartbeat recheck: 2026-09-29 10:47 UTC. Original `dev` HEAD remains `38166cb12a2d8901fce7727aca37cd8d2e7e4b2d`; no new commits or port actions. Existing findings and intentional differences below are unchanged.
+- Heartbeat recheck: 2026-09-29 18:48 UTC. Original `dev` HEAD remains `38166cb12a2d8901fce7727aca37cd8d2e7e4b2d`; no new commits or port actions. Existing findings and intentional differences below are unchanged.
 - Original dev HEAD: `38166cb12a2d8901fce7727aca37cd8d2e7e4b2d` (2026-09-29 07:54 UTC).
 - Imported baseline: `b17a7f4543e1710f49fae8b58880121690a314de`.
 - Scope: prior review plus the next 19 commit summaries, changed-file inventory and the hand-layout source diff after `a8e2def5b52e3381ea0f9e56f721881b78130b04`; not a complete audit of every change since the imported baseline.
