@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": 60,
+  "results": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "checks": 30
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "checks": 30
+    }
+  ],
+  "physicalDevice": false
+}

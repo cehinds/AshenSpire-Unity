@@ -1,0 +1,1207 @@
+{
+  "success": true,
+  "checks": [
+    "compiled Web exposes file chooser",
+    "missing original browser slot explains how to proceed",
+    "malformed file cannot be committed",
+    "preview names real resources and empty destination",
+    "cancelling preview writes no save",
+    "explicit browser-slot read reaches same preview",
+    "import occupies only first empty slot",
+    "successful persistence is reported",
+    "duplicate checkpoint refused",
+    "duplicate refusal preserves empty destination",
+    "import resumes on original map",
+    "compiled imported resources match original checkpoint",
+    "compiled imported deck retains original card identities",
+    "import survives browser reload with exact observer state",
+    "imported run enters actual compiled combat",
+    "profile import has its own clearly labelled flow",
+    "profile preview uses lifetime totals, not truncated history",
+    "cancelling profile preview did not add progress",
+    "profile persistence reports success",
+    "profile import preserves run slots",
+    "duplicate profile cannot be committed",
+    "profile import leaves active run state unchanged",
+    "Chronicle displays imported lifetime progress",
+    "Chronicle displays original run history",
+    "Chronicle displays original earned unlocks",
+    "profile progress and history survive a full browser reload",
+    "original profile file is unchanged",
+    "original browser save bytes remain unchanged",
+    "compiled player source remained unchanged during the import test",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "state": {
+    "phase": "Combat",
+    "act": 1,
+    "turn": 1,
+    "player": {
+      "classId": "reaver",
+      "hp": 62,
+      "maxHp": 62,
+      "mana": 1,
+      "maxMana": 1,
+      "stamina": 2,
+      "maxStamina": 2,
+      "energy": 3,
+      "block": 0,
+      "statuses": {},
+      "flaskCharges": {
+        "capacity": 4,
+        "base": 4,
+        "hp": 3,
+        "mana": 1,
+        "hpCurrent": 3,
+        "manaCurrent": 1,
+        "grown": {
+          "hp": 0,
+          "mana": 0
+        },
+        "granted": 0
+      },
+      "flasks": []
+    },
+    "hand": [
+      {
+        "instanceId": "rc4",
+        "cardId": "strike",
+        "upgraded": false,
+        "equipmentRole": "attack",
+        "profileId": "bladeAttack",
+        "equipmentAttackSlotId": "attack:3",
+        "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+        "sourceHand": "right",
+        "weaponId": "straightSword",
+        "profileReceipt": {
+          "role": "attack",
+          "profileId": "bladeAttack",
+          "pieceId": "straightSword",
+          "base": -6,
+          "rarity": "common",
+          "rarityBonus": 0,
+          "sourceStat": "strength",
+          "points": 13,
+          "pointsPerTier": 1,
+          "rounding": "floor",
+          "tier": 13,
+          "gainPerTier": 1,
+          "value": 7,
+          "raw": 7,
+          "cap": null
+        },
+        "sourceArmamentId": "straightSword",
+        "smithingLevel": 0,
+        "damageSchool": "physical",
+        "exposureBuildupPerHit": 0,
+        "mods": [
+          "damage=7"
+        ]
+      },
+      {
+        "instanceId": "rc3",
+        "cardId": "strike",
+        "upgraded": false,
+        "equipmentRole": "attack",
+        "profileId": "bladeAttack",
+        "equipmentAttackSlotId": "attack:2",
+        "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+        "sourceHand": "right",
+        "weaponId": "straightSword",
+        "profileReceipt": {
+          "role": "attack",
+          "profileId": "bladeAttack",
+          "pieceId": "straightSword",
+          "base": -6,
+          "rarity": "common",
+          "rarityBonus": 0,
+          "sourceStat": "strength",
+          "points": 13,
+          "pointsPerTier": 1,
+          "rounding": "floor",
+          "tier": 13,
+          "gainPerTier": 1,
+          "value": 7,
+          "raw": 7,
+          "cap": null
+        },
+        "sourceArmamentId": "straightSword",
+        "smithingLevel": 0,
+        "damageSchool": "physical",
+        "exposureBuildupPerHit": 0,
+        "mods": [
+          "damage=7"
+        ]
+      },
+      {
+        "instanceId": "rc2",
+        "cardId": "strike",
+        "upgraded": false,
+        "equipmentRole": "attack",
+        "profileId": "bladeAttack",
+        "equipmentAttackSlotId": "attack:1",
+        "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+        "sourceHand": "right",
+        "weaponId": "straightSword",
+        "profileReceipt": {
+          "role": "attack",
+          "profileId": "bladeAttack",
+          "pieceId": "straightSword",
+          "base": -6,
+          "rarity": "common",
+          "rarityBonus": 0,
+          "sourceStat": "strength",
+          "points": 13,
+          "pointsPerTier": 1,
+          "rounding": "floor",
+          "tier": 13,
+          "gainPerTier": 1,
+          "value": 7,
+          "raw": 7,
+          "cap": null
+        },
+        "sourceArmamentId": "straightSword",
+        "smithingLevel": 0,
+        "damageSchool": "physical",
+        "exposureBuildupPerHit": 0,
+        "mods": [
+          "damage=7"
+        ]
+      },
+      {
+        "instanceId": "rc9",
+        "cardId": "technique",
+        "upgraded": false,
+        "equipmentRole": "technique",
+        "profileId": "weaponTechnique",
+        "grantSource": "from:weapon",
+        "profileReceipt": {
+          "role": "technique",
+          "profileId": "weaponTechnique",
+          "pieceId": "straightSword",
+          "base": 0,
+          "rarity": "common",
+          "rarityBonus": 0,
+          "sourceStat": "dexterity",
+          "points": 11,
+          "pointsPerTier": 5,
+          "rounding": "floor",
+          "tier": 2,
+          "gainPerTier": 0,
+          "value": 0,
+          "raw": 0,
+          "cap": null
+        },
+        "sourceArmamentId": "straightSword",
+        "smithingLevel": 0,
+        "damageSchool": "physical",
+        "exposureBuildupPerHit": 0
+      },
+      {
+        "instanceId": "rc10",
+        "cardId": "gorefireSlash",
+        "upgraded": false,
+        "grantSource": "from:class",
+        "damageSchool": "physical",
+        "exposureBuildupPerHit": 0
+      }
+    ],
+    "cards": [
+      {
+        "instance": {
+          "instanceId": "rc4",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:3",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        "card": {
+          "id": "strike",
+          "name": "Slashing Strike",
+          "class": "colorless",
+          "rarity": "starter",
+          "cost": 1,
+          "type": "attack",
+          "keywords": [],
+          "icon": "⚔",
+          "effects": [
+            {
+              "op": "damage",
+              "target": "enemy",
+              "amount": 7,
+              "tags": [
+                "blade"
+              ]
+            }
+          ],
+          "textTemplate": "Deal {damage} damage.",
+          "upgrade": {
+            "effects": [
+              {
+                "op": "damage",
+                "target": "enemy",
+                "amount": 9
+              }
+            ]
+          },
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "tags": [
+            "blade"
+          ],
+          "flavor": "Steel gives the motion its name.",
+          "cardTags": [
+            "blade"
+          ],
+          "equipmentProfileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipMods": [
+            "damage=7"
+          ]
+        },
+        "cost": {
+          "action": 1,
+          "mana": 0,
+          "stamina": 0,
+          "variable": false
+        }
+      },
+      {
+        "instance": {
+          "instanceId": "rc3",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:2",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        "card": {
+          "id": "strike",
+          "name": "Slashing Strike",
+          "class": "colorless",
+          "rarity": "starter",
+          "cost": 1,
+          "type": "attack",
+          "keywords": [],
+          "icon": "⚔",
+          "effects": [
+            {
+              "op": "damage",
+              "target": "enemy",
+              "amount": 7,
+              "tags": [
+                "blade"
+              ]
+            }
+          ],
+          "textTemplate": "Deal {damage} damage.",
+          "upgrade": {
+            "effects": [
+              {
+                "op": "damage",
+                "target": "enemy",
+                "amount": 9
+              }
+            ]
+          },
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "tags": [
+            "blade"
+          ],
+          "flavor": "Steel gives the motion its name.",
+          "cardTags": [
+            "blade"
+          ],
+          "equipmentProfileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipMods": [
+            "damage=7"
+          ]
+        },
+        "cost": {
+          "action": 1,
+          "mana": 0,
+          "stamina": 0,
+          "variable": false
+        }
+      },
+      {
+        "instance": {
+          "instanceId": "rc2",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:1",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        "card": {
+          "id": "strike",
+          "name": "Slashing Strike",
+          "class": "colorless",
+          "rarity": "starter",
+          "cost": 1,
+          "type": "attack",
+          "keywords": [],
+          "icon": "⚔",
+          "effects": [
+            {
+              "op": "damage",
+              "target": "enemy",
+              "amount": 7,
+              "tags": [
+                "blade"
+              ]
+            }
+          ],
+          "textTemplate": "Deal {damage} damage.",
+          "upgrade": {
+            "effects": [
+              {
+                "op": "damage",
+                "target": "enemy",
+                "amount": 9
+              }
+            ]
+          },
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "tags": [
+            "blade"
+          ],
+          "flavor": "Steel gives the motion its name.",
+          "cardTags": [
+            "blade"
+          ],
+          "equipmentProfileId": "bladeAttack",
+          "equipmentRole": "attack",
+          "equipMods": [
+            "damage=7"
+          ]
+        },
+        "cost": {
+          "action": 1,
+          "mana": 0,
+          "stamina": 0,
+          "variable": false
+        }
+      },
+      {
+        "instance": {
+          "instanceId": "rc9",
+          "cardId": "technique",
+          "upgraded": false,
+          "equipmentRole": "technique",
+          "profileId": "weaponTechnique",
+          "grantSource": "from:weapon",
+          "profileReceipt": {
+            "role": "technique",
+            "profileId": "weaponTechnique",
+            "pieceId": "straightSword",
+            "base": 0,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 5,
+            "rounding": "floor",
+            "tier": 2,
+            "gainPerTier": 0,
+            "value": 0,
+            "raw": 0,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0
+        },
+        "card": {
+          "id": "technique",
+          "name": "Weapon Technique",
+          "class": "colorless",
+          "rarity": "starter",
+          "cost": 1,
+          "type": "skill",
+          "keywords": [],
+          "icon": "✧",
+          "effects": [
+            {
+              "op": "block",
+              "target": "self",
+              "amount": 3
+            },
+            {
+              "op": "draw",
+              "amount": 1
+            }
+          ],
+          "textTemplate": "Gain {block} Block. Draw {draw} card.",
+          "upgrade": {
+            "effects": [
+              {
+                "op": "block",
+                "target": "self",
+                "amount": 5
+              },
+              {
+                "op": "draw",
+                "amount": 1
+              }
+            ]
+          },
+          "tags": [],
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "flavor": "Let the weapon teach the hand.",
+          "cardTags": [
+            "blade",
+            "flourish"
+          ],
+          "equipmentProfileId": "weaponTechnique",
+          "equipmentRole": "technique"
+        },
+        "cost": {
+          "action": 1,
+          "mana": 0,
+          "stamina": 0,
+          "variable": false
+        }
+      },
+      {
+        "instance": {
+          "instanceId": "rc10",
+          "cardId": "gorefireSlash",
+          "upgraded": false,
+          "grantSource": "from:class",
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0
+        },
+        "card": {
+          "id": "gorefireSlash",
+          "name": "Gorefire Slash",
+          "class": "reaver",
+          "rarity": "starter",
+          "cost": 1,
+          "manaCost": 1,
+          "type": "attack",
+          "keywords": [],
+          "icon": "🗡",
+          "effects": [
+            {
+              "op": "damage",
+              "target": "enemy",
+              "amount": 5
+            },
+            {
+              "op": "applyStatus",
+              "target": "enemy",
+              "status": "bleed",
+              "stacks": 3
+            }
+          ],
+          "textTemplate": "Deal {damage} damage. Apply {bleed} Bleed.",
+          "upgrade": {
+            "effects": [
+              {
+                "op": "damage",
+                "target": "enemy",
+                "amount": 5
+              },
+              {
+                "op": "applyStatus",
+                "target": "enemy",
+                "status": "bleed",
+                "stacks": 5
+              }
+            ]
+          },
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "tags": [
+            "blade",
+            "blood",
+            "gorefire"
+          ]
+        },
+        "cost": {
+          "action": 1,
+          "mana": 1,
+          "stamina": 0,
+          "variable": false
+        }
+      }
+    ],
+    "run": {
+      "attributes": {
+        "strength": 13,
+        "dexterity": 11,
+        "constitution": 11,
+        "wisdom": 8,
+        "intelligence": 10
+      },
+      "cinders": 0,
+      "smithingStones": 0,
+      "loadout": {
+        "sets": {
+          "rightHand": [
+            "straightSword",
+            null,
+            null
+          ],
+          "leftHand": [
+            "roundShield",
+            null,
+            null
+          ],
+          "armor": [
+            "default"
+          ],
+          "talisman": [
+            null,
+            null,
+            null
+          ]
+        },
+        "active": {
+          "rightHand": 0,
+          "leftHand": 0,
+          "armor": 0,
+          "talisman": 0
+        },
+        "storage": [],
+        "creationArmourGrant": {
+          "classId": "reaver",
+          "id": "default"
+        }
+      },
+      "deck": [
+        {
+          "instanceId": "rc9",
+          "cardId": "technique",
+          "upgraded": false,
+          "equipmentRole": "technique",
+          "profileId": "weaponTechnique",
+          "grantSource": "from:weapon",
+          "profileReceipt": {
+            "role": "technique",
+            "profileId": "weaponTechnique",
+            "pieceId": "straightSword",
+            "base": 0,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 5,
+            "rounding": "floor",
+            "tier": 2,
+            "gainPerTier": 0,
+            "value": 0,
+            "raw": 0,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0
+        },
+        {
+          "instanceId": "rc10",
+          "cardId": "gorefireSlash",
+          "upgraded": false,
+          "grantSource": "from:class",
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0
+        },
+        {
+          "instanceId": "rc1",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:0",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        {
+          "instanceId": "rc2",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:1",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        {
+          "instanceId": "rc3",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:2",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        {
+          "instanceId": "rc4",
+          "cardId": "strike",
+          "upgraded": false,
+          "equipmentRole": "attack",
+          "profileId": "bladeAttack",
+          "equipmentAttackSlotId": "attack:3",
+          "equipmentPlanFingerprint": "attack:0:right:straightSword:strike:bladeAttack|attack:1:right:straightSword:strike:bladeAttack|attack:2:right:straightSword:strike:bladeAttack|attack:3:right:straightSword:strike:bladeAttack",
+          "sourceHand": "right",
+          "weaponId": "straightSword",
+          "profileReceipt": {
+            "role": "attack",
+            "profileId": "bladeAttack",
+            "pieceId": "straightSword",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "strength",
+            "points": 13,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 13,
+            "gainPerTier": 1,
+            "value": 7,
+            "raw": 7,
+            "cap": null
+          },
+          "sourceArmamentId": "straightSword",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "damage=7"
+          ]
+        },
+        {
+          "instanceId": "rc5",
+          "cardId": "defend",
+          "upgraded": false,
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "profileReceipt": {
+            "role": "guard",
+            "profileId": "shieldGuard",
+            "pieceId": "roundShield",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 11,
+            "gainPerTier": 1,
+            "value": 5,
+            "raw": 5,
+            "cap": null
+          },
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "block=5",
+            "block=+2"
+          ]
+        },
+        {
+          "instanceId": "rc6",
+          "cardId": "defend",
+          "upgraded": false,
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "profileReceipt": {
+            "role": "guard",
+            "profileId": "shieldGuard",
+            "pieceId": "roundShield",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 11,
+            "gainPerTier": 1,
+            "value": 5,
+            "raw": 5,
+            "cap": null
+          },
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "block=5",
+            "block=+2"
+          ]
+        },
+        {
+          "instanceId": "rc7",
+          "cardId": "defend",
+          "upgraded": false,
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "profileReceipt": {
+            "role": "guard",
+            "profileId": "shieldGuard",
+            "pieceId": "roundShield",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 11,
+            "gainPerTier": 1,
+            "value": 5,
+            "raw": 5,
+            "cap": null
+          },
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "block=5",
+            "block=+2"
+          ]
+        },
+        {
+          "instanceId": "rc8",
+          "cardId": "defend",
+          "upgraded": false,
+          "equipmentRole": "guard",
+          "profileId": "shieldGuard",
+          "profileReceipt": {
+            "role": "guard",
+            "profileId": "shieldGuard",
+            "pieceId": "roundShield",
+            "base": -6,
+            "rarity": "common",
+            "rarityBonus": 0,
+            "sourceStat": "dexterity",
+            "points": 11,
+            "pointsPerTier": 1,
+            "rounding": "floor",
+            "tier": 11,
+            "gainPerTier": 1,
+            "value": 5,
+            "raw": 5,
+            "cap": null
+          },
+          "sourceArmamentId": "roundShield",
+          "smithingLevel": 0,
+          "damageSchool": "physical",
+          "exposureBuildupPerHit": 0,
+          "mods": [
+            "block=5",
+            "block=+2"
+          ]
+        }
+      ],
+      "custom": {
+        "ascension": 0,
+        "mods": {},
+        "deckMode": "standard"
+      },
+      "customization": {
+        "name": "Forsaken",
+        "glyph": "⚔",
+        "tint": "gold"
+      },
+      "startingKitId": "reaverBaseline",
+      "startingKitSnapshot": {
+        "id": "reaverBaseline",
+        "classId": "reaver",
+        "rightHand": "straightSword",
+        "leftHand": "roundShield"
+      },
+      "path": [
+        "n1_5"
+      ],
+      "mapNodeId": "n1_5",
+      "runId": "web-import-c40faa9286eb16db626397846786d1086f103e6afc042c110fddff51fef03d46",
+      "seed": 1,
+      "mapDimensions": {
+        "floors": 12,
+        "columns": 7
+      }
+    },
+    "enemies": [
+      {
+        "id": "e1",
+        "kind": "enemy",
+        "enemyId": "blightHound",
+        "hp": 15,
+        "maxHp": 15,
+        "block": 0,
+        "statuses": {},
+        "poiseMeter": {
+          "value": 0,
+          "max": 6
+        },
+        "movesHistory": [
+          "bite"
+        ],
+        "intent": {
+          "kind": "attack",
+          "moveId": "bite",
+          "damage": 6,
+          "hits": 1,
+          "block": null,
+          "delayed": false,
+          "pending": false
+        },
+        "pendingMove": null,
+        "skipNextTurn": false,
+        "unlockedMoves": [],
+        "alive": true
+      },
+      {
+        "id": "e2",
+        "kind": "enemy",
+        "enemyId": "blightHound",
+        "hp": 15,
+        "maxHp": 15,
+        "block": 0,
+        "statuses": {},
+        "poiseMeter": {
+          "value": 0,
+          "max": 6
+        },
+        "movesHistory": [
+          "lunge"
+        ],
+        "intent": {
+          "kind": "attack",
+          "moveId": "lunge",
+          "damage": 3,
+          "hits": 2,
+          "block": null,
+          "delayed": false,
+          "pending": false
+        },
+        "pendingMove": null,
+        "skipNextTurn": false,
+        "unlockedMoves": [],
+        "alive": true
+      },
+      {
+        "id": "e3",
+        "kind": "enemy",
+        "enemyId": "graveWisp",
+        "hp": 11,
+        "maxHp": 11,
+        "block": 0,
+        "statuses": {},
+        "poiseMeter": {
+          "value": 0,
+          "max": 4
+        },
+        "movesHistory": [
+          "drain"
+        ],
+        "intent": {
+          "kind": "attack",
+          "moveId": "drain",
+          "damage": 4,
+          "hits": 1,
+          "block": null,
+          "delayed": false,
+          "pending": false
+        },
+        "pendingMove": null,
+        "skipNextTurn": false,
+        "unlockedMoves": [],
+        "alive": true
+      }
+    ],
+    "room": {
+      "encounterId": "packHunt",
+      "pool": "normal",
+      "nodeId": "n1_5"
+    },
+    "legalNodes": [],
+    "routes": []
+  },
+  "coop": null,
+  "controls": {
+    "Controls": [
+      {
+        "Id": "native-profile-back",
+        "X": 280,
+        "Y": 4208,
+        "Width": 880,
+        "Height": 50,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 1440,
+    "PanelHeight": 900,
+    "Labels": [
+      "CHRONICLE",
+      "YOUR WANDERERS AND DISCOVERIES",
+      "23 climbs · 8 victories · Act 3 reached",
+      "UNLOCKED",
+      "Gilded Oathsworn",
+      "",
+      "UNDISCOVERED",
+      "Eclipse Habit",
+      "Win a run as the Starseer.",
+      "UNDISCOVERED",
+      "Ashen Vigil",
+      "Defeat the Stitched King.",
+      "UNDISCOVERED",
+      "Ossuary Weave",
+      "Defeat the Blighted Valkyrie.",
+      "UNLOCKED",
+      "The Grave Warden",
+      "",
+      "UNLOCKED",
+      "Warden Mail",
+      "",
+      "UNDISCOVERED",
+      "Starlit Silks",
+      "Defeat the Fell Warden.",
+      "UNLOCKED",
+      "Astral Vestment",
+      "",
+      "UNDISCOVERED",
+      "Emberlight Habit",
+      "Defeat the Stitched King.",
+      "UNLOCKED",
+      "Pilgrim Wrap",
+      "",
+      "UNLOCKED",
+      "Second Main-hand Slot",
+      "",
+      "UNLOCKED",
+      "Third Main-hand Slot",
+      "",
+      "UNLOCKED",
+      "Second Off-hand Slot",
+      "",
+      "UNLOCKED",
+      "Third Off-hand Slot",
+      "",
+      "UNDISCOVERED",
+      "Duelist Jerkin",
+      "Win a run as the Rogue.",
+      "UNDISCOVERED",
+      "Nightveil Coat",
+      "Defeat the Fell Warden.",
+      "UNLOCKED",
+      "Shadow Mantle",
+      "",
+      "Last 20 climbs",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-22",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-21",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-20",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-19",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-18",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-17",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-16",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-15",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-14",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-13",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-12",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-11",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-10",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-9",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-8",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-7",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-6",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-5",
+      "Reaver · Defeat",
+      "Act 2, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-4",
+      "Reaver · Victory",
+      "Act 3, floor 8 · 7 fights · 120 damage dealt · Seed PROFILE-3"
+    ],
+    "LayoutAttempts": 1
+  },
+  "physicalDevice": false
+}

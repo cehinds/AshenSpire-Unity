@@ -29,6 +29,8 @@ acceptance or physical-device certification.
     - [x] Build 29 CI: the same 36 import and 16 native profile/slot checks pass against the current packaged runtime.
     - [ ] Broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
+    - [x] Real CSV transactions preserve 474 fields across all 77 shipped record tables (1,214 records); 245 checks plus 11 native checks exercising authored additions. [Field receipt](qa/unity-build-30/original-field-coverage.json).
+    - [ ] Complete field-specific rendered behavior and editing acceptance.
   - [ ] US-0.8: hosted artifacts and archive capacity.
     - [x] Four public build-29 downloads fetched and verified against packaged hashes.
     - [x] All 31 archived players retained at 383.1 MiB; 3,458 navigation checks pass. Earlier hosting validation includes three sampled player startups.

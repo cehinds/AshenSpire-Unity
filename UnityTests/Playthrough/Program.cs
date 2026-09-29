@@ -8,13 +8,14 @@ var root=Directory.GetCurrentDirectory();
 var output=args.Length>1?Path.GetFullPath(args[1]):Path.Combine(root,"TestResults/NativePolicy");Directory.CreateDirectory(output);
 var directory=Path.Combine(root,"GameContent/Unity/Original");
 var catalog=new OriginalContentCatalog(File.ReadAllText(Path.Combine(directory,"content.json")));
+var authoredContent=catalog.Data();
 var progression=new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(directory,"progression.json"))));
 var mechanics=JObject.Parse(File.ReadAllText(Path.Combine(directory,"mechanics.json")));
 var supplement=JObject.Parse(File.ReadAllText(Path.Combine(directory,"event-choices.json")));
 var seeds=args.Length>0?int.Parse(args[0]):3;
 var report=new JArray();var timer=Stopwatch.StartNew();
 var mode=args.Length>2?args[2]:"standard";
-if(!new[]{"standard","custom","sealed","draft","endless"}.Contains(mode))throw new ArgumentException("Unknown playthrough mode");
+if(!new[]{"standard","custom","sealed","draft","endless","endless-short"}.Contains(mode))throw new ArgumentException("Unknown playthrough mode");
 var classes=args.Length>3?new[]{args[3]}:new[]{"reaver","starseer","rogue","herald"};
 var sourceFiles=Directory.GetFiles(Path.Combine(root,"Unity/Assets/AshenSpire/Runtime/Domain/Original"),"*.cs").OrderBy(x=>x).ToArray();
 var digest=Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(string.Join("\n",sourceFiles.Select(p=>Path.GetRelativePath(root,p).Replace('\\','/')+":"+Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(p)))))))).ToLowerInvariant();
@@ -33,7 +34,17 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
   if(mode=="standard")game=OriginalGameSession.Start(catalog,supplement,mechanics,player,seed);
   else {
    var custom=new JObject{["ascension"]=mode=="custom"?1:0,["deckMode"]=mode=="sealed"||mode=="draft"?mode:"standard",["mods"]=new JObject()};
-   if(mode=="custom")custom["mods"]["hoarder"]=true;if(mode=="endless")custom["mods"]["endless"]=true;
+   if(mode=="custom")custom["mods"]["hoarder"]=true;if(mode.StartsWith("endless"))custom["mods"]["endless"]=true;
+   if(mode=="endless-short"){
+    // Ordinary player-facing Custom Climb controls, without changing content,
+    // damage, HP or saved state. Keep this scoped separately from default maps.
+    var configs=(JObject)catalog.Data()["mapConfigs"];
+    var options=JObject.Parse(File.ReadAllText(Path.Combine(directory,"custom-run-options.json")));
+    supplement["mapShapeLimits"]=options["mapShape"]["limits"].DeepClone();
+    var maxWeight=(int)options["mapShape"]["limits"]["maxWeight"];
+    var weights=new JObject(((JObject)configs.Properties().First().Value["typeWeights"]).Properties().Select(p=>new JProperty(p.Name,p.Name=="shrine"||p.Name=="treasure"?maxWeight:0)));
+    custom["mapShape"]=new JObject{["floors"]=configs.Properties().Max(p=>OriginalMapShape.MinimumFloors((JObject)p.Value)),["typeWeights"]=weights};
+   }
    result["custom"]=custom.DeepClone();game=OriginalGameSession.StartConfigured(catalog,supplement,mechanics,player,seed,new JObject{["custom"]=custom});
   }
   result["mode"]=mode;
@@ -43,6 +54,14 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
    if(testResume)resumed=OriginalGameSession.Restore(JObject.Parse(before.ToString(Newtonsoft.Json.Formatting.None)));
    var action=new JObject{["command"]=name,["beforePhase"]=game.Phase.ToString(),["beforeHp"]=game.Player["hp"], ["targetId"]=(string)game.Enemies.OfType<JObject>().Where(e=>(bool?)e["alive"]==true).OrderBy(e=>(int)e["hp"]).FirstOrDefault()?["id"]};
    var oldHand=game.Hand;var oldRun=game.RunPlayer;var oldRoom=game.Room;
+   if(game.Phase==OriginalRunPhase.Rewards){
+    var unavailable=new JArray();
+    foreach(var kind in new[]{"relic","armament","flask"}){
+     var id=(string)oldRoom["rewards"]?[kind+"Id"];
+     if(id!=null&&oldRoom["states"]?[kind]==null){var refusal=OriginalRewardAvailability.Refusal(authoredContent,oldRun,kind,id);if(refusal!=null)unavailable.Add(new JObject{["kind"]=kind,["reason"]=refusal});}
+    }
+    if(unavailable.Count>0)action["unavailableRewards"]=unavailable;
+   }
    if(name.StartsWith("play:")) action["instanceId"]=(string)oldHand.First(c=>(string)c["cardId"]==name.Substring(5))["instanceId"];
    command(game);commands++;
    // A command that is accepted but changes nothing is a stuck turn: the policy would loop until the budget runs out.
@@ -90,11 +109,15 @@ foreach(var classId in classes)for(uint seed=1;seed<=seeds;seed++)
      {
       if((string)room["states"][kind]=="taken")continue;string rewardId=null;bool offered=kind=="cinders"?(int?)rewards["cinders"]>0:kind=="card"?(rewards["cardIds"] as JArray)?.Count>0:!string.IsNullOrEmpty((string)rewards[kind+"Id"]);
       if(!offered)continue;if(kind=="card")rewardId=((JArray)rewards["cardIds"]).Values<string>().OrderByDescending(card=>RewardScore(catalog.Record("cards",card))).First();
-      if(kind=="flask"&&(game.RunPlayer["flasks"] as JArray)?.Count>=3)continue;
+      if(new[]{"relic","armament","flask"}.Contains(kind)&&OriginalRewardAvailability.Refusal(authoredContent,game.RunPlayer,kind,(string)rewards[kind+"Id"])!=null)continue;
       Act("reward:"+kind,s=>s.Reward(kind,rewardId));collected=true;break;
      }
      if(!collected)Act("continueRewards",s=>s.ContinueRewards());break;
     case OriginalRunPhase.Shrine:
+     if(mode=="endless-short"&&(bool?)new OriginalRunServices(catalog).LevelPlan(game.RunPlayer,1)["offerable"]==true){
+      var attribute=(int)game.RunPlayer["attributes"]["strength"]<5?"strength":"constitution";
+      Act("level:"+attribute,s=>s.Service("levelUp",new JObject{["allocation"]=new JObject{[attribute]=1}}));break;
+     }
      var shrineKey=game.ActNumber+":"+game.RunPlayer["mapNodeId"];if(!seenServices.Contains(shrineKey)){seenServices.Add(shrineKey);var upgrade=new ItemUpgradeService(catalog);var run=game.RunPlayer;var item=upgrade.OwnedRefs(run).Where(item=>((int?)run["itemUpgradeLevels"]?[item]??0)<upgrade.MaximumTier(item)).Select(item=>new{Item=item,Plan=upgrade.Plan(run,item)}).FirstOrDefault(x=>(bool?)x.Plan["affordable"]==true);if(item!=null){Act("service:upgrade",s=>s.Service("upgrade",new JObject{["itemRef"]=item.Item}));break;}}
      if((game.RunPlayer["relics"] as JArray??new JArray()).Values<string>().Any(id=>(bool?)catalog.Record("relics",id)["passives"]?["shrineNoRest"]==true))Act("leaveShrine",s=>s.LeaveShrine());else Act("rest",s=>s.Rest());break;
     case OriginalRunPhase.Event:

@@ -11,8 +11,8 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [x] Browser file selection and explicit reads of the three original slot keys implemented; 12 browser-adapter checks pass.
   - [x] Build 28 compiled import flow: 36 phone/desktop checks, plus 16 native save/profile checks. See [build-28 QA](qa/unity-build-28/README.md).
   - [x] Build 29 CI repeats the 36 import and 16 native profile/slot checks against exactly matching packaged runtime hashes; [current receipt](qa/unity-build-29/ci.json).
-  - [x] Build-30 source: one-time additive original profile import, preserving lifetime totals, earned unlocks, equipment discovery, existing Unity progress and the original record. 66 focused profile checks pass; combined importer suite: 460.
-  - [ ] Compile and exercise profile preview, cancellation, import, duplicate refusal and Chronicle reload in build 30.
+  - [x] Build-30 source: one-time additive original profile import, preserving lifetime totals, earned unlocks, equipment discovery, existing Unity progress and the original record. 77 focused profile checks pass; combined importer suite: 471. The stored baseline protects progress changed before or after preview.
+  - [x] Build 30: 60 phone/desktop checks verify run/profile preview, cancellation, import, duplicate refusal, unchanged active combat and Chronicle reload. [Receipt](qa/unity-build-30/import/summary.json).
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
   - [ ] Active room conversion (combat, reward, merchant), newer content/rule schemas and mode compatibility.
   - [ ] Owner acceptance of the finished import experience.
