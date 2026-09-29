@@ -7,6 +7,7 @@ acceptance or physical-device certification.
 - [ ] **Phase 1 — Foundation (F00), target 0.1.0.0**
   - [x] Implement the native content/rules, save-slot and companion foundations.
   - [x] Package build 29 for Web, Windows, Android and companion; focused flask reachability, complete reference-campaign and high-density touch scenarios pass against its exact Web payloads. See [QA](qa/unity-build-29/README.md).
+    - [x] Current native campaign replay: 749 checks and 306 commands, exact reloads and the recorded Act-3 defeat; [CI receipt](qa/unity-build-29/ci.json).
   - [x] Package build 28 and pass its 879 scoped compiled browser checks (build 27 has 186 historical checks).
     - [x] Standard campaign replay: 306 real-input commands, exact reloads, expected Act-3 defeat and recorded Chronicle result (749 checks).
   - [ ] US-0.1: complete encounter-art coverage and owner visual acceptance.
@@ -18,17 +19,19 @@ acceptance or physical-device certification.
     - [x] Build 27: menus/large text (32), card reading (32), draft/shrine/merchant journey (20).
   - [ ] US-0.5: complete multiplayer recovery and interaction acceptance.
     - [x] Build 27: two players, combat, rewards and rejoin with packaged companion (14 checks).
+    - [x] Build 29 CI: 14 two-player checks, including exact-hand rejoin, next-turn card play and retained peer selection; [receipt](qa/unity-build-29/ci.json).
     - [ ] Wider recovery matrix, host restart and final multiplayer acceptance.
   - [ ] US-0.6: complete profile/quota/upgrade checks and original-save import.
     - [x] Actual build-26 browser save upgrades through the rename with exact state (8 checks).
     - [x] Owner requires original JavaScript save import before Phase 1 completion (2026-09-28).
     - [x] Initial map-checkpoint converter, preview and empty-slot commit implemented; 394 domain and 12 browser-adapter checks passed.
     - [x] Build 28 compiled file/browser-slot import, preview, cancellation, duplicate refusal, exact reload and combat continuation: 36 checks; native profile/slot regression: 16 checks.
+    - [x] Build 29 CI: the same 36 import and 16 native profile/slot checks pass against the current packaged runtime.
     - [ ] Broader save/profile compatibility and quota/corruption matrix; see [import checklist](Unity-Original-Save-Import.md).
   - [ ] US-0.7: complete content-authoring field/schema/runtime coverage.
   - [ ] US-0.8: hosted artifacts and archive capacity.
-    - [x] Four public build-28 downloads fetched and verified against packaged hashes.
-    - [x] All 30 archived players retained at 382.5 MiB; local hosting checks and three sampled player startups pass.
+    - [x] Four public build-29 downloads fetched and verified against packaged hashes.
+    - [x] All 31 archived players retained at 383.1 MiB; 3,458 navigation checks pass. Earlier hosting validation includes three sampled player startups.
     - [ ] Owner merge, Pages deployment and public player verification; see [hosting checklist](Unity-Archive-Hosting.md).
   - [ ] US-0.9–0.10: appearance, final defects and owner acceptance.
 - [ ] **Phase 2 — Gameplay and presentation (F01–F16)**

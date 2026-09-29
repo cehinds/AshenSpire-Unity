@@ -10,6 +10,7 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [x] Original-engine card costs/effects match; imported checkpoints reload and play an enemy turn (394 domain checks including refusal/storage cases).
   - [x] Browser file selection and explicit reads of the three original slot keys implemented; 12 browser-adapter checks pass.
   - [x] Build 28 compiled import flow: 36 phone/desktop checks, plus 16 native save/profile checks. See [build-28 QA](qa/unity-build-28/README.md).
+  - [x] Build 29 CI repeats the 36 import and 16 native profile/slot checks against exactly matching packaged runtime hashes; [current receipt](qa/unity-build-29/ci.json).
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
   - [ ] Active room conversion (combat, reward, merchant), newer content/rule schemas and mode compatibility.
   - [ ] Owner acceptance of the finished import experience.
