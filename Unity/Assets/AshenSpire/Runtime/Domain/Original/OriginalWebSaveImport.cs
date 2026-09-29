@@ -51,7 +51,7 @@ namespace AshenSpire.Domain.Original
             }
             if (source["profile"] != null) throw new ArgumentException("This is a profile export. Run import needs an original run save.");
             if (source["schemaVersion"]?.Type != JTokenType.Integer || (int)source["schemaVersion"] != 5)
-                throw new ArgumentException("This importer supports original run schema 5. Open older saves in the original game and save them again first.");
+                throw new ArgumentException("This initial importer supports original run schema 5. Earlier and newer original-game save formats are not supported yet. Your original save is unchanged.");
             foreach (var name in new[] { "combatEntered", "pendingReward", "shopStock", "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" })
                 if (source[name] != null && source[name].Type != JTokenType.Null)
                     throw new ArgumentException("This save contains " + name + ". Finish the active room in the original game and save on the map before importing.");

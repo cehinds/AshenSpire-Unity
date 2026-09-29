@@ -41,7 +41,14 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  const normalizeControls=controlReportsForPage(page,e=>errors.push(e));
  page.on('pageerror',e=>errors.push(e.message));
  page.on('console',m=>{const value=normalizeControls(m.text());if(value===null)return;if(m.type()==='error')errors.push(value);for(const [prefix,receive] of [['ASHENSPIRE_CONTROLS ',d=>{controls=d;layout++;}],['ASHENSPIRE_NATIVE_STATE_CHUNK ',d=>{let parts=chunks.get(d.sequence);if(!parts){parts=[];chunks.set(d.sequence,parts);}parts[d.index]=d.text;if(parts.filter(x=>x!==undefined).length===d.count){state=JSON.parse(parts.join(''));revision++;chunks.delete(d.sequence);}}]]){const at=value.indexOf(prefix);if(at>=0)receive(JSON.parse(value.slice(at+prefix.length)));}});
- await page.goto(process.argv[2]);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await until(()=>controls?.Controls.length,'title');await shot('00-phone-title');
+ const playerUrl=process.argv[2];
+ const stamp=await page.request.get(new URL('build-source.json',playerUrl).href);
+ if(!stamp.ok())throw Error('Missing compiled player source receipt');
+ const sourceReceipt=await stamp.body();fs.writeFileSync(path.join(output,'build-source.json'),sourceReceipt);
+ await page.goto(playerUrl);await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});
+ await until(()=>pointerDriver.has('native-welcome-continue')||pointerDriver.has('native-new'),'welcome or title');
+ if(pointerDriver.has('native-welcome-continue'))await click('native-welcome-continue');
+ await until(()=>pointerDriver.has('native-new'),'title');await shot('00-phone-title');
  await click('native-new');await shot('01-phone-assign-points');
  check(controls.Labels.some(t=>t.trim()==='Unspent points: 0'),'Unspent points: 0 (Standard preset, the default)');
  await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await key('1');await key('Tab');await shot('02-phone-assigned-creation');await command('native-begin');
@@ -65,7 +72,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
   check(state.phase===action.phase&&state.player.hp===action.hp&&state.player.mana===action.mana&&state.player.stamina===action.stamina,'IL2CPP state agrees with domain after '+index+' '+action.command);
   commands.push({index,command:action.command,phase:state.phase,hp:state.player.hp});
   fs.writeFileSync(path.join(output,'progress.json'),JSON.stringify(report(false),null,2));
-  if(index===2||index===70){const expected=JSON.stringify(state);await click('native-menu');await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await command('native-continue');check(JSON.stringify(state)===expected,'persistent page reload resumes exact native state at '+index);}
+  if(index===2||index===70){const expected=JSON.stringify(state);await click('native-menu');controls=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await command('native-continue');check(JSON.stringify(state)===expected,'persistent page reload resumes exact native state at '+index);}
   if(index%20===0)console.log('Native browser: '+index+'/'+replay.length+' '+state.phase+' act'+state.act);
  }
  await capture();check(state.phase===recorded.result&&state.act===recorded.act,'recorded terminal '+recorded.result+' in act '+recorded.act+' through actual player controls');
@@ -73,5 +80,7 @@ function report(success){return {success,checks,screenshots,errors,commands,last
  check(controls.Labels.some(t=>t.includes(' · '+recorded.result+' · Act '+recorded.act+',')),'completed climb recorded in chronicle as '+recorded.result);
  check(controls.Labels.some(t=>t.trim().startsWith('1 climbs · '+(recorded.result==='Victory'?1:0)+' victories')),'chronicle totals count the one climb');
  await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(1200);await shot('100-desktop-chronicle');
+ const finalReceipt=await page.request.get(new URL('build-source.json',playerUrl).href);
+ check(finalReceipt.ok()&&(await finalReceipt.body()).equals(sourceReceipt),'compiled player source stayed unchanged throughout the climb');
  check(errors.length===0,'no browser or Unity error logs');fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(report(true),null,2));console.log('Native browser full climb passed: '+checks.length+' checks, '+commands.length+' commands.');await browser.close();
 })().catch(async e=>{errors.push(e.stack||String(e));if(page)await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(report(false),null,2));if(browser)await browser.close();console.error(e);process.exitCode=1;});
