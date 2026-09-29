@@ -57,6 +57,12 @@ namespace AshenSpire.Domain.Original
                     throw new ArgumentException("This save contains " + name + ". Finish the active room in the original game and save on the map before importing.");
             if (source["webImport"] != null || source["playerProjectionRules"] != null || source["phase"] != null)
                 throw new ArgumentException("Choose an original-game save, not an AshenedSpire snapshot.");
+            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView").Split(' ');
+            var inactiveFields = new[] { "pendingReward", "shopStock", "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
+            var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
+            if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
+            if (!(source["modifiers"] is JArray modifiers) || modifiers.Count != 0)
+                throw new ArgumentException("This save has original run modifiers that cannot yet be imported faithfully.");
             foreach (var key in new[] { "attributes", "loadout", "streamCounters", "mapGraph", "flaskCharges", "derivedStatRuleSnapshot", "equipmentProfileRuleSnapshot" })
                 if (!(source[key] is JObject)) throw new ArgumentException("Original save is missing " + key + ".");
             foreach (var key in new[] { "deck", "path", "history", "relics", "flasks" })
@@ -156,6 +162,12 @@ namespace AshenSpire.Domain.Original
             var snapshot = new JObject { ["schemaVersion"] = 1, ["content"] = data, ["supplement"] = frozenSupplement, ["run"] = run };
             var restored = OriginalGameSession.Restore(snapshot);
             foreach (var card in restored.RunPlayer["deck"].OfType<JObject>()) _ = restored.Resolve(card);
+            var projection = new WeaponCardProjection(frozenCatalog);
+            foreach (var card in source["deck"].OfType<JObject>())
+            {
+                var projected = projection.Resolve(card, loadout, classId, (JObject)source["attributes"]);
+                if (!JToken.DeepEquals(card["mods"] ?? new JArray(), projected["modifiers"])) throw new ArgumentException("Saved card modifiers are not supported faithfully: " + (string)card["cardId"]);
+            }
             return restored.Snapshot();
         }
     }

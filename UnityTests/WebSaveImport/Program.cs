@@ -50,7 +50,13 @@ RejectEdit(s=>s["loadout"]["rightHand"]="missing-item","unknown loadout refused"
 RejectEdit(s=>s["webImport"]=new JObject(),"native receipt in original input refused");
 RejectEdit(s=>s["equipmentProfileRuleSnapshot"]["snapshotVersion"]=99,"future equipment rules refused");
 RejectEdit(s=>s["derivedStatRuleSnapshot"]["snapshotVersion"]=99,"future derived rules refused");
+RejectEdit(s=>s["futureRules"]=new JObject(),"unknown same-schema state refused");
+RejectEdit(s=>s["modifiers"]=new JArray("unported-modifier"),"unsupported run modifiers refused");
+RejectEdit(s=>s["deck"][0]["mods"]=new JArray("damage=999"),"unsupported card modifiers refused");
+RejectEdit(s=>s["loadout"]["sets"]["rightHand"][2]="missing-item","unknown inactive equipment refused");
+RejectEdit(s=>s["loadout"]["storage"]=new JArray("missing-item"),"unknown stored equipment refused");
 var snapshot=Import(input);
+var clearedRoom=(JObject)source.DeepClone();clearedRoom["pendingReward"]=null;Check((string)Import(clearedRoom.ToString())["run"]["phase"]=="Map","explicit cleared reward is a map checkpoint");
 var wrapped=new JObject{["exportedAt"]="2026-09-28",["game"]="Ashen Spire",["archive"]=new JObject{["kind"]="run",["save"]=input}};
 Check(JToken.DeepEquals(Import(wrapped.ToString()),snapshot),"run archive wrapper converts identically");
 var reordered=new JObject(source.Properties().Reverse().Select(p=>new JProperty(p.Name,p.Value.DeepClone())));

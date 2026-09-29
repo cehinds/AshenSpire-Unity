@@ -7,7 +7,7 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [x] Preview and empty-slot-only commit implemented.
   - [x] Raw schema-5 map checkpoints and original exported run archives convert for all four baseline classes.
   - [x] Preserve map, path, seed/random counters, card identities, resources and frozen equipment/stat rules.
-  - [x] Original-engine card costs/effects match; imported checkpoints reload and play an enemy turn (368 domain checks including refusal/storage cases).
+  - [x] Original-engine card costs/effects match; imported checkpoints reload and play an enemy turn (374 domain checks including refusal/storage cases).
   - [x] Browser file selection and explicit reads of the three original slot keys implemented; 12 browser-adapter checks pass.
   - [ ] Compiled import flow, narrow-screen layout and browser persistence verification.
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
