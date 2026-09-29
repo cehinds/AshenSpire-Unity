@@ -210,13 +210,26 @@ namespace AshenSpire.Editor
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.template = "PROJECT:Mobile";
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            // Android stores preferences by the unchanged package ID, so its
+            // launcher label can use the new name. Windows/Web retain their
+            // product storage identity; their visible captions are branded separately.
+            BuildReport report;
+            try
             {
-                scenes = new[] { ScenePath },
-                target = target,
-                locationPathName = Path.Combine(Repository, "Builds", suffix),
-                options = BuildOptions.None
-            });
+                if (target == BuildTarget.Android) PlayerSettings.productName = "AshenedSpire";
+                report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+                {
+                    scenes = new[] { ScenePath },
+                    target = target,
+                    locationPathName = Path.Combine(Repository, "Builds", suffix),
+                    options = BuildOptions.None
+                });
+            }
+            finally
+            {
+                PlayerSettings.productName = "AshenSpire Unity";
+                AssetDatabase.SaveAssets();
+            }
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException($"{target} build failed: {report.summary.totalErrors} errors.");
             // The exporter, rather than a later copy command, records the source it built.

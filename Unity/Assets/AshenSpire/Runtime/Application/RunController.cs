@@ -99,6 +99,15 @@ namespace AshenSpire.Application
                 _view.CoopRequested += OpenCoop;
                 InitSaveSlots(channel); // RunController.Slots.cs: three run slots + legacy migration
                 Menu();
+                ApplyPlayerWindowTitle();
+                const string welcomeKey = "AshenSpire.Unity.Welcome.v1";
+                if (PlayerPrefs.GetInt(welcomeKey, 0) == 0)
+                    _view.Welcome(() =>
+                    {
+                        try { PlayerPrefs.SetInt(welcomeKey, 1); PlayerPrefs.Save(); }
+                        catch (Exception error) { Debug.LogWarning("Could not remember the welcome screen: " + error.Message); }
+                        Menu();
+                    });
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
                 BrowserVisibility.Install(gameObject.name);
@@ -275,12 +284,44 @@ namespace AshenSpire.Application
         }
         private void OnApplicationFocus(bool focused)
         {
+            if (focused) ApplyPlayerWindowTitle();
 #if !UNITY_WEBGL || UNITY_EDITOR
             // Android soft keyboards emit focus loss without backgrounding the game.
             if (!UnityEngine.Application.isMobilePlatform)
                 Interrupt(InterruptionSource.DesktopFocus, !focused);
 #endif
         }
+        // Keep the existing product/company identity: Windows PlayerPrefs are
+        // stored under it. Only the visible native window caption changes.
+        private static void ApplyPlayerWindowTitle()
+        {
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            using (var process = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                var processId = (uint)process.Id;
+                EnumPlayerWindows((window, _) =>
+                {
+                    GetWindowThreadProcessId(window, out var owner);
+                    if (owner != processId) return true;
+                    var className = new System.Text.StringBuilder(128);
+                    GetClassName(window, className, className.Capacity);
+                    if (className.ToString() == "UnityWndClass") SetWindowText(window, "AshenedSpire");
+                    return true;
+                }, IntPtr.Zero);
+            }
+#endif
+        }
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+        private delegate bool PlayerWindowVisitor(IntPtr window, IntPtr state);
+        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "EnumWindows")]
+        private static extern bool EnumPlayerWindows(PlayerWindowVisitor visitor, IntPtr state);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr window, out uint processId);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr window, System.Text.StringBuilder name, int capacity);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern bool SetWindowText(IntPtr window, string title);
+#endif
         // Called only by the Web lifecycle adapter, not a gameplay command endpoint.
         [UnityEngine.Scripting.Preserve]
         public void OnBrowserVisibilityChanged(int hidden)

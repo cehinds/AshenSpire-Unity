@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.27.0 · build 27 · 2026-09-29
+
+- F00 US-0.4: AshenedSpire branding, welcome and in-game guide; current-build Foundation validation
+
 ## 0.0.26.0 · build 26 · 2026-09-29
 
 - Refine title, settings, collection and combat presentation for desktop and phone.

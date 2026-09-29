@@ -226,7 +226,7 @@ namespace AshenSpire.Presentation
         }
         private void Catalog()
         {
-            Header("ASHEN SPIRE COMPENDIUM");
+            Header("ASHENEDSPIRE COMPENDIUM");
             var names = new List<string> { "cards", "classes", "relics", "statuses", "stances", "enemies", "encounters", "events", "flasks", "equipment.armaments", "equipment.armour", "equipment.startingKits", "unlocks" };
             Select("foundation-table", "Table", names, _table, value => { _table = value; Catalog(); });
             var query = new TextField("Find name or ID") { value = _search, name = "foundation-search" }; query.AddToClassList("seed-field"); query.RegisterValueChangedCallback(e => _search = e.newValue); _root.Add(query);

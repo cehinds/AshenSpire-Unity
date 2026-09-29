@@ -15,7 +15,7 @@ namespace AshenSpire.Presentation
             Action create, Action<bool> connect, Action back)
         {
             Shell("CLIMB TOGETHER", "A SHARED CLIMB · YOUR OWN HAND");
-            _body.Add(Text("Run the AshenSpire companion on the host computer. Everyone joins its address and uses the invitation code supplied by the host.", "lead"));
+            _body.Add(Text("Run the AshenedSpire companion on the host computer. Everyone joins its address and uses the invitation code supplied by the host.", "lead"));
             Field("coop-endpoint", "Companion address", "endpoint");
             Field("coop-invite", "Invitation code", "joinToken", true);
             Field("coop-host-key", "Host key (host only)", "hostToken", true);
@@ -62,7 +62,7 @@ namespace AshenSpire.Presentation
         }
         public void CoopGame(JObject snapshot, OriginalContentCatalog catalog, JObject supplement, Action<JObject> send, Action back)
         {
-            Shell("ASHEN SPIRE", "THE SHARED CLIMB");
+            Shell("ASHENEDSPIRE", "THE SHARED CLIMB");
             _coopPanel = new OriginalCoopPanel(_body, snapshot, catalog, supplement, send, () => Report(), back, _coopPanelState, MapView, _diagnostics);
         }
         public void CoopError(string message) { _coopPanel?.ShowError(message); }

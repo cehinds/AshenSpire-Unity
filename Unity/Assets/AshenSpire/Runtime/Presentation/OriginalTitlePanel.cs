@@ -13,8 +13,8 @@ namespace AshenSpire.Presentation
             Action cooperative, Action settings, Action extras, Action saves = null)
         {
             AddToClassList("original-title");
-            var wordmark = new Label("ASHEN SPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
-            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .112f, 28, 62));
+            var wordmark = new Label("ASHENEDSPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
+            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .09f, 22, 58));
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
             var invitation = new Label(canResume ? "Your climb is waiting." : "Gather your cards. Brave the Spire.");
