@@ -133,7 +133,7 @@ User stories (open work, from the detailed checklist below):
   restart, duplicate retry and rejoin via the packaged companion.
 - [ ] **US-0.6** Profile corruption, quota exhaustion, upgrade coverage and original JavaScript save import.
   - [x] Owner requires import before Phase 1 completion (2026-09-28).
-  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 374 domain and 12 browser-adapter checks passed.
+  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 376 domain and 12 browser-adapter checks passed.
   - [ ] Compiled import verification and broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
@@ -617,7 +617,7 @@ all archived players and independently tested channel saves. See
   art coverage. A compendium portrait is not an exercised encounter.
 - [x] Rebuild build 22 for Web/Windows/Android and companion; 451 companion,
   163 native exported-file and 20 package checks. Corrected source digest:
-  `54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea`.
+  `54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60376a11e3ea`.
 - [x] Build-22 phone/desktop visual flow (148 checks), card costs (152),
   settings persistence/inventory navigation, Draft/paid services (20), and
   corrected two-client packaged-companion fight/reward/exact-hand rejoin

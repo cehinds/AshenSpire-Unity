@@ -43,6 +43,8 @@ RejectEdit(s=>s["schemaVersion"]=4,"older unsupported schema refused");
 foreach(var field in new[]{"combatEntered","pendingReward","shopStock","draft","skillDraft","skills","classAbilities","handRuleSnapshot"})
  foreach(var value in new JToken[]{new JObject(),new JArray(),new JValue("unexpected")})RejectEdit(s=>s[field]=value.DeepClone(),"active/unsupported "+field+" "+value.Type+" refused");
 RejectEdit(s=>s["hp"]=(int)s["maxHp"]+1,"HP above maximum refused");
+RejectEdit(s=>s["hp"]=0,"finished character cannot become a living imported climb");
+RejectEdit(s=>s["mapGraph"]["startIds"]=new JArray(),"checkpoint with no continuing route refused");
 RejectEdit(s=>s["energyMax"]=999,"changed action resource refused");
 RejectEdit(s=>s["deck"][0]["cardId"]="missing-card","unknown card refused");
 RejectEdit(s=>s["deck"][1]["instanceId"]=s["deck"][0]["instanceId"].DeepClone(),"duplicate card identity refused");

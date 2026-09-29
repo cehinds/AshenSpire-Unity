@@ -63,6 +63,8 @@ namespace AshenSpire.Domain.Original
             if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
             if (!(source["modifiers"] is JArray modifiers) || modifiers.Count != 0)
                 throw new ArgumentException("This save has original run modifiers that cannot yet be imported faithfully.");
+            if (source["hp"]?.Type != JTokenType.Integer || (int)source["hp"] <= 0)
+                throw new ArgumentException("Import requires a living character at a map checkpoint. Finished or damaged runs are not imported as new climbs.");
             foreach (var key in new[] { "attributes", "loadout", "streamCounters", "mapGraph", "flaskCharges", "derivedStatRuleSnapshot", "equipmentProfileRuleSnapshot" })
                 if (!(source[key] is JObject)) throw new ArgumentException("Original save is missing " + key + ".");
             foreach (var key in new[] { "deck", "path", "history", "relics", "flasks" })
@@ -161,6 +163,7 @@ namespace AshenSpire.Domain.Original
             var frozenSupplement = (JObject)supplement.DeepClone(); frozenSupplement["mechanics"] = mechanics.DeepClone();
             var snapshot = new JObject { ["schemaVersion"] = 1, ["content"] = data, ["supplement"] = frozenSupplement, ["run"] = run };
             var restored = OriginalGameSession.Restore(snapshot);
+            if (restored.LegalNodeIds.Length == 0) throw new ArgumentException("This checkpoint has no continuing route. Completed or damaged maps cannot be imported as active climbs.");
             foreach (var card in restored.RunPlayer["deck"].OfType<JObject>()) _ = restored.Resolve(card);
             var projection = new WeaponCardProjection(frozenCatalog);
             foreach (var card in source["deck"].OfType<JObject>())
