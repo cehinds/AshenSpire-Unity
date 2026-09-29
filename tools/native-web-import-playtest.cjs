@@ -9,7 +9,7 @@ let browser,ui;
  const [url,outputArg,fixtures]=process.argv.slice(2),output=path.resolve(outputArg);
  if(!url||!fixtures)throw Error('Pass compiled Web URL, evidence folder, original fixtures folder.');
  const input=fs.readFileSync(path.join(fixtures,'reaver-map.json'),'utf8'),original=JSON.parse(input);
- browser=await chromium.launch({channel:'msedge',headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({...(process.platform==='win32'?{channel:'msedge'}:{}),headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const results=[];
  for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
   const context=await browser.newContext({viewport}),page=await context.newPage();

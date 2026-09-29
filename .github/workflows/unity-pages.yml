@@ -114,6 +114,12 @@ jobs:
             name: Verify compiled profile navigation, slot copies and checkpoint restoration
             run: node tools/native-save-recovery-playtest.cjs http://127.0.0.1:8787 TestResults/NativeSaveRecovery
             evidence: TestResults/NativeSaveRecovery
+          - id: native-original-save-import
+            name: Verify original-save file and browser-slot import in the compiled player
+            run: |
+              node tools/unity-web-save-fixtures.mjs TestResults/WebImportFixtures
+              node tools/native-web-import-playtest.cjs http://127.0.0.1:8787 TestResults/NativeWebImport TestResults/WebImportFixtures
+            evidence: TestResults/NativeWebImport
           - id: native-map-320x640
             name: Exercise branching maps, fog, camera restoration and touch navigation (320x640)
             run: node tools/native-map-playtest.cjs http://127.0.0.1:8787 TestResults/NativeMap --case=0/5
