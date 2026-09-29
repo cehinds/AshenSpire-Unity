@@ -17,7 +17,7 @@ JObject Import(string text)=>OriginalWebSaveImport.Convert(text,catalog,Json("ev
 foreach(var cls in new[]{"reaver","starseer","rogue","herald"}){
  var text=File.ReadAllText(Path.Combine(args[0],cls+"-map.json"));var before=JObject.Parse(text);var converted=Import(text);var game=OriginalGameSession.Restore(converted);
  Check(game.Phase==OriginalRunPhase.Map,"original map import");
- foreach(var key in new[]{"hp","maxHp","mana","maxMana","stamina","maxStamina","attributes","mapGraph","streamCounters","path","cinders","flaskCharges"})Check(JToken.DeepEquals(before[key],game.RunPlayer[key]),cls+": unchanged "+key);
+ foreach(var key in new[]{"hp","maxHp","mana","maxMana","stamina","maxStamina","attributes","mapGraph","streamCounters","path","cinders","flaskCharges","stats","seenEvents","customization","seedString"})Check(JToken.DeepEquals(before[key],game.RunPlayer[key]),cls+": unchanged "+key);
  Check(game.RunPlayer["deck"].Select(c=>(string)c["instanceId"]).SequenceEqual(before["deck"].Select(c=>(string)c["instanceId"])),"original card identities");
  var originalCards=JArray.Parse(File.ReadAllText(Path.Combine(args[0],cls+"-cards.json")));
  foreach(var expected in originalCards){
@@ -54,6 +54,8 @@ RejectEdit(s=>s["equipmentProfileRuleSnapshot"]["snapshotVersion"]=99,"future eq
 RejectEdit(s=>s["derivedStatRuleSnapshot"]["snapshotVersion"]=99,"future derived rules refused");
 RejectEdit(s=>s["futureRules"]=new JObject(),"unknown same-schema state refused");
 RejectEdit(s=>s["modifiers"]=new JArray("unported-modifier"),"unsupported run modifiers refused");
+RejectEdit(s=>s["seenEvents"]=new JObject(),"malformed event history refused");
+RejectEdit(s=>s["seenEvents"]=new JArray("missing-event"),"unknown event history refused");
 RejectEdit(s=>s["deck"][0]["mods"]=new JArray("damage=999"),"unsupported card modifiers refused");
 RejectEdit(s=>s["loadout"]["sets"]["rightHand"][2]="missing-item","unknown inactive equipment refused");
 RejectEdit(s=>s["loadout"]["storage"]=new JArray("missing-item"),"unknown stored equipment refused");

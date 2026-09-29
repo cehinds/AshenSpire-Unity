@@ -59,7 +59,7 @@ namespace AshenSpire.Domain.Original
                 throw new ArgumentException("Choose an original-game save, not an AshenedSpire snapshot.");
             var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView").Split(' ');
             var inactiveFields = new[] { "pendingReward", "shopStock", "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
-            var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
+            var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && p.Name != "seenEvents" && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
             if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
             if (!(source["modifiers"] is JArray modifiers) || modifiers.Count != 0)
                 throw new ArgumentException("This save has original run modifiers that cannot yet be imported faithfully.");
@@ -80,6 +80,11 @@ namespace AshenSpire.Domain.Original
             if (source["deck"].Select(c => (string)c["instanceId"]).Distinct().Count() != source["deck"].Count()) throw new ArgumentException("Duplicate card instance IDs.");
             foreach (var id in source["relics"].Values<string>()) _ = catalog.Record("relics", id);
             foreach (var flask in source["flasks"]) _ = catalog.Record("flasks", (string)flask["flaskId"]);
+            if (source["seenEvents"] != null)
+            {
+                if (!(source["seenEvents"] is JArray seenEvents)) throw new ArgumentException("Original event history must be an array.");
+                foreach (var id in seenEvents) _ = catalog.Record("events", (string)id);
+            }
             var loadout = (JObject)source["loadout"];
             if (loadout.Properties().Any(p => !new[] { "sets", "active", "storage", "creationArmourGrant" }.Contains(p.Name)) || !(loadout["sets"] is JObject sets) || !(loadout["active"] is JObject active) || !(loadout["storage"] is JArray storage))
                 throw new ArgumentException("Unsupported original equipment layout.");

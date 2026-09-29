@@ -133,7 +133,7 @@ User stories (open work, from the detailed checklist below):
   restart, duplicate retry and rejoin via the packaged companion.
 - [ ] **US-0.6** Profile corruption, quota exhaustion, upgrade coverage and original JavaScript save import.
   - [x] Owner requires import before Phase 1 completion (2026-09-28).
-  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 376 domain and 12 browser-adapter checks passed.
+  - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 394 domain and 12 browser-adapter checks passed.
   - [ ] Compiled import verification and broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
