@@ -7,16 +7,17 @@ ID and archive filenames remain stable to preserve installed saves and links.
 
 ## Latest inspected reference
 
-- Checked: 2026-09-28 (America/Anchorage).
-- Original dev HEAD: `a8e2def5b52e3381ea0f9e56f721881b78130b04` (2026-09-29 06:15 UTC, still September 28 in Anchorage).
+- Checked: 2026-09-29 (America/Anchorage).
+- Original dev HEAD: `38166cb12a2d8901fce7727aca37cd8d2e7e4b2d` (2026-09-29 07:54 UTC).
 - Imported baseline: `b17a7f4543e1710f49fae8b58880121690a314de`.
-- Scope: prior review plus 42 intervening commit summaries and the explicit state/skill changes in `2d48b91480`; not a complete audit of every change since the imported baseline.
+- Scope: prior review plus the next 19 commit summaries, changed-file inventory and the hand-layout source diff after `a8e2def5b52e3381ea0f9e56f721881b78130b04`; not a complete audit of every change since the imported baseline.
 - Daily check: `check-ashenspire-changes-for-ashenedspire`, attached to the
   development chat. Notify only for meaningful relevant changes or problems.
 
 ## Findings
 
 - [x] Compared the original again while preparing the build-28 importer.
+- [x] Compared again during build-29 validation. The next 19 commits primarily repair browser probe counts and documentation. The runtime hand change in `2bdd64ced53d5427baad58bee2abf0a5c11ae3ad` reserves fan lift only for the legacy transform fan; fitted cards already own their height. Unity uses a different layout, so the relevant acceptance requirement is unobscured cards and controls, not copying the CSS calculation. No new save schema or gameplay rule appeared in this inspected diff.
 - [ ] Review XP rates and deferred/manual level-up UX (`368af4d0b6`, `1fe83cce6a`, `b1c34968b0`).
 - [ ] Review configurable feat rewards, banked skill XP and claim state (`2d48b91480`, merged by `a8e2def5b5`). The source adds `feats`, `pendingReward.skillClaims` and `levelChoices`; the existing original schema is already beyond the baseline schema 5. These need explicit content/rule/save migration work, not a blind copy.
 - [ ] Compare tag-routed physical/bow/spell animation (`0e3482e376`, `7e5fbc73ed`) and tiny-enemy/intent tap clearance (`4cc1dfc6be`, `379c5a2f3d`, `234bfe3b95`) against Unity's existing feedback and targeting.

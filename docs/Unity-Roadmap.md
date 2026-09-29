@@ -1,7 +1,7 @@
 # AshenedSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.27.0 · build 27 ·
+content while improving phone play. Current source: **0.0.28.1 · build 29 ·
 Foundation in progress** (`GameContent/Unity/version.json`). Published channels
 may still carry earlier checkpoints.
 
@@ -25,7 +25,7 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 
 | ID | Feature | Status | Version | Evidence |
 |---|---|---|---|---|
-| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.27.0 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
+| F00 | Foundation (native engine, content import, build/package pipeline) | in-progress | 0.0.28.1 | [detail](#foundation-f00-detailed-acceptance) · [parity](Unity-Parity.md) · `Published/build.json` |
 | F01 | Title, profile & settings | in-progress | — | `OriginalTitlePanel.cs` · `CampaignView.cs` (Settings, Chronicle) · [visual](Unity-Visual-Parity.md) |
 | F02 | Class select & previews | in-progress | — | `OriginalFoundationPanel.cs` · `CreationModel.cs` · `OriginalStartingOptions.cs` |
 | F03 | Combat core (hand, actions, targets, piles) | in-progress | — | `OriginalRunPanel.cs` · `OriginalCardView.cs` · `CombatSession*.cs` · [readability](Unity-Combat-Readability.md) |
@@ -128,6 +128,8 @@ User stories (open work, from the detailed checklist below):
   and save/resume checks.
 - [ ] **US-0.3** Check card numbers, target availability, affordability, rejection
   recovery and result feedback in phone and desktop flows.
+  - [x] Build 29 fixes the legacy flask hidden by the action bar; nine portrait/landscape checks verify full visibility, touch size and exact charge/healing effects.
+  - [x] Build 29 reference campaign completes all nine encounters with rewards, equipment and exact reload; high-density touch covers 12 layouts and six landscape inspections. See [scoped QA](qa/unity-build-29/README.md).
 - [ ] **US-0.4** Cover original settings/inventory flows not exercised by current commands.
 - [ ] **US-0.5** Current-source multi-browser co-op: friendly targets, catch-up, host
   restart, duplicate retry and rejoin via the packaged companion.

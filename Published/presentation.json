@@ -1,28 +1,11 @@
 {
-  "guide": "Published/BuildReview28/Guide.md",
+  "guide": "Published/BuildReview29/Guide.md",
   "screenshots": [
-    "Published/BuildReview28/02-preview.png",
-    "Published/BuildReview28/03-imported-slot.png",
-    "Published/BuildReview28/04-imported-map.png",
-    "Published/BuildReview28/05-imported-combat.png",
-    "Published/BuildReview28/portraits/phone-wanderingSoldier.png",
-    "Published/BuildReview28/portraits/phone-blightHound.png",
-    "Published/BuildReview28/portraits/phone-graveWisp.png",
-    "Published/BuildReview28/portraits/phone-wyrmAspirant.png",
-    "Published/BuildReview28/portraits/phone-fellWarden.png",
-    "Published/BuildReview28/portraits/phone-gildedKnight.png",
-    "Published/BuildReview28/portraits/phone-courtSurgeon.png",
-    "Published/BuildReview28/portraits/phone-livingArmor.png",
-    "Published/BuildReview28/portraits/phone-courtDuelist.png",
-    "Published/BuildReview28/portraits/phone-stitchedKing.png",
-    "Published/BuildReview28/portraits/phone-valkyrieShade.png",
-    "Published/BuildReview28/portraits/phone-wyrmLord.png",
-    "Published/BuildReview28/portraits/phone-huskBrute.png",
-    "Published/BuildReview28/portraits/phone-stitchedHound.png",
-    "Published/BuildReview28/portraits/phone-courtMarionette.png",
-    "Published/BuildReview28/portraits/phone-ashRevenant.png",
-    "Published/BuildReview28/portraits/phone-emberStarvedPilgrim.png",
-    "Published/BuildReview28/portraits/phone-charredColossus.png",
-    "Published/BuildReview28/portraits/phone-blightedValkyrie.png"
+    "Published/BuildReview29/title-desktop.png",
+    "Published/BuildReview29/title-phone.png",
+    "Published/BuildReview29/390x844-flask-visible.png",
+    "Published/BuildReview29/740x320-flask-visible.png",
+    "Published/BuildReview29/15-campaign-victory.png",
+    "Published/BuildReview29/35-dense-settings.png"
   ]
 }

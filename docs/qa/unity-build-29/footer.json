@@ -1,0 +1,174 @@
+{
+  "success": true,
+  "checks": [
+    "damaged survivor has a flask at 390x844",
+    "entire flask button is reachable above the fixed action bar at 390x844",
+    "flask touch target retains 44 CSS pixels at 390x844",
+    "visible flask spends one charge and restores the expected vitality at 390x844",
+    "damaged survivor has a flask at 740x320",
+    "entire flask button is reachable above the fixed action bar at 740x320",
+    "flask touch target retains 44 CSS pixels at 740x320",
+    "visible flask spends one charge and restores the expected vitality at 740x320",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "state": null,
+  "coop": null,
+  "controls": {
+    "Controls": [
+      {
+        "Id": "deck",
+        "X": 349,
+        "Y": 100,
+        "Width": 79,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "menu",
+        "X": 655,
+        "Y": 100,
+        "Width": 65,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "intent-details",
+        "X": 20,
+        "Y": 410,
+        "Width": 700,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "status-details",
+        "X": 25,
+        "Y": 502,
+        "Width": 695,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "card-0",
+        "X": 20,
+        "Y": 562,
+        "Width": 217,
+        "Height": 142,
+        "Enabled": true
+      },
+      {
+        "Id": "card-1",
+        "X": 262,
+        "Y": 562,
+        "Width": 217,
+        "Height": 142,
+        "Enabled": true
+      },
+      {
+        "Id": "card-2",
+        "X": 503,
+        "Y": 562,
+        "Width": 217,
+        "Height": 142,
+        "Enabled": true
+      },
+      {
+        "Id": "card-3",
+        "X": 20,
+        "Y": 714,
+        "Width": 217,
+        "Height": 142,
+        "Enabled": true
+      },
+      {
+        "Id": "card-4",
+        "X": 503,
+        "Y": 714,
+        "Width": 217,
+        "Height": 142,
+        "Enabled": true
+      },
+      {
+        "Id": "draw-pile",
+        "X": 20,
+        "Y": 929,
+        "Width": 339,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "discard-pile",
+        "X": 364,
+        "Y": 929,
+        "Width": 351,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "action-history",
+        "X": 25,
+        "Y": 989,
+        "Width": 695,
+        "Height": 50,
+        "Enabled": true
+      },
+      {
+        "Id": "potion",
+        "X": 20,
+        "Y": 1049,
+        "Width": 700,
+        "Height": 50,
+        "Enabled": false
+      },
+      {
+        "Id": "play",
+        "X": 35,
+        "Y": 240,
+        "Width": 352,
+        "Height": 50,
+        "Enabled": false
+      },
+      {
+        "Id": "end-turn",
+        "X": 392,
+        "Y": 240,
+        "Width": 308,
+        "Height": 50,
+        "Enabled": true
+      }
+    ],
+    "PanelWidth": 740,
+    "PanelHeight": 320,
+    "Labels": [
+      "ASHENEDSPIRE",
+      "REAVER · ACT 1 · 0 CINDERS",
+      "70 / 70 VITALITY",
+      "VITALITY +9",
+      "Wandering Soldier · 24 / 24\nEnemy block · 0",
+      "TURN 4   ·   3 ENERGY   ·   0 BLOCK",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "2 ◇",
+      "Cleave",
+      "Deal 15 damage.",
+      "attack · reaver",
+      "1 ◇",
+      "Defend",
+      "Gain 5 block.",
+      "skill",
+      "1 ◇",
+      "Battle Cry",
+      "Gain 2 strength. Draw 1.",
+      "skill · reaver",
+      "1 ◇",
+      "Strike",
+      "Deal 6 damage.",
+      "attack",
+      "Crimson flask restores 9 vitality."
+    ],
+    "LayoutAttempts": 1
+  },
+  "physicalDevice": false
+}

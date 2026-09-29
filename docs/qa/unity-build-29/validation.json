@@ -1,0 +1,59 @@
+{
+  "version": "0.0.28.1",
+  "buildNumber": 29,
+  "sourceCommit": "9cd3d0fad489c7095fd50bbde17540c89eca7acb",
+  "sourceDigest": "7717600e2683ae8c3eb39a37b9452ced96bab6d56a8ebbaf2daacc5dc8dde92f",
+  "builtAt": "2026-09-29T09:05:49.1513736Z",
+  "webCompiled": true,
+  "windowsCompiled": true,
+  "androidCompiled": true,
+  "companionPackaged": true,
+  "compiledBrowserChecks": 9,
+  "currentPlayerSuites": [
+    {
+      "suite": "Legacy flask reachability, portrait and landscape",
+      "success": true,
+      "checks": 9
+    },
+    {
+      "suite": "Full nine-encounter reference campaign, equipment, rewards and reload",
+      "success": true
+    },
+    {
+      "suite": "High-density touch, six landscape inspections, insets and Settings navigation",
+      "success": true
+    }
+  ],
+  "downloads": [
+    {
+      "file": "Windows.zip",
+      "bytes": 103784846,
+      "sha256": "46450a0bf32bfb07ef95e1205d67b189fd4bac5f68d3a11618b5cc6b6f7c592c"
+    },
+    {
+      "file": "Android.apk",
+      "bytes": 93079924,
+      "sha256": "31ce7dec51f9bb2961f5460a5350dd5b00faf2c46597ddebd1144db8d4af1731"
+    },
+    {
+      "file": "Companion.zip",
+      "bytes": 47548842,
+      "sha256": "8ced79f8552c354ca8363df195d66ed9623ae2f0eb49f091e925ec0b4e9f4794"
+    },
+    {
+      "file": "Web.zip",
+      "bytes": 86592811,
+      "sha256": "f9958a1a9c552c685ab37bbe4bb3e01aef7fc4797b3fb8c6dae4d92e650e7abf"
+    }
+  ],
+  "phase1Complete": false,
+  "ownerAccepted": false,
+  "physicalDevice": false,
+  "limits": [
+    "The nine counted checks belong to the focused footer suite; campaign and touch scenarios are reported separately, not assigned invented check counts.",
+    "Build 28 native campaign replay and import/portrait checks remain historical evidence; no full Foundation acceptance is claimed.",
+    "Original save import supports compatible schema-5 map checkpoints; profile, active-room and newer-schema compatibility remains open.",
+    "Physical-device play and owner acceptance remain open."
+  ],
+  "testedWebPayloadsMatchPackages": true
+}

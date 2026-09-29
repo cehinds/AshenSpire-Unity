@@ -1,23 +1,22 @@
 {
   "Added": [
-    "Preview and import compatible original-game map checkpoints into an empty AshenedSpire slot.",
-    "Choose an exported JSON file or explicitly read one of the original browser slots."
+    "Portrait and landscape flask reachability regression coverage."
   ],
   "Changed": [
-    "Public download pages use the AshenedSpire name.",
-    "Original saved resources and supported equipment/stat rules remain attached to imported runs."
+    "Browser checks follow the welcome screen and scroll expanded Settings without dragging sliders."
   ],
   "Fixed": [
-    "Duplicate, corrupt, oversized and unsupported imports are refused before replacing any saved climb."
+    "Legacy combat and inspection content no longer end behind the fixed action bar."
   ],
   "KnownIssues": [
-    "Initial schema-5 map-save import only; profile, active-room and newer original schemas remain incomplete.",
-    "No owner acceptance or physical-device certification.",
-    "Other Foundation acceptance stories remain open."
+    "The nine counted checks belong to the focused footer suite; campaign and touch scenarios are reported separately, not assigned invented check counts.",
+    "Build 28 native campaign replay and import/portrait checks remain historical evidence; no full Foundation acceptance is claimed.",
+    "Original save import supports compatible schema-5 map checkpoints; profile, active-room and newer-schema compatibility remains open.",
+    "Physical-device play and owner acceptance remain open."
   ],
   "WhatToTest": [
-    "Open Saved climbs, choose Import original-game save and preview a compatible schema-5 map checkpoint.",
-    "Cancel once, then import into an empty slot; reload and continue the climb.",
-    "Keep newer original saves in the original game until their expanded progression schema is supported."
+    "Open Extras and the reference campaign; use a flask after taking damage in portrait and landscape.",
+    "Open Settings, scroll to Back and confirm preferences remain unchanged.",
+    "Use the original-save preview with a compatible map checkpoint."
   ]
 }

@@ -6,6 +6,7 @@ acceptance or physical-device certification.
 
 - [ ] **Phase 1 — Foundation (F00), target 0.1.0.0**
   - [x] Implement the native content/rules, save-slot and companion foundations.
+  - [x] Package build 29 for Web, Windows, Android and companion; focused flask reachability, complete reference-campaign and high-density touch scenarios pass against its exact Web payloads. See [QA](qa/unity-build-29/README.md).
   - [x] Package build 28 and pass its 879 scoped compiled browser checks (build 27 has 186 historical checks).
     - [x] Standard campaign replay: 306 real-input commands, exact reloads, expected Act-3 defeat and recorded Chronicle result (749 checks).
   - [ ] US-0.1: complete encounter-art coverage and owner visual acceptance.
@@ -52,8 +53,9 @@ acceptance or physical-device certification.
 
 No whole phase is currently signed off. The content/rules port, native runtime,
 save slots and companion pipeline are implemented components of Foundation.
-Build 28 is the latest locally verified checkpoint, with 879 scoped compiled
-browser checks and all four matching packages; see [QA](qa/unity-build-28/README.md).
+Build 29 is the latest locally verified Web patch. Build 28's 879 scoped compiled
+browser checks remain historical evidence; see [build 29](qa/unity-build-29/README.md)
+and [build 28](qa/unity-build-28/README.md). No whole phase is accepted by these checks.
 
 The next milestone is Foundation acceptance. Build 27 completes the rename,
 first-visit guidance and focused opening-mode/upgrade checks. Continue the

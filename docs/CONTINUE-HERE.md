@@ -14,11 +14,11 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
-[original-game review](Unity-Upstream-Review.md). Build 28 is compiled and packaged with 879 scoped browser checks. Its initial original-save importer preserves compatible map checkpoints. Foundation acceptance remains open; see [build-28 QA](qa/unity-build-28/README.md).
+[original-game review](Unity-Upstream-Review.md). Build 29 fixes fixed-action clearance and passes its scoped Web checks. Build 28's initial original-save importer preserves compatible map checkpoints, with 879 scoped browser checks recorded for that build. Foundation acceptance remains open; see [build-29 QA](qa/unity-build-29/README.md) and [build-28 QA](qa/unity-build-28/README.md).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.28.0 · build 28 · Foundation in progress**, compiled and packaged (`GameContent/Unity/version.json`). |
+| Version / build / stage | **0.0.28.1 · build 29 · Foundation in progress** (`GameContent/Unity/version.json`). Read `Published/build.json` for the matching package receipt. |
 | Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
@@ -26,6 +26,18 @@ remains AshenSpire. See [core phases](Unity-Milestones.md) and the
 | Presentation | `Unity/Assets/AshenSpire/Runtime/Presentation` (UI Toolkit, `Resources/*.uss`) |
 | Unity content source | `GameContent/Unity/Original/*.json` (imported into `Resources/Original`; never edit the copy) |
 | Specs | [UNITY-SPEC.md](UNITY-SPEC.md), [Unity-Build-Brief.md](Unity-Build-Brief.md), [Unity-Parity.md](Unity-Parity.md), [Unity-Visual-Parity.md](Unity-Visual-Parity.md) |
+
+### Build 29 layout patch
+
+- [ ] **Phase 1 — Foundation / US-0.3 interaction acceptance**
+  - [x] Restore clearance above fixed actions so the legacy flask and inspection content remain reachable.
+  - [x] Nine compiled portrait/landscape checks: whole-button visibility, touch size, charge consumption and exact healing.
+  - [x] Complete the nine-encounter reference campaign with rewards, equipment and exact reload.
+  - [x] Pass high-density touch across 12 layout scenarios and six landscape inspections.
+  - [x] Web, Windows, Android and companion packages match; 453 companion, 163 native-file and 20 package checks pass. Tested Web payloads are byte-identical to the package.
+  - [ ] Wider original/native interaction coverage and owner acceptance remain open.
+
+The build-28 CI failures and corrected harness behavior are preserved in [regression notes](qa/unity-build-28/ci-regressions.md). The legal patch step from build 28 passes six version checks; the accumulated branch still cannot jump over the owner's preceding integrations from `dev` build 21. Draft [PR #57](https://github.com/cehinds/AshenSpire-Unity/pull/57) remains a development candidate.
 
 ### Build 28 downloads and hosting
 
