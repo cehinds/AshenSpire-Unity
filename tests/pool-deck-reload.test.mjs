@@ -34,6 +34,7 @@ import { commitCombatSnapshot, restoreCombatSnapshot } from '../src/engine/comba
 import { dispatch, createCombat } from '../src/engine/combat.js';
 import { isPoolDeckRun, dealtAttackSlotCount, POOL_DECK_RULE } from '../src/model/cardRemoval.js';
 import { stampDeck } from '../src/model/loadout.js';
+import { extractionPlan, commitExtraction, commitInstall } from '../src/model/cardExtraction.js';
 
 const registries = createRegistries(contentBundle);
 const SEED = 5;
@@ -226,6 +227,76 @@ test('sealed: a full restamp sweeps a lent card from a dealt deck and appends no
   run.deck.push({ instanceId: 'weaponArt:stale:x', cardId: 'dodgeRoll', upgraded: false, equipmentRole: 'weaponArt', grantedBy: 'stale' });
   stampDeck(registries, run);
   assert.deepEqual(ids(run.deck), dealt);
+});
+
+// A card the PLAYER seats in a mount at the Blacksmith is theirs riding on the
+// item, not a card the equipment lends (cehinds/AshenSpire#1479, Codex review
+// 4166580092): a dealt deck keeps it through every restamp, a reload, a swap
+// and the sweep. This copy's content authors no weapon art, so the fixture is
+// the original's deck-rules one: a straight sword whose Crimson Cleave is extractable.
+const smithBundle = JSON.parse(JSON.stringify(contentBundle));
+smithBundle.equipment.armaments = smithBundle.equipment.armaments.map((piece) => (piece.id === 'straightSword'
+  ? { ...piece, weaponCardPackage: { compatibility: 'attack-v1', fillerAttackProfileId: 'bladeAttack', grantedCards: [], weaponArtDefaults: ['crimsonCleave'] } }
+  : piece));
+smithBundle.tagging.push({ family: 'card', scope: '', objectId: 'crimsonCleave', tagId: 'extractable' });
+smithBundle.scripts = contentBundle.scripts;
+const smithReg = createRegistries(smithBundle);
+function installedSwordArt() {
+  const storage = createMemoryStorage();
+  const saves = createSaveManager(storage);
+  saves.ensureProfile();
+  const run = createRunState({ seed: SEED, classId: 'reaver', registries: smithReg, profileMeta: saves.loadMeta() });
+  run.seedString = seedToString(SEED);
+  run.customization = { name: 'Forsaken', glyph: '⚔', tint: 'gold' };
+  run.custom = { ascension: 0, mods: {}, deckMode: 'sealed' };
+  run.stats = { fightsWon: 0, damageDealt: 0, damageTaken: 0 };
+  run.path = []; run.seenEvents = []; run.lastEncounters = [];
+  run.deck = createDeck([...BASE, 'strike', 'strike'], createIdGen('rc'));
+  run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);
+  run.poolDeckRule = POOL_DECK_RULE;
+  stampDeck(smithReg, run, undefined, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });
+  assert.ok(!run.deck.some((c) => c.cardId === 'crimsonCleave'), 'the sword\'s own art is not dealt');
+  run.deck.push({ instanceId: 'bought:1', cardId: 'crimsonCleave', upgraded: false });
+  const item = extractionPlan(smithReg, run).candidates.find((c) => c.itemRef === 'armament/straightSword');
+  const mount = item.mounts.find((m) => m.cardId === 'crimsonCleave');
+  commitExtraction(smithReg, run, item.itemRef, mount.mountKey, undefined, { free: true });
+  commitInstall(smithReg, run, item.itemRef, mount.mountKey, 'bought:1', undefined, { free: true });
+  return { run, rng: createRng(SEED), saves, mountKey: mount.mountKey };
+}
+
+test('sealed: a Blacksmith-installed card rides the equipped item through every restamp and a reload', () => {
+  const { run, rng, saves, mountKey } = installedSwordArt();
+  const seated = (deck) => deck.filter((c) => c.instanceId === mountKey);
+  assert.ok(!run.deck.some((c) => c.instanceId === 'bought:1'), 'seating consumed the loose copy');
+  assert.equal(seated(run.deck).length, 1, 'the installed card is in the deck while the sword is worn');
+  stampDeck(smithReg, run, undefined, { adoptEquipmentBonuses: false }); // end of a fight
+  assert.equal(seated(run.deck).length, 1, 'it survives the end-of-fight restamp');
+  // Armoury: a dagger in hand, then the sword again.
+  run.loadout.sets.rightHand[1] = 'dagger';
+  run.loadout.active.rightHand = 1;
+  stampDeck(smithReg, run);
+  assert.equal(seated(run.deck).length, 0, 'it rides the sword, not the dagger');
+  run.loadout.active.rightHand = 0;
+  stampDeck(smithReg, run);
+  assert.equal(seated(run.deck).length, 1, 'and returns with the sword');
+  saves.saveRun(run, rng);
+  const back = saves.loadRun(smithReg, 1);
+  assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+  assert.equal(seated(back.deck).length, 1, 'and survives a reload');
+});
+
+test('sealed: a fight holding a Blacksmith-installed card keeps it through the legacy sweep', () => {
+  const { run, rng, saves, mountKey } = installedSwordArt();
+  const combat = createCombat({ registries: smithReg, rng, enemyIds: smithReg.encounters.get('loneSoldier').enemies, hpMult: 1, enemyStatuses: [], playerStatuses: [],
+    player: { classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, poolDeck: true, equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout } });
+  assert.equal(Object.values(combat.piles).flat().filter((c) => c && c.instanceId === mountKey).length, 1, 'the installed card is in the fight');
+  commitCombatSnapshot({ run, combat, nodeId: 'n0', encounterId: 'loneSoldier' });
+  delete run.combatEntered.snapshot.poolDeck; // the sweep path a pre-fix fight takes
+  saves.saveRun(run, rng);
+  const back = saves.loadRun(smithReg, 1);
+  assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+  assert.equal(Object.values(back.combatEntered.snapshot.piles).flat().filter((c) => c && c.instanceId === mountKey).length, 1, 'the sweep keeps it');
+  assert.ok(!(saves.runStatus().ledger?.entries || []).some((e) => e.site === 'save.js:sweepPoolDeckLentCards'), 'nothing was swept');
 });
 
 test('sealed: a mid-fight weapon swap deals no lent card into the piles', () => {
