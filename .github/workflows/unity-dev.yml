@@ -177,6 +177,18 @@ jobs:
             gh pr edit "$number" --title "$title" --body-file body.md
             echo "Updated promotion PR #$number: $title"
           else
-            gh pr create --base test --head dev --title "$title" --body-file body.md
-            echo "Opened promotion PR: $title"
+            # Creating the PR needs Settings → Actions → General → "Allow GitHub Actions
+            # to create and approve pull requests". Without it, leave a warning with a
+            # ready link instead of failing dev, and keep the test plan in the summary.
+            if out="$(gh pr create --base test --head dev --title "$title" --body-file body.md 2>&1)"; then
+              echo "$out"
+              echo "Opened promotion PR: $title"
+            elif grep -q "not permitted to create or approve pull requests" <<<"$out"; then
+              url="https://github.com/${GH_REPO}/compare/test...dev?expand=1"
+              echo "::warning::Actions may not open PRs in this repo. Open the promotion PR yourself: $url (or enable Settings → Actions → General → Allow GitHub Actions to create and approve pull requests)."
+              { echo "## $title"; echo; echo "Open it: $url"; echo; cat body.md; } >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "$out" >&2
+              exit 1
+            fi
           fi
