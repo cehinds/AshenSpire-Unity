@@ -85,17 +85,24 @@ resumes (map, fight rewards, merchant or the start of a fight).
   repository's `src/`, holds a dealt deck to its own rule. Its quota is the
   attack slots it was dealt (`attack:0..k-1`, none on a fresh deal), which is
   also the native rule (`OriginalCustomRunRules.Initialize`).
-  - **Pre-fix saves.** The original's load door heals a save written before
-    the fix, whose quota is the larger composed one, and so does the import
-    (`OriginalWebSaveImport.BirthAttackQuota`). The import receipt keeps the
-    original bytes.
+  - **Pre-fix saves.** The original now marks a dealt-deck run
+    `poolDeckRule: 1`. A pool save without the marker was written before
+    the fix and may carry the larger composed quota. The original's load
+    door heals that quota once, to the dealt count, and so does the import
+    (`OriginalWebSaveImport.BirthAttackQuota`). A marked save is held to its
+    quota: one that lost an attack card is refused, as the original refuses
+    it. The import receipt keeps the original bytes.
   - **Refused.** A gap or a duplicate in the dealt slots, more slots than the
     quota, or a malformed quota is refused. A Standard deck that lacks its
     composed slots is still refused, as the original refuses it.
-  - **The dealt deck is kept exactly.** The original reloads a dealt deck as
-    it is: the kit basics and weapon arts the deal took out return only at
-    its next full restamp, after a fight or an equipment change. The import's
-    one reconcile therefore keeps exactly the dealt instances.
+  - **The dealt deck is kept exactly.** The original never deals a pool
+    deck the equipment's lent cards (kit basics, weapon arts, Dodge Roll) at
+    any restamp: load, end of fight, Armoury change, mid-fight swap or
+    resumed fight. The import's one reconcile therefore keeps exactly the
+    dealt instances. The native runtime's later reconciles
+    (`WeaponCardComposer.Recompose`, on a relic, a service or an equipment
+    change) do not yet know this rule, and would add those cards to an
+    imported or native Sealed/Draft run.
   - **Checked against the original.** The imported Sealed and Draft runs open
     the same next encounter and opening hand as the original.
 
@@ -120,9 +127,9 @@ the receipt. The checks run with the other WebSaveImport checks.
 Open follow-ups: compiled Web/native verification of each room type, owner
 acceptance, exact mid-fight snapshot conversion, and custom map shapes.
 Sealed/Draft saves that retired an attack slot (`removedAttackSlotIds`, which
-this `src/` copy predates) are still refused as unknown state. Whether a dealt
-deck should receive the lent cards at its first full restamp is an owner
-question on #1479.
+this `src/` copy predates) are still refused as unknown state. The native
+runtime does not yet apply the original's rule that a dealt deck receives no
+lent cards (see Modes above).
 
 ## Profile import
 

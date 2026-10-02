@@ -36,9 +36,11 @@ namespace AshenSpire.Domain.Original
         // Standard decks are composed from the equipment and must hold every slot; the original
         // archives one that does not, so the import refuses it. Sealed and Draft decks are dealt
         // from a pool, and their quota is the slots dealt (attack:0..k-1, none on a fresh deal),
-        // which is also the native rule (OriginalCustomRunRules.Initialize). Saves written before
-        // the original's fix carry the composed deck's larger quota; its load door heals that to
-        // the dealt count, and so does the import. Null: a legacy save with no quota, recounted.
+        // which is also the native rule (OriginalCustomRunRules.Initialize). The original marks
+        // such a run `poolDeckRule: 1`. An unmarked one was saved before its fix and may carry the
+        // composed deck's larger quota, which its load door heals once to the dealt count, and so
+        // does the import; a marked one is held to its quota, so a lost attack card is refused.
+        // Null: a legacy save with no quota, recounted.
         private static bool IsPoolDeck(JObject source) => source["custom"] is JObject custom && custom["deckMode"]?.Type == JTokenType.String && ((string)custom["deckMode"] == "sealed" || (string)custom["deckMode"] == "draft");
         private static int? BirthAttackQuota(JObject source)
         {
@@ -46,6 +48,8 @@ namespace AshenSpire.Domain.Original
             if (quota == null) return null;
             if (quota.Type != JTokenType.Integer || (long)quota < 0 || (long)quota > int.MaxValue) throw new ArgumentException("Malformed original equipment attack quota. Your original save is unchanged.");
             var attacks = source["deck"].Where(c => (string)c["equipmentRole"] == "attack").ToArray();
+            var rule = source["poolDeckRule"];
+            if (rule != null && (rule.Type != JTokenType.Integer || (long)rule != 1 || !IsPoolDeck(source))) throw new ArgumentException("Malformed original dealt-deck rule. Your original save is unchanged.");
             var mode = IsPoolDeck(source) ? (string)source["custom"]["deckMode"] : "standard";
             if (mode == "standard")
             {
@@ -54,7 +58,7 @@ namespace AshenSpire.Domain.Original
                 return (int)quota;
             }
             var slots = attacks.Select(c => c["equipmentAttackSlotId"]?.Type == JTokenType.String ? (string)c["equipmentAttackSlotId"] : null).ToArray();
-            if (!slots.OrderBy(id => id, StringComparer.Ordinal).SequenceEqual(Enumerable.Range(0, attacks.Length).Select(i => "attack:" + i).OrderBy(id => id, StringComparer.Ordinal)) || (int)quota < attacks.Length)
+            if (!slots.OrderBy(id => id, StringComparer.Ordinal).SequenceEqual(Enumerable.Range(0, attacks.Length).Select(i => "attack:" + i).OrderBy(id => id, StringComparer.Ordinal)) || (int)quota < attacks.Length || rule != null && (int)quota != attacks.Length)
                 throw new ArgumentException("This " + (mode == "sealed" ? "Sealed" : "Draft") + " deck's attack slots are not the ones it was dealt, so the original game cannot reload it either. Your original save is unchanged.");
             return attacks.Length;
         }
@@ -90,7 +94,7 @@ namespace AshenSpire.Domain.Original
             if (source["combatEntered"] is JObject fight && fight["snapshot"] != null && fight["snapshot"].Type != JTokenType.Null) throw new ArgumentException(MidFightMessage);
             if (source["webImport"] != null || source["playerProjectionRules"] != null || source["phase"] != null)
                 throw new ArgumentException("Choose an original-game save, not an AshenedSpire snapshot.");
-            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView flaskChancePct removesPurchased pendingReward shopStock").Split(' ');
+            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount poolDeckRule relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView flaskChancePct removesPurchased pendingReward shopStock").Split(' ');
             var inactiveFields = new[] { "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
             var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && p.Name != "seenEvents" && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
             if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
