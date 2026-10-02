@@ -5,7 +5,8 @@
 // COSTS: OriginalCardCostText formats authoritative costs and resource shortages.
 // MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
 // END: Victory/Defeat render RunSummaryView (F11) from the RunSummary the caller passes.
-// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
+// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here (the only
+// ticking is HoldConfirmButton's element-scoped scheduler on destructive buttons).
 using System;
 using System.Linq;
 using AshenSpire.Domain.Original;
@@ -197,7 +198,19 @@ namespace AshenSpire.Presentation
             }
             if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
             { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
-            Button("native-rewards-continue", "Continue · leave unclaimed rewards", _game.ContinueRewards);
+            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Auto: Continue takes every
+            // pending reward that was not skipped, so each pending kind gets a Skip (ids stay outside the
+            // native-reward-* prefix the playtests treat as "take"). Manual: Continue leaves the rest.
+            var mode = OriginalGameplayOptions.RewardCollectMode(_game.Catalog.Data(), _settings?.RewardCollect);
+            if (mode == "auto")
+                foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
+                {
+                    if (room["states"][kind] != null) continue;
+                    var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
+                    if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
+                }
+            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · leave unclaimed rewards", () => _game.ContinueRewards(mode));
+            if (mode == "auto") Text("Continue takes everything you didn't skip, picking a card for you.", "caption");
         }
         private void Shop()
         {
@@ -271,9 +284,9 @@ namespace AshenSpire.Presentation
         }
         private void RemoveCards()
         {
-            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice");
+            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice"); Text("Removal is permanent: hold a card's button until the bar fills, or tap it twice.", "caption");
             foreach (var card in ((JArray)_game.RunPlayer["deck"]).OfType<JObject>().Where(x => string.IsNullOrEmpty((string)x["grantedBy"]) && string.IsNullOrEmpty((string)x["equipmentAttackSlotId"])))
-            { var id = (string)card["instanceId"]; Button("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
+            { var id = (string)card["instanceId"]; Destructive("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], ConfirmationPolicy.RemoveCard, () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
             Button("native-service-back", "Back", Render); _report();
         }
         private void Mounts()
@@ -331,9 +344,11 @@ namespace AshenSpire.Presentation
                     if ((int)run["loadout"]["active"][slotId] != index)
                     {
                         var allowance = combat && (string)_game.Catalog.Data()["balance"]["equipment"]["swapCostKind"] == "allowance";
-                        var price = combat ? (int)_game.SwapPrice(slotId, set)["cost"] : 0;
+                        var receipt = combat ? _game.SwapPrice(slotId, set) : null; var price = combat ? (int)receipt["cost"] : 0;
                         var button = Button("native-set-" + slotId + "-" + index, "Use set " + (index + 1) + (combat ? allowance ? " · 1 swap (" + _game.SwapsLeft + " left)" : " · " + price + " actions" : ""), () => _game.SelectSet(slotId, set));
                         button.SetEnabled(!combat || (allowance ? _game.SwapsLeft > 0 : (int)_game.Player["energy"] >= price));
+                        // Weapon swap cost setting (US-15.2): name the live rule and how it reached the price.
+                        if (combat && !allowance) Text(OriginalGameplayOptions.DescribeSwapPrice(receipt, (JObject)_game.Catalog.Data()["balance"]["equipment"]), "caption");
                     }
                     if (combat) continue;
                     foreach (var item in owned.Where(x => WeaponLoadout.Fits(slot, x)))
@@ -349,6 +364,13 @@ namespace AshenSpire.Presentation
         private Button Button(string id, string text, Action command, VisualElement parent = null)
         {
             var button = new Button(() => Execute(command)) { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button); return button;
+        }
+        // US-13.3: the action's confirmation level comes from confirmation-policies.json;
+        // DESTRUCTIVE actions commit only after a hold or a second tap (HoldConfirmButton).
+        private Button Destructive(string id, string text, string actionId, Action command, VisualElement parent = null)
+        {
+            var button = new Button { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button);
+            HoldConfirmButton.Bind(button, actionId, () => Execute(command), _report); return button;
         }
         private void Execute(Action command)
         {

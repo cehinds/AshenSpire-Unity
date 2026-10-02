@@ -330,6 +330,38 @@ Check(Near(decks.VolumeAt(acts[0].Deck, 41), floor), "a late clip (WebGL render)
 acts = Run(dd.Enter(MusicScene.Death, 50));
 Check(acts.Count == 0 && decks.Tick(50.61).Count == 1 && decks.ActiveDeck == -1, "death fades the deck out and stops it");
 
+// ---- player bus levels (AudioBusLevels.From; US-8.3) -------------------------------------------
+AudioBusLevels L(double master = 1, double music = 1, double sfx = 1, double ui = 1, bool muted = false, bool musicOn = true) =>
+    AudioBusLevels.From(new OriginalPlayerSettings { MasterVolume = master, MusicVolume = music, SfxVolume = sfx, UiVolume = ui, Muted = muted, MusicEnabled = musicOn });
+var busFull = L();
+Check(busFull.Master == 1 && busFull.Music == 1 && busFull.Sfx == 1 && busFull.Ui == 1 && busFull.MusicOn && busFull.MusicPercent == 100, "bus levels: defaults are unattenuated and music is on");
+var busMixed = L(.5, .8, .6, .4);
+Check(Near(busMixed.Music, .4) && Near(busMixed.Sfx, .3) && Near(busMixed.Ui, .2) && Near(busMixed.Master, .5) && busMixed.MusicPercent == 40, "bus levels: each bus is master × its own level");
+Check(L(1, .3, 1, 1).Sfx == 1 && L(1, 1, .3, 1).Music == 1 && L(1, 1, 1, .3).Sfx == 1 && L(1, 1, 1, .3).Music == 1, "bus levels: music, SFX and interface levels are independent");
+var busMuted = L(.5, .8, .6, .4, muted: true);
+Check(busMuted.Master == 0 && busMuted.Music == 0 && busMuted.Sfx == 0 && busMuted.Ui == 0 && !busMuted.MusicOn, "bus levels: mute silences every bus and stops music");
+var busOff = L(.5, .8, .6, .4, musicOn: false);
+Check(busOff.Music == 0 && !busOff.MusicOn && Near(busOff.Sfx, .3) && Near(busOff.Ui, .2), "bus levels: music off silences only music");
+Check(L(0, 1, 1, 1).Music == 0 && L(0, 1, 1, 1).Sfx == 0 && L(0, 1, 1, 1).MusicOn, "bus levels: master 0 silences every bus but keeps music logically on");
+Check(L(2, 1.5, -1, double.NaN).Music == 1 && L(2, 1.5, -1, double.NaN).Sfx == 0 && L(2, 1.5, -1, double.NaN).Ui == 0, "bus levels: out-of-range and NaN inputs clamp into 0–1");
+Check(L(.55, .55).MusicPercent == 30 && L(.5, .01).MusicPercent == 1 && L(1, .005).MusicPercent == 1, "bus levels: music percent for the director rounds half away from zero");
+foreach (var (m, mu, s, u, mute, on) in new[] { (1.0, 1.0, 1.0, 1.0, false, true), (.5, .8, .6, .4, false, true), (.5, .8, .6, .4, true, true), (.5, .8, .6, .4, false, false) })
+{
+    var settings = new OriginalPlayerSettings { MasterVolume = m, MusicVolume = mu, SfxVolume = s, UiVolume = u, Muted = mute, MusicEnabled = on };
+    var lv = AudioBusLevels.From(settings);
+    Check(Near(lv.Music, settings.Gain("music")) && Near(lv.Sfx, settings.Gain("sfx")) && Near(lv.Ui, settings.Gain("ui")), "bus levels agree with OriginalPlayerSettings.Gain (mute " + mute + ", music " + (on ? "on" : "off") + ")");
+}
+// The director receives master 100 and the music bus as its volume: same level as master × music.
+var bus = new MusicDirector(catalog, 9, new MusicSettings { MasterVolume = 100, MusicVolume = busMixed.MusicPercent, MusicEnabled = busMixed.MusicOn });
+var split = new MusicDirector(catalog, 9, new MusicSettings { MasterVolume = 50, MusicVolume = 80, MusicEnabled = true });
+var busCmd = bus.Enter(MusicScene.Map, 0); var splitCmd = split.Enter(MusicScene.Map, 0);
+Check(busCmd.Count == 1 && splitCmd.Count == 1 && Near(busCmd[0].TargetVolume, splitCmd[0].TargetVolume), "director volume from the bus level equals the old master × music split");
+var offDirector = new MusicDirector(catalog, 9, new MusicSettings { MasterVolume = 100, MusicVolume = busOff.MusicPercent, MusicEnabled = busOff.MusicOn });
+Check(offDirector.Enter(MusicScene.Map, 0).Count == 0, "music off: the director starts no track");
+var playerSourceForPrefs = Regex.Replace(Read("Unity/Assets/AshenSpire/Runtime/Application/MusicPlayer.cs"), @"//.*", "");
+Check(!playerSourceForPrefs.Contains("PlayerPrefs"), "MusicPlayer reads no PlayerPrefs (levels come from OriginalPlayerSettings)");
+Check(Exists("Unity/Assets/AshenSpire/Runtime/Domain/Original/AudioBusLevels.cs.meta"), "AudioBusLevels.cs has a Unity .meta file");
+
 // ---- run phase to scene ------------------------------------------------------------------------
 Check(MusicSceneMap.ForNativePhase("Map", null) == MusicScene.Map && MusicSceneMap.ForNativePhase("Combat", "normal") == MusicScene.Combat
     && MusicSceneMap.ForNativePhase("Combat", "elite") == MusicScene.Elite && MusicSceneMap.ForNativePhase("Combat", "boss") == MusicScene.Boss

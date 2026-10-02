@@ -1,8 +1,12 @@
-// Authoring acceptance: independently imported CSV additions execute in native combat.
+// Authoring acceptance: schema validation (US-16.3, always), then — given a content.json path —
+// independently imported CSV additions execute in native combat.
+// Run from the repository root: dotnet run --project UnityTests/OriginalAuthoring [-- <content.json>]
 using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 var root = Directory.GetCurrentDirectory();
-var catalog = new OriginalContentCatalog(File.ReadAllText(args[0]));
+Console.WriteLine($"Original schema validation: {ValidationChecks.Run(root)} checks passed");
+if (args.Length == 0) return;
+var catalog = new OriginalContentCatalog(File.ReadAllText(args[0]), Path.GetFileName(args[0]));
 var mechanics = JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/mechanics.json")));
 var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/progression.json"))));
 var checks = 0;

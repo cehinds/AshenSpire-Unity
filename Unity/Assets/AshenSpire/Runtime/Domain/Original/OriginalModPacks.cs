@@ -7,7 +7,9 @@
 // { "cards": [ full records ], "remove": { "cards": ["id"] } }. A record whose id exists
 // replaces it in place; a new id is appended. Order: dependencies first, then
 // (loadOrder, id). Each pack is validated by OriginalContentCatalog after it is applied;
-// a refused pack leaves the catalog exactly as it was and is reported, never thrown.
+// a refused pack leaves the catalog exactly as it was and is reported, never thrown. Every
+// schema/reference problem becomes its own ValidationFailed error whose Path points at the
+// pack file and record that supplied the row (see OriginalContentValidation).
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -96,6 +98,13 @@ namespace AshenSpire.Domain.Original
                     else { rows.Add(entry.Record.DeepClone()); packChanges.Add(manifest.Id + " add " + entry.Table + "/" + id); }
                 }
                 OriginalContentCatalog candidate = null;
+                if (packErrors.Count == 0)
+                {
+                    // Full schema + reference validation of the merged tables: one error per problem, pointed back
+                    // at the pack file and record that supplied the row.
+                    foreach (var problem in OriginalContentValidation.Validate(draft, "content.json", OriginalValidationScope.Full))
+                        packErrors.Add(new OriginalModError(OriginalModErrorCodes.ValidationFailed, manifest.Id, Locate(pack, problem.Path), problem.Path + ": " + problem.Message));
+                }
                 if (packErrors.Count == 0)
                 {
                     try { candidate = new OriginalContentCatalog(draft.ToString(Formatting.None)); }
@@ -252,6 +261,19 @@ namespace AshenSpire.Domain.Original
             }
             foreach (var record in pack.Records) if (removed.Contains(record.Table + "/" + (string)record.Record["id"]))
                 errors.Add(new OriginalModError(OriginalModErrorCodes.DuplicateRecord, modId, record.Path, "'" + (string)record.Record["id"] + "' is both removed and supplied; supply it alone to replace it."));
+        }
+        /// <summary>Maps a merged-content path such as cards[emberBrand].effects[1].status to the pack file that
+        /// supplied that record (Mods/x/cards.json#cards[0].effects[1].status); otherwise names the merged content.</summary>
+        private static string Locate(Pack pack, string path)
+        {
+            var open = path.IndexOf('['); var close = open < 0 ? -1 : path.IndexOf(']', open);
+            if (close > open)
+            {
+                var table = path.Substring(0, open); var id = path.Substring(open + 1, close - open - 1);
+                foreach (var record in pack.Records)
+                    if (record.Table == table && (string)record.Record["id"] == id) return record.Path + path.Substring(close + 1);
+            }
+            return "merged content.json#" + path;
         }
         private static OriginalModError UnknownTable(string modId, string file, string table, Dictionary<string, TableSchema> schemas) =>
             new OriginalModError(OriginalModErrorCodes.UnknownTable, modId, file, "'" + table + "' is not a moddable table. Use one of: " + string.Join(", ", schemas.Keys.OrderBy(x => x, StringComparer.Ordinal)) + ".");

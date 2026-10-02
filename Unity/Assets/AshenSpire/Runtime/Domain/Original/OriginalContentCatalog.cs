@@ -16,7 +16,10 @@ namespace AshenSpire.Domain.Original
         private readonly JObject _content;
         private readonly TagCatalog _tags;
         public string Version => (string)_content["version"];
-        public OriginalContentCatalog(string json)
+        public OriginalContentCatalog(string json) : this(json, OriginalContentValidation.DefaultFile) { }
+        /// <param name="sourceName">File name used in validation messages (e.g. "content.json").</param>
+        /// <exception cref="OriginalContentValidationException">Lists every cross-table reference problem, not just the first.</exception>
+        public OriginalContentCatalog(string json, string sourceName)
         {
             _content = JObject.Parse(json, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
             foreach (var table in new[] { "cards", "classes", "statuses", "stances", "enemies", "encounters", "events", "flasks", "relics", "attributes", "creationModes", "unlocks" })
@@ -31,7 +34,9 @@ namespace AshenSpire.Domain.Original
                 }
             }
             _tags = new TagCatalog(_content);
-            OriginalContentValidation.ValidateReferences(_content);
+            // References only, as before (all problems in one exception). Full schema checks run where content is
+            // authored (CSV import, mod packs), so content frozen inside older saves keeps loading.
+            OriginalContentValidation.ValidateReferences(_content, sourceName);
             var cards = ((JArray)_content["cards"]).Select(x => (string)x["id"]).ToHashSet();
             foreach (var hero in _content["classes"])
             {

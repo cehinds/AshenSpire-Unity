@@ -137,7 +137,8 @@ User stories (open work, from the detailed checklist below):
   - [x] Owner requires import before Phase 1 completion (2026-09-28).
   - [x] Initial map-checkpoint converter and preview/empty-slot UI implemented; 394 domain and 12 browser-adapter checks passed.
   - [x] Build 28 compiled import verification: 36 phone/desktop checks and 16 native profile/slot regression checks.
-  - [ ] Broader profile/active-room compatibility; see [import checklist](Unity-Original-Save-Import.md).
+  - [x] Build 31 source: web profile import (history, unlocks, optional settings) and active-room import for reward, merchant, fight-start, event, Custom and Endless saves (Web save import 1130 checks).
+  - [ ] Mid-fight, Sealed/Draft and custom-map-shape saves are refused; compiled import acceptance open. See [import checklist](Unity-Original-Save-Import.md).
 - [ ] **US-0.7** Finish field/schema/runtime authoring coverage.
 - [ ] **US-0.8** Verify hosted build/history links, downloads and screenshots; expand
   archive hosting capacity without deleting archived players.
@@ -165,6 +166,7 @@ clear Continue, and a settings screen that saves.
 - [ ] **US-1.1** As a returning player I see Continue first and resume my run in one tap.
 - [ ] **US-1.2** As a player I open Collection/Chronicle and see my wanderers, runs and unlocks.
 - [ ] **US-1.3** As a player I change sound, motion and animation speed and it persists.
+  - [x] Build 31 source: Settings schema 2–3 persist music/SFX enable and levels, reduce motion/flashes and animation speed (Feel 93, Music 518 checks); owner acceptance open.
 - [ ] **US-1.4** As a first-time player a startup gate/press-to-begin avoids an accidental menu tap (SPEC §7.1).
 - [ ] **US-1.5** As a player I can read an About screen with the AI-use acknowledgement (SPEC §2.1).
 
@@ -238,6 +240,7 @@ breaking.
 - [ ] **US-4.2** Each enemy shows a Poise meter under HP; filling it Staggers the enemy (skip turn, +50% damage).
 - [ ] **US-4.3** Intents use icons plus numbers, recomputed live when statuses change.
 - [ ] **US-4.4** Tapping an enemy shows its statuses and what they do.
+  - [x] Build 31 source: Tap or long-press shows a bounded, scrollable status explanation popup (`StatusExplainer`, `ExplainGesture`; Telegraphs 143 checks); owner acceptance open.
 
 Acceptance: intent numbers equal the engine's damage preview; Poise meter and
 Stagger state are visible and correct in solo and co-op; icons readable at 320×640.
@@ -298,6 +301,7 @@ transitions make each action satisfying, without slowing the game.
 - [ ] **US-7.2** Damage, guard, healing and status numbers float from actual result receipts.
 - [ ] **US-7.3** Screen and room transitions; enemy hit/death reactions.
 - [ ] **US-7.4** Reduced motion and Quick animations respected everywhere.
+  - [x] Build 31 source: Reduce motion, reduce flashes and the Quick/Normal/Slow speed come from one `FeelSettings` source (Feel 93 checks); compiled visual check open.
 
 Acceptance: feedback never changes simulation results; reduced motion removes
 meaningful motion; no dropped frames on target phones (see F17).
@@ -315,6 +319,7 @@ with volume control.
 - [ ] **US-8.1** Distinct SFX for attack, guard, hit, reward, UI (procedural cues exist).
 - [ ] **US-8.2** Per-context music (title, map, combat, boss) with smooth transitions.
 - [ ] **US-8.3** Separate music and SFX volume sliders; mute persists.
+  - [x] Build 31 source: Separate music/SFX levels and mutes via `AudioBusLevels`, persisted in settings (Music 518 checks); compiled audio check open.
 - [ ] **US-8.4** Owner can drop replacement tracks into a folder (reference `music/`).
 
 Acceptance: audible on Web after first interaction, Windows and Android; pauses
@@ -402,8 +407,11 @@ Tests: `UnityTests/Playthrough`, `MapShape`, `tools/native-playtest.cjs`,
 
 - [ ] **US-13.1** Every flow fits 320×640 to 1440×900 with safe areas and reachable controls.
 - [ ] **US-13.2** Text size, high contrast, colorblind-friendly palette, reduce flashes.
+  - [x] Build 31 source: Reduce flashes and high contrast settings added (schema 2); text size and colourblind palette styling still need editor work.
 - [ ] **US-13.3** Minimum tap size and hold-to-confirm for destructive actions.
+  - [x] Build 31 source: Hold-to-confirm for card removal, slot delete/overwrite and unsaved-progress load (`HoldConfirm` 144 checks); minimum tap size audit open.
 - [ ] **US-13.4** No hover-only information; tooltips have tap equivalents.
+  - [x] Build 31 source: Enemy statuses are explained by tap/long-press, not hover (US-4.4 above); full-UI audit open.
 
 Acceptance: all screens pass layout checks at four viewports; accessibility
 options persist and apply globally.
@@ -436,8 +444,11 @@ Tests: `UnityTests/CoopRun`, `tools/NativeLan/Tests/*`, `tools/native-coop-ci.cj
 **Goal:** players tune the game to taste and input device.
 
 - [ ] **US-15.1** Display options: fullscreen, UI size, accent colour, card motif, map header, control hints.
+  - [x] Build 31 source: Display options stored in settings schema 3; styles for UI size/accent/motif need the editor.
 - [ ] **US-15.2** Gameplay options: combat pacing, reward collection, merchant buy-back, weapon swap cost display.
+  - [x] Build 31 source: Gameplay options (pacing, reward collection default auto, buy-back, swap-cost display) in schema 3 with a Parity `gameplay-options` section (55 checks).
 - [ ] **US-15.3** Keyboard and gamepad bindings with rebinding.
+  - [x] Build 31 source: Keyboard bindings and gamepad mapping in schema 3 (`OriginalGamepad`); the gamepad input hook needs the Input System package.
 
 Acceptance: each option persists per channel and changes the named behaviour
 only; defaults match the reference.
@@ -453,6 +464,7 @@ Tests: to write.
 - [ ] **US-16.1** Export/import any table as CSV with validation, stale-edit refusal and backups.
 - [ ] **US-16.2** Add a card, weapon, enemy and encounter that work in real combat.
 - [ ] **US-16.3** Full original schema validation with file/row/field error messages.
+  - [x] Build 31 source: Generated `OriginalContentSchema.cs` from `src/model/schemas.js` (`tools/unity-content-schema.mjs --check`); validation reports every file/row/field error at once (OriginalAuthoring 31 checks).
 - [ ] **US-16.4** Optional data packs layered over base content.
 
 Acceptance: authoring checks pass; invalid imports never replace valid content.

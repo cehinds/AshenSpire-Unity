@@ -59,7 +59,8 @@ The attempted public deployment failed its 950 MiB size guard and preserved the 
   - [x] Compiled file/browser-slot import: 36 checks; native profile/slot persistence: 16 checks.
   - [x] Full compiled standard campaign replay: 749 checks, ending at its recorded terminal result.
   - [x] Four matching packages, source digest `f3de4f1487e5653fbc87932d05623326255e252d11275ebb5f654835c17ab05f`.
-  - [ ] Profile import, active rooms, newer original schemas and broader progressed-save compatibility.
+  - [x] Profile import and active-room import (reward, merchant, fight-start, event, Custom, Endless) in build-31 source.
+  - [ ] Mid-fight and Sealed/Draft saves, newer original schemas and compiled import acceptance.
   - [ ] Full custom modes, multiplayer recovery, authoring/appearance matrices and owner acceptance.
 
 Original-game regression: 136 checks; original shipped/version checks: 6 and 8.

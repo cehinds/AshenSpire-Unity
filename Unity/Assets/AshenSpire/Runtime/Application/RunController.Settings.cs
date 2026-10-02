@@ -5,7 +5,8 @@
 // touching the file system, so the shipped catalog is built exactly as before.
 // SAVE: AshenSpire.Settings.v1 (OriginalPlayerSettings.ToJson) plus the three legacy ints
 // AshenSpire.ReducedMotion / FastMotion / Muted, which older builds and code paths read.
-// APPLY: UI size -> PanelSettings.scale (restored on disable); separate SFX/UI/music buses.
+// APPLY: UI size -> PanelSettings.scale (restored on disable); SFX/UI/music buses from
+// AudioBusLevels.From (Domain: master multiplied, mute -> 0, music off -> 0).
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
 // WebGL (and Android, whose StreamingAssets sit inside the APK) need web requests, which are
 // not wired; the player sees why in Settings and the shipped content is used.
@@ -69,11 +70,15 @@ namespace AshenSpire.Application
                 var scale = _panelScaleBase * (float)_playerSettings.UiScale;
                 if (_panelSettings.scale != scale) _panelSettings.scale = scale;
             }
-            _audio?.SetVolumeScale((float)(_playerSettings.MasterVolume * _playerSettings.SfxVolume));
-            _audio?.SetInterfaceVolumeScale((float)(_playerSettings.MasterVolume * _playerSettings.UiVolume));
+            var levels = AudioBusLevels.From(_playerSettings);
+            _audio?.SetVolumeScale((float)levels.Sfx);
+            _audio?.SetInterfaceVolumeScale((float)levels.Ui);
             _audio?.SetMuted(_playerSettings.Muted);
-            _music?.ApplySettings((int)Math.Round(_playerSettings.MasterVolume * 100), (int)Math.Round(_playerSettings.MusicVolume * 100), true);
+            // Mute goes first so the director fades the track out from its current level. While muted the
+            // zero bus level is not pushed, so unmuting resumes at the level the player last set.
+            // The music bus is already master × music; the director's own master stays at 100.
             _music?.SetMuted(_playerSettings.Muted);
+            if (!_playerSettings.Muted) _music?.ApplySettings(100, levels.MusicPercent, levels.MusicOn);
         }
         private void PlayInterfaceSound() => _audio?.PlayInterface();
         private void PreviewSound() => _audio?.Play("guard");

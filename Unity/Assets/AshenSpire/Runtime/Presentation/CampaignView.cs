@@ -43,6 +43,8 @@ namespace AshenSpire.Presentation
         public event Action ProfileRequested;
         public event Action CoopRequested;
         public bool NativeSaveAvailable { get; set; }
+        /// <summary>The climb in memory failed to save; loading a slot would discard it (US-13.3 loadSlot).</summary>
+        public bool NativeUnsavedProgress { get; set; }
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -150,7 +152,7 @@ namespace AshenSpire.Presentation
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
-                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke()));
+                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), NativeUnsavedProgress));
             Report();
         }
         // Keep earlier playable checkpoints and developer tools accessible without
@@ -504,8 +506,8 @@ namespace AshenSpire.Presentation
             mute.AddToClassList("setting");
             mute.RegisterValueChangedCallback(e => { _muted = e.newValue; MuteRequested?.Invoke(e.newValue); Report(); });
             _body.Add(mute);
-            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
-            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; ConfigureFeel(); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; ConfigureFeel(); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             ExtendSettings(motion, fast, mute); // CampaignView.PlayerSettings.cs: grouped OriginalPlayerSettings sections.
             _body.Add(Text("HOW TO PLAY", "heading"));
             AddButton("native-guide", "Open the field guide", () => Guide(() => Settings(back)));

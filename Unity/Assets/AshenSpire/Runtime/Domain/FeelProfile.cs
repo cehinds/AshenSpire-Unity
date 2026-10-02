@@ -54,6 +54,40 @@ namespace AshenSpire.Domain
         /// <summary>CampaignView's "Reduced motion" and "Quick animations" toggles: Quick = the HTML `fast` speed.</summary>
         public static FeelSettings FromToggles(bool reducedMotion, bool quickAnimations) =>
             new FeelSettings { Speed = quickAnimations ? "fast" : "normal", ReducedMotion = reducedMotion };
+
+        /// <summary>Slider limits of OriginalPlayerSettings.AnimationSpeed (0.5–2 = 50–200%).</summary>
+        public const double MinAnimationSpeed = 0.5, MaxAnimationSpeed = 2;
+        /// <summary>Speeds below this use the HTML `slow` pacing; at or above FastFrom, `fast`.</summary>
+        public const double NormalFrom = 1, FastFrom = 2;
+
+        /// <summary>
+        /// The Unity animation-speed slider (0.5–2) mapped onto the four HTML pacing buckets
+        /// (fx.js ANIM_SPEEDS; the HTML offers only those four). Instant wins; below 100% is
+        /// `slow`, 100–199% `normal`, 200% `fast` (the old Quick animations = speed 2).
+        /// NaN or out-of-range speeds are clamped first, so the bucket is always one of the four.
+        /// </summary>
+        public static string SpeedFor(double animationSpeed, bool instantAnimations)
+        {
+            if (instantAnimations) return "instant";
+            var speed = double.IsNaN(animationSpeed) ? NormalFrom : Math.Min(MaxAnimationSpeed, Math.Max(MinAnimationSpeed, animationSpeed));
+            return speed >= FastFrom ? "fast" : speed >= NormalFrom ? "normal" : "slow";
+        }
+
+        /// <summary>
+        /// Every feel-related player setting (OriginalPlayerSettings fields, passed by name because
+        /// the Domain and Original assemblies do not reference each other). FeelDriver.Configure
+        /// calls this; the mapping is tested in UnityTests/Feel. Intensity is clamped to 0–1.
+        /// </summary>
+        public static FeelSettings From(double animationSpeed, bool instantAnimations, bool reducedMotion, bool reduceFlashes,
+            bool screenShake, double screenShakeIntensity, bool hitStop) => new FeelSettings
+        {
+            Speed = SpeedFor(animationSpeed, instantAnimations),
+            ReducedMotion = reducedMotion,
+            ReduceFlashes = reduceFlashes,
+            ScreenShake = screenShake,
+            ScreenShakeIntensity = double.IsNaN(screenShakeIntensity) ? 1 : Math.Min(1, Math.Max(0, screenShakeIntensity)),
+            HitStop = hitStop,
+        };
     }
 
     [Serializable]

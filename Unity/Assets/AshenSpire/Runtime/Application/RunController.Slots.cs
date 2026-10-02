@@ -72,7 +72,7 @@ namespace AshenSpire.Application
                 if (!TryLoadOriginalProfile()) return;
                 var snapshot = _slotSaves.Load(slot, value => OriginalGameSession.Restore(value), out var meta, out var recovered);
                 var game = OriginalGameSession.Restore(snapshot);
-                _activeSlot = slot; _playtimeBase = meta?.PlaytimeSeconds ?? 0; _playtimeSince = Time.realtimeSinceStartup;
+                _activeSlot = slot; _playtimeBase = meta?.PlaytimeSeconds ?? 0; _playtimeSince = Time.realtimeSinceStartup; Unsaved(false);
                 BindOriginal(game);
                 if (recovered) Debug.LogWarning("Recovered the previous native run checkpoint in slot " + (slot + 1) + ".");
                 RefreshOriginal();
@@ -95,8 +95,11 @@ namespace AshenSpire.Application
         private void BeginSlot(int slot)
         {
             if (_slotSaves.List()[slot].State != OriginalSaveSlotState.Empty) _slotSaves.Delete(slot);
-            _activeSlot = slot; _playtimeBase = 0; _playtimeSince = Time.realtimeSinceStartup;
+            _activeSlot = slot; _playtimeBase = 0; _playtimeSince = Time.realtimeSinceStartup; Unsaved(false);
         }
+        // US-13.3: while true, loading a slot would discard the climb in memory, so the view
+        // makes Continue hold-to-confirm (action.loadSlot).
+        private void Unsaved(bool value) => _view.NativeUnsavedProgress = value;
         private void SaveOriginalSlot()
         {
             if (_originalGame == null || _slotSaves == null || _activeSlot < 0) return;
@@ -105,8 +108,9 @@ namespace AshenSpire.Application
             {
                 Debug.LogWarning("Native save to slot " + (_activeSlot + 1) + " did not verify; in-memory progress is retained for retry.");
                 _slotNotice = "The last save to slot " + (_activeSlot + 1) + " could not be verified. Keep this game open, free some storage and keep playing to retry.";
+                Unsaved(true);
             }
-            else _slotNotice = null;
+            else { _slotNotice = null; Unsaved(false); }
         }
         private string TakeSlotNotice() { var notice = _slotNotice; _slotNotice = null; return notice; }
         private JObject RecordOriginalResult(JObject run, bool victory)
@@ -124,6 +128,7 @@ namespace AshenSpire.Application
             {
                 try
                 {
+                    if (OriginalWebProfileImport.IsProfile(text)) { PreviewWebProfile(text); return; }
                     var target = _slotSaves.List().FirstOrDefault(s => s.State == OriginalSaveSlotState.Empty);
                     if (target == null) throw new InvalidOperationException("All slots are occupied. Free a slot from Saved climbs before importing.");
                     // An imported checkpoint freezes the shipped original catalog;
@@ -131,7 +136,7 @@ namespace AshenSpire.Application
                     var importCatalog = new OriginalContentCatalog(OriginalRules("content").ToString());
                     var snapshot = OriginalWebSaveImport.Convert(text, importCatalog, OriginalRules("event-choices"), OriginalRules("mechanics"), OriginalRules("progression"));
                     var run = snapshot["run"];
-                    var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\nDestination: Slot " + (target.Slot + 1);
+                    var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\n" + OriginalWebRoomImport.Resumes(snapshot) + "\nDestination: Slot " + (target.Slot + 1);
                     _previewWebImport = null;
                     _view.WebSaveImportPreview(summary, () =>
                     {
@@ -151,6 +156,31 @@ namespace AshenSpire.Application
             browserSlot = slot => AshenedSpire_ReadOriginalSlot(gameObject.name, slot);
 #endif
             _view.WebSaveImport(notice, _previewWebImport, ShowSaveSlots, chooseFile, browserSlot);
+        }
+        // Original profile (history, unlocks, discoveries, settings) merges into the native
+        // profile; settings are applied only when the player asks. Nothing is replaced.
+        private void PreviewWebProfile(string text)
+        {
+            var preview = OriginalWebProfileImport.Merge(text, _originalContent, _profile, _playerSettings);
+            _previewWebImport = null;
+            Action Commit(bool withSettings) => () =>
+            {
+                try
+                {
+                    // Merge again against the live profile so nothing recorded since the preview is lost.
+                    var merge = OriginalWebProfileImport.Merge(text, _originalContent, _profile, _playerSettings);
+                    if (merge.Changed)
+                    {
+                        var previous = _profile; _profile = merge.Profile;
+                        if (!SaveOriginalProfile()) { _profile = previous; ShowWebImport("The profile import could not be saved. Free some storage and try again. Your original profile is unchanged."); return; }
+                    }
+                    if (withSettings) { _playerSettings = merge.Settings; _view.PlayerSettings = _playerSettings; SavePlayerSettings(); }
+                    ShowSaveSlots("Original profile imported: " + merge.ImportedResults + " run results, " + (merge.AddedUnlocks.Count + merge.EarnedUnlocks.Count) + " unlocks" + (withSettings ? ", " + merge.MappedSettings.Count + " settings." : "."));
+                }
+                catch (Exception error) { ShowWebImport("Import refused: " + error.Message); }
+            };
+            var unmapped = preview.UnmappedSettings.Count == 0 ? "" : "Not carried over: " + string.Join("; ", preview.UnmappedSettings.Select(u => u.Split(':')[0]));
+            _view.WebProfileImportPreview(preview.Summary(), unmapped, preview.Changed ? Commit(false) : null, preview.MappedSettings.Count > 0 ? Commit(true) : null, ShowSaveSlots);
         }
         private void ShowSaveSlots(string notice)
         {

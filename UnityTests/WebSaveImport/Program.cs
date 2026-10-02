@@ -84,4 +84,8 @@ foreach(var failAt in new[]{"write","flush","truncate"}){
  Check(targets.List()[0].State==OriginalSaveSlotState.Empty&&store.Read("sote_run_v1")==input,"failed import leaves no partial save: "+failAt);
  armed=false;Check(targets.ImportWebRun(0,snapshot),"import can retry after storage recovers: "+failAt);
 }
+Check(!OriginalWebProfileImport.IsProfile(input)&&!OriginalWebProfileImport.IsProfile(wrapped.ToString().Replace("\"meta\"","\"run\"")),"run saves are not routed as profiles");
+Refuse(()=>Import(new JObject{["profile"]="{}"}.ToString()),"profile export refused by run import");
+checks+=ProfileImportChecks.Run(root,catalog);
+checks+=RoomImportChecks.Run(root,catalog,Json);
 Console.WriteLine("Web save import: "+checks+" checks passed");

@@ -7,9 +7,10 @@
 //   from the mute toggle and SetSuspended on backgrounding. Volumes come from the
 //   director (0.9 × master × music × context gain) and are copied to AudioSource.volume
 //   every frame from MusicDecks, so fades never jump when a command interrupts a fade.
-// SETTINGS: mute = "AshenSpire.Muted" (shared with GameAudio). Optional bus levels are read
-//   once from PlayerPrefs "AshenSpire.MasterVolume", "AshenSpire.MusicVolume" (0..100) and
-//   "AshenSpire.MusicEnabled" (0/1); absent keys use the catalog defaults (100, 50, on).
+// SETTINGS: starts at the catalog defaults (100, 50, on) and the attach-time mute; RunController
+//   then applies OriginalPlayerSettings through ApplySettings/SetMuted (AudioBusLevels.From).
+//   The old optional PlayerPrefs keys (AshenSpire.MasterVolume / MusicVolume / MusicEnabled)
+//   are migrated once by OriginalPlayerSettings.FromLegacy and no longer read here.
 // CLIPS: desktop/mobile stream each bed through an AudioClip PCM reader callback (one
 //   MusicBedRenderer per clip, ~3 KB of state; nothing pre-rendered). WebGL does not support
 //   PCM callbacks, so beds are pre-rendered time-sliced (~4 ms per frame) into ordinary clips:
@@ -27,9 +28,6 @@ namespace AshenSpire.Application
 {
     public sealed class MusicPlayer : MonoBehaviour
     {
-        public const string MasterVolumeKey = "AshenSpire.MasterVolume";
-        public const string MusicVolumeKey = "AshenSpire.MusicVolume";
-        public const string MusicEnabledKey = "AshenSpire.MusicEnabled";
         /// <summary>WebGL pre-render cache: 240 s of 22050 Hz mono (≈ 20 MiB float32).</summary>
         public const int PrerenderSampleBudget = MusicSynth.SampleRate * 240;
         // Time-sliced pre-render: ~4 ms of main thread per frame in 4096-sample chunks. Measured in .NET at
@@ -85,10 +83,7 @@ namespace AshenSpire.Application
                 source.priority = 0;
                 _sources[i] = source;
             }
-            var settings = MusicSettings.Defaults(_catalog);
-            settings.MasterVolume = PlayerPrefs.GetInt(MasterVolumeKey, settings.MasterVolume);
-            settings.MusicVolume = PlayerPrefs.GetInt(MusicVolumeKey, settings.MusicVolume);
-            settings.MusicEnabled = PlayerPrefs.GetInt(MusicEnabledKey, settings.MusicEnabled ? 1 : 0) == 1;
+            var settings = MusicSettings.Defaults(_catalog); // levels arrive from RunController.ApplyPlayerSettings
             settings.Muted = muted;
             _director = new MusicDirector(_catalog, unchecked((uint)DateTime.UtcNow.Ticks | 1u), settings);
         }

@@ -211,6 +211,17 @@ namespace AshenSpire.Domain.Original
         }
         public bool CollectReward(string kind,string cardId = null) => Change((run,rng) => { Require(run,OriginalRunPhase.Rewards); return Collect(run,rng,kind,cardId); });
         public bool SkipReward(string kind) => Change((run,rng) => { Require(run,OriginalRunPhase.Rewards); if ((string)run["room"]["states"][kind] == "taken") return false; if (!new[] { "cinders","card","flask","armament","relic" }.Contains(kind)) return false; run["room"]["states"][kind] = "skipped"; return true; });
+        /// <summary>Merges gameplay options (OriginalGameplayOptions.ProfileSettings) into run.profileMeta.settings,
+        /// where the merchant and swap pricing read them. Uses no randomness; false when nothing changed.</summary>
+        public bool SetProfileSettings(JObject settings) => settings != null && Change((run,rng) =>
+        {
+            if (!(run["profileMeta"] is JObject meta)) run["profileMeta"] = meta = new JObject();
+            if (!(meta["settings"] is JObject current)) meta["settings"] = current = new JObject();
+            var changed = false;
+            foreach (var property in settings.Properties())
+                if (!JToken.DeepEquals(current[property.Name],property.Value)) { current[property.Name] = property.Value.DeepClone(); changed = true; }
+            return changed;
+        });
         public void ContinueRewards(bool autoCollect) => Change((run,rng) =>
         {
             Require(run,OriginalRunPhase.Rewards);

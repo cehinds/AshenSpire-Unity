@@ -81,6 +81,8 @@ jobs:
           node-version: '22'
       - name: Compile all Runtime assemblies against Unity reference assemblies
         run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
+      - name: Generated content schema matches src/model/schemas.js
+        run: node tools/unity-content-schema.mjs --check
 
   domain-tests:
     name: Console tests (${{ matrix.shard }})
@@ -103,7 +105,7 @@ jobs:
           - shard: map-and-data
             suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
           - shard: features
-            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel?'
+            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel? HoldConfirm?'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
