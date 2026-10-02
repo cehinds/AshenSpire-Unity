@@ -331,11 +331,13 @@ namespace AshenSpire.Presentation
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("WEAPON CARD MOUNTS", "heading"); _notice = Text("", "notice");
             var mounts = new CardMountService(_game.Catalog); var run = _game.RunPlayer;
             var services = _game.Room["smith"]["services"] as JArray ?? new JArray();
+            var extractRefused = CardMountService.ExtractionRefusal(run) != null;
+            if (extractRefused && services.Any(x => (string)x == "extract")) Text(CardMountService.PoolDeckRefusalText, "caption");
             foreach (var item in new ItemUpgradeService(_game.Catalog).OwnedRefs(run).Where(x => !x.StartsWith("relic/", StringComparison.Ordinal)))
                 foreach (var row in mounts.MountRows(item, run["itemMounts"] as JObject))
                 {
                     var key = (string)row["mountKey"]; Text(OriginalCardText.Humanize(item.Split('/').Last()) + " · " + ((string)row["cardName"] ?? "Open mount"), "stat");
-                    if ((bool)row["extractable"] && services.Any(x => (string)x == "extract")) Button("native-extract-" + key, "Extract card · " + mounts.Cost("extract") + " stones", () => _game.Service("extract", new JObject { ["itemRef"] = item, ["mountKey"] = key }));
+                    if ((bool)row["extractable"] && !extractRefused && services.Any(x => (string)x == "extract")) Button("native-extract-" + key, "Extract card · " + mounts.Cost("extract") + " stones", () => _game.Service("extract", new JObject { ["itemRef"] = item, ["mountKey"] = key }));
                     if (new[] { "fallback", "empty", "open" }.Contains((string)row["state"]) && services.Any(x => (string)x == "install"))
                         foreach (var card in ((JArray)run["deck"]).OfType<JObject>().Where(x => string.IsNullOrEmpty((string)x["equipmentRole"]) && _game.Catalog.Tags("card", _game.Catalog.Record("cards", (string)x["cardId"])).Intersect(row["accepts"].Values<string>()).Any()))
                         { var id = (string)card["instanceId"]; Button("native-install-" + key + "-" + id, "Install " + (string)_game.Resolve(card)["name"] + " · " + mounts.Cost("install") + " stones", () => _game.Service("install", new JObject { ["itemRef"] = item, ["mountKey"] = key, ["instanceId"] = id })); }

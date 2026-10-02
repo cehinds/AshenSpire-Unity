@@ -361,6 +361,8 @@ namespace AshenSpire.Presentation
             { Text("Mount changes require an available smith service.", "notice"); Button("mounts-back", "Back to the room", Main); _report?.Invoke(); return; }
             var mounts = new CardMountService(_catalog); var upgrades = Upgrades; var stones = ItemUpgradeService.Stones(Run);
             Text(stones + " Smithing Stones · extracting adds a run-owned card; installing consumes that card.", "caption");
+            var extractRefused = CardMountService.ExtractionRefusal(Run) != null;
+            if (extractRefused && services.Values<string>().Contains("extract")) Text(CardMountService.PoolDeckRefusalText, "caption");
             foreach (var item in upgrades.OwnedRefs(Run).Where(item => !item.StartsWith("relic/", StringComparison.Ordinal)))
             {
                 Text(ItemName(item), "node-title");
@@ -369,7 +371,7 @@ namespace AshenSpire.Presentation
                 foreach (var row in rows)
                 {
                     var key = (string)row["mountKey"]; Text(((string)row["cardName"] ?? "Open mount") + " · " + Human((string)row["state"]), "stat");
-                    if ((bool)row["extractable"] && services.Values<string>().Contains("extract"))
+                    if ((bool)row["extractable"] && !extractRefused && services.Values<string>().Contains("extract"))
                         Command("extract-" + key, "Extract " + row["cardName"] + " · " + mounts.Cost("extract") + " stones", Service("extract", new JObject { ["itemRef"] = item, ["mountKey"] = key }), stones >= mounts.Cost("extract"));
                     if (!new[] { "fallback", "empty", "open" }.Contains((string)row["state"]) || !services.Values<string>().Contains("install")) continue;
                     var cards = (Run["deck"] as JArray ?? new JArray()).Where(card => string.IsNullOrEmpty((string)card["equipmentRole"]) && _catalog.Tags("card", _catalog.Record("cards", (string)card["cardId"])).Intersect(row["accepts"].Values<string>()).Any()).ToArray();
