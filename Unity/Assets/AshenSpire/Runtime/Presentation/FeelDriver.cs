@@ -1,7 +1,8 @@
 // FeelDriver.cs — Presentation's single entry point to the F07 feel profile.
 // Loads Resources/Feel/feel-profile.json once (JsonUtility → FeelProfile, validated), holds
-// the player's motion settings (CampaignView's Reduced motion / Quick animations toggles →
-// FeelSettings.FromToggles), applies sampled transforms, and owns the hand-card hover lift.
+// the player's motion settings (OriginalPlayerSettings → FeelSettings.From in Domain; the bare
+// Reduced motion / Quick animations toggles → FeelSettings.FromToggles), applies sampled
+// transforms, and owns the hand-card hover lift.
 // EDIT timings in the HTML first, then feel-profile.json (docs/Unity-Feel.md); never here.
 // GEOMETRY CONTRACT: feel transforms are visual only. Every element they move is tracked,
 // and SettledBound reports a control's bounds as if no feel transform applied, so pointer
@@ -35,14 +36,15 @@ namespace AshenSpire.Presentation
 
         public static void Configure(bool reducedMotion, bool quickAnimations) => Settings = FeelSettings.FromToggles(reducedMotion, quickAnimations);
 
+        /// <summary>The saved settings; the speed buckets and flags are mapped in Domain (FeelSettings.From, tested).</summary>
         public static void Configure(AshenSpire.Domain.Original.OriginalPlayerSettings settings)
         {
-            Settings = FeelSettings.FromToggles(settings.ReducedMotion, settings.QuickAnimations);
-            if (settings.InstantAnimations) Settings.Speed = "instant";
-            else if (settings.AnimationSpeed < 1) Settings.Speed = "slow";
-            Settings.ScreenShake = settings.ScreenShake;
-            Settings.ScreenShakeIntensity = settings.ScreenShakeIntensity;
-            Settings.HitStop = settings.HitStop;
+            if (settings == null) return;
+            Settings = FeelSettings.From(
+                animationSpeed: settings.AnimationSpeed, instantAnimations: settings.InstantAnimations,
+                reducedMotion: settings.ReducedMotion, reduceFlashes: settings.ReduceFlashes,
+                screenShake: settings.ScreenShake, screenShakeIntensity: settings.ScreenShakeIntensity,
+                hitStop: settings.HitStop);
         }
 
         /// <summary>Writes a sampled transform. Rest values (0, 0, 1, 0°) clear the inline style.</summary>

@@ -98,12 +98,15 @@ Unity loop is therefore 84 × cadence, from 72.2 s (`bed.boss.4`, 860 ms) to
   - An uncached bed starts once it is rendered, typically 2 to 4 s later. Its
     fade-in starts at that point. The outgoing bed still fades out on time.
 - **Settings.**
-  - Mute uses `AshenSpire.Muted`, the same key the sound-effects toggle uses.
-  - Optional `PlayerPrefs` keys set the bus levels: `AshenSpire.MasterVolume`
-    and `AshenSpire.MusicVolume` (0 to 100), and `AshenSpire.MusicEnabled`
-    (0 or 1). No settings UI writes them yet.
-  - When a key is absent, the catalog default applies: master 100, music 50,
-    music on.
+  - Mute, master volume, music volume and the Music on/off toggle are saved in
+    `OriginalPlayerSettings` (see [Unity-Settings.md](Unity-Settings.md)).
+    `RunController.ApplyPlayerSettings` computes `AudioBusLevels.From(settings)`
+    and calls `MusicPlayer.SetMuted` and `ApplySettings(100, music bus %, on)`.
+  - The player starts from the catalog defaults (master 100, music 50, on)
+    until those settings are applied. The old optional `PlayerPrefs` keys
+    `AshenSpire.MasterVolume`, `AshenSpire.MusicVolume` and
+    `AshenSpire.MusicEnabled` are migrated once into the settings record and
+    are no longer read.
 - **Hooks.**
   - `Menu()` plays Title.
   - `Refresh()` follows the foundation campaign phase.
@@ -276,7 +279,7 @@ The adapter should:
    `ReturnFromInterruption` call `MusicPlayer.SetSuspended`. It pauses and
    unpauses both sources and leaves the director state unchanged. This needs
    a device check against F08's "pauses on backgrounding" criterion.
-6. **Settings: partly done.** Mute is shared with sound effects. Master and
-   music volume and music on/off are read from `PlayerPrefs` at start. No
-   settings UI writes them yet. When one is added, call
-   `MusicPlayer.ApplySettings(master, music, enabled)`.
+6. **Settings: wired.** Mute is shared with sound effects. Master and music
+   volume and music on/off come from the Settings screen through
+   `AudioBusLevels.From` (tested in `UnityTests/Music`). Needs an editor play
+   test.

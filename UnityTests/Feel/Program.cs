@@ -131,6 +131,31 @@ Check(profile.Resolve("banner.coop", S(reduced: true)).DurationMs == 500 && prof
 Check(!profile.Resolve("hit.recoil", S(flashes: true)).Play && profile.Resolve("damageNumber.pop", S(flashes: true)).Play, "Reduce flashes suppresses flash() effects, never the numbers");
 Check(profile.Resolve("boss.veil", S(reduced: true)).Play && profile.Resolve("boss.veil", S(reduced: true)).Has("opacity"), "reduced motion keeps opacity-only transitions");
 
+// ---- OriginalPlayerSettings → FeelSettings (FeelDriver.Configure; US-7.4 / US-13.2) ----------------------
+FeelSettings P(double speed, bool instant = false, bool reduced = false, bool flashes = false, bool shake = false, double intensity = 1, bool hitStop = false) =>
+    FeelSettings.From(speed, instant, reduced, flashes, shake, intensity, hitStop);
+foreach (var (percent, bucket) in new[] { (50, "slow"), (75, "slow"), (99, "slow"), (100, "normal"), (125, "normal"), (150, "normal"), (199, "normal"), (200, "fast") })
+{
+    var mapped = P(percent / 100.0);
+    Check(mapped.Speed == bucket && profile.Pace(mapped).SpeedId == bucket, "animation speed " + percent + "% → " + bucket + " pacing");
+}
+Check(profile.Pace(P(.5)).BeatMs == 700 && profile.Pace(P(1)).BeatMs == 400 && profile.Pace(P(2)).BeatMs == 180, "speed buckets keep the HTML ANIM_SPEEDS beats (700 / 400 / 180 ms)");
+Check(Near(profile.LungeScale(P(.5)), 340 / 260.0) && Near(profile.LungeScale(P(1.5)), 1) && Near(profile.LungeScale(P(2)), 160 / 260.0), "speed buckets scale lunges by the bucket's lunge / 260");
+Check(P(.1).Speed == "slow" && P(9).Speed == "fast" && P(double.NaN).Speed == "normal", "out-of-range or NaN speeds clamp into 50–200% first");
+Check(new[] { .5, 1, 2 }.All(v => P(v, instant: true).Speed == "instant" && profile.Pace(P(v, instant: true)).Instant), "Instant animations override every speed");
+Check(FeelSettings.SpeedFor(2, false) == FeelSettings.FromToggles(false, true).Speed && FeelSettings.SpeedFor(1, false) == FeelSettings.FromToggles(false, false).Speed, "200% matches the legacy Quick animations toggle; 100% matches it off");
+var reducedMapped = P(2, reduced: true, shake: true, hitStop: true);
+Check(reducedMapped.ReducedMotion && reducedMapped.Speed == "fast" && profile.Pace(reducedMapped).Instant && !profile.Resolve("screen.shake", reducedMapped).Play, "reduced motion is carried over: paces like instant at any speed and stops shake");
+var reducedBeat = AshenSpire.Presentation.FeelBeat.Plan(profile, reducedMapped, false, true, 30, 0);
+Check(reducedBeat.HoldMs == 0 && !reducedBeat.Actor.Play && reducedBeat.Recoil.Tracks.All(tr => !FeelProperty.IsMovement(tr.Property)), "reduced motion from settings: no hit-stop, no lunge, no recoil movement");
+var flashMapped = P(1, flashes: true);
+var flashBeat = AshenSpire.Presentation.FeelBeat.Plan(profile, flashMapped, false, true, 30, 0);
+var flashGlow = AshenSpire.Presentation.FeelBeat.Plan(profile, flashMapped, false, false, 0, 0);
+Check(flashMapped.ReduceFlashes && !flashBeat.Recoil.Play && !flashBeat.Actor.Play && !flashGlow.Glow.Play && flashBeat.Number.Play, "Reduce flashes from settings: no hit flash, recoil or flashing lunge; the damage number stays");
+Check(!P(1).ReduceFlashes && AshenSpire.Presentation.FeelBeat.Plan(profile, P(1), false, true, 30, 0).Recoil.Play, "Reduce flashes off (the default) keeps the hit flash");
+var shakeMapped = P(1, shake: true, intensity: 3);
+Check(shakeMapped.ScreenShake && shakeMapped.ScreenShakeIntensity == 1 && P(1, shake: true, intensity: -1).ScreenShakeIntensity == 0 && !P(1).ScreenShake && P(1, hitStop: true).HitStop, "shake, intensity (clamped 0–1) and hit-stop carry over");
+
 // ---- damage number tiers -------------------------------------------------------------------------
 var t = profile.Thresholds; var dn = profile.DamageNumbers;
 Check(FeelDamageNumbers.Tier(25, t) == "crit" && FeelDamageNumbers.Tier(24, t) == "heavy" && FeelDamageNumbers.Tier(15, t) == "heavy" && FeelDamageNumbers.Tier(14, t) == "normal" && FeelDamageNumbers.Tier(6, t) == "normal" && FeelDamageNumbers.Tier(5, t) == "small", "number tiers match fx.js dmgClass boundaries");

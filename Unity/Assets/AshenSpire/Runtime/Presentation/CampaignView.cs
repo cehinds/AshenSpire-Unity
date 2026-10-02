@@ -506,8 +506,8 @@ namespace AshenSpire.Presentation
             mute.AddToClassList("setting");
             mute.RegisterValueChangedCallback(e => { _muted = e.newValue; MuteRequested?.Invoke(e.newValue); Report(); });
             _body.Add(mute);
-            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
-            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; FeelDriver.Configure(_reducedMotion, _fast); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            motion.RegisterValueChangedCallback(e => { _reducedMotion = e.newValue; ConfigureFeel(); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
+            fast.RegisterValueChangedCallback(e => { _fast = e.newValue; ConfigureFeel(); SettingsRequested?.Invoke(_reducedMotion, _fast); Report(); });
             ExtendSettings(motion, fast, mute); // CampaignView.PlayerSettings.cs: grouped OriginalPlayerSettings sections.
             _body.Add(Text("HOW TO PLAY", "heading"));
             AddButton("native-guide", "Open the field guide", () => Guide(() => Settings(back)));

@@ -7,8 +7,10 @@
 // OWNERSHIP: RunController (RunController.Settings.cs) loads, saves and passes the settings
 // object in; this file edits it and raises PlayerSettingsChanged / ContentModsChanged.
 // APPLIED HERE: text size (per text element, from its resolved USS size), colorblind palette
-// (root class palette-*, Resources/OriginalPalette.uss), map key bindings (MapView.KeyAction)
-// and the reduced/quick/mute flags that CombatFeedback already reads.
+// (root class palette-*, Resources/OriginalPalette.uss), high contrast (root class
+// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), and the
+// feel settings (FeelDriver.Configure → Domain FeelSettings.From: speed bucket, reduced
+// motion, reduce flashes, shake, hit-stop) that CombatFeedback reads.
 // VERIFY IN EDITOR: open Settings, move each slider, pick a palette, rebind a map key.
 using System;
 using System.Collections.Generic;
@@ -60,7 +62,18 @@ namespace AshenSpire.Presentation
             _muted = settings.Muted;
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
             ApplyPalette();
+            _root.EnableInClassList(HighContrastClass, settings.HighContrast);
             ScheduleTextScale();
+        }
+
+        /// <summary>Root USS class for the High contrast setting (HTML body.hi-contrast).</summary>
+        public const string HighContrastClass = "high-contrast";
+
+        /// <summary>The bare Reduced motion / Quick animations toggles, or every saved feel setting when present.</summary>
+        private void ConfigureFeel()
+        {
+            if (_playerSettings != null) FeelDriver.Configure(_playerSettings);
+            else FeelDriver.Configure(_reducedMotion, _fast);
         }
 
         private void ApplyPalette()
@@ -148,15 +161,19 @@ namespace AshenSpire.Presentation
             SettingSlider("volume-master", "Master volume", 0, 100, Percent(s.MasterVolume), v => s.MasterVolume = v / 100.0);
             SettingSlider("volume-sfx", "Sound effects", 0, 100, Percent(s.SfxVolume), v => s.SfxVolume = v / 100.0);
             SettingSlider("volume-music", "Music volume", 0, 100, Percent(s.MusicVolume), v => s.MusicVolume = v / 100.0);
+            SettingToggle("music-enabled", "Music", s.MusicEnabled, v => s.MusicEnabled = v);
             SettingSlider("volume-ui", "Interface sounds", 0, 100, Percent(s.UiVolume), v => s.UiVolume = v / 100.0);
             AddButton("preview-interface-sound", "Preview interface sound", () => { });
             AddButton("preview-sound-effect", "Preview combat sound", () => SoundPreviewRequested?.Invoke()).AddToClassList("no-interface-sound");
-            _body.Add(Text("Master volume controls all sound. Interface sounds and combat effects have separate levels. Music volume changes the playing track immediately. Mute silences previews too.", "caption"));
+            _body.Add(Text("Master volume controls all sound. Interface sounds, combat effects and music have separate levels. Music volume changes the playing track immediately; Music off stops it. Mute silences everything, previews too, and is remembered.", "caption"));
 
             // ACCESSIBILITY
             _body.Add(Text("ACCESSIBILITY", "heading"));
             _body.Add(motion);
             motion.RegisterValueChangedCallback(e => { s.ReducedMotion = e.newValue; Changed(); });
+            SettingToggle("reduce-flashes", "Reduce flashes", s.ReduceFlashes, v => s.ReduceFlashes = v);
+            SettingToggle("high-contrast", "High contrast", s.HighContrast, v => s.HighContrast = v);
+            _body.Add(Text("Reduce flashes skips the bright hit flash and the glowing attack lunge; damage numbers stay. High contrast brightens secondary text and borders.", "caption"));
             SettingSlider("text-scale", "Text size", 80, 160, Percent(s.TextScale), v => s.TextScale = v / 100.0);
             var palette = new DropdownField("Colorblind palette", PaletteChoices, (int)s.ColorblindPalette) { name = "colorblind-palette" };
             palette.AddToClassList("setting");

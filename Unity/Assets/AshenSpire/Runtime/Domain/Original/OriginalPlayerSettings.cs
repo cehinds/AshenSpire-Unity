@@ -18,9 +18,14 @@ namespace AshenSpire.Domain.Original
 
     public sealed class OriginalPlayerSettings
     {
-        public const int SchemaVersion = 1;
+        /// <summary>2 added reduceFlashes, highContrast and audio.musicEnabled (absent in schema 1: off, off, on).</summary>
+        public const int SchemaVersion = 2;
+        /// <summary>The key keeps its v1 name so existing saves are found; schemaVersion inside the record is what changes.</summary>
         public const string StorageKey = "AshenSpire.Settings.v1";
         public const string LegacyReducedMotionKey = "AshenSpire.ReducedMotion", LegacyFastMotionKey = "AshenSpire.FastMotion", LegacyMutedKey = "AshenSpire.Muted";
+        /// <summary>Music bus keys MusicPlayer used to read (0..100, 0/1). Nothing in the Unity build wrote them; they are
+        /// migrated once by FromLegacy when no settings record exists and are not read again.</summary>
+        public const string LegacyMasterVolumeKey = "AshenSpire.MasterVolume", LegacyMusicVolumeKey = "AshenSpire.MusicVolume", LegacyMusicEnabledKey = "AshenSpire.MusicEnabled";
         public const double TextScaleMin = .8, TextScaleMax = 1.6, UiScaleMin = .75, UiScaleMax = 1.5, AnimationSpeedMin = .5, AnimationSpeedMax = 2, IntensityMin = 0, IntensityMax = 1, VolumeMin = 0, VolumeMax = 1;
         /// <summary>Legacy "Quick animations" halved feedback duration (CombatFeedback: × .5), i.e. speed 2.</summary>
         public const double LegacyFastAnimationSpeed = 2;
@@ -44,9 +49,15 @@ namespace AshenSpire.Domain.Original
         public bool ReducedMotion;
         public bool ScreenShake; public double ScreenShakeIntensity = 1;
         public bool HitStop;
+        /// <summary>Suppress bright impact flashes (photosensitivity); damage numbers stay (HTML reduceFlashes).</summary>
+        public bool ReduceFlashes;
+        /// <summary>Brighter text and stronger borders: the root gets the high-contrast USS class (HTML highContrast).</summary>
+        public bool HighContrast;
         public ColorblindPalette ColorblindPalette = ColorblindPalette.None;
         public double MasterVolume = 1, MusicVolume = 1, SfxVolume = 1, UiVolume = 1;
         public bool Muted;
+        /// <summary>Music on/off, separate from Mute (which silences every bus).</summary>
+        public bool MusicEnabled = true;
         /// <summary>Read StreamingAssets/Mods when content loads. Off by default: the shipped content only.</summary>
         public bool LoadContentMods;
         /// <summary>Whether packs apply to this content load. Co-op (host, guest, companion) always uses the
@@ -55,15 +66,15 @@ namespace AshenSpire.Domain.Original
         private readonly Dictionary<string, string> _keys = new Dictionary<string, string>(DefaultKeyBindings, StringComparer.Ordinal);
         public IReadOnlyDictionary<string, string> KeyBindings => _keys;
 
-        /// <summary>Multiplier for feedback durations: 0 when instant, 1 / speed otherwise (legacy fast = .5).</summary>
         /// <summary>The legacy "Quick animations" flag (AshenSpire.FastMotion): instant or at least the legacy fast speed.</summary>
         public bool QuickAnimations => InstantAnimations || AnimationSpeed >= LegacyFastAnimationSpeed;
+        /// <summary>Multiplier for feedback durations: 0 when instant, 1 / speed otherwise (legacy fast = .5).</summary>
         public double AnimationDurationScale => InstantAnimations ? 0 : 1 / AnimationSpeed;
         /// <summary>Effective gain for a bus after master volume and mute.</summary>
         public double Gain(string bus)
         {
             if (Muted) return 0;
-            switch (bus) { case "music": return MasterVolume * MusicVolume; case "sfx": return MasterVolume * SfxVolume; case "ui": return MasterVolume * UiVolume; case "master": return MasterVolume; default: throw new ArgumentException("Unknown audio bus: " + bus); }
+            switch (bus) { case "music": return MusicEnabled ? MasterVolume * MusicVolume : 0; case "sfx": return MasterVolume * SfxVolume; case "ui": return MasterVolume * UiVolume; case "master": return MasterVolume; default: throw new ArgumentException("Unknown audio bus: " + bus); }
         }
 
         /// <summary>Binds <paramref name="key"/> to <paramref name="action"/> unless another action already uses it.
@@ -101,8 +112,9 @@ namespace AshenSpire.Domain.Original
                 ["schemaVersion"] = SchemaVersion, ["textScale"] = TextScale, ["uiScale"] = UiScale,
                 ["animationSpeed"] = AnimationSpeed, ["instantAnimations"] = InstantAnimations, ["reducedMotion"] = ReducedMotion,
                 ["screenShake"] = ScreenShake, ["screenShakeIntensity"] = ScreenShakeIntensity, ["hitStop"] = HitStop,
+                ["reduceFlashes"] = ReduceFlashes, ["highContrast"] = HighContrast,
                 ["colorblindPalette"] = PaletteName(ColorblindPalette),
-                ["audio"] = new JObject { ["master"] = MasterVolume, ["music"] = MusicVolume, ["sfx"] = SfxVolume, ["ui"] = UiVolume, ["muted"] = Muted },
+                ["audio"] = new JObject { ["master"] = MasterVolume, ["music"] = MusicVolume, ["sfx"] = SfxVolume, ["ui"] = UiVolume, ["muted"] = Muted, ["musicEnabled"] = MusicEnabled },
                 ["keyBindings"] = keys, ["loadContentMods"] = LoadContentMods,
             };
         }
@@ -131,6 +143,10 @@ namespace AshenSpire.Domain.Original
             settings.ReducedMotion = legacyInt(LegacyReducedMotionKey, 0) == 1;
             if (legacyInt(LegacyFastMotionKey, 0) == 1) settings.AnimationSpeed = LegacyFastAnimationSpeed;
             settings.Muted = legacyInt(LegacyMutedKey, 0) == 1;
+            // MusicPlayer's old optional keys (0..100). Absent (-1) keeps the defaults; values are clamped.
+            var master = legacyInt(LegacyMasterVolumeKey, -1); if (master >= 0) settings.MasterVolume = Math.Min(100, master) / 100.0;
+            var music = legacyInt(LegacyMusicVolumeKey, -1); if (music >= 0) settings.MusicVolume = Math.Min(100, music) / 100.0;
+            var enabled = legacyInt(LegacyMusicEnabledKey, -1); if (enabled >= 0) settings.MusicEnabled = enabled != 0;
             adjustments.Add("migrated legacy preferences to schema " + SchemaVersion);
             return settings;
         }
@@ -151,6 +167,7 @@ namespace AshenSpire.Domain.Original
             }
             if (version.Type != JTokenType.Integer || (long)version < 1) { notes.Add("unknown schemaVersion " + version + "; defaults used"); return s; }
             if ((long)version > SchemaVersion) notes.Add("schemaVersion " + version + " is newer than " + SchemaVersion + "; known fields read");
+            else if ((long)version < SchemaVersion) notes.Add("migrated schema " + version + " to schema " + SchemaVersion); // 1 → 2: new fields keep their defaults
             double Number(JToken value, string name, double fallback, double min, double max)
             {
                 if (value == null) return fallback;
@@ -175,6 +192,8 @@ namespace AshenSpire.Domain.Original
             s.ScreenShake = Bool(json["screenShake"], "screenShake", s.ScreenShake);
             s.ScreenShakeIntensity = Number(json["screenShakeIntensity"], "screenShakeIntensity", s.ScreenShakeIntensity, IntensityMin, IntensityMax);
             s.HitStop = Bool(json["hitStop"], "hitStop", s.HitStop);
+            s.ReduceFlashes = Bool(json["reduceFlashes"], "reduceFlashes", s.ReduceFlashes);
+            s.HighContrast = Bool(json["highContrast"], "highContrast", s.HighContrast);
             s.LoadContentMods = Bool(json["loadContentMods"], "loadContentMods", s.LoadContentMods);
             var palette = json["colorblindPalette"];
             if (palette != null) { if (palette.Type == JTokenType.String && TryParsePalette((string)palette, out var parsed)) s.ColorblindPalette = parsed; else notes.Add("colorblindPalette '" + palette + "' is unknown; none used"); }
@@ -183,6 +202,7 @@ namespace AshenSpire.Domain.Original
                 s.MasterVolume = Number(audio["master"], "audio.master", 1, VolumeMin, VolumeMax); s.MusicVolume = Number(audio["music"], "audio.music", 1, VolumeMin, VolumeMax);
                 s.SfxVolume = Number(audio["sfx"], "audio.sfx", 1, VolumeMin, VolumeMax); s.UiVolume = Number(audio["ui"], "audio.ui", 1, VolumeMin, VolumeMax);
                 s.Muted = Bool(audio["muted"], "audio.muted", false);
+                s.MusicEnabled = Bool(audio["musicEnabled"], "audio.musicEnabled", true);
             }
             else if (json["audio"] != null) notes.Add("audio was not an object; defaults used");
             if (json["keyBindings"] is JObject keys)
