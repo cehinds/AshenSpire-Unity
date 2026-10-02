@@ -78,6 +78,10 @@ namespace AshenSpire.Application
                 _view = new CampaignView(document.rootVisualElement, _diagnosticsEnabled, PlayerPrefs.GetInt("AshenSpire.ReducedMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.FastMotion", 0) == 1, PlayerPrefs.GetInt("AshenSpire.Muted", 0) == 1);
                 _view.MapView.Read = ReadMapView; _view.MapView.Write = WriteMapView;
                 InstallPlayerSettings(); // RunController.Settings.cs: settings v1, UI size, volume, mods.
+                // Gamepad (US-15.3): legacy Input Manager polling; GamepadNavigator runs the actions.
+                var gamepad = GetComponent<GamepadDriver>();
+                if (gamepad == null) gamepad = gameObject.AddComponent<GamepadDriver>();
+                gamepad.Navigator = _view.Gamepad;
                 _view.SetDisplayHeight(DisplayViewport.Height);
                 _view.StartRequested += StartRun;
                 _view.ContinueRequested += Resume;
@@ -380,6 +384,7 @@ namespace AshenSpire.Application
             var referenceHeight = ViewportLayout.ReferenceHeight(displayHeight);
             _panelSettings.referenceResolution = new Vector2Int(430, referenceHeight);
             _view?.SetDisplayHeight(displayHeight);
+            ApplyPanelScale(); // RunController.Settings.cs: L/XL UI sizes are capped by the screen they fit.
             var scale = (float)referenceHeight / Math.Max(1, Screen.height);
             var root = GetComponent<UIDocument>().rootVisualElement;
             root.style.paddingTop = (Screen.height - _safeArea.yMax) * scale;
@@ -399,6 +404,8 @@ namespace AshenSpire.Application
             if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
             if (_view == null)
                 return;
+            var gamepad = GetComponent<GamepadDriver>();
+            if (gamepad != null) gamepad.Navigator = null;
             _view.Dispose();
             FlushMapView(); // Detaching the map freezes its final camera before shutdown.
             _view.ReturnRequested -= ReturnFromInterruption;

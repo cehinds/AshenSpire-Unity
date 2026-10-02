@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.31.0 · build 32 · 2026-10-02
+
+- Rewards: only cinders auto-collected by default; gamepad support (legacy input, rebinding); display options apply their styles; owner acceptance recorded
+
 ## 0.0.30.0 · build 31 · 2026-10-02
 
 - US-13.3 hold-to-confirm; US-13.2/7.4/8.3 settings a11y+audio; US-15.1-15.3 gameplay/display/gamepad options; US-0.6 web profile and active-room import; US-16.3 content schema validation

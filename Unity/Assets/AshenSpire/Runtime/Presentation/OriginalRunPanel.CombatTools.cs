@@ -62,9 +62,16 @@ namespace AshenSpire.Presentation
             Text("Esc · cancel selection or close an inspection\nTab · move between controls\nEnter · activate the focused button", "caption");
             Text("Change shortcuts in Settings → Controls. Pile, inventory and help screens block combat shortcuts while you read.", "caption");
             Button("native-combat-keys-back", "Back to combat", Render);
+            // Gamepad hints (US-15.3), derived from the saved pad bindings; listed first when a pad was the last input.
+            var pad = _settings?.GamepadBindings ?? OriginalGamepad.DefaultBindings;
+            var padLines = "Gamepad · d-pad or left stick moves between controls · right stick scrolls\n" + string.Join("\n",
+                OriginalGamepadNavigation.Bound(pad, OriginalGamepadNavigation.Actions.Where(a => !a.StartsWith("map", StringComparison.Ordinal)))
+                    .Select(b => OriginalKeyBindings.PadLabel(b.Action) + " · " + OriginalGamepad.Label(b.Button)));
+            if (GamepadNavigator.LastInputWasGamepad) Text(padLines, "caption").name = "native-combat-pad-hints";
             var keys = _settings?.KeyBindings ?? OriginalPlayerSettings.DefaultKeyBindings;
             foreach (var action in OriginalKeyBindings.CombatActions)
                 Text(OriginalKeyBindings.Label(action) + " · " + (keys.TryGetValue(action, out var key) ? OriginalKeyBindings.DisplayKey(key) : "unbound"), "stat");
+            if (!GamepadNavigator.LastInputWasGamepad) Text(padLines, "caption").name = "native-combat-pad-hints";
             _root.Focus(); _report();
         }
 

@@ -138,11 +138,14 @@ namespace AshenSpire.Domain.Original
         public void DrinkFlask(int slot, string target = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkFlask(slot, target); CommitCombat(); });
         public void Service(string service, JObject request) => Change(() => { if (!_run.UseService(service, request)) throw new ArgumentException("This service is unavailable here or its requirements are not met."); });
         public void Reward(string kind, string id = null) => Change(() => { if (!_run.CollectReward(kind, id)) throw new ArgumentException("That reward cannot be collected."); });
-        /// <summary>Continue as "manual": only what was already chosen comes along (the pre-setting behaviour).</summary>
+        /// <summary>Continue leaving everything still pending, cinders included (the pre-setting behaviour; replays and
+        /// tests use it). The player's Continue is ContinueRewards(mode).</summary>
         public void ContinueRewards() => Change(() => _run.ContinueRewards(false));
         /// <summary>Continue under the Reward collection setting (OriginalGameplayOptions.RewardCollectMode):
-        /// auto takes every pending, un-skipped, unblocked reward and picks a card on the cardRewards stream.</summary>
-        public void ContinueRewards(string mode) => Change(() => _run.ContinueRewards(OriginalGameplayOptions.RewardCollectMode(_catalog.Data(), mode) == "auto"));
+        /// auto takes every pending, un-skipped, unblocked reward and picks a card on the cardRewards stream;
+        /// manual (the default, owner decision 2026-10-02) takes only the pending, un-skipped cinders and leaves
+        /// every other unchosen reward behind.</summary>
+        public void ContinueRewards(string mode) => Change(() => { var auto = OriginalGameplayOptions.RewardCollectMode(_catalog.Data(), mode) == "auto"; _run.ContinueRewards(auto, !auto); });
         /// <summary>Mark a pending reward skipped, so an auto Continue leaves it (the HTML Skip).</summary>
         public void SkipReward(string kind) => Change(() => { if (!_run.SkipReward(kind)) throw new ArgumentException("That reward cannot be skipped."); });
         /// <summary>Merge gameplay options into the run's profileMeta.settings (see OriginalGameplayOptions).

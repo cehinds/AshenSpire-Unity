@@ -6,6 +6,7 @@
 // FONT: Fonts/GlyphFonts.json maps complete authored Unicode strings to bundled
 // static monochrome fonts, including supplementary codepoints. Update that map
 // after changing icons/tags; see Fonts/README.md. A caller may override card art.
+// MOTIF: the class cardTint layer and rarity pip follow the root card-motif-* classes (US-15.1).
 // ACCESS: FullText exposes every label and tag blurb; the same text is the tooltip.
 // Tag chips open their blurb on hover or long press (EnemyTelegraphView.Explain), and
 // pile inspection lists the blurbs, so touch users lose no details (US-13.4).
@@ -28,9 +29,13 @@ namespace AshenSpire.Presentation
         {
             internal readonly JObject Types;
             internal readonly Dictionary<string, JObject> Tags;
+            /// <summary>Class id → its cardTint (the card motif hue). Colorless cards have none.</summary>
+            internal readonly Dictionary<string, Color> Tints = new Dictionary<string, Color>(StringComparer.Ordinal);
             internal Metadata(OriginalContentCatalog catalog)
             {
                 var data = catalog.Data();
+                foreach (var klass in (data["classes"] as JArray ?? new JArray()).OfType<JObject>())
+                    if ((string)klass["id"] is string id && TryColor((string)klass["cardTint"], out var tint)) Tints[id] = tint;
                 Types = (JObject)data["balance"]?["ui"]?["cardTypes"]?.DeepClone() ?? new JObject();
                 Tags = ((JArray)data["tags"]).OfType<JObject>().ToDictionary(x => (string)x["id"], x => (JObject)x.DeepClone());
             }
@@ -56,6 +61,16 @@ namespace AshenSpire.Presentation
             var typeName = (string)type?["label"] ?? OriginalCardText.Humanize(typeId);
             var rarity = (string)card["rarity"] ?? "common";
             AddToClassList("rarity-" + rarity); AddToClassList("type-" + typeId);
+            // Card motif (Settings → Card motif): one unpickable layer behind the face, tinted with the
+            // owning class's cardTint. OriginalCards.uss shapes it per root class card-motif-* and sets
+            // its opacity per motif-strength-*; the rarity pip shows in Accent mode only.
+            var classId = (string)card["class"];
+            if (classId != null && metadata.Tints.TryGetValue(classId, out var classTint))
+            {
+                var motif = new VisualElement { pickingMode = PickingMode.Ignore }; motif.AddToClassList("original-card-motif");
+                motif.style.backgroundColor = classTint; Add(motif); AddToClassList("has-class-tint");
+            }
+            var pip = new VisualElement { pickingMode = PickingMode.Ignore }; pip.AddToClassList("original-card-pip"); Add(pip);
             if ((bool?)card["upgraded"] == true || ((string)card["name"] ?? "").EndsWith("+", StringComparison.Ordinal)) AddToClassList("upgraded");
 
             var title = (string)card["name"] ?? (string)card["id"];

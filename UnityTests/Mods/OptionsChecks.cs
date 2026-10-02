@@ -32,7 +32,9 @@ static class OptionsChecks
         Check(Def("animSpeed") == d.CombatPacing && Choices("animSpeed").SequenceEqual(OriginalPlayerSettings.CombatPacings), "html: combat pacing default normal and slow/normal/fast/instant");
         var content = JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json")));
         var ui = (JObject)content["balance"]["ui"]; var equipment = (JObject)content["balance"]["equipment"];
-        Check((string)ui["rewardCollect"]["def"] == d.RewardCollect && ui["rewardCollect"]["modes"].Values<string>().SequenceEqual(OriginalPlayerSettings.RewardCollectModes), "content: reward collection default auto and auto/manual modes");
+        // Owner decision 2026-10-02: Unity defaults Reward collection to manual (only cinders are collected
+        // automatically) although the content dial's def stays auto for the HTML game.
+        Check((string)ui["rewardCollect"]["def"] == "auto" && d.RewardCollect == "manual" && ui["rewardCollect"]["modes"].Values<string>().SequenceEqual(OriginalPlayerSettings.RewardCollectModes), "content: reward collection auto/manual modes; Unity default manual over the content def auto");
         Check((string)equipment["swapCostRule"] == d.SwapCostRule && equipment["swapCostRules"].Select(r => (string)r["id"]).SequenceEqual(OriginalPlayerSettings.SwapCostRuleIds), "content: weapon swap cost default flat and flat/gear/category rules");
         Check((string)ui["cardMotif"] == d.CardMotif && ui["cardMotifModes"].Values<string>().SequenceEqual(OriginalPlayerSettings.CardMotifs), "content: card motif default wash and off/wash/accent/band");
         Check(settingsJs.Contains("def: UI_DEFAULTS.rewardCollect.def") && settingsJs.Contains("def: EQ_DEFAULTS.swapCostRule") && settingsJs.Contains("def: UI_DEFAULTS.cardMotif"), "html: those three rows derive from the same balance tables");
@@ -49,14 +51,21 @@ static class OptionsChecks
         var resaved = OriginalPlayerSettings.LoadOrMigrate(fromV2.ToJson().ToString(), NoPrefs, out var resavedNotes);
         Check((int)fromV2.ToJson()["schemaVersion"] == 3 && JToken.DeepEquals(resaved.ToJson(), fromV2.ToJson()) && resavedNotes.Count == 0, "migration v2 → v3: saving writes schema 3, which loads without notes");
         Check(v3Keys.All(k => freshJson[k] != null), "defaults: every schema-3 field is saved explicitly");
+        // Reward collection default moved auto → manual (owner decision 2026-10-02). No field means never chosen,
+        // so it gets the new default; a stored value (always written by schema 3) is an explicit choice and is kept.
+        Check(fromV2.RewardCollect == "manual" && (string)freshJson["rewardCollect"] == "manual", "reward collection: a schema-2 record (no field) gets the new default manual");
+        var v3Absent = OriginalPlayerSettings.LoadOrMigrate("{\"schemaVersion\":3,\"shopSell\":false}", NoPrefs, out var v3AbsentNotes);
+        Check(v3Absent.RewardCollect == "manual" && v3AbsentNotes.Count == 0, "reward collection: a schema-3 record without the field gets manual, silently");
+        var v3Auto = OriginalPlayerSettings.LoadOrMigrate("{\"schemaVersion\":3,\"rewardCollect\":\"auto\"}", NoPrefs, out var v3AutoNotes);
+        Check(v3Auto.RewardCollect == "auto" && v3AutoNotes.Count == 0 && (string)v3Auto.ToJson()["rewardCollect"] == "auto", "reward collection: a stored auto is kept as an explicit choice");
 
         // ---- Round trip and validation ------------------------------------------------------------
-        var custom = new OriginalPlayerSettings { RewardCollect = "manual", ShopSell = false, SwapCostRule = "category", Fullscreen = true, UiSize = "XL", Accent = "violet", CardMotif = "band", CardMotifStrength = "strong", MapHeaderDensity = "compact", MapHeaderRelics = false, MapHeaderSeed = false, ControlHints = false };
+        var custom = new OriginalPlayerSettings { RewardCollect = "auto", ShopSell = false, SwapCostRule = "category", Fullscreen = true, UiSize = "XL", Accent = "violet", CardMotif = "band", CardMotifStrength = "strong", MapHeaderDensity = "compact", MapHeaderRelics = false, MapHeaderSeed = false, ControlHints = false };
         custom.BindGamepadSwapping("endTurn", "south");
         var back = OriginalPlayerSettings.LoadOrMigrate(custom.ToJson().ToString(), NoPrefs, out var backNotes);
-        Check(JToken.DeepEquals(back.ToJson(), custom.ToJson()) && backNotes.Count == 0 && back.RewardCollect == "manual" && back.SwapCostRule == "category" && !back.ShopSell && back.GamepadBindings["endTurn"] == "south", "roundtrip: gameplay, display and gamepad fields survive save and load");
+        Check(JToken.DeepEquals(back.ToJson(), custom.ToJson()) && backNotes.Count == 0 && back.RewardCollect == "auto" && back.SwapCostRule == "category" && !back.ShopSell && back.GamepadBindings["endTurn"] == "south", "roundtrip: gameplay, display and gamepad fields survive save and load");
         var bad = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":3,\"rewardCollect\":\"sometimes\",\"swapCostRule\":\"both\",\"accent\":7,\"uiSize\":\"xxl\",\"shopSell\":\"no\",\"controlHints\":0,\"cardMotif\":null}"), out var badNotes);
-        Check(bad.RewardCollect == "auto" && bad.SwapCostRule == "flat" && bad.Accent == "gold" && bad.UiSize == "Auto" && bad.ShopSell && bad.ControlHints && bad.CardMotif == "wash", "validation: unknown choices and non-booleans fall back to defaults");
+        Check(bad.RewardCollect == "manual" && bad.SwapCostRule == "flat" && bad.Accent == "gold" && bad.UiSize == "Auto" && bad.ShopSell && bad.ControlHints && bad.CardMotif == "wash", "validation: unknown choices and non-booleans fall back to defaults");
         Check(badNotes.Count == 7 && badNotes.Contains("swapCostRule 'both' is unknown; flat used") && badNotes.Contains("shopSell was not true/false; default used"), "validation: every fallback is noted");
         var cased = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":3,\"rewardCollect\":\" MANUAL \",\"uiSize\":\"xl\",\"swapCostRule\":\"Gear\"}"), out var casedNotes);
         Check(cased.RewardCollect == "manual" && cased.UiSize == "XL" && cased.SwapCostRule == "gear" && casedNotes.Count == 0 && (string)cased.ToJson()["uiSize"] == "XL", "validation: choices match case-insensitively and store canonically");
@@ -107,6 +116,8 @@ static class OptionsChecks
         // ---- Gameplay options threading ------------------------------------------------------------
         var profile = OriginalGameplayOptions.ProfileSettings(custom);
         Check(JToken.DeepEquals(profile, JObject.Parse("{\"shopSell\":false,\"swapCostRule\":\"category\"}")) && JToken.DeepEquals(OriginalGameplayOptions.ProfileSettings(null), JObject.Parse("{\"shopSell\":true,\"swapCostRule\":\"flat\"}")), "gameplay: run-facing keys use the HTML meta.settings names");
-        Check(OriginalGameplayOptions.RewardCollectMode(content, "manual") == "manual" && OriginalGameplayOptions.RewardCollectMode(content, "bogus") == "auto" && OriginalGameplayOptions.RewardCollectMode(content, null) == "auto" && OriginalGameplayOptions.RewardCollectMode(new JObject(), "manual") == "manual", "gameplay: reward mode resolves against the content dial, as reward.js collectMode");
+        Check(OriginalGameplayOptions.RewardCollectMode(content, "manual") == "manual" && OriginalGameplayOptions.RewardCollectMode(content, "auto") == "auto" && OriginalGameplayOptions.RewardCollectMode(content, "bogus") == "manual" && OriginalGameplayOptions.RewardCollectMode(content, null) == "manual" && OriginalGameplayOptions.RewardCollectMode(new JObject(), "manual") == "manual" && OriginalGameplayOptions.RewardCollectMode(new JObject(), null) == "manual", "gameplay: reward mode resolves against the content dial's modes; unset or unknown is the Unity default manual");
+        var autoOnly = JObject.Parse("{\"balance\":{\"ui\":{\"rewardCollect\":{\"def\":\"auto\",\"modes\":[\"auto\"]}}}}");
+        Check(OriginalGameplayOptions.RewardCollectMode(autoOnly, "manual") == "auto" && OriginalGameplayOptions.RewardCollectMode(autoOnly, null) == "auto", "gameplay: content that offers no manual mode falls back to its def");
     }
 }
