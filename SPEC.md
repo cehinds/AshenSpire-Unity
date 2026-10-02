@@ -380,6 +380,14 @@ its mounts, and **seat** a run-owned card in an emptied or open mount.
 - **Seat.** The reverse: the deck instance leaves, the card rides with the item from then on,
   and is extractable again. Extra mounts beyond the authored ones (`cardMounts.extraMounts`,
   per item, a kind) sit behind a flag that is off — the seam a later rune feature opens.
+- **Not in a Sealed or Draft run** (owner, 2026-10-02; the original's SPEC, cehinds/AshenSpire#1495).
+  A pool-built deck is never dealt the equipment's lent cards, and extracting one would hand the
+  run a free copy of what those modes exclude. The refusal (`poolDeck`; the original's
+  `extractionRefusal`, here `CardMountService.ExtractionRefusal` over
+  `OriginalCustomRunRules.IsPoolDeckRun`) is read from the run's own Custom Climb rules every
+  time, never from a stored field. Extract is refused by name, a free grant too, before the run
+  is touched, and every smith door shows the service unavailable with that reason instead of an
+  extract action. Seating a card the run already owns is unchanged.
 - **Priced in Smithing Stones** (`smithing.services.extract.cost`, `.install.cost`), free by
   the owner's word. **Who offers what** is `smithing.services.offeredAt`: a node kind, a chance
   and a service list. A chance of 100 is a promise and consumes no roll; a merchant's 25 rolls
