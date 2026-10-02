@@ -28,7 +28,7 @@
 //      for lost.
 
 import { serializeRun, deserializeRun, initializeRunDerivedStats, initializeRunFlaskCharges, RUN_SCHEMA_VERSION } from '../model/state.js';
-import { createEquipmentProfileRuleSnapshot, createLoadout, normalizeArmamentLocations } from '../model/loadout.js';
+import { createEquipmentProfileRuleSnapshot, createLoadout, normalizeArmamentLocations, isItemOwned } from '../model/loadout.js';
 // Every composition step — plan, apply, restamp — through the ONE framework
 // door (owner ruling), so the save/load path cannot split across the boundary.
 import { stampDeck, WeaponDeckCompositionService, reconcileGrantedCardsInCombat } from '../framework/deckComposition.js';
@@ -155,7 +155,18 @@ function migrateCombatSnapshotWeaponCards(registries, run) {
   // A Sealed/Draft fight keeps its dealt piles: no lent card is dealt into a
   // resumed fight either (model/cardRemoval.js isPoolDeckRun).
   const poolDeck = isPoolDeckRun(run) || snapshot.poolDeck === true;
+  const lentBefore = poolDeck ? COMBAT_SNAPSHOT_PILE_ORDER.flatMap((pile) => snapshot.piles[pile]).filter(isItemOwned).map((c) => c.instanceId) : [];
   reconcileGrantedCardsInCombat(registries, { class: classId, loadout: snapshot.loadout, itemMounts, ...(poolDeck ? { poolDeck: true } : {}) }, snapshot.piles);
+  if (lentBefore.length) {
+    note(run, {
+      kind: 'heal',
+      site: 'save.js:sweepPoolDeckLentCards',
+      field: 'combatEntered.snapshot.piles',
+      was: lentBefore,
+      now: [],
+      why: `a ${run.custom?.deckMode || 'pool'} fight saved by an older build held cards its equipment lent at a mid-fight swap; a dealt deck holds none, so they are swept`,
+    });
+  }
   const cards = COMBAT_SNAPSHOT_PILE_ORDER.flatMap((pile) => snapshot.piles[pile]);
   // THE BIRTH QUOTA REACHES THE MIGRATION TOO. Persisting it on the run and the
   // combat snapshot is only half the job: this door builds its own plan and
