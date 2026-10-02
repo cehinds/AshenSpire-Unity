@@ -87,4 +87,5 @@ foreach(var failAt in new[]{"write","flush","truncate"}){
 Check(!OriginalWebProfileImport.IsProfile(input)&&!OriginalWebProfileImport.IsProfile(wrapped.ToString().Replace("\"meta\"","\"run\"")),"run saves are not routed as profiles");
 Refuse(()=>Import(new JObject{["profile"]="{}"}.ToString()),"profile export refused by run import");
 checks+=ProfileImportChecks.Run(root,catalog);
+checks+=RoomImportChecks.Run(root,catalog,Json);
 Console.WriteLine("Web save import: "+checks+" checks passed");

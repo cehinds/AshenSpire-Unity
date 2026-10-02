@@ -14,6 +14,7 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
     - [ ] Domain merge, fixtures and checks implemented on `feature/unity-us0-6-profile-import` (see [Profile import](#profile-import)); compiled browser/native verification, the progressed run-save matrix and owner acceptance remain open.
   - [ ] Active room conversion (combat, reward, merchant), newer content/rule schemas and mode compatibility.
+    - [ ] Domain conversion, fixtures and checks implemented on `feature/unity-us0-6-active-rooms` (see [Active rooms](#active-rooms)): reward and merchant rooms, fight-entry receipts, entered events, Custom Climb rules and Endless import; exact mid-fight snapshots, Sealed/Draft saves the original cannot reload, custom map shapes and other run schemas are refused by name. Compiled browser/native verification and owner acceptance remain open.
   - [ ] Owner acceptance of the finished import experience.
 
 Open **Saved climbs → Import original-game save**. Web supports choosing a JSON
@@ -28,11 +29,12 @@ corrupt and backup-only slots cannot be replaced. Original keys and files are
 never changed. Identical checkpoints, including archive wrappers or reformatted
 JSON, cannot be imported twice into occupied slots.
 
-The run importer refuses active rooms, unsupported schemas, profiles,
-missing/unknown references, incompatible frozen rules, duplicate JSON properties
-and files over 1 MiB. It does not reset a battle, skip a reward, grant unlocks,
-or convert an unknown skill tree. Finish active rooms in the original game and
-save on its map to use this initial route. Unsupported cases remain acceptance work.
+The run importer converts map checkpoints and the active rooms listed under
+[Active rooms](#active-rooms). It refuses exact mid-fight snapshots, unsupported
+schemas, profiles, missing/unknown references, incompatible frozen rules,
+duplicate JSON properties and files over 1 MiB. It does not reset a battle, skip
+a reward, grant unlocks, or convert an unknown skill tree. Unsupported cases
+remain acceptance work.
 
 Validation uses `tools/unity-web-save-fixtures.mjs` to produce saves and card
 oracles through the repository's original JavaScript engine. Run
@@ -40,6 +42,63 @@ oracles through the repository's original JavaScript engine. Run
 `node tools/unity-web-save-bridge.test.mjs`. Compiled verification is
 `tools/native-web-import-playtest.cjs`; generated fixtures and browser profiles
 must remain separate from the player's actual saves.
+
+## Active rooms
+
+The original game saves inside a room in four ways. Each is converted into the
+native room the restored climb continues from, or refused with a message that
+says why; the original save is never changed. The preview adds where the import
+resumes (map, fight rewards, merchant or the start of a fight).
+
+- **Rewards** (`pendingReward`, schema 1). The offer (cinders, card choices,
+  flask, relic, armament) and every taken or skipped row carry over. Pending
+  cinders are granted on import, as the original reward screen grants them when
+  a saved reward is resumed; the Smithing Stone row was already granted at the
+  fight and stays granted. Taking a reward, continuing with or without
+  auto-collect, and a boss reward's move to the next act (including its map)
+  match the original. The offer must match the fight on its map node, its
+  Smithing Stone claim must be in the run, and a final-boss reward is refused.
+- **Merchant** (`shopStock`). Remaining stock and prices (Custom Climb price
+  rules included), the card-removal price and the merchant's smith carry over.
+  The original removes sold items from the stock; the native merchant marks them
+  sold, so the remaining items are the same. Purchases, removal and the rising
+  removal price match the original. `removesPurchased` and the flask-drop chance
+  (`flaskChancePct`) are imported.
+- **Fights.** The original autosaves a fight-entry receipt (node and encounter)
+  and rebuilds that fight from the saved random streams on resume. The import
+  does the same: the opening hand, draw order, enemies, intents and stream
+  positions match the original for all four classes and under Custom rules. An
+  exact mid-fight snapshot (the original's Save Game during a fight) is refused:
+  "This save is mid-fight; finish the fight in the original game, then import."
+  Its card piles, enemy state and stream positions use a different snapshot
+  model and are not converted approximately.
+- **Events.** The original saves on entering an event and resumes such a save on
+  the map at that node, with the event spent. The import is that map checkpoint.
+  Shrines and treasure rooms are not saved inside the room by the original.
+- **Modes.** Custom Climb ascension and chaos rules and Endless (including acts
+  past 3) import. Sealed and Draft saves written by the current original fail
+  its own load door (their deck no longer matches the born equipment attack
+  slots) and are refused with that explanation. Custom map-shape climbs are
+  refused for now. Unknown modifiers and deck modes are refused.
+- **Schemas.** `src/engine/save.js` writes run schema 5 and has no newer schema,
+  so there is no newer migration to port; other run schemas are refused by
+  name as before.
+
+Fixtures come from the original modules: `node
+UnityTests/WebSaveImport/export-room-reference.mjs` rewrites
+`room-reference.json` and its receipt (source hashes and output SHA-256). It
+reaches each room with the same roll functions, order and streams as
+`src/main.js`, persists through the real save manager, and records what the
+original does next and whether its own load door accepts the save. Two steps are
+not played out and are named in the script: the route to a deeper room is
+walked without playing the rooms before it, and a reward room follows a fight
+won without HP loss. The few lines of reward/shop screen code that apply a take
+or purchase are mirrored with their source line, and those screens are hashed in
+the receipt. The checks run with the other WebSaveImport checks.
+
+Open follow-ups: compiled Web/native verification of each room type, owner
+acceptance, exact mid-fight snapshot conversion, custom map shapes, and the
+original's own Sealed/Draft reload refusal.
 
 ## Profile import
 
