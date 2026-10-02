@@ -461,6 +461,7 @@ Tests: `UnityTests/CoopRun`, `tools/NativeLan/Tests/*`, `tools/native-coop-ci.cj
   - [x] Owner decision 2026-10-02: Reward collection defaults to manual; only cinders are collected automatically at Continue, everything else is taken or skipped (Skip controls in both modes). A stored `auto` is kept (see [Unity-Settings.md](Unity-Settings.md) *Migration*).
 - [ ] **US-15.3** Keyboard and gamepad bindings with rebinding.
   - [x] Build 31 source: Keyboard bindings and gamepad mapping in schema 3 (`OriginalGamepad`); the gamepad input hook needs the Input System package.
+  - [x] Source: gamepad input through the legacy Input Manager (`GamepadDriver` → `GamepadReader` → `GamepadNavigator`), shared key dispatch, spatial focus, right-stick map pan, press-a-button rebinding; `UnityTests/Gamepad`. Needs a play test with real pads (docs/Unity-Settings.md → Gamepad).
 
 Acceptance: each option persists per channel and changes the named behaviour
 only; defaults match the reference.

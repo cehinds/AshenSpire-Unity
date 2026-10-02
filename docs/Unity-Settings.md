@@ -189,21 +189,100 @@ only as root USS classes, with no styles yet: `ui-size-auto|s|m|l|xl`, `accent-<
 compact map header), decide how the `uiSize` chips relate to the numeric `uiScale` slider,
 and hide the map-header relics/seed and any control-hint bar when their classes are set.
 
-## Gamepad (US-15.3, domain side)
+## Gamepad (US-15.3)
 
-`OriginalGamepad` (Domain/Original) holds the button ids, the defaults and a pure resolver:
-`Action(bindings, button, contextActions)` names the bound action for a press in a context
-(map or combat action list, plus `cancel` / `menu` where they apply), and
-`KeyName(action, keyBindings)` gives the keyboard key that action dispatches as (`cancel`
-→ `Escape`, `menu` → none), so a pad press can enter the existing key-action path the way
-HTML `input.js` does. The Settings screen lists a button choice per action
-(`pad-<action>`, `pad-reset`) with the same conflict refusal.
-**Not wired to input:** `Unity/Packages/manifest.json` does not reference
-`com.unity.inputsystem`, and no package was added. Follow-up: add the Input System (or
-read the legacy joystick axes), map each device control to an `OriginalGamepad` button id
-(`FromStandardIndex` covers the standard layout), call `Action`, then raise the bound key
-through `OriginalRunPanel.CombatTools` / `OriginalMapBoard.Key`, and the menu callback for
-`menu`.
+The project stays on the **legacy Input Manager** (`activeInputHandler: 0` in
+`ProjectSettings.asset`); the Input System package is not used. A controller is read with
+`Input.GetKey(KeyCode.JoystickButton0…19)` and `Input.GetAxisRaw("GamepadAxis1"…"GamepadAxis10")`.
+
+| Piece | File | Job |
+| --- | --- | --- |
+| Driver | `Presentation/GamepadDriver.cs` | The only code that reads `Input`. A MonoBehaviour that `RunController.OnEnable` adds next to itself. Each frame it fills a `GamepadFrame` (20 buttons, 10 raw axes) and calls `GamepadNavigator.Tick`. A keyboard key, mouse click/move or touch marks the keyboard as the last device. Input stops while the window is unfocused, and held buttons must be released before they fire again. |
+| Reader | `Domain/Original/OriginalGamepadInput.cs` | Pure. `GamepadLayout` maps physical controls to the 16 button ids. `GamepadReader.Step` turns frames into **Press** (down edge, never repeats), **Navigate** (d-pad or left stick, with repeat) and **Pan** (right stick) signals. |
+| Planner | `Domain/Original/OriginalGamepadNavigation.cs` | Pure. `Plan` / `PlanNavigate` turn a signal into ordered steps. `Next` / `Entry` choose spatial focus targets. |
+| Dispatcher | `Presentation/GamepadNavigator.cs` | Runs the steps on the UI Toolkit tree, one at a time, until one is handled. |
+| Input axes | `ProjectSettings/InputManager.asset` | `GamepadAxis1`…`GamepadAxis10`: raw joystick axes 1…10 (`axis: 0…9`) of every pad, with dead 0, sensitivity 1 and no inversion. The deadzone lives in the reader. The joystick entries of `Horizontal` / `Vertical` and the pad buttons on `Submit` / `Cancel` were removed. UI Toolkit's built-in event system reads those axes, so it would otherwise also navigate and click from the pad and ignore the player's rebinding. |
+
+**One dispatcher for keyboard and pad.** Most bound actions are dispatched as the key the
+**keyboard** binding names (`OriginalGamepad.KeyName`). The navigator sends a `KeyDownEvent`
+and then a `KeyUpEvent` to the focused element. The combat handler
+(`OriginalRunPanel.BindCombatKeys`) and the map handler (`OriginalMapBoard.Key`) receive exactly
+what a keypress would give them. The same rules apply: an open inspection blocks combat
+actions, a combat action fires on key-up only, and Enter on a focused button activates that
+button. If the player rebinds End turn to `Z` on the keyboard, the pad's End turn sends `Z`.
+`menu` is the one exception. It has no key, so it is not dispatched this way.
+
+| Default button | Action | Steps, in order (the first handled one wins) |
+| --- | --- | --- |
+| A / Cross (`south`) | Play / confirm | `Return` key (Play when the combat surface has focus). Otherwise activate the focused control. With nothing focused, focus the first control. |
+| B / Circle (`east`) | Cancel / back | `Escape` key (combat: clear the selection or close an inspection). Then close an open dropdown list. Then activate the visible Back / Close / Cancel button (element name `back`, `close`, `*-back`, `*-close` or `*-cancel`). |
+| X / Square (`west`) | End turn | `E` (the keyboard binding) |
+| Y / Triangle (`north`) | Deck and equipment | `D` |
+| LB / L1, RB / R1 | Previous / next enemy | `LeftArrow` / `RightArrow` |
+| LT / L2, RT / R2, left stick press | Crimson, Azure, first utility flask | `F`, `G`, `H` |
+| Start / Options (`start`) | Menu | Move focus to `native-menu` (Save and return to title) or `menu`. Start never activates it: confirm with A. |
+| D-pad up / down | Map scroll, else move focus | `PageUp` / `PageDown` (handled only while the map viewport has focus), otherwise move focus. Map scroll repeats while held. |
+| D-pad left / right, left stick | Move focus | Spatial focus move between visible, enabled, focusable leaf controls: cards, Play / End turn, flasks, map nodes, menu and settings rows. On a focused slider, left/right changes it by 5% of its range. On a focused choice, left/right picks the previous or next option. Inside an open dropdown list, directions go to the list. |
+| Right stick | Pan / scroll | Pans the visible route map (stick up shows higher floors). Otherwise it scrolls the scroll view that holds the focus, or the screen. 900 px/s at full tilt. |
+| Select / Share | unbound | |
+
+Confirm is whatever button **Play** is bound to. Rebinding Play moves confirm with it. Every
+action in the list can be rebound. A d-pad direction bound to a combat action (for example
+End turn) fires once per press: holding it never ends a second turn. The first press runs
+the action, and the repeats that follow are dropped.
+
+**Tuning** (`GamepadTuning`): radial stick deadzone .25, rescaled so 0 starts at the edge.
+The left stick must lean past .5 to navigate. Repeat starts after .4 s, then fires every
+.12 s, with at most one repeat per frame. Triggers and axis d-pads press above .5 and
+release below .3. Pan frames are capped at .1 s.
+
+**Rebinding.** Settings → Controls lists one button per action (`pad-<action>`) and
+`pad-reset`. Activate a row with the mouse, keyboard or pad, then press a controller
+button. A held button is refused and the message names the action that holds it (the
+same rule as keys). Esc, or activating the row again, cancels. While a row is waiting,
+pad directions neither move focus nor act. The press that opened the row does not count:
+capture needs a new button-down.
+
+**Control hints.** Unity has no HTML-style hint strip yet. The root element gets the
+class `input-gamepad` while the pad was the last input, for a future strip or USS. The
+combat controls screen (`native-combat-keys`) lists the pad bindings
+(`native-combat-pad-hints`). The list sits above the keyboard list after pad input and
+below it otherwise.
+
+### Layouts (assumed controllers)
+
+| Platform | Layout | Buttons | Sticks / triggers / d-pad |
+| --- | --- | --- | --- |
+| Windows (player and editor) | `xinput`: Xbox / XInput pads | 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB, 6 Back, 7 Start, 8 LS, 9 RS | Left stick X/Y axes. Right stick 4th/5th axes. LT 9th axis, RT 10th axis (0…1). D-pad 6th axis (right +) and 7th axis (up +). |
+| WebGL | `standard`: the browser Gamepad API "standard" mapping | button *i* = W3C index *i* (12–15 d-pad, 6/7 triggers, 8 Select, 9 Start) | Left stick axes 0/1, right stick axes 2/3 |
+| Android | `android`: standard plus Android extras | as standard, Start also on button 10 | as standard, plus a hat d-pad on the 6th/7th axes (up negative) |
+| macOS, Linux, other | falls back to `xinput` | probably wrong | probably wrong |
+
+Raw stick Y is taken as negative when pushed up on every layout.
+
+### Unverified without hardware
+
+No controller was connected while this was built. Every mapping above comes from the
+documented layouts, and these need a real pad before US-15.3 can be ticked:
+
+- XInput axis numbers on Windows: triggers on the 9th/10th axes, the d-pad on the 6th/7th, and the right stick on the 4th/5th.
+- Whether DualShock / DualSense pads on Windows (DirectInput, no XInput wrapper) report a different order. They very likely do; Steam Input or DS4Windows would give the XInput layout.
+- That Unity WebGL exposes browser gamepad buttons and axes in standard order, and that the triggers report as pressed. Browsers also only expose a pad after its first button press.
+- Every Android number: button 10 Start, the hat d-pad on the 6th/7th axes, and the trigger and right-stick axes.
+- macOS and Linux layouts. They use the XInput guess, which is likely wrong (Linux triggers rest at −1, for example).
+- UI Toolkit behaviour that the C# compiler cannot check:
+  - Synthesized `KeyDownEvent` / `NavigationSubmitEvent` dispatch synchronously, so "handled" is known in the same call.
+  - `Button` and `OriginalCardView` click on `NavigationSubmitEvent`, and hold-to-confirm buttons arm on it.
+  - An open `DropdownField` list follows `NavigationMoveEvent` / `NavigationCancelEvent`.
+  - `ScrollView.ScrollTo` brings a focused card or settings row into view.
+- That removing the joystick `Horizontal` / `Vertical` / `Submit` / `Cancel` entries stops UI Toolkit's default event system from also navigating on the pad, with no double activation.
+
+Editor play test with a pad (Windows, XInput):
+1. Title: move with the d-pad and stick, and confirm with A.
+2. Settings: d-pad down through every section. Slide a slider with left/right, cycle a choice, and rebind End turn to RB. Expect a refusal naming the next enemy, so move Next enemy to Select first.
+3. Map: pan with the right stick and pick a node with the d-pad and A.
+4. Combat: select a card with the d-pad and A, play it with A. Then end the turn with X, drink with LT/RT, cycle enemies with LB/RB, open the deck with Y and close it with B.
+5. Start: focus moves to Save and return. B on the deck screen returns to combat.
 
 ## Wiring (done; needs editor play test)
 
@@ -212,7 +291,7 @@ Hook lines in existing files are marked with a comment that names the new file.
 | Where | What it does |
 |---|---|
 | `RunController.Settings.cs` (new) | `InstallPlayerSettings()` runs in `OnEnable` after the view exists. It calls `LoadOrMigrate`. The three legacy ints then win for reduced motion, quick animations and mute, because an older build on the same device may have changed them. Every change saves `AshenSpire.Settings.v1` **and** writes `AshenSpire.ReducedMotion`, `AshenSpire.FastMotion` (= `QuickAnimations`) and `AshenSpire.Muted`. So the older code paths (`RunController.Settings/Mute`, the `CampaignView` constructor) keep working. |
-| `CampaignView.PlayerSettings.cs` (new) | The settings screen, grouped like the HTML game: **Game** (Quick animations, animation speed, instant, interface size, screen shake + intensity, hit-stop), **Audio** (Mute sound, master/SFX/music/interface volume), **Accessibility** (Reduced motion, Reduce flashes, High contrast, text size, colorblind palette), **Controls** (map keys, conflict message, reset), **Content mods**. The original toggles keep their names (`reduced-motion`, `fast-motion`, `mute-sound`) and labels; they are only moved under the headings. New control names: `animation-speed`, `instant-animations`, `ui-scale`, `screen-shake`, `screen-shake-intensity`, `hit-stop`, `volume-master`, `volume-sfx`, `volume-music`, `music-enabled`, `volume-ui`, `reduce-flashes`, `high-contrast`, `text-scale`, `colorblind-palette`, `key-mapScrollUp` … `key-mapBottom`, `keys-reset`, `load-content-mods`. Schema 3 adds, without new headings (the section jump ids `settings-section-0…5` are unchanged): in **Game** `combat-pacing`, `reward-collect`, `shop-sell`, `swap-cost-rule`, then a *Display* group `fullscreen`, `ui-size`, `accent-color`, `card-motif`, `card-motif-strength`, `map-header-density`, `map-header-relics`, `map-header-seed`, `control-hints`; in **Controls** `pad-<action>` and `pad-reset`. |
+| `CampaignView.PlayerSettings.cs` (new) | The settings screen, grouped like the HTML game: **Game** (Quick animations, animation speed, instant, interface size, screen shake + intensity, hit-stop), **Audio** (Mute sound, master/SFX/music/interface volume), **Accessibility** (Reduced motion, Reduce flashes, High contrast, text size, colorblind palette), **Controls** (map keys, conflict message, reset), **Content mods**. The original toggles keep their names (`reduced-motion`, `fast-motion`, `mute-sound`) and labels; they are only moved under the headings. New control names: `animation-speed`, `instant-animations`, `ui-scale`, `screen-shake`, `screen-shake-intensity`, `hit-stop`, `volume-master`, `volume-sfx`, `volume-music`, `music-enabled`, `volume-ui`, `reduce-flashes`, `high-contrast`, `text-scale`, `colorblind-palette`, `key-mapScrollUp` … `key-mapBottom`, `keys-reset`, `load-content-mods`. Schema 3 adds, without new headings (the section jump ids `settings-section-0…5` are unchanged): in **Game** `combat-pacing`, `reward-collect`, `shop-sell`, `swap-cost-rule`, then a *Display* group `fullscreen`, `ui-size`, `accent-color`, `card-motif`, `card-motif-strength`, `map-header-density`, `map-header-relics`, `map-header-seed`, `control-hints`; in **Controls** `pad-<action>` (buttons that capture the next controller press; US-15.3) and `pad-reset`. |
 | `OriginalKeyBindings.cs` (new) | Turns bindings (Unity `KeyCode` names, case-insensitive) into map actions. `OriginalMapBoard.Key` asks `OriginalMapViewServices.KeyAction`. Without bindings it uses the old four keys. |
 | `Resources/OriginalTheme.uss` | `high-contrast` on the root swaps the ink, secondary-text and edge colour tokens (the same idea as the HTML `body.hi-contrast`). Visual tuning is not done. |
 | `FeelSettings.From` / `SpeedFor` (Domain, `FeelProfile.cs`) | Maps animation speed, Instant, Reduced motion, Reduce flashes, shake, intensity and hit-stop to the feel settings. `FeelDriver.Configure(OriginalPlayerSettings)` only forwards the fields. Tested in `UnityTests/Feel`. |
@@ -259,8 +338,8 @@ once and check they are left; set Auto, skip the card, press Continue and check 
 the cinders and other rows were taken but no card. Turn Merchant buys back off and check the
 merchant has no Sell rows. Set Weapon swap cost to Category, Continue a climb, open the
 Armoury in a fight and read the swap price line for a heavy and a quick weapon. Toggle
-Fullscreen on desktop and Web. Change a gamepad button to one already used and check the
-refusal names the holder.
+Fullscreen on desktop and Web. Rebind a gamepad action by pressing a button already used and
+check the refusal names the holder (see "Gamepad" above for the full pad play test).
 
 ## Hold-to-confirm
 

@@ -8,7 +8,8 @@
 // object in; this file edits it and raises PlayerSettingsChanged / ContentModsChanged.
 // APPLIED HERE: text size (per text element, from its resolved USS size), colorblind palette
 // (root class palette-*, Resources/OriginalPalette.uss), high contrast (root class
-// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), and the
+// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), gamepad
+// rebinding (press a button: GamepadNavigator.Capture), and the
 // feel settings (FeelDriver.Configure → Domain FeelSettings.From: speed bucket, reduced
 // motion, reduce flashes, shake, hit-stop) that CombatFeedback reads.
 // VERIFY IN EDITOR: open Settings, move each slider, pick a palette, rebind a map key.
@@ -132,7 +133,7 @@ namespace AshenSpire.Presentation
         {
             var s = _playerSettings;
             if (s == null) return; // No settings object: keep the original three toggles only.
-            _capturingAction = null;
+            _capturingAction = null; Gamepad.Capture = null;
             motion.RemoveFromHierarchy(); fast.RemoveFromHierarchy(); mute.RemoveFromHierarchy();
 
             // GAME
@@ -243,32 +244,43 @@ namespace AshenSpire.Presentation
             _body.Add(keyMessage);
             AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
             ShowKeys();
-            // Gamepad (US-15.3, domain side): bindings are saved and conflict-checked like keys; OriginalGamepad
-            // resolves presses. No pad is read yet (the project has no Input System package).
-            _body.Add(Text("Gamepad buttons. Saved now; controller input arrives in a later build.", "caption"));
+            // Gamepad (US-15.3): bindings are saved and conflict-checked like keys. Choosing an action waits for
+            // the next pad button (GamepadNavigator.Capture); Esc or choosing it again cancels.
+            _body.Add(Text("Gamepad buttons. Choose an action, then press a controller button; Esc cancels. The d-pad and left stick move between controls and the right stick scrolls or pans the map; the Play button also activates the focused control.", "caption"));
             var padMessage = Text("", "caption");
-            var padChoices = new List<string> { "unbound" }; padChoices.AddRange(OriginalGamepad.Buttons.Select(OriginalGamepad.Label));
-            var padFields = new Dictionary<string, DropdownField>();
-            void ShowPad() { foreach (var pair in padFields) pair.Value.SetValueWithoutNotify(s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
-            foreach (var action in OriginalGamepad.PadOnlyActions.Concat(OriginalKeyBindings.MapActions).Concat(OriginalKeyBindings.CombatActions).Where(a => !a.StartsWith("card", StringComparison.Ordinal)))
+            var padButtons = new Dictionary<string, Button>();
+            string capturingPad = null;
+            void ShowPad() { foreach (var pair in padButtons) pair.Value.text = PadLabel(pair.Key) + " · " + (pair.Key == capturingPad ? "press a button…" : s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
+            void StopPadCapture(string message) { capturingPad = null; Gamepad.Capture = null; if (message != null) padMessage.text = message; ShowPad(); Report(); }
+            foreach (var action in OriginalGamepadNavigation.Actions)
             {
                 var id = action;
-                var field = new DropdownField(PadLabel(id), padChoices, 0) { name = "pad-" + id };
-                field.AddToClassList("setting");
-                field.RegisterValueChangedCallback(e =>
+                var button = AddButton("pad-" + id, "", () =>
                 {
-                    var button = OriginalGamepad.Buttons.FirstOrDefault(b => OriginalGamepad.Label(b) == e.newValue);
-                    if (button == null) { padMessage.text = "Choose a button; reset restores the defaults."; ShowPad(); Report(); return; }
-                    if (s.TryBindGamepad(id, button, out var holder)) { padMessage.text = PadLabel(id) + " is now " + e.newValue + "."; Changed(); }
-                    else padMessage.text = e.newValue + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.";
+                    if (capturingPad == id) { StopPadCapture("Unchanged."); return; }
+                    capturingPad = id;
+                    padMessage.text = "Press a gamepad button for " + PadLabel(id) + ". Esc cancels.";
+                    Gamepad.Capture = pressed =>
+                    {
+                        if (capturingPad != id || padButtons[id].panel == null) { Gamepad.Capture = null; return false; }
+                        if (s.TryBindGamepad(id, pressed, out var holder)) { StopPadCapture(PadLabel(id) + " is now " + OriginalGamepad.Label(pressed) + "."); Changed(); }
+                        else StopPadCapture(OriginalGamepad.Label(pressed) + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.");
+                        return true;
+                    };
                     ShowPad(); Report();
                 });
-                _body.Add(field); padFields[id] = field;
+                button.RegisterCallback<KeyDownEvent>(e =>
+                {
+                    if (capturingPad != id || e.keyCode != KeyCode.Escape) return;
+                    e.StopImmediatePropagation();
+                    StopPadCapture("Unchanged.");
+                });
+                padButtons[id] = button;
             }
             var padConflicts = s.GamepadConflicts();
             padMessage.text = padConflicts.Count == 0 ? "" : string.Join("\n", padConflicts.Select(c => OriginalGamepad.Label(c.Key) + " is bound to " + string.Join(" and ", c.Actions.Select(PadLabel)) + ". Rebind one of them."));
             _body.Add(padMessage);
-            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); padMessage.text = "Gamepad buttons reset to their defaults."; ShowPad(); Changed(); });
+            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); StopPadCapture("Gamepad buttons reset to their defaults."); Changed(); });
             ShowPad();
 
             // CONTENT MODS (the HTML game files these under Advanced)
@@ -332,7 +344,7 @@ namespace AshenSpire.Presentation
         }
         private static int Percent(double value) => (int)Math.Round(value * 100);
         private static string Title(string value) => string.IsNullOrEmpty(value) ? value : char.ToUpperInvariant(value[0]) + value.Substring(1);
-        private static string PadLabel(string action) => action == "cancel" ? "Cancel / back" : action == "menu" ? "Open menu" : OriginalKeyBindings.Label(action);
+        private static string PadLabel(string action) => OriginalKeyBindings.PadLabel(action);
         /// <summary>A closed-set choice; shows each value capitalized and hands the canonical value back.</summary>
         private DropdownField SettingChoice(string id, string label, string[] values, string value, Action<string> changed)
         {
