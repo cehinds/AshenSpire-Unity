@@ -5,7 +5,8 @@
 // COSTS: OriginalCardCostText formats authoritative costs and resource shortages.
 // MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
 // END: Victory/Defeat render RunSummaryView (F11) from the RunSummary the caller passes.
-// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
+// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here (the only
+// ticking is HoldConfirmButton's element-scoped scheduler on destructive buttons).
 using System;
 using System.Linq;
 using AshenSpire.Domain.Original;
@@ -270,9 +271,9 @@ namespace AshenSpire.Presentation
         }
         private void RemoveCards()
         {
-            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice");
+            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice"); Text("Removal is permanent: hold a card's button until the bar fills, or tap it twice.", "caption");
             foreach (var card in ((JArray)_game.RunPlayer["deck"]).OfType<JObject>().Where(x => string.IsNullOrEmpty((string)x["grantedBy"]) && string.IsNullOrEmpty((string)x["equipmentAttackSlotId"])))
-            { var id = (string)card["instanceId"]; Button("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
+            { var id = (string)card["instanceId"]; Destructive("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], ConfirmationPolicy.RemoveCard, () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
             Button("native-service-back", "Back", Render); _report();
         }
         private void Mounts()
@@ -348,6 +349,13 @@ namespace AshenSpire.Presentation
         private Button Button(string id, string text, Action command, VisualElement parent = null)
         {
             var button = new Button(() => Execute(command)) { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button); return button;
+        }
+        // US-13.3: the action's confirmation level comes from confirmation-policies.json;
+        // DESTRUCTIVE actions commit only after a hold or a second tap (HoldConfirmButton).
+        private Button Destructive(string id, string text, string actionId, Action command, VisualElement parent = null)
+        {
+            var button = new Button { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button);
+            HoldConfirmButton.Bind(button, actionId, () => Execute(command), _report); return button;
         }
         private void Execute(Action command)
         {
