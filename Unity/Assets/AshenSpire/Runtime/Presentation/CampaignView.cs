@@ -33,6 +33,8 @@ namespace AshenSpire.Presentation
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
         public OriginalMapViewServices MapView { get; } = new OriginalMapViewServices();
+        /// <summary>Gamepad dispatch for this view (US-15.3); GamepadDriver feeds it each frame.</summary>
+        public GamepadNavigator Gamepad { get; }
         private VisualElement _stage;
         private VisualElement _interruptionCover;
         private Button _returnButton;
@@ -62,6 +64,7 @@ namespace AshenSpire.Presentation
             MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
             MapView.SetMapSurface = SetMapSurface;
             MapView.Report = () => Report();
+            Gamepad = new GamepadNavigator(root, () => _playerSettings, () => Report());
             root.AddToClassList("app");
             root.styleSheets.Add(Resources.Load<StyleSheet>("Expedition"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalTheme"));
@@ -102,7 +105,7 @@ namespace AshenSpire.Presentation
             }
             ScheduleTextScale(); // CampaignView.PlayerSettings.cs; no-op at the default text size.
         }
-        public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
+        public void Dispose() { _disposed = true; Gamepad.Capture = null; Gamepad.Reset(); _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
         public void ShowInterruption(bool canReturn)
         {
             _feedback.Cancel();
@@ -607,6 +610,8 @@ namespace AshenSpire.Presentation
         private sealed class ControlList
         {
             public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
+            /// <summary>The app root's classes (display options, palette, high contrast) for settings playtests.</summary>
+            public string[] RootClasses;
             public int LayoutAttempts;
         }
         private void Report(bool refreshTouchTargets = true)
@@ -652,7 +657,7 @@ namespace AshenSpire.Presentation
             // supplementary glyph can be split into invalid UTF-8 log envelopes.
             var report = Newtonsoft.Json.JsonConvert.SerializeObject(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
-                LayoutAttempts = _controlReportAttempts + 1,
+                LayoutAttempts = _controlReportAttempts + 1, RootClasses = _root.GetClasses().ToArray(),
                 Labels = surface.Query<Label>().ToList().Where(label => !FeelDriver.InOverlay(label)).Select(label => label.text).ToArray() }, // hover copies are not controls
                 new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
             // Web console messages have a finite byte limit. Expanded creators

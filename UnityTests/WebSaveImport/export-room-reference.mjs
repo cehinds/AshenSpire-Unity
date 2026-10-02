@@ -28,13 +28,14 @@ const {createRegistries} = await load('src/model/registries.js');
 const {createRunState, createIdGen, createDeck} = await load('src/model/state.js');
 const {createRng, seedToString} = await load('src/engine/rng.js');
 const {createSaveManager, createMemoryStorage} = await load('src/engine/save.js');
+const {isPoolDeckMode, dealtAttackSlotCount, POOL_DECK_RULE} = await load('src/model/cardRemoval.js');
 const {buildActMap} = await load('src/engine/actmap.js');
 const {rollEncounter, rollRuneReward, rollCardRewardIds, rollFlaskDrop, rollRelicReward, rollArmamentDrop, buildShopStock} = await load('src/engine/encounters.js');
 const {createCombat} = await load('src/engine/combat.js');
 const {commitCombatSnapshot} = await load('src/engine/combatSnapshot.js');
 const {grantSmithingReward} = await load('src/model/smithing.js');
 const {smithServicesAt} = await load('src/model/cardExtraction.js');
-const {runMods, addToStorage, carriedIds, resolveSwapCostRule, isEquipmentComposedInstance} = await load('src/model/loadout.js');
+const {runMods, addToStorage, carriedIds, resolveSwapCostRule, isEquipmentComposedInstance, stampDeck} = await load('src/model/loadout.js');
 const {activeMods, endlessActInfo, ENDLESS_HP_PER_LOOP, ENDLESS_STR_PER_LOOP} = await load('src/content/customMods.js');
 const {syncFlaskGrowth} = await load('src/model/flaskgrowth.js');
 const {rewardPlan, resolveContinue} = await load('src/model/rewardplan.js');
@@ -56,6 +57,8 @@ function climb(classId, seed, custom = {ascension: 0, mods: {}, deckMode: 'stand
     for (let i = 0; i < 3 && pool.length; i++) { const id = rng.pick('misc', pool); pool.splice(pool.indexOf(id), 1); ids.push(id); }
     run.deck = createDeck(ids, createIdGen('rc'));
   } else if (deckMode === 'draft') run.deck = createDeck(['strike', 'strike', 'strike', 'strike', 'defend', 'defend', 'defend'], createIdGen('rc'));
+  // main.js newRun: the dealt deck's birth attack quota is the slots it holds (the Sealed/Draft reload fix).
+  if (isPoolDeckMode(run)) { run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck); run.poolDeckRule = POOL_DECK_RULE; }
   if (mods.cursedStart) run.deck.push(...createDeck(['guilt'], createIdGen('cx')));
   if (mods.hoarder) run.cinders += registries.balance.customMods.hoarderCinders;
   if (deckMode === 'draft') {
@@ -67,6 +70,8 @@ function climb(classId, seed, custom = {ascension: 0, mods: {}, deckMode: 'stand
       run.deck.push({instanceId: idGen(), cardId: offer[0], upgraded: false}); pool.splice(pool.indexOf(offer[0]), 1);
     }
   }
+  // main.js startClimb: a dealt deck (picks included) gets its equipment faces (no lent card is dealt).
+  if (isPoolDeckMode(run)) stampDeck(registries, run, undefined, {adoptEquipmentBonuses: false, reconcileEquipmentPools: false});
   const g = {run, rng, saves, storage};
   g.run.mapGraph = buildActMap(registries, rng, contentAct(g), runShape(g), {history: run.history});
   return g;
@@ -108,7 +113,7 @@ function startFight(g, pool) {
 }
 function buildCombat(g, encounterId) {
   const run = g.run; const enc = registries.encounters.get(encounterId); const cm = combatMods(g, enc.pool);
-  return createCombat({registries, rng: g.rng, player: {classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout},
+  return createCombat({registries, rng: g.rng, player: {classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, ...(isPoolDeckMode(run) ? {poolDeck: true} : {}), equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout},
     enemyIds: enc.enemies, hpMult: cm.hpMult, enemyStatuses: cm.enemyStatuses, swapCostRule: resolveSwapCostRule(registries, g.saves.loadMeta()), playerStatuses: [...cm.playerStatuses, ...runMods(registries, run.loadout, run.class).startStatuses]});
 }
 const opening = c => ({turn: c.turn, phase: c.phase, energy: c.player.energy, hand: c.piles.hand.map(x => x.instanceId), draw: c.piles.draw.map(x => x.instanceId), discard: c.piles.discard.map(x => x.instanceId),
@@ -267,7 +272,7 @@ for (const fixture of Object.values(fixtures)) {
 const text = JSON.stringify({sourceCommit: sha, fixtures}, null, 1) + '\n';
 fs.writeFileSync(path.join(out, 'room-reference.json'), text);
 const hash = p => createHash('sha256').update(fs.readFileSync(path.join(root, p))).digest('hex');
-const sources = Object.fromEntries(['src/engine/save.js', 'src/model/state.js', 'src/engine/encounters.js', 'src/engine/combat.js', 'src/engine/combatSnapshot.js', 'src/engine/actmap.js', 'src/model/rewardplan.js', 'src/main.js', 'src/ui/screens/reward.js', 'src/ui/screens/shop.js', 'src/ui/screens/draft.js', 'src/content/index.js'].map(p => [p, hash(p)]));
+const sources = Object.fromEntries(['src/engine/save.js', 'src/model/state.js', 'src/engine/encounters.js', 'src/engine/combat.js', 'src/engine/combatSnapshot.js', 'src/engine/actmap.js', 'src/model/rewardplan.js', 'src/main.js', 'src/ui/screens/reward.js', 'src/ui/screens/shop.js', 'src/ui/screens/draft.js', 'src/model/cardRemoval.js', 'src/content/index.js'].map(p => [p, hash(p)]));
 const receipt = {sourceCommit: sha, sources, outputSha256: createHash('sha256').update(text).digest('hex'), fixtures: Object.fromEntries(Object.entries(fixtures).map(([k, v]) => [k, {note: v.note, bytes: v.save.length, originalReload: v.originalReload.state}]))};
 fs.writeFileSync(path.join(out, 'room-reference.receipt.json'), JSON.stringify(receipt, null, 2) + '\n');
 console.log(`room reference: ${Object.keys(fixtures).length} fixtures, ${text.length} bytes`);

@@ -526,6 +526,10 @@ export const RUN_SHAPE = [
   // Optional only for runs saved before the quota was written down; stampDeck
   // falls back to counting a run's own deck for exactly those.
   { key: 'equipmentAttackSlotCount', type: 'number', optional: true },
+  // A Sealed/Draft run held to the dealt-deck rule (model/cardRemoval.js
+  // POOL_DECK_RULE). Absent on every Standard run and on a pool save written
+  // before the rule, which the load door heals once and marks.
+  { key: 'poolDeckRule', type: 'number', optional: true },
   { key: 'floor', type: 'number' },
   { key: 'actNumber', type: 'number' },
   { key: 'hp', type: 'number' },

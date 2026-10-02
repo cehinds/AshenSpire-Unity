@@ -9,6 +9,7 @@ try
     ModPackChecks.Run(root, Check);
     SettingsChecks.Run(Check);
     OptionsChecks.Run(root, Check);
+    DisplayChecks.Run(root, Check);
 }
 catch (Exception error)
 {

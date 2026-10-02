@@ -17,6 +17,7 @@ export function serializeCombatSnapshot(combat) {
     version: COMBAT_SNAPSHOT_VERSION,
     equipmentProfileRuleSnapshot: combat.equipmentProfileRuleSnapshot,
     equipmentAttackSlotCount: combat.equipmentAttackSlotCount,
+    ...(combat.poolDeck ? { poolDeck: true } : {}),
     itemUpgradeLevels: combat.itemUpgradeLevels,
     itemMounts: combat.itemMounts,
     equipmentPoolDeficits: combat.equipmentPoolDeficits,
@@ -52,7 +53,13 @@ export function serializeCombatSnapshot(combat) {
  * non-idempotent for a current one, which tools/weapon-card-packages.mjs is
  * right to assert against: a load must not rewrite a snapshot it understands.
  */
-export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttackSlotCount }) {
+function restoredPoolDeck(saved, fallback) {
+  if (saved !== undefined && saved !== true) throw new Error(`combat snapshot poolDeck must be true when present (got ${JSON.stringify(saved)})`);
+  if (typeof fallback === 'boolean' && saved === true && !fallback) throw new Error('combat snapshot poolDeck disagrees with the run\'s deck mode');
+  return saved === true || fallback === true;
+}
+
+export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttackSlotCount, fallbackPoolDeck = false }) {
   assertCombatSnapshot(snapshot);
   const saved = structuredClone(snapshot);
   const combat = {
@@ -62,6 +69,9 @@ export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttac
     equipmentAttackSlotCount: Number.isFinite(saved.equipmentAttackSlotCount)
       ? saved.equipmentAttackSlotCount
       : (Number.isFinite(fallbackAttackSlotCount) ? fallbackAttackSlotCount : undefined),
+    // The run's own rule backs the snapshot's flag (model/cardRemoval.js), and
+    // when the caller knows the run the two must agree, never be OR-ed.
+    ...(restoredPoolDeck(saved.poolDeck, fallbackPoolDeck) ? { poolDeck: true } : {}),
     itemUpgradeLevels: saved.itemUpgradeLevels || Object.fromEntries(
       Object.entries(saved.armamentLevels || {}).map(([id, level]) => [`armament/${id}`, level]),
     ),

@@ -144,7 +144,7 @@ namespace AshenSpire.Domain.Original
         private JObject Finish(JObject run, string service, string itemRef, JToken mount, string instanceId, int transaction, int before, int cost, bool free)
         {
             run["smithingStones"] = before - (free ? 0 : cost); run["mountTransactions"] = transaction;
-            run["deck"] = new WeaponCardComposer(_catalog).Recompose((JArray)run["deck"], (JObject)run["loadout"], ((string)run["class"] ?? (string)run["classId"]), run["itemMounts"] as JObject);
+            run["deck"] = new WeaponCardComposer(_catalog).Recompose((JArray)run["deck"], (JObject)run["loadout"], ((string)run["class"] ?? (string)run["classId"]), OriginalCustomRunRules.IsPoolDeckRun(run), run["itemMounts"] as JObject);
             new ItemUpgradeService(_catalog).RestampCards(run);
             var receipt = new JObject { ["schemaVersion"] = 1, ["service"] = service, ["itemRef"] = itemRef, ["mountKey"] = mount["mountKey"].DeepClone(), ["kind"] = mount["kind"].DeepClone(), ["cardId"] = mount["cardId"].DeepClone(), ["instanceId"] = instanceId, ["authoredCost"] = cost, ["spent"] = free ? 0 : cost, ["stoneBalanceBefore"] = before, ["stoneBalanceAfter"] = run["smithingStones"].DeepClone(), ["free"] = free, ["transaction"] = transaction };
             run["lastMountReceipt"] = receipt.DeepClone(); return new JObject { ["run"] = run, ["receipt"] = receipt };

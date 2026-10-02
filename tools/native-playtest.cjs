@@ -71,8 +71,9 @@ function report(success){return {success,checks,screenshots,errors,commands,last
   else if(kind==='event')await command('native-choice-'+value);
   else if(kind==='buy')await command('native-buy-relics-'+action.index);
   else if(kind==='service')await command('native-upgrade-'+action.itemRef.replaceAll('/','-'));
-  // The domain script continues "manual"; under the default auto Reward collection, skip what is pending first.
-  else if(kind==='continueRewards'){await until(()=>controls.Controls.some(c=>c.Id==='native-rewards-continue'),'reward continue');if(controls.Controls.some(c=>c.Id.startsWith('native-skip-reward-')))for(const id of NativeUiDriver.pendingRewardSkips(state))await command(id);await command('native-rewards-continue');}
+  // The domain script's Continue leaves everything pending, cinders included. Either Reward collection mode
+  // takes something on Continue (manual, the default: cinders; auto: everything), so skip each pending kind first.
+  else if(kind==='continueRewards'){await until(()=>controls.Controls.some(c=>c.Id==='native-rewards-continue'),'reward continue');for(const id of NativeUiDriver.pendingRewardSkips(state))if(pointerDriver.has(id))await command(id);await command('native-rewards-continue');}
   else {const ids={endTurn:'native-end-turn',catchBreath:'native-breath',continueRewards:'native-rewards-continue',rest:'native-rest',leaveShrine:'native-shrine-leave',leaveEvent:'native-event-leave',leaveShop:'native-shop-leave'};if(!ids[kind])throw Error('Unknown command '+kind);await command(ids[kind]);}
   check(state.phase===action.phase&&state.player.hp===action.hp&&state.player.mana===action.mana&&state.player.stamina===action.stamina,'IL2CPP state agrees with domain after '+index+' '+action.command);
   commands.push({index,command:action.command,phase:state.phase,hp:state.player.hp});

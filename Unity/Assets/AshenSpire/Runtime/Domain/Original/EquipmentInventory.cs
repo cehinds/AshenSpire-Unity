@@ -61,7 +61,7 @@ namespace AshenSpire.Domain.Original
                 if (((int?)card["smithingLevel"] ?? 0) != 0) throw new ArgumentException("Smithing save needs the upgrade resolver.");
             }
             // Validate the saved projection rather than silently repairing tampered cards.
-            var expected = _composer.Recompose(_deck, _loadout, _classId);
+            var expected = _composer.Recompose(_deck, _loadout, _classId, false);
             if (!JToken.DeepEquals(expected, _deck)) throw new ArgumentException("Saved equipment cards do not match their owners.");
         }
         public static EquipmentInventory Restore(OriginalContentCatalog catalog, JObject snapshot) => new EquipmentInventory(catalog, (JObject)snapshot.DeepClone());
@@ -113,8 +113,8 @@ namespace AshenSpire.Domain.Original
             if (inCombat && combatPiles == null) return new JObject { ["ok"] = false, ["reason"] = "Mid-combat equipment requires all four piles." };
             var receipt = _locations.Equip(_loadout, _classId, slotId, setIndex, itemId, _owned, _attributes, inCombat);
             if (!(bool)receipt["ok"]) return receipt;
-            var loadout = (JObject)receipt["loadout"]; var deck = _composer.Recompose(_deck, loadout, _classId);
-            var piles = inCombat ? _composer.ReconcileCombat(combatPiles, loadout, _classId, _attackSlotCount) : null;
+            var loadout = (JObject)receipt["loadout"]; var deck = _composer.Recompose(_deck, loadout, _classId, false);
+            var piles = inCombat ? _composer.ReconcileCombat(combatPiles, loadout, _classId, _attackSlotCount, false) : null;
             _loadout = loadout; _deck = deck;
             if (piles != null) receipt["piles"] = piles;
             return (JObject)receipt.DeepClone();
@@ -129,7 +129,7 @@ namespace AshenSpire.Domain.Original
             {
                 var piece = _locations.Equipped(next, _classId, slotId);
                 if (piece != null && !(bool)_locations.RequirementReceipt(piece, _attributes)["ok"]) return new JObject { ["ok"] = false, ["reason"] = "Attribute requirements are not met." };
-                var deck = _composer.Recompose(_deck, next, _classId); _loadout = next; _deck = deck;
+                var deck = _composer.Recompose(_deck, next, _classId, false); _loadout = next; _deck = deck;
                 return new JObject { ["ok"] = true, ["loadout"] = next.DeepClone() };
             }
             catch (ArgumentException error) { return new JObject { ["ok"] = false, ["reason"] = error.Message }; }

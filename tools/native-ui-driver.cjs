@@ -144,12 +144,14 @@ class NativeUiDriver {
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
  async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();const tap=async key=>{await this.page.keyboard.press(key,{delay:40});await this.page.waitForTimeout(160);};await tap('Home');for(let n=0;n<index;n++)await tap('ArrowDown');await tap('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
- // Continue rewards leaving whatever is still pending (the "manual" meaning). Under the default
- // auto Reward collection setting the screen shows Skip controls; skip each pending kind (read from
- // the authoritative state) first, so Continue takes nothing extra.
+ // Continue rewards leaving whatever is still pending, cinders included (what the domain scripts'
+ // argument-free ContinueRewards() does). Reward collection decides what Continue takes: manual (the
+ // default since the owner decision of 2026-10-02) takes the pending cinders, auto takes everything.
+ // Both modes show a Skip control per pending kind; skip each pending kind (read from the authoritative
+ // state) whose control is present first, so Continue takes nothing extra in either mode.
  async continueRewards(){
   await this.until(()=>this.has('native-rewards-continue'),'reward continue');
-  if(this.controls.Controls.some(c=>c.Id.startsWith('native-skip-reward-')))for(const id of NativeUiDriver.pendingRewardSkips(this.state))await this.command(id);
+  for(const id of NativeUiDriver.pendingRewardSkips(this.state))if(this.has(id))await this.command(id);
   await this.command('native-rewards-continue');
  }
  static pendingRewardSkips(s){const room=(s&&s.room)||{},offer=room.rewards||{},states=room.states||{};return ['cinders','card','flask','armament','relic'].filter(k=>!states[k]&&(k==='cinders'?offer.cinders>0:k==='card'?(offer.cardIds||[]).length>0:!!offer[k+'Id'])).map(k=>'native-skip-reward-'+k);}

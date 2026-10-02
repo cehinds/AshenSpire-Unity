@@ -8,6 +8,7 @@
 // No global subscriptions, saved state, timers or MonoBehaviour lifecycle here (the only
 // ticking is HoldConfirmButton's element-scoped scheduler on destructive buttons).
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
@@ -45,10 +46,13 @@ namespace AshenSpire.Presentation
             if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));
             else if (!RunSummary.IsTerminal(_game.Phase))
             {
-            Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading");
-            _root.Add(OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject));
-            Text("HP " + p["hp"] + "/" + p["maxHp"] + " · MP " + p["mana"] + "/" + p["maxMana"] + " · Stamina " + p["stamina"] + "/" + p["maxStamina"], "stat");
-            Text(run["cinders"] + " cinders · " + ((int?)run["smithingStones"] ?? 0) + " Smithing Stones", "caption");
+            // The run header. map-header-* classes let the display settings (root classes from
+            // OriginalDisplayOptions, styled in OriginalTheme.uss) tighten it and hide relics/seed.
+            Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading").AddToClassList("map-header-title");
+            var badge = OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject); badge.AddToClassList("map-header-identity"); _root.Add(badge);
+            Text("HP " + p["hp"] + "/" + p["maxHp"] + " · MP " + p["mana"] + "/" + p["maxMana"] + " · Stamina " + p["stamina"] + "/" + p["maxStamina"], "stat").AddToClassList("map-header-stats");
+            Text(run["cinders"] + " cinders · " + ((int?)run["smithingStones"] ?? 0) + " Smithing Stones", "caption").AddToClassList("map-header-purse");
+            if (_game.Phase == OriginalRunPhase.Map) MapHeaderExtras(run);
             }
             _notice = Text("", "notice"); _notice.style.display = DisplayStyle.None;
             switch (_game.Phase)
@@ -107,6 +111,35 @@ namespace AshenSpire.Presentation
                 id => Execute(() => _game.Enter(id)), _diagnostics);
             board.style.flexGrow = 1; board.style.flexShrink = 1; board.style.minHeight = 0;
             _root.Add(board);
+            ControlHints(OriginalKeyBindings.MapActions);
+        }
+        // HTML map header: relic icons and the run seed (Settings → Relics / Seed in map header).
+        // One line; the relic list ellipsizes rather than pushing the map down.
+        private void MapHeaderExtras(JObject run)
+        {
+            var row = new VisualElement { name = "native-map-header-extras", pickingMode = PickingMode.Ignore }; row.AddToClassList("map-header-extras");
+            var seed = (string)run["seedString"] ?? run["seed"]?.ToString();
+            if (!string.IsNullOrEmpty(seed)) row.Add(OriginalCombatLayout.Label("Seed " + seed, "map-header-seed"));
+            var relics = (run["relics"] as JArray ?? new JArray()).Values<string>().Select(id => (string)_game.Catalog.Record("relics", id)?["name"] ?? id).ToArray();
+            if (relics.Length > 0) row.Add(OriginalCombatLayout.Label("Relics · " + string.Join(", ", relics), "map-header-relics"));
+            if (row.childCount > 0) _root.Add(row);
+        }
+        // HTML hint bar (Settings → Control hints): the current keyboard shortcuts along the bottom of map
+        // and combat. OriginalTheme.uss shows it only in wide windows (.ui-wide, like the HTML game hiding
+        // it in the narrow layout) and hides it under the root class no-control-hints. Not a control.
+        private void ControlHints(IEnumerable<string> actions)
+        {
+            var keys = _settings?.KeyBindings ?? OriginalPlayerSettings.DefaultKeyBindings;
+            string Key(string action) => keys.TryGetValue(action, out var key) ? OriginalKeyBindings.DisplayKey(key) : null;
+            var parts = actions.Select(action => (Action: action, Key: Key(action))).Where(x => x.Key != null)
+                .Select(x => x.Action == "card1" ? x.Key + "–" + (Key("card9") ?? "9") + " card" : x.Key + " " + HintVerb(x.Action));
+            _root.Add(OriginalCombatLayout.Label(string.Join("  ·  ", parts), "control-hints"));
+        }
+        private static string HintVerb(string action)
+        {
+            var label = OriginalKeyBindings.Label(action);
+            var colon = label.IndexOf(": ", StringComparison.Ordinal);
+            return colon < 0 ? label.ToLowerInvariant() : label.Substring(colon + 2);
         }
         private int ContentAct => new OriginalCustomRunRules(_game.Catalog.Data()).ContentAct(_game.RunPlayer);
         private void Draft()
@@ -179,6 +212,7 @@ namespace AshenSpire.Presentation
                 Button("native-flask-" + slot, (string)definition["name"], () => _game.DrinkFlask(slot, (bool?)definition["targeted"] == true ? _target : null), _combatTools);
             }
             _root.Add(_combatTools);
+            ControlHints(new[] { "card1", "combatPlay", "endTurn", "combatDeck", "targetPrevious", "targetNext" });
         }
         private static string CostText(JObject cost) => OriginalCardCostText.Describe(cost);
         private void Rewards()
@@ -198,19 +232,20 @@ namespace AshenSpire.Presentation
             }
             if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
             { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
-            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Auto: Continue takes every
-            // pending reward that was not skipped, so each pending kind gets a Skip (ids stay outside the
-            // native-reward-* prefix the playtests treat as "take"). Manual: Continue leaves the rest.
+            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Owner decision 2026-10-02:
+            // the default is manual, where Continue takes only the pending cinders (reward.js grants them on arrival)
+            // and every other reward is the player's to take or skip; auto also takes every other un-skipped row.
+            // Either way each pending kind gets a Skip (ids stay outside the native-reward-* prefix the playtests
+            // treat as "take"), so a player, or a replay, can leave everything, cinders included.
             var mode = OriginalGameplayOptions.RewardCollectMode(_game.Catalog.Data(), _settings?.RewardCollect);
-            if (mode == "auto")
-                foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
-                {
-                    if (room["states"][kind] != null) continue;
-                    var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
-                    if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
-                }
-            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · leave unclaimed rewards", () => _game.ContinueRewards(mode));
-            if (mode == "auto") Text("Continue takes everything you didn't skip, picking a card for you.", "caption");
+            foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
+            {
+                if (room["states"][kind] != null) continue;
+                var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
+                if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
+            }
+            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · collect cinders, leave the rest", () => _game.ContinueRewards(mode));
+            Text(mode == "auto" ? "Continue takes everything you didn't skip, picking a card for you." : "Continue collects your cinders unless you skipped them; take or skip everything else here.", "caption");
         }
         private void Shop()
         {
