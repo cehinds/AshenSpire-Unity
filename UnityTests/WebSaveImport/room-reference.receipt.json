@@ -1,21 +1,21 @@
 {
-  "sourceCommit": "dd779baa69e57d0e213be5e25bd5f5b36b0eaf88",
+  "sourceCommit": "f91c30c0e6112b8904ef6cfe8a35f1fbbebe686d",
   "sources": {
-    "src/engine/save.js": "c81bdbdbd25d8a3bd58492cc11f4d154c9473f07669425f558fe6a608ee3d3bc",
+    "src/engine/save.js": "3265dccd009af927ac73b254dea25ecb78ffade606933fafaec42d651e469aa0",
     "src/model/state.js": "c668921d73e4688942a8f9e9ea0be4b058bf7e591d8e1ea25913277606a3444d",
     "src/engine/encounters.js": "27cedec10d476b2a7e1698b4b942e9c98caf8c130809c9a188a7c12f8242cf4b",
     "src/engine/combat.js": "f8b2002cd932bde9da3342f9ac0c208976ca4989167ae07f77effbdbe9e1a03b",
-    "src/engine/combatSnapshot.js": "999ce3dae2dab9c0b2fa85b7424a634044557def1636e289b45b7a2af41b6c4d",
+    "src/engine/combatSnapshot.js": "a9f4495a3b0d881f02f560ea1fcc8f8056c6e94ae32ade3ec5a5e03095b30ee5",
     "src/engine/actmap.js": "7606f5161d8f54fb95c3e400971dc7374cf950b02050699d5cf16cfad91cb616",
     "src/model/rewardplan.js": "965cbabc75a021d534a759284b154d384d6017a359aeca1778b1e6098f433322",
-    "src/main.js": "2376ca2c477de63a5e074e0dffa9841729da1203d85a3a65f65af7510a9eebca",
+    "src/main.js": "81d45d49e7cfc2897dc281228e3bc0ba096228037d4de41f18d95b4bc2e32302",
     "src/ui/screens/reward.js": "2c0b77201e0511e9c2da21daf87f54298036ed14de86d6a95ee87569240442c8",
     "src/ui/screens/shop.js": "12eb1a7ac493a1d66bee40a9d14c04abd6e235589d4bf60896f2f2b710b896a2",
     "src/ui/screens/draft.js": "408cd1bfbcf379704e2ce0d9d44b93933288539fe6451b23f1891176663d4501",
     "src/model/cardRemoval.js": "4a6a5881df5de3f0d3fb0677ddfb9e93a1f7f0af211c7a7e18314a7a74bfa299",
     "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46"
   },
-  "outputSha256": "0a805566cf6c78282f4fcd957397a70212e3fcd516fda03d0cbfd9f13125864f",
+  "outputSha256": "cc3227aff75bea3fc398844f806bd737922e642008cb54f4118024d077c30449",
   "fixtures": {
     "reaver-combat-entry": {
       "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
