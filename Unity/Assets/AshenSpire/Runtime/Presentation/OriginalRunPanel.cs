@@ -137,6 +137,7 @@ namespace AshenSpire.Presentation
                     () => { _target = id; Render(); }, id == _target, out var image);
                 if (id == _target) EnemyImage = image;
                 EnemyTelegraphView.Attach(target, telegraphs.FirstOrDefault(t => t.InstanceId == id));
+                EnemyTelegraphView.ExplainStatuses(target, (string)definition["name"], id, enemy, StatusExplainer.Describe(_game.Catalog, enemy["statuses"] as JObject));
                 stage.Add(target);
             }
             _root.Add(stage);

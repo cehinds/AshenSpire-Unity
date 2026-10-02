@@ -4,6 +4,8 @@
 // Attach swaps the text intent label for the badge and adds the Poise meter under HP.
 // DATA: Domain/Original/EnemyTelegraph.cs (EnemyTelegraphViewModel) owns every number and
 // every word. MODIFY: look in Resources/EnemyTelegraphs.uss. No rules or saved state here.
+// Explain(element, text) is the shared hover/long-press panel (also card tag blurbs, US-13.4);
+// ExplainStatuses binds StatusExplainer rows to an enemy's figure and status row (US-4.4).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,8 @@ namespace AshenSpire.Presentation
     {
         public const string StyleSheetResource = "EnemyTelegraphs";
         private const long HoverDelayMs = 350, LongPressMs = 450, TouchHideMs = 4000;
+        // A touch that travels this far is a scroll or drag, not a long press.
+        private const float LongPressSlop = 12;
         // Glyphs the authored font map does not list (↑ ☾) are in NotoSansSymbols.
         private const string SymbolFallbackFont = "Fonts/NotoSansSymbols-Regular";
         private static StyleSheet _sheet;
@@ -87,13 +91,41 @@ namespace AshenSpire.Presentation
             return meter;
         }
 
+        /// <summary>
+        /// US-4.4: the enemy figure and its status row explain every active status (authored
+        /// tooltip text) on hover or long press. A short tap still selects the target.
+        /// </summary>
+        public static void ExplainStatuses(VisualElement slot, string enemyName, string instanceId, JObject enemy, IReadOnlyList<StatusExplanation> statuses)
+        {
+            if (slot == null) return;
+            var text = StatusExplainer.Panel(enemyName + " · statuses", statuses, "Guard " + (enemy?["block"] ?? 0) + " · HP " + enemy?["hp"] + "/" + enemy?["maxHp"]);
+            var caption = slot.Children().FirstOrDefault(c => c.ClassListContains("original-fighter-caption"));
+            if (caption != null)
+            {
+                caption.name = "enemy-status-" + instanceId; caption.pickingMode = PickingMode.Position;
+                caption.AddToClassList("telegraph-status-row");
+                Explain(caption, text);
+            }
+            var figure = slot.Children().FirstOrDefault(c => c.ClassListContains("original-combat-figure"));
+            if (figure != null) { figure.pickingMode = PickingMode.Position; Explain(figure, text); }
+        }
+
         // Runtime UI Toolkit panels never draw `tooltip`, so the explanation is a floating
         // label on the panel root: after a hover delay (mouse) or on a long press (touch/pen).
-        // A long press releases the slot's pointer capture so it does not also select the target.
+        // A long press releases any ancestor's pointer capture (an enemy slot or a card
+        // button) so it does not also select that control. The `tooltip` property is kept.
+        /// <summary>Hover/long-press explanation panel; the first line of `text` is the title.</summary>
+        public static void Explain(VisualElement owner, string text)
+        {
+            if (_sheet == null) _sheet = Resources.Load<StyleSheet>(StyleSheetResource);
+            Tooltip(owner, text);
+        }
+
         private static void Tooltip(VisualElement owner, string text)
         {
             if (string.IsNullOrEmpty(text)) return;
             owner.tooltip = text;
+            var pressAt = Vector2.zero;
             VisualElement popup = null; IVisualElementScheduledItem pending = null, expiry = null;
             void Hide() { pending?.Pause(); expiry?.Pause(); popup?.RemoveFromHierarchy(); popup = null; }
             void Show()
@@ -109,6 +141,14 @@ namespace AshenSpire.Presentation
                 var left = Mathf.Clamp(anchor.center.x - width / 2, 4, Mathf.Max(4, root.layout.width - width - 4));
                 popup.style.position = Position.Absolute; popup.style.width = width;
                 popup.style.left = left; popup.style.top = anchor.yMax + 4;
+                // Keep long explanations on screen: flip above the anchor, then clamp.
+                var shown = popup;
+                shown.RegisterCallback<GeometryChangedEvent>(_ =>
+                {
+                    var height = shown.layout.height; var limit = root.layout.height;
+                    if (height <= 0 || limit <= 0 || anchor.yMax + 4 + height <= limit) return;
+                    shown.style.top = Mathf.Max(4, Mathf.Min(anchor.yMin - 4 - height, limit - height - 4));
+                });
                 root.Add(popup);
             }
             owner.RegisterCallback<PointerEnterEvent>(e =>
@@ -120,14 +160,18 @@ namespace AshenSpire.Presentation
             owner.RegisterCallback<PointerDownEvent>(e =>
             {
                 if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) return;
-                var pointerId = e.pointerId; pending?.Pause();
+                var pointerId = e.pointerId; pending?.Pause(); pressAt = e.position;
                 pending = owner.schedule.Execute(() =>
                 {
-                    var slot = owner.parent; if (slot != null && slot.HasPointerCapture(pointerId)) slot.ReleasePointer(pointerId);
+                    for (var up = owner.parent; up != null; up = up.parent) if (up.HasPointerCapture(pointerId)) up.ReleasePointer(pointerId);
                     Show(); expiry?.Pause(); expiry = owner.schedule.Execute(Hide).StartingIn(TouchHideMs);
                 }).StartingIn(LongPressMs);
             });
             owner.RegisterCallback<PointerUpEvent>(e => { if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) pending?.Pause(); });
+            owner.RegisterCallback<PointerMoveEvent>(e =>
+            {
+                if (e.pointerType != UnityEngine.UIElements.PointerType.mouse && ((Vector2)e.position - pressAt).sqrMagnitude > LongPressSlop * LongPressSlop) pending?.Pause();
+            });
             owner.RegisterCallback<PointerCancelEvent>(_ => pending?.Pause());
             owner.RegisterCallback<DetachFromPanelEvent>(_ => Hide());
         }
