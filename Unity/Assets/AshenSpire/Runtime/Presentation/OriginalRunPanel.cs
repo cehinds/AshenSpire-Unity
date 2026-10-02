@@ -198,19 +198,20 @@ namespace AshenSpire.Presentation
             }
             if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
             { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
-            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Auto: Continue takes every
-            // pending reward that was not skipped, so each pending kind gets a Skip (ids stay outside the
-            // native-reward-* prefix the playtests treat as "take"). Manual: Continue leaves the rest.
+            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Owner decision 2026-10-02:
+            // the default is manual, where Continue takes only the pending cinders (reward.js grants them on arrival)
+            // and every other reward is the player's to take or skip; auto also takes every other un-skipped row.
+            // Either way each pending kind gets a Skip (ids stay outside the native-reward-* prefix the playtests
+            // treat as "take"), so a player, or a replay, can leave everything, cinders included.
             var mode = OriginalGameplayOptions.RewardCollectMode(_game.Catalog.Data(), _settings?.RewardCollect);
-            if (mode == "auto")
-                foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
-                {
-                    if (room["states"][kind] != null) continue;
-                    var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
-                    if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
-                }
-            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · leave unclaimed rewards", () => _game.ContinueRewards(mode));
-            if (mode == "auto") Text("Continue takes everything you didn't skip, picking a card for you.", "caption");
+            foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
+            {
+                if (room["states"][kind] != null) continue;
+                var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
+                if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
+            }
+            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · collect cinders, leave the rest", () => _game.ContinueRewards(mode));
+            Text(mode == "auto" ? "Continue takes everything you didn't skip, picking a card for you." : "Continue collects your cinders unless you skipped them; take or skip everything else here.", "caption");
         }
         private void Shop()
         {

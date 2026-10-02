@@ -52,9 +52,12 @@ namespace AshenSpire.Domain.Original
         // ---- Schema 3: closed sets and defaults, copied from the HTML reference --------------
         /// <summary>HTML animSpeed ("Combat pacing", fx.js ANIM_SPEEDS). Stored as AnimationSpeed/InstantAnimations.</summary>
         public static readonly string[] CombatPacings = { "slow", "normal", "fast", "instant" };
-        /// <summary>balance.ui.rewardCollect.modes / .def.</summary>
+        /// <summary>balance.ui.rewardCollect.modes. The default is NOT the content def ("auto"): owner decision
+        /// 2026-10-02, after a fight only cinders are collected automatically; every other reward is taken or
+        /// skipped by the player. A record without rewardCollect (schema 1/2, or a schema-3 record missing the
+        /// field) gets "manual"; a stored "auto" is an explicit choice and is kept.</summary>
         public static readonly string[] RewardCollectModes = { "auto", "manual" };
-        public const string DefaultRewardCollect = "auto";
+        public const string DefaultRewardCollect = "manual";
         /// <summary>balance.equipment.swapCostRules ids / balance.equipment.swapCostRule.</summary>
         public static readonly string[] SwapCostRuleIds = { "flat", "gear", "category" };
         public const string DefaultSwapCostRule = "flat";
@@ -87,7 +90,8 @@ namespace AshenSpire.Domain.Original
 
         // Gameplay (US-15.2). Read live by the run: OriginalGameplayOptions.ProfileSettings copies
         // shopSell and swapCostRule into run.profileMeta.settings; rewardCollect is passed to Continue.
-        /// <summary>auto: Continue takes every pending, un-skipped reward (a card is picked); manual: only what was chosen.</summary>
+        /// <summary>auto: Continue takes every pending, un-skipped reward (a card is picked); manual (default): Continue takes
+        /// the pending, un-skipped cinders and otherwise only what was chosen.</summary>
         public string RewardCollect = DefaultRewardCollect;
         /// <summary>HTML shopSell ("Merchant buys back"): the merchant's Sell rows. Off removes them.</summary>
         public bool ShopSell = true;
@@ -309,6 +313,10 @@ namespace AshenSpire.Domain.Original
                 if (match == null) notes.Add(name + " '" + value + "' is unknown; " + fallback + " used");
                 return match ?? fallback;
             }
+            // rewardCollect: the default moved from "auto" to "manual" (owner decision 2026-10-02) without a schema bump.
+            // An absent field (schema 1/2, or a hand-written record) means the player never chose, so it gets the new
+            // default. Every schema-3 record this build or an earlier one wrote carries the field, so a stored "auto"
+            // cannot be told apart from a deliberate choice and is kept as one.
             s.RewardCollect = Choice("rewardCollect", s.RewardCollect, RewardCollectModes);
             s.ShopSell = Bool(json["shopSell"], "shopSell", s.ShopSell);
             s.SwapCostRule = Choice("swapCostRule", s.SwapCostRule, SwapCostRuleIds);
