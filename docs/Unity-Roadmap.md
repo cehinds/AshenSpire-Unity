@@ -104,6 +104,17 @@ is not owner acceptance.
   - Performance budgets, physical Android, graphical Windows and iOS: not
     measured or built ([visual parity](Unity-Visual-Parity.md)).
 
+## Owner decisions (2026-10-02)
+
+- Rewards: by default only cinders are collected automatically; other rewards are taken or skipped by the player.
+- High contrast stays off by default (the HTML game defaults it on).
+- The animation-speed setting keeps three steps (Quick, Normal, Slow).
+- Gamepad support uses Unity's built-in input (no Input System package).
+- Display options must visibly apply their styles.
+- Original-save import may refuse mid-fight saves and custom map shapes.
+- Accepted: US-1.3, US-4.4, US-7.4, US-8.3, US-9.3, US-13.2, US-13.3, US-13.4, US-16.3.
+- Play test happens on the GitHub Pages build once it is published.
+
 ## Feature detail
 
 User-story checkboxes below track full acceptance, not merely whether code exists. Specific verified subitems and current-build evidence are summarized in [core phases](Unity-Milestones.md).
@@ -165,7 +176,7 @@ clear Continue, and a settings screen that saves.
 
 - [ ] **US-1.1** As a returning player I see Continue first and resume my run in one tap.
 - [ ] **US-1.2** As a player I open Collection/Chronicle and see my wanderers, runs and unlocks.
-- [ ] **US-1.3** As a player I change sound, motion and animation speed and it persists.
+- [x] **US-1.3** As a player I change sound, motion and animation speed and it persists. Owner accepted 2026-10-02.
   - [x] Build 31 source: Settings schema 2–3 persist music/SFX enable and levels, reduce motion/flashes and animation speed (Feel 93, Music 518 checks); owner acceptance open.
 - [ ] **US-1.4** As a first-time player a startup gate/press-to-begin avoids an accidental menu tap (SPEC §7.1).
 - [ ] **US-1.5** As a player I can read an About screen with the AI-use acknowledgement (SPEC §2.1).
@@ -239,7 +250,7 @@ breaking.
 - [ ] **US-4.1** Each enemy shows its intent (attack total incl. multi-hit, block, buff, debuff, unknown, staggered).
 - [ ] **US-4.2** Each enemy shows a Poise meter under HP; filling it Staggers the enemy (skip turn, +50% damage).
 - [ ] **US-4.3** Intents use icons plus numbers, recomputed live when statuses change.
-- [ ] **US-4.4** Tapping an enemy shows its statuses and what they do.
+- [x] **US-4.4** Tapping an enemy shows its statuses and what they do. Owner accepted 2026-10-02.
   - [x] Build 31 source: Tap or long-press shows a bounded, scrollable status explanation popup (`StatusExplainer`, `ExplainGesture`; Telegraphs 143 checks); owner acceptance open.
 
 Acceptance: intent numbers equal the engine's damage preview; Poise meter and
@@ -300,7 +311,7 @@ transitions make each action satisfying, without slowing the game.
 - [ ] **US-7.1** Attacks play anticipation/impact/recovery poses for all four renderer styles.
 - [ ] **US-7.2** Damage, guard, healing and status numbers float from actual result receipts.
 - [ ] **US-7.3** Screen and room transitions; enemy hit/death reactions.
-- [ ] **US-7.4** Reduced motion and Quick animations respected everywhere.
+- [x] **US-7.4** Reduced motion and Quick animations respected everywhere. Owner accepted 2026-10-02.
   - [x] Build 31 source: Reduce motion, reduce flashes and the Quick/Normal/Slow speed come from one `FeelSettings` source (Feel 93 checks); compiled visual check open.
 
 Acceptance: feedback never changes simulation results; reduced motion removes
@@ -318,7 +329,7 @@ with volume control.
 
 - [ ] **US-8.1** Distinct SFX for attack, guard, hit, reward, UI (procedural cues exist).
 - [ ] **US-8.2** Per-context music (title, map, combat, boss) with smooth transitions.
-- [ ] **US-8.3** Separate music and SFX volume sliders; mute persists.
+- [x] **US-8.3** Separate music and SFX volume sliders; mute persists. Owner accepted 2026-10-02.
   - [x] Build 31 source: Separate music/SFX levels and mutes via `AudioBusLevels`, persisted in settings (Music 518 checks); compiled audio check open.
 - [ ] **US-8.4** Owner can drop replacement tracks into a folder (reference `music/`).
 
@@ -335,7 +346,7 @@ Tests: `UnityTests/AudioPreview`, `tools/campaign-playtest.cjs --feedback-only`;
 
 - [ ] **US-9.1** Merchant: buy cards, relics and flasks; sell eligible relics/utility flasks; remove a card.
 - [ ] **US-9.2** Shrine: refill flasks on arrival, rest, reallocate Crimson/Azure, buy level points, or leave without resting.
-- [ ] **US-9.3** Events: all 22 events and 62 choices reachable with results shown.
+- [x] **US-9.3** Events: all 22 events and 62 choices reachable with results shown. Owner accepted 2026-10-02.
 
 Acceptance: prices/refusals match the domain; every event choice reachable in a
 compiled run; purchases survive reload.
@@ -406,11 +417,11 @@ Tests: `UnityTests/Playthrough`, `MapShape`, `tools/native-playtest.cjs`,
 **Goal:** comfortable one-handed phone play and readable text for everyone.
 
 - [ ] **US-13.1** Every flow fits 320×640 to 1440×900 with safe areas and reachable controls.
-- [ ] **US-13.2** Text size, high contrast, colorblind-friendly palette, reduce flashes.
+- [x] **US-13.2** Text size, high contrast, colorblind-friendly palette, reduce flashes. Owner accepted 2026-10-02.
   - [x] Build 31 source: Reduce flashes and high contrast settings added (schema 2); text size and colourblind palette styling still need editor work.
-- [ ] **US-13.3** Minimum tap size and hold-to-confirm for destructive actions.
+- [x] **US-13.3** Minimum tap size and hold-to-confirm for destructive actions. Owner accepted 2026-10-02.
   - [x] Build 31 source: Hold-to-confirm for card removal, slot delete/overwrite and unsaved-progress load (`HoldConfirm` 144 checks); minimum tap size audit open.
-- [ ] **US-13.4** No hover-only information; tooltips have tap equivalents.
+- [x] **US-13.4** No hover-only information; tooltips have tap equivalents. Owner accepted 2026-10-02.
   - [x] Build 31 source: Enemy statuses are explained by tap/long-press, not hover (US-4.4 above); full-UI audit open.
 
 Acceptance: all screens pass layout checks at four viewports; accessibility
@@ -463,7 +474,7 @@ Tests: to write.
 
 - [ ] **US-16.1** Export/import any table as CSV with validation, stale-edit refusal and backups.
 - [ ] **US-16.2** Add a card, weapon, enemy and encounter that work in real combat.
-- [ ] **US-16.3** Full original schema validation with file/row/field error messages.
+- [x] **US-16.3** Full original schema validation with file/row/field error messages. Owner accepted 2026-10-02.
   - [x] Build 31 source: Generated `OriginalContentSchema.cs` from `src/model/schemas.js` (`tools/unity-content-schema.mjs --check`); validation reports every file/row/field error at once (OriginalAuthoring 31 checks).
 - [ ] **US-16.4** Optional data packs layered over base content.
 
