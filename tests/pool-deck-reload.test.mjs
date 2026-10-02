@@ -27,10 +27,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { contentBundle } from '../src/content/index.js';
 import { createRegistries } from '../src/model/registries.js';
-import { createRunState, createIdGen, createDeck } from '../src/model/state.js';
+import { createRunState, createIdGen, createDeck, RUN_SCHEMA_VERSION } from '../src/model/state.js';
 import { createRng, seedToString } from '../src/engine/rng.js';
 import { createSaveManager, createMemoryStorage } from '../src/engine/save.js';
-import { commitCombatSnapshot, restoreCombatSnapshot } from '../src/engine/combatSnapshot.js';
+import { commitCombatSnapshot, restoreCombatSnapshot, serializeCombatSnapshot } from '../src/engine/combatSnapshot.js';
 import { dispatch, createCombat } from '../src/engine/combat.js';
 import { isPoolDeckRun, dealtAttackSlotCount, POOL_DECK_RULE } from '../src/model/cardRemoval.js';
 import { stampDeck } from '../src/model/loadout.js';
@@ -40,11 +40,34 @@ const registries = createRegistries(contentBundle);
 const SEED = 5;
 const BASE = ['strike', 'strike', 'strike', 'strike', 'defend', 'defend', 'defend'];
 
+// Builds before this fix wrote run schema 5 (the bump to 6 came with the
+// dealt-deck rule), so a pre-fix save is stamped 5 in its slot. Only the
+// stamp is rewritten: the shape is one a schema-5 build wrote. The old
+// build writes until this build first loads the slot; deal() disarms the
+// shim there, so every later save is this build's own schema-6 save.
+function asSchema5(storage) {
+  const set = storage.setItem;
+  let armed = true;
+  storage.disarm = () => { armed = false; };
+  storage.setItem = (key, value) => {
+    if (armed && /^sote_run_v1(_s\d+)?$/.test(key)) {
+      const saved = JSON.parse(value);
+      if (saved.schemaVersion === RUN_SCHEMA_VERSION) { saved.schemaVersion = 5; value = JSON.stringify(saved); }
+    }
+    return set(key, value);
+  };
+  return storage;
+}
+
 // main.js newRun → (showDraft) → startClimb's persist. `fixed: false` writes
 // the save the way builds before this fix wrote it.
 function deal(classId, deckMode, { fixed = true } = {}) {
-  const storage = createMemoryStorage();
+  const storage = fixed ? createMemoryStorage() : asSchema5(createMemoryStorage());
   const saves = createSaveManager(storage);
+  if (!fixed) {
+    const load = saves.loadRun.bind(saves);
+    saves.loadRun = (...args) => { storage.disarm(); return load(...args); };
+  }
   saves.ensureProfile();
   const run = createRunState({ seed: SEED, classId, registries, profileMeta: saves.loadMeta() });
   run.seedString = seedToString(SEED);
@@ -395,6 +418,76 @@ test('a fight\'s poolDeck flag must agree with its run, and never rides a run (C
     const snapshot = { ...structuredClone(run.combatEntered.snapshot), poolDeck: true };
     assert.throws(() => restoreCombatSnapshot({ registries, rng: createRng(SEED), snapshot, fallbackPoolDeck: false }), /poolDeck/);
   }
+});
+
+test('schema 6 brings the dealt-deck rule: a 6 save loads as it is, a 5 pool save heals through the migration, a 6 pool save without the marker is refused (Codex review)', () => {
+  assert.equal(RUN_SCHEMA_VERSION, 6);
+  // A schema-6 Sealed save (newRun wrote the marker) loads untouched.
+  {
+    const { saves, storage } = deal('starseer', 'sealed');
+    const bytes = JSON.parse(storage.getItem('sote_run_v1'));
+    assert.equal(bytes.schemaVersion, 6);
+    assert.equal(bytes.poolDeckRule, POOL_DECK_RULE);
+    const back = saves.loadRun(registries, 1);
+    assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+    assert.equal(saves.runStatus().state, 'ok');
+    assert.equal(back.schemaVersion, 6);
+  }
+  // A schema-5 Sealed save (no marker, the composed quota) migrates to 6:
+  // the ledger names the migration from 5, the quota heal, and the marker.
+  {
+    const { saves, storage } = deal('starseer', 'sealed', { fixed: false });
+    const bytes = JSON.parse(storage.getItem('sote_run_v1'));
+    assert.equal(bytes.schemaVersion, 5);
+    assert.equal('poolDeckRule' in bytes, false);
+    const back = saves.loadRun(registries, 1);
+    assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+    assert.equal(saves.runStatus().state, 'healed');
+    assert.equal(back.schemaVersion, 6);
+    assert.equal(back.poolDeckRule, POOL_DECK_RULE);
+    const rows = saves.runStatus().ledger.entries;
+    assert.ok(rows.some((row) => row.field === 'schemaVersion' && row.was === 5 && row.now === 6), 'the migration from 5 is named');
+    assert.ok(rows.some((row) => row.site === 'save.js:dealtAttackSlotCount'), 'the heal is named');
+    // Saved again, it is a schema-6 save carrying the marker, and loads clean.
+    saves.saveRun(back, createRng(SEED));
+    const resaved = JSON.parse(storage.getItem('sote_run_v1'));
+    assert.equal(resaved.schemaVersion, 6, 'the resave is this build\'s own schema-6 save');
+    assert.equal(resaved.poolDeckRule, POOL_DECK_RULE);
+    assert.ok(saves.loadRun(registries, 1));
+    assert.equal(saves.runStatus().state, 'ok');
+  }
+  // A schema-5 Standard save has nothing to migrate but the stamp.
+  {
+    const { saves } = deal('reaver', 'standard', { fixed: false });
+    const back = saves.loadRun(registries, 1);
+    assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+    assert.equal(back.schemaVersion, 6);
+    assert.equal('poolDeckRule' in back, false);
+  }
+  // A schema-6 Sealed or Draft save without the marker was not written by
+  // newRun: refused by name, never healed.
+  for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft']]) {
+    const { run, rng, saves } = deal(classId, deckMode);
+    delete run.poolDeckRule;
+    saves.saveRun(run, rng);
+    assert.equal(saves.loadRun(registries, 1), null, `${deckMode}: a schema-6 save without the marker must be refused`);
+    assert.equal(saves.runStatus().state, 'archived');
+    assert.match(saves.runStatus().reason, /schema-6 .* missing poolDeckRule/);
+  }
+});
+
+test('a Sealed fight round-trips through a standalone restore; only supplied run context can disagree (Codex review)', () => {
+  const { run, rng } = deal('reaver', 'sealed');
+  const combat = fight(run, rng);
+  const saved = serializeCombatSnapshot(combat);
+  assert.equal(saved.poolDeck, true, 'a new Sealed fight carries the flag');
+  // No run context: the snapshot's own flag stands and nothing throws.
+  const back = restoreCombatSnapshot({ registries, rng: createRng(SEED), snapshot: structuredClone(saved) });
+  assert.equal(back.poolDeck, true);
+  assert.deepEqual(serializeCombatSnapshot(back), saved, 'the round trip is exact');
+  // Agreeing context restores; an explicit Standard context is refused.
+  assert.equal(restoreCombatSnapshot({ registries, rng: createRng(SEED), snapshot: structuredClone(saved), fallbackPoolDeck: true }).poolDeck, true);
+  assert.throws(() => restoreCombatSnapshot({ registries, rng: createRng(SEED), snapshot: structuredClone(saved), fallbackPoolDeck: false }), /poolDeck/);
 });
 
 test('standard: a deck missing its composed attack slots is still refused', () => {

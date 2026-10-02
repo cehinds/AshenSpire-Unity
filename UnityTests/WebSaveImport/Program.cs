@@ -38,7 +38,9 @@ Refuse(()=>Import(new string('x',OriginalWebSaveImport.MaximumBytes+1)),"oversiz
 Refuse(()=>Import("{broken"),"corrupt JSON refused");
 Refuse(()=>Import(input+"{}"),"trailing JSON refused");
 Refuse(()=>Import("{\"schemaVersion\":5,\"schemaVersion\":5}"),"duplicate JSON fields refused");
-RejectEdit(s=>s["schemaVersion"]=6,"future schema refused");
+Check((int)source["schemaVersion"]==6,"fixtures are written at the original's current run schema, 6");
+{var older=(JObject)source.DeepClone();older["schemaVersion"]=5;Check(OriginalGameSession.Restore(Import(older.ToString())).Phase==OriginalRunPhase.Map,"a schema-5 Standard save still imports (schema 6 adds only the dealt-deck rule)");}
+RejectEdit(s=>s["schemaVersion"]=7,"future schema refused");
 RejectEdit(s=>s["schemaVersion"]=4,"older unsupported schema refused");
 foreach(var field in new[]{"combatEntered","pendingReward","shopStock","draft","skillDraft","skills","classAbilities","handRuleSnapshot"})
  foreach(var value in new JToken[]{new JObject(),new JArray(),new JValue("unexpected")})RejectEdit(s=>s[field]=value.DeepClone(),"active/unsupported "+field+" "+value.Type+" refused");
