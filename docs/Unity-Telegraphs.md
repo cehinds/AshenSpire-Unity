@@ -240,8 +240,16 @@ are owner-edited.
   and every status line. It uses the same hover (350 ms) / long-press (450 ms)
   panel as the intent badge. A short tap still selects the target; the existing
   `native-target-*`, `coop-target-*`, `enemy-intent-*` and `enemy-poise-*` names
-  are unchanged. Long presses now release pointer capture on any ancestor and
-  are cancelled by a touch that moves more than 12 px (hand-rail scrolling).
+  are unchanged. The press is tracked from the panel root (TrickleDown), because
+  the enclosing Button captures the pointer; release, cancel or a move of more
+  than 12 px before 450 ms cancels it, and the root handlers are removed when the
+  press ends. Rules: `LongPressTracker` and `PopupPlacement` in
+  `Domain/Original/ExplainGesture.cs`. The panel's height is bounded to the
+  viewport and its body scrolls; it opens below, else above, else clamped.
+- Co-op: while a friendly-target card is selected, enemy targets are no longer
+  `SetEnabled(false)` (that blocked the explanation). They get the
+  `target-unavailable` class (dimmed, not focusable), their click is ignored, and
+  the control report still reports them as not enabled. Solo never disables targets.
 - Cards: each tag chip opens `Label` + blurb on hover or long press, without
   selecting the card; the `tooltip` property is kept. The card's `FullText`
   ends with the tag lines, and the solo pile inspection lists them under each

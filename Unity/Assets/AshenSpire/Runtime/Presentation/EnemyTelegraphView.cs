@@ -125,54 +125,95 @@ namespace AshenSpire.Presentation
         {
             if (string.IsNullOrEmpty(text)) return;
             owner.tooltip = text;
-            var pressAt = Vector2.zero;
-            VisualElement popup = null; IVisualElementScheduledItem pending = null, expiry = null;
-            void Hide() { pending?.Pause(); expiry?.Pause(); popup?.RemoveFromHierarchy(); popup = null; }
+            VisualElement popup = null; IVisualElementScheduledItem pending = null, expiry = null, leaving = null;
+            // Owners sit inside Buttons whose Clickable captures the pointer after pointer-down,
+            // so move/up/cancel go to that ancestor, not to the owner. Track the press from the
+            // panel root in the TrickleDown phase (it sees every captured event) and unregister
+            // as soon as the press ends, fires or the owner leaves the panel.
+            var press = new LongPressTracker(LongPressSlop);
+            VisualElement trackRoot = null;
+            EventCallback<PointerMoveEvent> onMove = null; EventCallback<PointerUpEvent> onUp = null; EventCallback<PointerCancelEvent> onCancel = null;
+            void StopTracking()
+            {
+                if (trackRoot == null) return;
+                trackRoot.UnregisterCallback(onMove, TrickleDown.TrickleDown);
+                trackRoot.UnregisterCallback(onUp, TrickleDown.TrickleDown);
+                trackRoot.UnregisterCallback(onCancel, TrickleDown.TrickleDown);
+                trackRoot = null;
+            }
+            void CancelPress() { press.Cancel(); pending?.Pause(); StopTracking(); }
+            onMove = e => { if (press.Move(e.pointerId, e.position.x, e.position.y)) CancelPress(); };
+            onUp = e => { if (press.End(e.pointerId)) CancelPress(); };
+            onCancel = e => { if (press.End(e.pointerId)) CancelPress(); };
+            void Hide() { CancelPress(); expiry?.Pause(); leaving?.Pause(); popup?.RemoveFromHierarchy(); popup = null; }
             void Show()
             {
                 var root = owner.panel?.visualTree; if (root == null) return;
                 popup?.RemoveFromHierarchy();
-                popup = new VisualElement { pickingMode = PickingMode.Ignore }; popup.AddToClassList("telegraph-tooltip");
+                // Pickable so a long body can be scrolled; the height is bounded to the viewport.
+                popup = new VisualElement { pickingMode = PickingMode.Position }; popup.AddToClassList("telegraph-tooltip");
                 if (_sheet != null) popup.styleSheets.Add(_sheet);
                 var lines = text.Split('\n');
                 popup.Add(Text(lines[0], "telegraph-tooltip-title"));
-                if (lines.Length > 1) popup.Add(Text(string.Join("\n", lines.Skip(1)), "telegraph-tooltip-body"));
+                if (lines.Length > 1)
+                {
+                    var scroll = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+                    scroll.AddToClassList("telegraph-tooltip-scroll"); scroll.style.flexShrink = 1; scroll.style.minHeight = 0;
+                    scroll.Add(Text(string.Join("\n", lines.Skip(1)), "telegraph-tooltip-body"));
+                    popup.Add(scroll);
+                }
                 var anchor = owner.worldBound; const float width = 230;
-                var left = Mathf.Clamp(anchor.center.x - width / 2, 4, Mathf.Max(4, root.layout.width - width - 4));
-                popup.style.position = Position.Absolute; popup.style.width = width;
-                popup.style.left = left; popup.style.top = anchor.yMax + 4;
-                // Keep long explanations on screen: flip above the anchor, then clamp.
+                var first = PopupPlacement.Place(anchor.center.x, anchor.yMin, anchor.yMax, width, 0, root.layout.width, root.layout.height);
+                popup.style.position = Position.Absolute; popup.style.width = width; popup.style.flexDirection = FlexDirection.Column;
+                popup.style.left = first.Left; popup.style.top = first.Top; popup.style.maxHeight = first.MaxHeight;
+                // Keep long explanations on screen: below, else above, else clamped (bounded height).
                 var shown = popup;
                 shown.RegisterCallback<GeometryChangedEvent>(_ =>
                 {
-                    var height = shown.layout.height; var limit = root.layout.height;
-                    if (height <= 0 || limit <= 0 || anchor.yMax + 4 + height <= limit) return;
-                    shown.style.top = Mathf.Max(4, Mathf.Min(anchor.yMin - 4 - height, limit - height - 4));
+                    var limit = root.layout.height; if (shown.layout.height <= 0 || limit <= 0) return;
+                    var at = PopupPlacement.Place(anchor.center.x, anchor.yMin, anchor.yMax, width, shown.layout.height, root.layout.width, limit);
+                    if (!Mathf.Approximately(shown.resolvedStyle.top, at.Top)) shown.style.top = at.Top;
+                    if (!Mathf.Approximately(shown.resolvedStyle.maxHeight.value, at.MaxHeight)) shown.style.maxHeight = at.MaxHeight;
+                });
+                shown.RegisterCallback<PointerEnterEvent>(_ => leaving?.Pause());
+                shown.RegisterCallback<PointerLeaveEvent>(e => { if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) Hide(); });
+                shown.RegisterCallback<PointerDownEvent>(e =>
+                {
+                    if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) return;
+                    expiry?.Pause(); expiry = owner.schedule.Execute(Hide).StartingIn(TouchHideMs); // reading/scrolling keeps it open
                 });
                 root.Add(popup);
             }
             owner.RegisterCallback<PointerEnterEvent>(e =>
             {
                 if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+                leaving?.Pause(); if (popup != null) return;
                 pending?.Pause(); pending = owner.schedule.Execute(Show).StartingIn(HoverDelayMs);
             });
-            owner.RegisterCallback<PointerLeaveEvent>(e => { if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) Hide(); });
+            // A short grace lets the mouse move onto the popup to scroll it.
+            owner.RegisterCallback<PointerLeaveEvent>(e =>
+            {
+                if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+                pending?.Pause(); leaving?.Pause(); leaving = owner.schedule.Execute(Hide).StartingIn(150);
+            });
             owner.RegisterCallback<PointerDownEvent>(e =>
             {
                 if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) return;
-                var pointerId = e.pointerId; pending?.Pause(); pressAt = e.position;
+                CancelPress();
+                var root = owner.panel?.visualTree; if (root == null) return;
+                var pointerId = e.pointerId; press.Begin(pointerId, e.position.x, e.position.y);
+                trackRoot = root;
+                root.RegisterCallback(onMove, TrickleDown.TrickleDown);
+                root.RegisterCallback(onUp, TrickleDown.TrickleDown);
+                root.RegisterCallback(onCancel, TrickleDown.TrickleDown);
                 pending = owner.schedule.Execute(() =>
                 {
+                    StopTracking();
+                    if (!press.Fire(pointerId)) return; // released, cancelled or moved: a tap or scroll
                     for (var up = owner.parent; up != null; up = up.parent) if (up.HasPointerCapture(pointerId)) up.ReleasePointer(pointerId);
                     Show(); expiry?.Pause(); expiry = owner.schedule.Execute(Hide).StartingIn(TouchHideMs);
                 }).StartingIn(LongPressMs);
             });
-            owner.RegisterCallback<PointerUpEvent>(e => { if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) pending?.Pause(); });
-            owner.RegisterCallback<PointerMoveEvent>(e =>
-            {
-                if (e.pointerType != UnityEngine.UIElements.PointerType.mouse && ((Vector2)e.position - pressAt).sqrMagnitude > LongPressSlop * LongPressSlop) pending?.Pause();
-            });
-            owner.RegisterCallback<PointerCancelEvent>(_ => pending?.Pause());
             owner.RegisterCallback<DetachFromPanelEvent>(_ => Hide());
         }
 

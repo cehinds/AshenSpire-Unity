@@ -162,10 +162,11 @@ namespace AshenSpire.Presentation
             {
                 var id = (string)enemy["id"];
                 var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
-                    () => { _target = id; Render(); }, id == _target, out _);
+                    () => { if (friendly) return; _target = id; Render(); }, id == _target, out _);
                 EnemyTelegraphView.Attach(target, EnemyTelegraphView.FromSnapshot(enemy, Body, _balance));
                 EnemyTelegraphView.ExplainStatuses(target, Name("enemies", (string)enemy["enemyId"]), id, enemy, StatusExplainer.Describe(_catalog, enemy["statuses"] as JObject));
-                target.SetEnabled(!friendly); stage.Add(target);
+                // Not SetEnabled(false): disabling propagates and would block the status explanation.
+                OriginalCombatLayout.SetTargetAvailable(target, !friendly); stage.Add(target);
             }
             _body.Add(stage);
             _combatTools = OriginalCombatLayout.Utilities("coop-combat-tools", _report);

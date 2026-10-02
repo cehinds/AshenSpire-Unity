@@ -639,7 +639,7 @@ namespace AshenSpire.Presentation
                 .Where(x => !string.IsNullOrEmpty(x.name) && !FeelDriver.InOverlay(x))
                 .Select(x => (Control: x, Bound: FeelDriver.SettledBound(x))) // settled: feel transforms are visual only
                 .Select(x => new ControlBounds { Id = x.Control.name, X = x.Bound.x, Y = x.Bound.y,
-                    Width = x.Bound.width, Height = x.Bound.height, Enabled = x.Control.enabledInHierarchy }).ToArray();
+                    Width = x.Bound.width, Height = x.Bound.height, Enabled = OriginalCombatLayout.Selectable(x.Control) }).ToArray();
             var width = _root.resolvedStyle.width;
             var height = _root.resolvedStyle.height;
             // Rotation and detached elements can expose unmeasured bounds. Never

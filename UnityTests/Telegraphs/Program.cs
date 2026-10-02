@@ -276,6 +276,34 @@ try
             foreach (var r in StatusExplainer.Describe(catalog, (JObject)e["statuses"]!))
                 Check(r.Authored && !r.Text.Contains('{'), "live enemy status '" + r.Id + "' explained: " + r.Label);
     Check(StatusExplainer.Describe(catalog, (JObject)filler.Enemies[0]!["statuses"]!).Any(r => r.Id == "staggered"), "a live Staggered enemy lists Staggered");
+
+    // ---- Explanation gesture and popup placement (ExplainGesture.cs) -----------------------
+    var press = new LongPressTracker(12);
+    press.Begin(7, 100, 100);
+    Check(!press.Move(7, 108, 106) && press.Active, "movement within the 12px slop keeps the long press");
+    Check(press.Fire(7) && !press.Active, "a held press fires once");
+    Check(!press.Fire(7), "a fired press never fires again");
+    press.Begin(7, 100, 100);
+    Check(press.Move(7, 100, 113) && !press.Active && !press.Fire(7), "movement beyond the slop (a scroll) cancels it");
+    press.Begin(7, 100, 100);
+    Check(press.End(7) && !press.Fire(7), "pointer up/cancel/leave before the delay (a short tap) cancels it");
+    press.Begin(7, 100, 100);
+    Check(!press.Move(8, 400, 400) && !press.End(8) && press.Fire(7), "another pointer neither cancels nor fires the tracked press");
+    press.Begin(1, 0, 0); press.Begin(2, 0, 0);
+    Check(!press.Fire(1) && press.Fire(2), "a new press replaces the previous one");
+    press.Begin(3, 0, 0); press.Cancel();
+    Check(!press.Fire(3), "explicit cancel (detach/hide) clears the press");
+    var fits = PopupPlacement.Place(200, 100, 160, 230, 120, 800, 600);
+    Check(!fits.Above && fits.Top == 164 && fits.Left == 85 && fits.MaxHeight == 592, "fits below the anchor; max height is the viewport minus margins");
+    var flip = PopupPlacement.Place(200, 400, 460, 230, 200, 800, 600);
+    Check(flip.Above && flip.Top == 196, "flips above when it does not fit below");
+    var tall = PopupPlacement.Place(200, 200, 260, 230, 5000, 800, 600);
+    Check(tall.MaxHeight == 592 && tall.Top == 4 && tall.Top + tall.MaxHeight <= 596, "a very tall body is bounded to the viewport (and scrolls), never off screen");
+    var edge = PopupPlacement.Place(10, 100, 160, 230, 50, 300, 600);
+    var right = PopupPlacement.Place(295, 100, 160, 230, 50, 300, 600);
+    Check(edge.Left == 4 && right.Left == 66, "horizontal clamp keeps the popup inside both edges");
+    var tiny = PopupPlacement.Place(100, 10, 20, 230, 100, 300, 6);
+    Check(tiny.MaxHeight == 0 && tiny.Top >= 4, "degenerate viewport never yields a negative height");
 }
 catch (Exception error)
 {
