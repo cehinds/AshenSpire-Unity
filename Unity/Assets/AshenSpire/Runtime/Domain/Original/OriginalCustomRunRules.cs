@@ -42,6 +42,13 @@ namespace AshenSpire.Domain.Original
             var normalized = Normalize(custom);
             return normalized["mapShape"] is JObject shape && shape.HasValues || (int)normalized["ascension"] > 0 || (string)normalized["deckMode"] != "standard" || ((JObject)normalized["mods"]).Properties().Any(p => (bool)p.Value);
         }
+        // A Sealed/Draft ("pool deck") run keeps exactly the deck it was dealt: its birth attack
+        // quota is the attack slots it was dealt, and no reconcile ever deals it the equipment's
+        // lent cards (kit basics, weapon arts, Dodge Roll, smith mounts). Mirrors the original's
+        // model/cardRemoval.js isPoolDeckRun (cehinds/AshenSpire#1479); WeaponCardComposer's
+        // Recompose and ReconcileCombat take this as a required argument so no caller can miss it.
+        public static readonly string[] PoolDeckModes = { "sealed", "draft" };
+        public static bool IsPoolDeckRun(JObject run) => run?["custom"] is JObject custom && custom["deckMode"]?.Type == JTokenType.String && PoolDeckModes.Contains((string)custom["deckMode"]);
         public static bool Enabled(JObject run, string id) => (bool?)ActiveMods(run["custom"] as JObject)[id] == true;
         public int ContentAct(JObject run)
         {

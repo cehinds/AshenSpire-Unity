@@ -99,10 +99,12 @@ resumes (map, fight rewards, merchant or the start of a fight).
     deck the equipment's lent cards (kit basics, weapon arts, Dodge Roll) at
     any restamp: load, end of fight, Armoury change, mid-fight swap or
     resumed fight. The import's one reconcile therefore keeps exactly the
-    dealt instances. The native runtime's later reconciles
-    (`WeaponCardComposer.Recompose`, on a relic, a service or an equipment
-    change) do not yet know this rule, and would add those cards to an
-    imported or native Sealed/Draft run.
+    dealt instances, and so does every later native reconcile:
+    `WeaponCardComposer.Recompose` and `ReconcileCombat` take the rule
+    (`OriginalCustomRunRules.IsPoolDeckRun`) as a required argument, so a
+    relic, a service, an Armoury change, a mid-fight swap or the end of a
+    fight leaves an imported or native Sealed/Draft deck as dealt (Parity
+    section `pool-deck`).
   - **Checked against the original.** The imported Sealed and Draft runs open
     the same next encounter and opening hand as the original.
 
@@ -127,9 +129,7 @@ the receipt. The checks run with the other WebSaveImport checks.
 Open follow-ups: compiled Web/native verification of each room type, owner
 acceptance, exact mid-fight snapshot conversion, and custom map shapes.
 Sealed/Draft saves that retired an attack slot (`removedAttackSlotIds`, which
-this `src/` copy predates) are still refused as unknown state. The native
-runtime does not yet apply the original's rule that a dealt deck receives no
-lent cards (see Modes above).
+this `src/` copy predates) are still refused as unknown state.
 
 ## Profile import
 

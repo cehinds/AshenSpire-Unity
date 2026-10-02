@@ -79,8 +79,8 @@ namespace AshenSpire.Domain.Original
             if (!allowance) player["energy"] = checked(Number(player["energy"], "actions") - (int)price["cost"]);
             var rule = Rule(run, battle); if (rule != null) player["equipmentSwapRule"] = rule;
             var mounts = nextRun["itemMounts"] as JObject; var quota = Number(nextRun["equipmentAttackSlotCount"], "birth attack quota", ((JArray)nextRun["deck"]).Count(c => (string)c["equipmentRole"] == "attack"));
-            nextRun["deck"] = composer.Recompose((JArray)nextRun["deck"], after, ClassId(run), mounts);
-            nextBattle["piles"] = composer.ReconcileCombat((JObject)battle["piles"], after, ClassId(run), quota, mounts);
+            nextRun["deck"] = composer.Recompose((JArray)nextRun["deck"], after, ClassId(run), OriginalCustomRunRules.IsPoolDeckRun(run), mounts);
+            nextBattle["piles"] = composer.ReconcileCombat((JObject)battle["piles"], after, ClassId(run), quota, OriginalCustomRunRules.IsPoolDeckRun(run), mounts);
             var upgradesService = new ItemUpgradeService(_catalog); upgradesService.RestampCards(nextRun);
             foreach (var pile in new[] { "hand", "draw", "discard", "exhaust" })
             { var carrier = (JObject)nextRun.DeepClone(); carrier["deck"] = nextBattle["piles"][pile].DeepClone(); upgradesService.RestampCards(carrier); nextBattle["piles"][pile] = carrier["deck"].DeepClone(); }
