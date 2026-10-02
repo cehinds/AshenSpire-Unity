@@ -37,13 +37,16 @@ namespace AshenSpire.Domain.Original
         // archives one that does not, so the import refuses it. Sealed and Draft decks are dealt
         // from a pool, and their quota is the slots dealt (attack:0..k-1, none on a fresh deal),
         // which is also the native rule (OriginalCustomRunRules.Initialize). The original marks
-        // such a run `poolDeckRule: 1`. An unmarked one was saved before its fix and may carry the
-        // composed deck's larger quota, which its load door heals once to the dealt count, and so
-        // does the import; a marked one is held to its quota, so a lost attack card is refused.
+        // such a run `poolDeckRule: 1`, and run schema 6 is the bump that brought it. An unmarked
+        // schema-5 one was saved before its fix and may carry the composed deck's larger quota,
+        // which its load door heals once to the dealt count, and so does the import; a marked one
+        // is held to its quota, so a lost attack card is refused. A schema-6 Sealed or Draft save
+        // without the mark was not written by the original's newRun, and both refuse it.
         // Null: a legacy save with no quota, recounted.
         private static bool IsPoolDeck(JObject source) => source["custom"] is JObject custom && custom["deckMode"]?.Type == JTokenType.String && ((string)custom["deckMode"] == "sealed" || (string)custom["deckMode"] == "draft");
         private static int? BirthAttackQuota(JObject source)
         {
+            if (source["poolDeckRule"] == null && IsPoolDeck(source) && (int)source["schemaVersion"] >= 6) throw new ArgumentException("This schema-6 " + ((string)source["custom"]["deckMode"] == "sealed" ? "Sealed" : "Draft") + " save is missing its dealt-deck rule (poolDeckRule), so the original game cannot reload it either. Your original save is unchanged.");
             var quota = source["equipmentAttackSlotCount"];
             if (quota == null) return null;
             if (quota.Type != JTokenType.Integer || (long)quota < 0 || (long)quota > int.MaxValue) throw new ArgumentException("Malformed original equipment attack quota. Your original save is unchanged.");
@@ -83,8 +86,9 @@ namespace AshenSpire.Domain.Original
                 source = ParseStrict((string)archive["save"]);
             }
             if (source["profile"] != null) throw new ArgumentException("This is a profile export. Run import needs an original run save.");
-            if (source["schemaVersion"]?.Type != JTokenType.Integer || (int)source["schemaVersion"] != 5)
-                throw new ArgumentException("This initial importer supports original run schema 5. Earlier and newer original-game save formats are not supported yet. Your original save is unchanged.");
+            // Schema 6 adds only the dealt-deck rule (poolDeckRule), checked in BirthAttackQuota.
+            if (source["schemaVersion"]?.Type != JTokenType.Integer || (int)source["schemaVersion"] < 5 || (int)source["schemaVersion"] > 6)
+                throw new ArgumentException("This importer supports original run schemas 5 and 6. Earlier and newer original-game save formats are not supported yet. Your original save is unchanged.");
             foreach (var name in new[] { "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" })
                 if (source[name] != null && source[name].Type != JTokenType.Null)
                     throw new ArgumentException("This save contains " + name + ". Finish the active room in the original game and save on the map before importing.");

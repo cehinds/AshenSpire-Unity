@@ -195,11 +195,19 @@ static class RoomImportChecks
             // A save written before the original's fix kept the composed deck's quota and had no
             // marker. The original load door heals it to the dealt count (tests/pool-deck-reload.test.mjs);
             // so does the import.
-            var stale = (JObject)dealt.DeepClone(); stale["equipmentAttackSlotCount"] = 3; stale.Remove("poolDeckRule");
+            // Those builds wrote run schema 5; the original's bump to 6 came with the marker.
+            Equal(dealt["schemaVersion"], new JValue(6), name + ": the original writes run schema 6");
+            var stale = (JObject)dealt.DeepClone(); stale["equipmentAttackSlotCount"] = 3; stale.Remove("poolDeckRule"); stale["schemaVersion"] = 5;
             var staleSnapshot = Import(stale.ToString()); var healed = OriginalGameSession.Restore(staleSnapshot);
             Equal(healed.RunPlayer["equipmentAttackSlotCount"], new JValue(0), name + ": pre-fix composed quota converts to the dealt count");
             Equal(healed.RunPlayer["deck"], game.RunPlayer["deck"], name + ": pre-fix save imports the same deck");
             Check((int?)staleSnapshot["run"]?["webImport"]?["original"]?["equipmentAttackSlotCount"] == 3, name + ": import receipt keeps the original bytes' quota");
+            // A schema-6 save without the marker was not written by the original's newRun: both refuse it.
+            RejectPool(dealt, s => s.Remove("poolDeckRule"), name + ": schema-6 save without the dealt-deck rule refused", "missing its dealt-deck rule");
+            RejectPool(dealt, s => { s.Remove("poolDeckRule"); s.Remove("equipmentAttackSlotCount"); }, name + ": schema-6 save without the rule or a quota refused", "missing its dealt-deck rule");
+            // A marked schema-5 save (a build of the fix before the bump) imports as it is.
+            var marked5 = (JObject)dealt.DeepClone(); marked5["schemaVersion"] = 5;
+            Equal(OriginalGameSession.Restore(Import(marked5.ToString())).RunPlayer["deck"], game.RunPlayer["deck"], name + ": a marked schema-5 save imports the same deck");
             RejectPool(dealt, s => ((JArray)s["deck"]!).Add(new JObject { ["instanceId"] = "x1", ["cardId"] = "strike", ["upgraded"] = false, ["equipmentRole"] = "attack", ["equipmentAttackSlotId"] = "attack:1" }), name + ": gap in dealt attack slots refused", "not the ones it was dealt");
             RejectPool(dealt, s => ((JArray)s["deck"]!).Add(new JObject { ["instanceId"] = "x1", ["cardId"] = "strike", ["upgraded"] = false, ["equipmentRole"] = "attack", ["equipmentAttackSlotId"] = "attack:0" }), name + ": more attack slots than the quota refused", "not the ones it was dealt");
             RejectPool(dealt, s => s["equipmentAttackSlotCount"] = -1, name + ": malformed quota refused", "Malformed original equipment attack quota");
@@ -262,7 +270,7 @@ static class RoomImportChecks
         RejectEdit(JObject.Parse(Save("mode-chaos")), s => s["custom"]!["mapShape"] = new JObject { ["floors"] = 8 }, "custom map-shape climb refused by name", "map-shape");
         RejectEdit(JObject.Parse(Save("mode-chaos")), s => s["custom"]!["mods"]!["futureMod"] = true, "unknown custom modifier refused");
         RejectEdit(JObject.Parse(Save("mode-sealed")), s => s["custom"]!["deckMode"] = "gauntlet", "unknown deck mode refused");
-        RejectEdit(reward, s => s["schemaVersion"] = 6, "newer original run schema refused", "newer original-game save formats");
+        RejectEdit(reward, s => s["schemaVersion"] = 7, "newer original run schema refused", "newer original-game save formats");
 
         Check(OriginalWebRoomImport.Resumes(Import(Save("reward-elite"))) == "Resumes at the fight's rewards" && OriginalWebRoomImport.Resumes(Import(Save("merchant-fresh"))) == "Resumes at the merchant"
             && OriginalWebRoomImport.Resumes(Import(Save("rogue-combat-entry"))) == "Resumes at the start of the fight" && OriginalWebRoomImport.Resumes(Import(Save("event-entered"))) == "Resumes on the map", "preview names where each import resumes");
