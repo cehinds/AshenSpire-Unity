@@ -206,6 +206,9 @@ static class RoomImportChecks
             // A marked save is held to its quota, as the original holds it: a lost attack card is corruption.
             RejectPool(dealt, s => s["equipmentAttackSlotCount"] = 1, name + ": marked save missing an attack card refused", "not the ones it was dealt");
             RejectPool(dealt, s => s["poolDeckRule"] = 2, name + ": unknown dealt-deck rule refused", "Malformed original dealt-deck rule");
+            // Only an absent marker is a pre-fix save; a present string or null is refused like the original refuses it.
+            RejectPool(dealt, s => s["poolDeckRule"] = "1", name + ": string dealt-deck rule refused", "Malformed original dealt-deck rule");
+            RejectPool(dealt, s => s["poolDeckRule"] = JValue.CreateNull(), name + ": null dealt-deck rule refused", "Malformed original dealt-deck rule");
         }
         void RejectPool(JObject source, Action<JObject> edit, string label, string contains) { var copy = (JObject)source.DeepClone(); edit(copy); Refuse(() => Import(copy.ToString()), label, contains); }
         // A Standard deck keeps the composed rule: a quota its deck does not hold is refused,
