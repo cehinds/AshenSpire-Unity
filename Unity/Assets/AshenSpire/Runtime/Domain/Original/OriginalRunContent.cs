@@ -134,6 +134,8 @@ namespace AshenSpire.Domain.Original
             if (new[] { "upgrade", "extract", "install" }.Contains(service))
             {
                 if ((bool?)run["room"]["smith"]?["offered"] != true || !(run["room"]["smith"]?["services"] as JArray ?? new JArray()).Values<string>().Contains(service)) return false;
+                // A Sealed or Draft run is refused extraction whatever the room offers (CardMountService.ExtractionRefusal).
+                if (service == "extract" && CardMountService.ExtractionRefusal(run) != null) return false;
                 JObject result;
                 if (service == "upgrade") result = new ItemUpgradeService(_catalog).Commit(run,(string)request["itemRef"]);
                 else if (service == "extract") result = new CardMountService(_catalog).Extract(run,(string)request["itemRef"],(string)request["mountKey"]);

@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.0 · build 34 · 2026-10-02
+
+- Sealed and Draft runs can no longer extract equipment cards at the smith
+
 ## 0.0.32.0 · build 33 · 2026-10-02
 
 - Sealed/Draft: run schema 6 import, pool-deck marker validation, src/ mirror of HTML reload fixes

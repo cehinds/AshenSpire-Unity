@@ -8,7 +8,8 @@
 // projection reconcile every service runs, a mid-fight swap, and the end of that fight. Two
 // contents run: the shipped one (whose only lent card is the empty hand's Dodge Roll) and one
 // that also authors a weapon package and a bound armour grant. A Standard run walks the same
-// doors and must still be dealt, and stripped of, its lent cards.
+// doors and must still be dealt, and stripped of, its lent cards. A pool run also never
+// extracts a card at the smith (CardMountService.ExtractionRefusal, owner ruling 2026-10-02).
 using AshenSpire.Domain.Original;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -191,7 +192,19 @@ internal static class PoolDeckChecks
                 string Loose(params string[] skip) => (string)game.RunPlayer["deck"].First(c => c["equipmentRole"] == null && new[] { "strike", "defend", "gorefireSlash" }.Contains((string)c["cardId"]) && !skip.Contains((string)c["instanceId"]))["instanceId"];
                 var first = Loose(); var firstCard = (string)game.RunPlayer["deck"].First(c => (string)c["instanceId"] == first)["cardId"];
                 Smith("install", new JObject { ["itemRef"] = armourRef, ["mountKey"] = extraKey, ["instanceId"] = first });
-                Smith("extract", new JObject { ["itemRef"] = armourRef, ["mountKey"] = boundKey });
+                if (pool)
+                {
+                    // No extraction (owner ruling, 2026-10-02): the bound mount is emptied the way a save
+                    // from before that rule carries it, so the install below still has an open mount.
+                    var refusedAt = Text(game.RunPlayer); ExtractRefused(game, armourRef, boundKey, label);
+                    Check(Text(game.RunPlayer) == refusedAt, label + ": a refused extraction changes nothing");
+                    var snapshot = game.Snapshot(); var run = (JObject)snapshot["run"];
+                    if (!(run["itemMounts"] is JObject)) run["itemMounts"] = new JObject();
+                    if (!(run["itemMounts"][armourRef] is JObject)) run["itemMounts"][armourRef] = new JObject();
+                    run["itemMounts"][armourRef][boundKey] = new JObject { ["card"] = null, ["extractions"] = 1 };
+                    game = OriginalGameSession.Restore(snapshot);
+                }
+                else Smith("extract", new JObject { ["itemRef"] = armourRef, ["mountKey"] = boundKey });
                 var second = Loose(first); var secondCard = (string)game.RunPlayer["deck"].First(c => (string)c["instanceId"] == second)["cardId"];
                 Smith("install", new JObject { ["itemRef"] = armourRef, ["mountKey"] = boundKey, ["instanceId"] = second });
                 var installed = (JArray)game.RunPlayer["deck"].DeepClone();
@@ -229,6 +242,59 @@ internal static class PoolDeckChecks
                 Kept("mid-fight swap", true);
                 game = Win(game); Kept("fight end", true);
                 game.SelectSet("rightHand", 0); Kept("post-fight Armoury", true);
+            }
+        }
+        // Extraction (owner ruling, 2026-10-02; the original's model/cardExtraction.js
+        // extractionRefusal, tests/pool-deck-extraction.test.mjs): a Sealed or Draft run never lifts
+        // a lent card out of a mount, however the smith is reached — the service door returns false,
+        // the commit throws (a free grant too) — and no save carries it in: a resumed snapshot, one
+        // whose room offers extraction outright, is refused the same. A Standard run still extracts.
+        void ExtractRefused(OriginalGameSession at, string itemRef, string mountKey, string label)
+        {
+            var catalog = at.Catalog;
+            Check(CardMountService.ExtractionRefusal(at.RunPlayer) == CardMountService.PoolDeckRefusal, label + ": extraction refusal is named");
+            var snapshot = at.Snapshot(); var run = (JObject)snapshot["run"];
+            run["room"]["smith"] = new JObject { ["offered"] = true, ["services"] = new JArray("upgrade", "extract", "install") };
+            var before = Text(run);
+            var content = new OriginalRunContent(catalog, reconcile: new OriginalPlayerProjection(catalog, mechanics).Reconcile);
+            Check(!content.ApplyService(run, "extract", new JObject { ["itemRef"] = itemRef, ["mountKey"] = mountKey }, new RandomStreams(1)), label + ": the smith door refuses extraction");
+            Check(Text(run) == before, label + ": the refused smith door changes nothing");
+            foreach (var free in new[] { false, true })
+            {
+                try { new CardMountService(catalog).Extract(run, itemRef, mountKey, free); Check(false, label + ": Extract (free " + free + ") was not refused"); }
+                catch (ArgumentException error) { Check(error.Message == CardMountService.PoolDeckRefusalText, label + ": Extract (free " + free + ") refused by name, got " + error.Message); }
+            }
+            // The same save, resumed from its bytes, with the smith's extraction on offer.
+            var resumed = OriginalGameSession.Restore(JObject.Parse(snapshot.ToString()));
+            Check(CardMountService.ExtractionRefusal(resumed.RunPlayer) == CardMountService.PoolDeckRefusal, label + ": a resumed save is still refused");
+            var resumedRun = (JObject)resumed.Snapshot()["run"]; resumedRun["room"]["smith"] = run["room"]["smith"].DeepClone();
+            Check(!content.ApplyService(resumedRun, "extract", new JObject { ["itemRef"] = itemRef, ["mountKey"] = mountKey }, new RandomStreams(1)), label + ": a resumed save offering extraction is refused");
+        }
+        // Shipped content tags no lent card extractable, so the lending content makes its bound
+        // armour's basic and the spare weapon's art extractable (the spare rides in storage).
+        {
+            const string classId = "reaver";
+            var data = Lending(classId, out var spare).Data();
+            foreach (var card in new[] { "defend", "quickstep" }) ((JArray)data["tagging"]).Add(new JObject { ["family"] = "card", ["scope"] = "", ["objectId"] = card, ["tagId"] = "extractable" });
+            var catalog = new OriginalContentCatalog(data.ToString());
+            foreach (var mode in new[] { "sealed", "draft", "standard" })
+            {
+                var label = "extract/" + mode;
+                var game = Dealt(catalog, mode, classId, 123u, spare);
+                // Every authored extractable mount on every owned item: what a Standard run could lift.
+                var mounts = new CardMountService(catalog); var run = game.RunPlayer;
+                var targets = new ItemUpgradeService(catalog).OwnedRefs(run).Where(item => !item.StartsWith("relic/", StringComparison.Ordinal))
+                    .SelectMany(item => mounts.MountRows(item, run["itemMounts"] as JObject).Where(row => (bool)row["extractable"]).Select(row => (item, key: (string)row["mountKey"]))).ToArray();
+                Check(targets.Length > 0, label + ": the fixture carries an extractable mount");
+                if (mode != "standard") { foreach (var (item, key) in targets) ExtractRefused(game, item, key, label + " " + key); continue; }
+                Check(CardMountService.ExtractionRefusal(run) == null, label + ": a Standard run is not refused");
+                var (standardItem, standardKey) = targets[0];
+                var snapshot = game.Snapshot(); var standardRun = (JObject)snapshot["run"];
+                standardRun["room"]["smith"] = new JObject { ["offered"] = true, ["services"] = new JArray("extract") };
+                var content = new OriginalRunContent(catalog, reconcile: new OriginalPlayerProjection(catalog, mechanics).Reconcile);
+                var deckBefore = ((JArray)standardRun["deck"]).Count;
+                Check(content.ApplyService(standardRun, "extract", new JObject { ["itemRef"] = standardItem, ["mountKey"] = standardKey }, new RandomStreams(1)), label + ": a Standard run still extracts");
+                Check(((JArray)standardRun["deck"]).Any(c => ((string)c["instanceId"]).StartsWith("extracted:", StringComparison.Ordinal)), label + ": the extracted card joins the deck");
             }
         }
         Console.WriteLine($"PoolDeckChecks: {checks} dealt-deck reconcile checks passed");
