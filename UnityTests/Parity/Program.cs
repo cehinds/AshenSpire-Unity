@@ -129,7 +129,7 @@ var sections = new (string Name, int Weight, Action Run)[]
     ("custom-run", 60, () => { CustomRunChecks.Run(root); }),
     ("swaps", 16, () => { Console.WriteLine($"Paid swaps: {SwapChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), Path.Combine(root, "UnityTests/Parity/swap-reference.json"))} checks passed"); }),
     ("starting-options", 3, () => { Console.WriteLine($"Starting choices: {StartingOptionsChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Path.Combine(root, "UnityTests/Parity/starting-reference.json"))} checks passed"); }),
-    ("event-reachability", 90, () => { EventReachabilityChecks.Run(root); }),
+    ("event-reachability", 156, () => { EventReachabilityChecks.Run(root); }),
     ("coop-combat", 89, () => { Console.WriteLine($"Co-op combat: {CoopCombatChecks.Run(root)} checks passed"); }),
 };
 // PARITY_SHARD=i/n runs shard i of n. Weights are measured local seconds; sections are

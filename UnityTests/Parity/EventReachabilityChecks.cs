@@ -39,8 +39,10 @@ internal static class EventReachabilityChecks
             {
                 var content = e["choices"]![i]!; var row = rows[i];
                 Check(!string.IsNullOrEmpty((string)row["id"]) && rows.Count(r => (string)r["id"] == (string)row["id"]) == 1, $"unique choice id {id}/{i}");
-                Check(!string.IsNullOrEmpty((string)content["resultText"]) && (string)row["resultText"] == (string)content["resultText"], $"result text {id}/{row["id"]}");
-                Same(row["effects"], content["effects"], $"effects {id}/{row["id"]}");
+                Check(!string.IsNullOrEmpty((string)content["resultText"]), $"result text {id}/{row["id"]}");
+                // The supplement may only add its own fields; every content field must match exactly.
+                var copied = (JObject)row.DeepClone(); copied.Remove("id"); copied.Remove("requiresHistory");
+                Same(copied, content, $"choice row {id}/{row["id"]} matches content apart from id/requiresHistory");
             }
         }
 
