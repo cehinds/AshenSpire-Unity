@@ -4,6 +4,30 @@
    like the HTML body.hi-contrast in styles/base.css: brighter ink and secondary text, stronger edges.
    Visual tuning beyond these tokens is not done yet. */
 .app.high-contrast { --ash-ink: #fdf6e6; --ash-muted: #cdbf9e; --ash-edge: #85714f; }
+/* Display options (Settings → Display, US-15.1). CampaignView puts the classes from Domain
+   OriginalDisplayOptions.RootClasses on the root; UnityTests/Mods checks these colours against it.
+   Accent: the --ash-gold token, like the HTML --gold (balance.ui.accents). accent-gold keeps the
+   theme's own gold above, so it needs no rule. */
+.app.accent-crimson { --ash-gold: #c1453a; }
+.app.accent-frost { --ash-gold: #7fa8c9; }
+.app.accent-verdant { --ash-gold: #8bae54; }
+.app.accent-violet { --ash-gold: #a06cc8; }
+/* Map header (OriginalRunPanel map-header-*; HTML body.map-compact / hide-header-relics / hide-header-seed). */
+.map-header-extras { flex-direction: row; flex-shrink: 0; align-items: center; margin: 0 0 2px; }
+.map-header-seed, .map-header-relics { font-size: 11px; color: var(--ash-muted); margin: 0 12px 0 0; padding: 0; white-space: nowrap; }
+.map-header-seed { flex-shrink: 0; }
+.map-header-relics { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.map-header-no-relics .map-header-relics { display: none; }
+.map-header-no-seed .map-header-seed { display: none; }
+.map-header-compact .map-screen > .map-header-title { font-size: 14px; margin: 0 0 1px; padding-bottom: 2px; border-bottom-width: 0; }
+.map-header-compact .map-screen > .map-header-stats { font-size: 11px; margin: 0; }
+.map-header-compact .map-screen > .map-header-purse { font-size: 10px; margin: 0; }
+.map-header-compact .map-screen > .map-header-extras { margin: 0; }
+/* Control hints (OriginalRunPanel.ControlHints; HTML .hint-bar): keyboard shortcuts under map and
+   combat. Like the HTML game, wide windows only (the phone layout has no keyboard); off hides it. */
+.control-hints { display: none; flex-shrink: 0; margin: 4px 0 0; font-size: 11px; color: var(--ash-muted); -unity-text-align: middle-center; white-space: normal; }
+.ui-wide .control-hints { display: flex; }
+.ui-wide.no-control-hints .control-hints { display: none; }
 .body { max-width: 1000px; padding: 24px 20px 32px; }
 .body.has-fixed-actions { padding-bottom: 110px; }
 .button { background-color: var(--ash-panel); border-color: var(--ash-edge); color: var(--ash-ink); border-radius: 6px; padding: 12px 16px; }

@@ -186,7 +186,7 @@ namespace AshenSpire.Domain.Original
             var quota = (int?)run["equipmentAttackSlotCount"] ?? beforeDeck.Count(card => (string)card["equipmentRole"] == "attack");
             if (quota != beforeDeck.Count(card => (string)card["equipmentRole"] == "attack")) throw new ArgumentException("Equipment attack quota was changed");
             composer.BuildAttackPlan(next,classId,quota);
-            var deck = composer.Recompose(beforeDeck,next,classId,run["itemMounts"] as JObject);
+            var deck = composer.Recompose(beforeDeck,next,classId,OriginalCustomRunRules.IsPoolDeckRun(run),run["itemMounts"] as JObject);
             if (deck.Count(card => (string)card["equipmentRole"] == "attack") != quota) throw new InvalidOperationException("Equipment change altered the born attack quota");
             var ids = new System.Collections.Generic.HashSet<string>();
             if (deck.Any(card => string.IsNullOrEmpty((string)card["instanceId"]) || !ids.Add((string)card["instanceId"]))) throw new InvalidOperationException("Equipment produced duplicate card instances");

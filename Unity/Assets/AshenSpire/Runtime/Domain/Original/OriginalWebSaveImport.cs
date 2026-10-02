@@ -32,6 +32,36 @@ namespace AshenSpire.Domain.Original
                 return result;
             }
         }
+        // The original load door (save.js loadRun) holds the deck to its birth attack quota.
+        // Standard decks are composed from the equipment and must hold every slot; the original
+        // archives one that does not, so the import refuses it. Sealed and Draft decks are dealt
+        // from a pool, and their quota is the slots dealt (attack:0..k-1, none on a fresh deal),
+        // which is also the native rule (OriginalCustomRunRules.Initialize). The original marks
+        // such a run `poolDeckRule: 1`. An unmarked one was saved before its fix and may carry the
+        // composed deck's larger quota, which its load door heals once to the dealt count, and so
+        // does the import; a marked one is held to its quota, so a lost attack card is refused.
+        // Null: a legacy save with no quota, recounted.
+        private static bool IsPoolDeck(JObject source) => source["custom"] is JObject custom && custom["deckMode"]?.Type == JTokenType.String && ((string)custom["deckMode"] == "sealed" || (string)custom["deckMode"] == "draft");
+        private static int? BirthAttackQuota(JObject source)
+        {
+            var quota = source["equipmentAttackSlotCount"];
+            if (quota == null) return null;
+            if (quota.Type != JTokenType.Integer || (long)quota < 0 || (long)quota > int.MaxValue) throw new ArgumentException("Malformed original equipment attack quota. Your original save is unchanged.");
+            var attacks = source["deck"].Where(c => (string)c["equipmentRole"] == "attack").ToArray();
+            var rule = source["poolDeckRule"];
+            if (rule != null && (rule.Type != JTokenType.Integer || (long)rule != 1 || !IsPoolDeck(source))) throw new ArgumentException("Malformed original dealt-deck rule. Your original save is unchanged.");
+            var mode = IsPoolDeck(source) ? (string)source["custom"]["deckMode"] : "standard";
+            if (mode == "standard")
+            {
+                if ((int)quota != attacks.Length)
+                    throw new ArgumentException("This save's deck no longer matches its equipment attack slots, so the original game cannot reload it either. Your original save is unchanged.");
+                return (int)quota;
+            }
+            var slots = attacks.Select(c => c["equipmentAttackSlotId"]?.Type == JTokenType.String ? (string)c["equipmentAttackSlotId"] : null).ToArray();
+            if (!slots.OrderBy(id => id, StringComparer.Ordinal).SequenceEqual(Enumerable.Range(0, attacks.Length).Select(i => "attack:" + i).OrderBy(id => id, StringComparer.Ordinal)) || (int)quota < attacks.Length || rule != null && (int)quota != attacks.Length)
+                throw new ArgumentException("This " + (mode == "sealed" ? "Sealed" : "Draft") + " deck's attack slots are not the ones it was dealt, so the original game cannot reload it either. Your original save is unchanged.");
+            return attacks.Length;
+        }
         public static void ValidateReceipt(JObject run)
         {
             if (run["webImport"] == null) return;
@@ -64,7 +94,7 @@ namespace AshenSpire.Domain.Original
             if (source["combatEntered"] is JObject fight && fight["snapshot"] != null && fight["snapshot"].Type != JTokenType.Null) throw new ArgumentException(MidFightMessage);
             if (source["webImport"] != null || source["playerProjectionRules"] != null || source["phase"] != null)
                 throw new ArgumentException("Choose an original-game save, not an AshenedSpire snapshot.");
-            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView flaskChancePct removesPurchased pendingReward shopStock").Split(' ');
+            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount poolDeckRule relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView flaskChancePct removesPurchased pendingReward shopStock").Split(' ');
             var inactiveFields = new[] { "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
             var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && p.Name != "seenEvents" && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
             if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
@@ -85,10 +115,7 @@ namespace AshenSpire.Domain.Original
                 _ = catalog.Record("cards", (string)card["cardId"]);
             }
             if (source["deck"].Select(c => (string)c["instanceId"]).Distinct().Count() != source["deck"].Count()) throw new ArgumentException("Duplicate card instance IDs.");
-            // The original load door archives a run whose born attack quota differs from its deck
-            // (save.js; current Sealed and Draft climbs). Refuse it the same way, by name.
-            if (source["equipmentAttackSlotCount"] != null && (source["equipmentAttackSlotCount"].Type != JTokenType.Integer || (int)source["equipmentAttackSlotCount"] != source["deck"].Count(c => (string)c["equipmentRole"] == "attack")))
-                throw new ArgumentException("This save's deck no longer matches its equipment attack slots, so the original game cannot reload it either (this happens to Sealed and Draft climbs). Your original save is unchanged.");
+            var attackQuota = BirthAttackQuota(source);
             foreach (var id in source["relics"].Values<string>()) _ = catalog.Record("relics", id);
             foreach (var flask in source["flasks"]) _ = catalog.Record("flasks", (string)flask["flaskId"]);
             if (source["seenEvents"] != null)
@@ -171,12 +198,24 @@ namespace AshenSpire.Domain.Original
             run["stats"] = source["stats"]?.DeepClone() ?? new JObject { ["fightsWon"] = 0, ["damageDealt"] = 0, ["damageTaken"] = 0 };
             run["fightsWon"] = run["stats"]["fightsWon"]?.DeepClone() ?? new JValue(0);
             run["custom"] = OriginalCustomRunRules.Normalize(source["custom"] as JObject);
+            if (attackQuota != null) run["equipmentAttackSlotCount"] = attackQuota.Value;
             // Wrapper timestamps and JSON spacing must not make the same checkpoint
             // importable twice. Hash the parsed run, independently of its export wrapper.
             var hash = Hash(source);
             run["runId"] = "web-import-" + hash;
             run["webImport"] = new JObject { ["version"] = 1, ["sha256"] = hash, ["original"] = source.DeepClone() };
             new OriginalPlayerProjection(frozenCatalog, mechanics).Reconcile(run);
+            if (attackQuota != null && IsPoolDeck(source))
+            {
+                // The original reloads a dealt deck as it is (save.js stamps it as a subset): the
+                // kit and weapon-art cards the deal took out come back only at its next full
+                // restamp, after a fight or an equipment change, as they do natively on the next
+                // reconcile. The import's one reconcile must not deal them back early.
+                var dealt = source["deck"].Select(c => (string)c["instanceId"]).ToArray();
+                var kept = new JArray(run["deck"].Where(c => dealt.Contains((string)c["instanceId"])).Select(c => c.DeepClone()));
+                if (!kept.Select(c => (string)c["instanceId"]).SequenceEqual(dealt)) throw new ArgumentException("This dealt deck does not match supported original rules. Your original save is unchanged.");
+                run["deck"] = kept;
+            }
             foreach (var resource in new[] { "hp", "maxHp", "mana", "maxMana", "stamina", "maxStamina", "energyMax", "drawPerTurn" })
                 if (!JToken.DeepEquals(run[resource], source[resource])) throw new ArgumentException("The saved " + resource + " does not match supported original rules; no save was changed.");
             if (!JToken.DeepEquals(run["damageBySchoolAdd"], source["damageBySchoolAdd"])) throw new ArgumentException("Saved relic damage modifiers differ from supported content.");

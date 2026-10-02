@@ -21,7 +21,9 @@ internal static class GameplayOptionsChecks
 
         // ---- Defaults: the setting-free game is unchanged ----------------------------------------
         var defaults = new OriginalPlayerSettings();
-        Check(OriginalGameplayOptions.RewardCollectMode(data, defaults.RewardCollect) == (string)data["balance"]["ui"]["rewardCollect"]["def"], "default reward mode is the content dial's def");
+        // Owner decision 2026-10-02: Unity's default is manual (only cinders come along), not the content def (auto).
+        Check(defaults.RewardCollect == "manual" && OriginalGameplayOptions.RewardCollectMode(data, defaults.RewardCollect) == "manual", "default reward mode is manual (owner decision 2026-10-02)");
+        Check((string)data["balance"]["ui"]["rewardCollect"]["def"] == "auto" && OriginalGameplayOptions.RewardCollectMode(data, null) == "manual", "the Unity default overrides the content def when no mode is set");
         var fresh = Start(11); var before = fresh.Snapshot();
         Check(fresh.ApplyProfileSettings(OriginalGameplayOptions.ProfileSettings(defaults)), "binding writes the gameplay keys into a run that lacks them");
         var after = fresh.Snapshot();
@@ -44,8 +46,15 @@ internal static class GameplayOptionsChecks
         Check((int?)offer["cinders"] > 0 && ((JArray)offer["cardIds"]).Count > 1, "fixture offers cinders and a card choice");
         var legacy = OriginalGameSession.Restore(rewards); legacy.ContinueRewards();
         var manual = OriginalGameSession.Restore(rewards); manual.ContinueRewards("manual");
-        Check(JToken.DeepEquals(manual.Snapshot(), legacy.Snapshot()), "manual is exactly the pre-setting Continue");
-        Check(((JArray)manual.RunPlayer["deck"]).Count == deckBefore && (int)manual.RunPlayer["cinders"] == cindersBefore && manual.Phase == OriginalRunPhase.Map, "manual: nothing unchosen comes along");
+        var tapped = OriginalGameSession.Restore(rewards); tapped.Reward("cinders"); tapped.ContinueRewards();
+        Check(JToken.DeepEquals(manual.Snapshot(), tapped.Snapshot()), "manual is the pre-setting Continue with the cinders collected");
+        Check(((JArray)legacy.RunPlayer["deck"]).Count == deckBefore && (int)legacy.RunPlayer["cinders"] == cindersBefore && legacy.Phase == OriginalRunPhase.Map, "the argument-free Continue still leaves everything (replays)");
+        Check(((JArray)manual.RunPlayer["deck"]).Count == deckBefore && (int)manual.RunPlayer["cinders"] == cindersBefore + (int)offer["cinders"] && manual.Phase == OriginalRunPhase.Map, "manual: cinders come along automatically, nothing else unchosen does");
+        Check((int)manual.RunPlayer["streamCounters"]["cardRewards"] == (int)legacy.RunPlayer["streamCounters"]["cardRewards"], "manual draws no card pick");
+        var manualSkipped = OriginalGameSession.Restore(rewards); manualSkipped.SkipReward("cinders"); manualSkipped.ContinueRewards("manual");
+        Check(JToken.DeepEquals(Without(manualSkipped.Snapshot(), "streamCounters"), Without(legacy.Snapshot(), "streamCounters")) && (int)manualSkipped.RunPlayer["cinders"] == cindersBefore, "manual respects an explicit cinders Skip");
+        var manualTaken = OriginalGameSession.Restore(rewards); manualTaken.Reward("cinders"); manualTaken.ContinueRewards("manual");
+        Check((int)manualTaken.RunPlayer["cinders"] == cindersBefore + (int)offer["cinders"], "manual never grants cinders twice");
         var auto = OriginalGameSession.Restore(rewards); auto.ContinueRewards("auto");
         var reference = OriginalRunSession.Restore(rewards, callbacks); reference.ContinueRewards(true);
         Check(JToken.DeepEquals(auto.Snapshot()["run"], reference.Snapshot()["run"]), "auto is the run session's auto-collect (resolveContinue take-all)");
@@ -60,9 +69,9 @@ internal static class GameplayOptionsChecks
         Check(((JArray)skipped.RunPlayer["deck"]).Count == deckBefore && (int)skipped.RunPlayer["cinders"] == cindersBefore + (int)offer["cinders"], "auto respects an explicit Skip");
         var everything = OriginalGameSession.Restore(rewards); foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" }) { try { everything.SkipReward(kind); } catch (ArgumentException) { } }
         everything.ContinueRewards("auto");
-        Check(JToken.DeepEquals(Without(everything.Snapshot(), "streamCounters"), Without(manual.Snapshot(), "streamCounters")) && (int)everything.RunPlayer["streamCounters"]["cardRewards"] == (int)manual.RunPlayer["streamCounters"]["cardRewards"], "auto with every kind skipped equals manual (the playtest harness path)");
+        Check(JToken.DeepEquals(Without(everything.Snapshot(), "streamCounters"), Without(legacy.Snapshot(), "streamCounters")) && (int)everything.RunPlayer["streamCounters"]["cardRewards"] == (int)legacy.RunPlayer["streamCounters"]["cardRewards"], "auto with every kind skipped equals the argument-free Continue (the playtest harness path)");
         var unknown = OriginalGameSession.Restore(rewards); unknown.ContinueRewards("sometimes");
-        Check(JToken.DeepEquals(unknown.Snapshot(), auto.Snapshot()), "an unknown mode is the content default (auto)");
+        Check(JToken.DeepEquals(unknown.Snapshot(), manual.Snapshot()), "an unknown mode is the Unity default (manual)");
         var taken = OriginalGameSession.Restore(rewards); taken.Reward("card", (string)offer["cardIds"][0]); taken.ContinueRewards("auto");
         Check(((JArray)taken.RunPlayer["deck"]).Count == deckBefore + 1 && (string)((JArray)taken.RunPlayer["deck"]).Last["cardId"] == (string)offer["cardIds"][0], "auto never re-takes a row taken at tap time");
         var refused = OriginalGameSession.Restore(rewards); var threw = false;

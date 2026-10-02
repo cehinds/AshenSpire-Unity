@@ -5,8 +5,10 @@
 // context, and KeyName(...) gives the keyboard key that action is bound to, so a presentation
 // hook can feed a pad press into the existing key-action path (the HTML input.js approach:
 // "a pad press dispatches that same key"). `cancel` resolves to Escape; `menu` has no key.
-// FOLLOW-UP: the Unity project does not reference com.unity.inputsystem, so nothing polls a pad
-// yet. A hook would read the device, map its control to a button id here and call Action().
+// READING A PAD: the project uses the legacy Input Manager (activeInputHandler 0, no Input System
+// package). Presentation/GamepadDriver.cs polls joystick buttons and axes, OriginalGamepadInput.cs
+// turns a frame into presses/directions per platform layout, OriginalGamepadNavigation.cs plans the
+// steps, and Presentation/GamepadNavigator.cs runs them. docs/Unity-Settings.md has the mapping.
 using System;
 using System.Collections.Generic;
 using System.Linq;

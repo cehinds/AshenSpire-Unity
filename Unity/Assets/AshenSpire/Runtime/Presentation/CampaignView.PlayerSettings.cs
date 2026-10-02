@@ -8,7 +8,9 @@
 // object in; this file edits it and raises PlayerSettingsChanged / ContentModsChanged.
 // APPLIED HERE: text size (per text element, from its resolved USS size), colorblind palette
 // (root class palette-*, Resources/OriginalPalette.uss), high contrast (root class
-// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), and the
+// high-contrast, Resources/OriginalTheme.uss), display options (root classes from Domain
+// OriginalDisplayOptions; OriginalTheme.uss / OriginalCards.uss), map key bindings (MapView.KeyAction), gamepad
+// rebinding (press a button: GamepadNavigator.Capture), and the
 // feel settings (FeelDriver.Configure → Domain FeelSettings.From: speed bucket, reduced
 // motion, reduce flashes, shake, hit-stop) that CombatFeedback reads.
 // VERIFY IN EDITOR: open Settings, move each slider, pick a palette, rebind a map key.
@@ -132,7 +134,7 @@ namespace AshenSpire.Presentation
         {
             var s = _playerSettings;
             if (s == null) return; // No settings object: keep the original three toggles only.
-            _capturingAction = null;
+            _capturingAction = null; Gamepad.Capture = null;
             motion.RemoveFromHierarchy(); fast.RemoveFromHierarchy(); mute.RemoveFromHierarchy();
 
             // GAME
@@ -154,11 +156,11 @@ namespace AshenSpire.Presentation
             pacing = SettingChoice("combat-pacing", "Combat pacing", OriginalPlayerSettings.CombatPacings, s.CombatPacing, v => { s.CombatPacing = v; SyncQuick(); });
             // Gameplay (US-15.2): HTML Advanced → Gameplay / Tuning rows.
             SettingChoice("reward-collect", "Reward collection", OriginalPlayerSettings.RewardCollectModes, s.RewardCollect, v => s.RewardCollect = v);
-            _body.Add(Text("Auto: Continue takes everything you didn't skip, picking a card for you. Manual: Continue means done; only what you chose comes along.", "caption"));
+            _body.Add(Text("Manual (default): cinders are collected for you; take or skip every other reward yourself. Auto: Continue also takes everything you didn't skip, picking a card for you.", "caption"));
             SettingToggle("shop-sell", "Merchant buys back", s.ShopSell, v => s.ShopSell = v);
             SettingChoice("swap-cost-rule", "Weapon swap cost", OriginalPlayerSettings.SwapCostRuleIds, s.SwapCostRule, v => s.SwapCostRule = v);
             _body.Add(Text("Merchant buys back offers a Sell row for relics and flasks. Weapon swap cost: Flat charges the same for every weapon; Gear lets talismans and relics change it; Category prices it by the weapon you draw. Both apply from the next climb or Continue.", "caption"));
-            // Display (US-15.1). Saved; Fullscreen applies now, the rest set root classes for the styles to follow.
+            // Display (US-15.1). Every row applies on change (Changed → ApplyPlayerSettings) and on load.
             _body.Add(Text("Display", "caption"));
             SettingToggle("fullscreen", "Fullscreen", s.Fullscreen, v => { s.Fullscreen = v; Screen.fullScreen = v; });
             SettingChoice("ui-size", "UI size", OriginalPlayerSettings.UiSizes, s.UiSize, v => s.UiSize = v);
@@ -169,7 +171,7 @@ namespace AshenSpire.Presentation
             SettingToggle("map-header-relics", "Relics in map header", s.MapHeaderRelics, v => s.MapHeaderRelics = v);
             SettingToggle("map-header-seed", "Seed in map header", s.MapHeaderSeed, v => s.MapHeaderSeed = v);
             SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
-            _body.Add(Text("UI size, accent, card motif, map header and control hints are saved; their styles are still being tuned.", "caption"));
+            _body.Add(Text("UI size scales the whole interface; L and XL grow only as far as the screen fits. Accent tints highlights, borders and primary buttons. Card motif colours class cards: Wash tints the body, Accent puts your accent on the border with a rarity pip, Band adds a class stripe. Compact tightens the map header; relics and seed show in a line under it. Control hints list keyboard shortcuts under the map and combat in wide windows.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
@@ -243,32 +245,43 @@ namespace AshenSpire.Presentation
             _body.Add(keyMessage);
             AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
             ShowKeys();
-            // Gamepad (US-15.3, domain side): bindings are saved and conflict-checked like keys; OriginalGamepad
-            // resolves presses. No pad is read yet (the project has no Input System package).
-            _body.Add(Text("Gamepad buttons. Saved now; controller input arrives in a later build.", "caption"));
+            // Gamepad (US-15.3): bindings are saved and conflict-checked like keys. Choosing an action waits for
+            // the next pad button (GamepadNavigator.Capture); Esc or choosing it again cancels.
+            _body.Add(Text("Gamepad buttons. Choose an action, then press a controller button; Esc cancels. The d-pad and left stick move between controls and the right stick scrolls or pans the map; the Play button also activates the focused control.", "caption"));
             var padMessage = Text("", "caption");
-            var padChoices = new List<string> { "unbound" }; padChoices.AddRange(OriginalGamepad.Buttons.Select(OriginalGamepad.Label));
-            var padFields = new Dictionary<string, DropdownField>();
-            void ShowPad() { foreach (var pair in padFields) pair.Value.SetValueWithoutNotify(s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
-            foreach (var action in OriginalGamepad.PadOnlyActions.Concat(OriginalKeyBindings.MapActions).Concat(OriginalKeyBindings.CombatActions).Where(a => !a.StartsWith("card", StringComparison.Ordinal)))
+            var padButtons = new Dictionary<string, Button>();
+            string capturingPad = null;
+            void ShowPad() { foreach (var pair in padButtons) pair.Value.text = PadLabel(pair.Key) + " · " + (pair.Key == capturingPad ? "press a button…" : s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
+            void StopPadCapture(string message) { capturingPad = null; Gamepad.Capture = null; if (message != null) padMessage.text = message; ShowPad(); Report(); }
+            foreach (var action in OriginalGamepadNavigation.Actions)
             {
                 var id = action;
-                var field = new DropdownField(PadLabel(id), padChoices, 0) { name = "pad-" + id };
-                field.AddToClassList("setting");
-                field.RegisterValueChangedCallback(e =>
+                var button = AddButton("pad-" + id, "", () =>
                 {
-                    var button = OriginalGamepad.Buttons.FirstOrDefault(b => OriginalGamepad.Label(b) == e.newValue);
-                    if (button == null) { padMessage.text = "Choose a button; reset restores the defaults."; ShowPad(); Report(); return; }
-                    if (s.TryBindGamepad(id, button, out var holder)) { padMessage.text = PadLabel(id) + " is now " + e.newValue + "."; Changed(); }
-                    else padMessage.text = e.newValue + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.";
+                    if (capturingPad == id) { StopPadCapture("Unchanged."); return; }
+                    capturingPad = id;
+                    padMessage.text = "Press a gamepad button for " + PadLabel(id) + ". Esc cancels.";
+                    Gamepad.Capture = pressed =>
+                    {
+                        if (capturingPad != id || padButtons[id].panel == null) { Gamepad.Capture = null; return false; }
+                        if (s.TryBindGamepad(id, pressed, out var holder)) { StopPadCapture(PadLabel(id) + " is now " + OriginalGamepad.Label(pressed) + "."); Changed(); }
+                        else StopPadCapture(OriginalGamepad.Label(pressed) + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.");
+                        return true;
+                    };
                     ShowPad(); Report();
                 });
-                _body.Add(field); padFields[id] = field;
+                button.RegisterCallback<KeyDownEvent>(e =>
+                {
+                    if (capturingPad != id || e.keyCode != KeyCode.Escape) return;
+                    e.StopImmediatePropagation();
+                    StopPadCapture("Unchanged.");
+                });
+                padButtons[id] = button;
             }
             var padConflicts = s.GamepadConflicts();
             padMessage.text = padConflicts.Count == 0 ? "" : string.Join("\n", padConflicts.Select(c => OriginalGamepad.Label(c.Key) + " is bound to " + string.Join(" and ", c.Actions.Select(PadLabel)) + ". Rebind one of them."));
             _body.Add(padMessage);
-            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); padMessage.text = "Gamepad buttons reset to their defaults."; ShowPad(); Changed(); });
+            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); StopPadCapture("Gamepad buttons reset to their defaults."); Changed(); });
             ShowPad();
 
             // CONTENT MODS (the HTML game files these under Advanced)
@@ -332,7 +345,7 @@ namespace AshenSpire.Presentation
         }
         private static int Percent(double value) => (int)Math.Round(value * 100);
         private static string Title(string value) => string.IsNullOrEmpty(value) ? value : char.ToUpperInvariant(value[0]) + value.Substring(1);
-        private static string PadLabel(string action) => action == "cancel" ? "Cancel / back" : action == "menu" ? "Open menu" : OriginalKeyBindings.Label(action);
+        private static string PadLabel(string action) => OriginalKeyBindings.PadLabel(action);
         /// <summary>A closed-set choice; shows each value capitalized and hands the canonical value back.</summary>
         private DropdownField SettingChoice(string id, string label, string[] values, string value, Action<string> changed)
         {
@@ -348,19 +361,13 @@ namespace AshenSpire.Presentation
             _body.Add(field);
             return field;
         }
-        // Display options (US-15.1) as root classes. No USS rules read them yet; tuning is editor follow-up.
-        private static readonly string[] DisplayClassPrefixes = { "ui-size-", "accent-", "card-motif-", "motif-strength-", "map-header-" };
+        // Display options (US-15.1) as root classes (Domain OriginalDisplayOptions.RootClasses).
+        // OriginalTheme.uss styles accent, map header and control hints from them; OriginalCards.uss
+        // the card motif and its strength. UI size is PanelSettings.scale (RunController.Settings.cs).
         private void ApplyDisplayClasses(OriginalPlayerSettings settings)
         {
-            foreach (var name in _root.GetClasses().Where(c => DisplayClassPrefixes.Any(p => c.StartsWith(p, StringComparison.Ordinal))).ToList()) _root.RemoveFromClassList(name);
-            _root.AddToClassList("ui-size-" + settings.UiSize.ToLowerInvariant());
-            _root.AddToClassList("accent-" + settings.Accent);
-            _root.AddToClassList("card-motif-" + settings.CardMotif);
-            _root.AddToClassList("motif-strength-" + settings.CardMotifStrength);
-            _root.AddToClassList("map-header-" + settings.MapHeaderDensity);
-            _root.EnableInClassList("map-header-no-relics", !settings.MapHeaderRelics);
-            _root.EnableInClassList("map-header-no-seed", !settings.MapHeaderSeed);
-            _root.EnableInClassList("no-control-hints", !settings.ControlHints);
+            foreach (var name in _root.GetClasses().Where(OriginalDisplayOptions.IsDisplayClass).ToList()) _root.RemoveFromClassList(name);
+            foreach (var name in OriginalDisplayOptions.RootClasses(settings)) _root.AddToClassList(name);
         }
         private Toggle SettingToggle(string id, string label, bool value, Action<bool> changed)
         {

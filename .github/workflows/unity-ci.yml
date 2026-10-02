@@ -105,7 +105,7 @@ jobs:
           - shard: map-and-data
             suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
           - shard: features
-            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel? HoldConfirm?'
+            suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel? HoldConfirm? Gamepad?'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4

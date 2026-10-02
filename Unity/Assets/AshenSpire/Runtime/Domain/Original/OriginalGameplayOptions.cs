@@ -3,7 +3,8 @@
 // loadout.resolveSwapCostRule reads swapCostRule, reward.js collectMode reads rewardCollect.
 // Unity runs read run.profileMeta.settings (OriginalRunServices.Sellables, OriginalCombatEquipment.Rule),
 // so ProfileSettings is merged in there by OriginalGameSession.ApplyProfileSettings whenever a run is
-// bound (new or continued). rewardCollect is resolved at Continue (OriginalGameSession.ContinueRewards(mode)).
+// bound (new or continued). rewardCollect is resolved at Continue (OriginalGameSession.ContinueRewards(mode));
+// Unity defaults it to "manual" (owner decision 2026-10-02): only cinders are collected for the player.
 // Swap price display: DescribeSwapPrice turns an OriginalCombatEquipment.Price receipt into one line.
 using System;
 using System.Linq;
@@ -21,13 +22,16 @@ namespace AshenSpire.Domain.Original
         }
 
         /// <summary>reward.js collectMode: the wanted mode when the content's balance.ui.rewardCollect.modes
-        /// lists it, otherwise its def. Content without the dial falls back to { def: auto, modes: [auto, manual] }.</summary>
+        /// lists it. Otherwise Unity's own default (OriginalPlayerSettings.DefaultRewardCollect, "manual" by owner
+        /// decision 2026-10-02) when the dial lists it, else the dial's def. This is the one deliberate difference
+        /// from reward.js, whose fallback is the content def ("auto"). Content without the dial behaves as
+        /// { modes: [auto, manual] }.</summary>
         public static string RewardCollectMode(JObject content, string wanted)
         {
             var dial = content?["balance"]?["ui"]?["rewardCollect"] as JObject;
             var modes = (dial?["modes"] as JArray)?.Values<string>().ToArray() ?? OriginalPlayerSettings.RewardCollectModes;
-            var fallback = (string)dial?["def"] ?? OriginalPlayerSettings.DefaultRewardCollect;
-            return wanted != null && modes.Contains(wanted) ? wanted : fallback;
+            if (wanted != null && modes.Contains(wanted)) return wanted;
+            return modes.Contains(OriginalPlayerSettings.DefaultRewardCollect) ? OriginalPlayerSettings.DefaultRewardCollect : (string)dial?["def"] ?? modes.FirstOrDefault() ?? OriginalPlayerSettings.DefaultRewardCollect;
         }
 
         /// <summary>One line naming the live rule and how it reached the price, e.g.
