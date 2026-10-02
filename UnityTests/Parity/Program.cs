@@ -6,7 +6,14 @@ using Newtonsoft.Json.Linq;
 var root = args.Length > 0 ? args[0] : ".";
 if (args.Length == 2 && args[0] == "--validate")
 {
-    try { _ = new OriginalContentCatalog(File.ReadAllText(args[1])); Console.WriteLine("Original content validation: 1 checks passed"); }
+    // Authored candidate (tools/original-table.py): full schema + reference validation, every problem listed, then the catalog's own checks.
+    try
+    {
+        var text = File.ReadAllText(args[1]);
+        OriginalContentValidation.ThrowIfInvalid(JObject.Parse(text), "content.json");
+        _ = new OriginalContentCatalog(text);
+        Console.WriteLine("Original content validation: 1 checks passed");
+    }
     catch (ArgumentException error) { Console.Error.WriteLine(error.Message); Environment.ExitCode = 1; }
     return;
 }
