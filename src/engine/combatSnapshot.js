@@ -53,7 +53,7 @@ export function serializeCombatSnapshot(combat) {
  * non-idempotent for a current one, which tools/weapon-card-packages.mjs is
  * right to assert against: a load must not rewrite a snapshot it understands.
  */
-export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttackSlotCount }) {
+export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttackSlotCount, fallbackPoolDeck = false }) {
   assertCombatSnapshot(snapshot);
   const saved = structuredClone(snapshot);
   const combat = {
@@ -63,7 +63,8 @@ export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttac
     equipmentAttackSlotCount: Number.isFinite(saved.equipmentAttackSlotCount)
       ? saved.equipmentAttackSlotCount
       : (Number.isFinite(fallbackAttackSlotCount) ? fallbackAttackSlotCount : undefined),
-    ...(saved.poolDeck === true ? { poolDeck: true } : {}),
+    // The run's own rule backs the snapshot's flag (model/cardRemoval.js isPoolDeckRun).
+    ...(saved.poolDeck === true || fallbackPoolDeck === true ? { poolDeck: true } : {}),
     itemUpgradeLevels: saved.itemUpgradeLevels || Object.fromEntries(
       Object.entries(saved.armamentLevels || {}).map(([id, level]) => [`armament/${id}`, level]),
     ),

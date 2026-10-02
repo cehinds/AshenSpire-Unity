@@ -1565,7 +1565,7 @@ function enterCombat(nodeId, encounterId, { resuming = false } = {}) {
   const enc = registries.encounters.get(encounterId);
   audio.music(enc.pool === 'boss' ? 'boss' : enc.pool === 'elite' ? 'elite' : 'combat');
   const cm = combatMods(enc.pool);
-  const combat = savedSnapshot ? restoreCombatSnapshot({ registries, rng, snapshot: savedSnapshot, fallbackAttackSlotCount: run.equipmentAttackSlotCount }) : createCombat({
+  const combat = savedSnapshot ? restoreCombatSnapshot({ registries, rng, snapshot: savedSnapshot, fallbackAttackSlotCount: run.equipmentAttackSlotCount, fallbackPoolDeck: isPoolDeckRun(run) }) : createCombat({
     registries,
     rng,
     player: {
