@@ -81,6 +81,8 @@ jobs:
           node-version: '22'
       - name: Compile all Runtime assemblies against Unity reference assemblies
         run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
+      - name: Generated content schema matches src/model/schemas.js
+        run: node tools/unity-content-schema.mjs --check
 
   domain-tests:
     name: Console tests (${{ matrix.shard }})
