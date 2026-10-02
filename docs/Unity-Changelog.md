@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.32.0 · build 33 · 2026-10-02
+
+- Sealed/Draft: run schema 6 import, pool-deck marker validation, src/ mirror of HTML reload fixes
+
 ## 0.0.31.0 · build 32 · 2026-10-02
 
 - Rewards: only cinders auto-collected by default; gamepad support (legacy input, rebinding); display options apply their styles; owner acceptance recorded
