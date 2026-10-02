@@ -51,6 +51,17 @@ namespace AshenSpire.Presentation
                 default: return action;
             }
         }
+        /// <summary>Gamepad list label: the keyboard label, with the pad-only actions and Play's double duty named.</summary>
+        public static string PadLabel(string action)
+        {
+            switch (action)
+            {
+                case "cancel": return "Cancel / back";
+                case "menu": return "Go to menu button";
+                case "combatPlay": return "Confirm · Combat: play selected card";
+                default: return Label(action);
+            }
+        }
         /// <summary>The bound action for <paramref name="code"/>, or null. Unknown key names bind nothing.</summary>
         public static string Action(IReadOnlyDictionary<string, string> bindings, KeyCode code)
             => Find(bindings, code, MapActions);

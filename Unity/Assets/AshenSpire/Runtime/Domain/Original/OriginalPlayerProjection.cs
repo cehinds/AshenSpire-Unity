@@ -146,7 +146,7 @@ namespace AshenSpire.Domain.Original
             next["relics"] = Relics(next).DeepClone(); next["relicIds"] = next["relics"].DeepClone();
             if (next["deck"] is JArray deck)
             {
-                next["deck"] = new WeaponCardComposer(_catalog).Recompose(deck, (JObject)next["loadout"], ClassId(next), next["itemMounts"] as JObject);
+                next["deck"] = new WeaponCardComposer(_catalog).Recompose(deck, (JObject)next["loadout"], ClassId(next), OriginalCustomRunRules.IsPoolDeckRun(next), next["itemMounts"] as JObject);
                 new ItemUpgradeService(_catalog).RestampCards(next);
             }
             run.RemoveAll(); foreach (var property in next.Properties()) run[property.Name] = property.Value.DeepClone();

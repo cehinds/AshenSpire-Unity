@@ -1,20 +1,21 @@
 {
-  "sourceCommit": "80cbcd71f9aac5bc454b4602f48714d9717b27b2",
+  "sourceCommit": "5e33e91822f771dce28ea2b9f1106ee3be2d452f",
   "sources": {
-    "src/engine/save.js": "93572fa3c20f87c60715ad5b657dd1bdd77c838762d126546fb25719cb89e6bd",
-    "src/model/state.js": "7ff2066cfa03438aa1af541988a5d7eea31f84f446f604cc76456c1a7d4a933f",
+    "src/engine/save.js": "8da2a2ec9efc3b7b7b68af1a724b70b325c718791c403dc8e83ffa0551b73bdf",
+    "src/model/state.js": "c668921d73e4688942a8f9e9ea0be4b058bf7e591d8e1ea25913277606a3444d",
     "src/engine/encounters.js": "27cedec10d476b2a7e1698b4b942e9c98caf8c130809c9a188a7c12f8242cf4b",
-    "src/engine/combat.js": "523a028bd9039084886f348ba13143f05ea627ad99a5336420b7dadd1146e9c5",
-    "src/engine/combatSnapshot.js": "b3b377320eba77093e0d2e83b85438843bb7e20a070590ca5f75b1eefbcfb5b6",
+    "src/engine/combat.js": "f8b2002cd932bde9da3342f9ac0c208976ca4989167ae07f77effbdbe9e1a03b",
+    "src/engine/combatSnapshot.js": "e15120bdecb5cbb5832290c658bbb06a6462477b43da62b50a75782014b23492",
     "src/engine/actmap.js": "7606f5161d8f54fb95c3e400971dc7374cf950b02050699d5cf16cfad91cb616",
     "src/model/rewardplan.js": "965cbabc75a021d534a759284b154d384d6017a359aeca1778b1e6098f433322",
-    "src/main.js": "34a420dfeabe358af3417f1f123e839b91a67cf6bd8b4224df39449cadbb3b0c",
+    "src/main.js": "cdfc13bb57f801706992602457fa60917896d78bf0e41ba4e1ad77f558e13184",
     "src/ui/screens/reward.js": "2c0b77201e0511e9c2da21daf87f54298036ed14de86d6a95ee87569240442c8",
     "src/ui/screens/shop.js": "12eb1a7ac493a1d66bee40a9d14c04abd6e235589d4bf60896f2f2b710b896a2",
     "src/ui/screens/draft.js": "408cd1bfbcf379704e2ce0d9d44b93933288539fe6451b23f1891176663d4501",
+    "src/model/cardRemoval.js": "b7be1f7911fe4e02df058b962656b6829e529590de0c02a3b336d9bf697ae3a6",
     "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46"
   },
-  "outputSha256": "9737aca53e9399bac326a4daf1907a70007abfb0d631e92641aa46b67210ee19",
+  "outputSha256": "7d9e1a0d43541886bfbb3f5dd90058f64ac0312c2a47f0e7668523501798de5e",
   "fixtures": {
     "reaver-combat-entry": {
       "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
@@ -103,13 +104,13 @@
     },
     "mode-sealed": {
       "note": "{\"ascension\":0,\"mods\":{},\"deckMode\":\"sealed\"} map checkpoint.",
-      "bytes": 11125,
-      "originalReload": "archived"
+      "bytes": 11399,
+      "originalReload": "ok"
     },
     "mode-draft": {
       "note": "{\"ascension\":0,\"mods\":{},\"deckMode\":\"draft\"} map checkpoint.",
-      "bytes": 10926,
-      "originalReload": "archived"
+      "bytes": 11283,
+      "originalReload": "ok"
     },
     "mode-chaos": {
       "note": "{\"ascension\":4,\"mods\":{\"allElite\":true,\"glassCannon\":true,\"chaosRewards\":true,\"hoarder\":true},\"deckMode\":\"standard\"} map checkpoint.",
