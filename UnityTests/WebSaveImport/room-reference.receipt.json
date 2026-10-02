@@ -1,7 +1,7 @@
 {
-  "sourceCommit": "cccbbdcef0b06f6f27845f0071014777f713e33b",
+  "sourceCommit": "c2326f29d88c797e979b5b8854c1ace7106ef688",
   "sources": {
-    "src/engine/save.js": "72681539174d52e707f32a3920ff43e9c671b058d8a77efa7d1a154f01f3c4db",
+    "src/engine/save.js": "fc827b66fe0eea8665909e42c57cb4bc98be413f7a505e9a285d359d2981a87c",
     "src/model/state.js": "c668921d73e4688942a8f9e9ea0be4b058bf7e591d8e1ea25913277606a3444d",
     "src/engine/encounters.js": "27cedec10d476b2a7e1698b4b942e9c98caf8c130809c9a188a7c12f8242cf4b",
     "src/engine/combat.js": "f8b2002cd932bde9da3342f9ac0c208976ca4989167ae07f77effbdbe9e1a03b",
@@ -15,7 +15,7 @@
     "src/model/cardRemoval.js": "4a6a5881df5de3f0d3fb0677ddfb9e93a1f7f0af211c7a7e18314a7a74bfa299",
     "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46"
   },
-  "outputSha256": "5cc2bb132be33e48a78f28b5db48c42fb51d5e95093a2697492f716a28e6ae5c",
+  "outputSha256": "bd2a1c8ac76bd44c92984311c8ec3745ab8a3a6488ce5551b86a40ea064a9dc2",
   "fixtures": {
     "reaver-combat-entry": {
       "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
