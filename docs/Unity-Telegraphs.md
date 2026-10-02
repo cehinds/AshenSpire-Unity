@@ -217,3 +217,44 @@ It covers the following:
 
 The project is not in `.github/workflows/unity-pages.yml` yet, because workflows
 are owner-edited.
+
+## Status and tag explanations (US-4.4, US-13.4)
+
+**Status: source and compiled tests only; needs an editor/touch play test.**
+
+- `Domain/Original/StatusExplainer.cs` (pure, no UnityEngine).
+  `StatusExplainer.Describe(catalog, enemy["statuses"])` returns one
+  `StatusExplanation` per active status in snapshot order: `Id`, `Name`,
+  `Stacks` (or build-up value), `Label` (`Weak ×2`, `Bleed 4 / 7`,
+  `Magic Vulnerable 25% · 2 turns`) and `Text`, the authored `tooltip` with its
+  `{proc.*}`, `{resists.percent}`, `{tv.pct}` and `{decay.duration}` tokens bound
+  (a port of `statusTooltipText` / `statusInstancePresentation` in
+  `src/ui/uiContent.js`), plus `Turns left: N.` when timed. An id with no status
+  row gets `Authored = false` and the text "No description is recorded for this
+  status. (<id>)".
+- `StatusExplainer.CardTags(catalog, card)` returns tag → blurb rows from the
+  same tag ids the card face draws (explicit `cardTags`, otherwise the catalog
+  junction; unknown ids are skipped as on the face).
+- Enemies: `EnemyTelegraphView.ExplainStatuses` makes the enemy figure and its
+  status caption (new name `enemy-status-<id>`) open a panel listing Guard, HP
+  and every status line. It uses the same hover (350 ms) / long-press (450 ms)
+  panel as the intent badge. A short tap still selects the target; the existing
+  `native-target-*`, `coop-target-*`, `enemy-intent-*` and `enemy-poise-*` names
+  are unchanged. The press is tracked from the panel root (TrickleDown), because
+  the enclosing Button captures the pointer; release, cancel or a move of more
+  than 12 px before 450 ms cancels it, and the root handlers are removed when the
+  press ends. Rules: `LongPressTracker` and `PopupPlacement` in
+  `Domain/Original/ExplainGesture.cs`. The panel's height is bounded to the
+  viewport and its body scrolls; it opens below, else above, else clamped.
+- Co-op: while a friendly-target card is selected, enemy targets are no longer
+  `SetEnabled(false)` (that blocked the explanation). They get the
+  `target-unavailable` class (dimmed, not focusable), their click is ignored, and
+  the control report still reports them as not enabled. Solo never disables targets.
+- Cards: each tag chip opens `Label` + blurb on hover or long press, without
+  selecting the card; the `tooltip` property is kept. The card's `FullText`
+  ends with the tag lines, and the solo pile inspection lists them under each
+  card.
+- Tests: `UnityTests/Telegraphs` explains every status referenced by the shipped
+  content (authored text, no fallback, every token bound, formatted stacks and
+  turns) plus live engine enemy snapshots; `UnityTests/CardText` checks every
+  tag on every authored card yields its blurb through `CardTags`.

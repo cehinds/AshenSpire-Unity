@@ -226,6 +226,84 @@ try
     Check(projected.Intent.TooltipBody.Contains("modifiers included"), "host preview is identified as modifier-inclusive");
     ((JObject)vulnerableView["intent"]).Remove("previewDamage");
     Check(EnemyTelegraphViewModel.FromSnapshot(vulnerableView, null).Intent.TooltipBody.Contains("base damage"), "old companion fallback is explicitly labelled base damage");
+
+    // ---- US-4.4 status explanations (StatusExplainer) ------------------------------------
+    var shipped = new OriginalContentCatalog(Read("GameContent/Unity/Original/content.json"));
+    var statusRows = content["statuses"]!.OfType<JObject>().ToDictionary(x => (string)x["id"]!);
+    var reachable = new SortedSet<string>(StringComparer.Ordinal) { "staggered" };
+    foreach (var token in content.Descendants().OfType<JProperty>().Where(p => p.Name == "status" && p.Value.Type == JTokenType.String))
+        if (statusRows.ContainsKey((string)token.Value!)) reachable.Add((string)token.Value!);
+    Check(reachable.Count >= 10, "content references " + reachable.Count + " statuses (a superset of those an enemy snapshot can carry)");
+    var unbound = new List<string>();
+    foreach (var id in reachable)
+    {
+        var def = statusRows[id];
+        var instance = def["proc"] is JObject proc ? new JObject { ["meter"] = new JObject { ["value"] = 3, ["max"] = proc["threshold"] } } : new JObject { ["stacks"] = 2 };
+        if (def["decay"] is JObject) instance["duration"] = 2;
+        var statusSnapshot = new JObject { [id] = instance };
+        var frozen = statusSnapshot.DeepClone();
+        var row = StatusExplainer.Describe(shipped, statusSnapshot).Single();
+        if (!JToken.DeepEquals(frozen, statusSnapshot)) throw new Exception("Describe mutated the status snapshot for " + id);
+        if (!row.Authored || row.Text.Contains(StatusExplainer.UnknownText)) throw new Exception("status '" + id + "' used the fallback");
+        if (StatusExplainer.TooltipText(def).Length == 0 || !row.Text.StartsWith(StatusExplainer.TooltipText(def), StringComparison.Ordinal)) throw new Exception("status '" + id + "' text is not its authored tooltip");
+        if (row.Text.Contains('{')) unbound.Add(id);
+        var name = (string)def["name"]!;
+        var expectedLabel = (string)def["instancePresentation"]?["valueToken"] == "percent" ? name + " 2% · 2 turns"
+            : def["proc"] != null ? name + " 3 / " + def["proc"]!["threshold"] : name + " ×2";
+        if (row.Label != expectedLabel) throw new Exception("status '" + id + "' label '" + row.Label + "', expected '" + expectedLabel + "'");
+        if (def["decay"] is JObject && !row.Text.EndsWith(" Turns left: 2.", StringComparison.Ordinal)) throw new Exception("status '" + id + "' omits its turns left");
+    }
+    Check(true, "all " + reachable.Count + " content-referenced statuses explain with authored text and formatted stacks (" + string.Join(", ", reachable) + ")");
+    Check(unbound.Count == 0, "every status token is bound (" + string.Join(", ", unbound) + ")");
+    foreach (var def in statusRows.Values) if (string.IsNullOrWhiteSpace((string)def["tooltip"])) throw new Exception("status " + def["id"] + " has no tooltip");
+    Check(true, "every one of " + statusRows.Count + " authored statuses has tooltip text");
+    var bleed = StatusExplainer.Describe(shipped, JObject.Parse("{bleed:{meter:{value:4,max:7}}}")).Single();
+    Equal(bleed.Text, "Build-up: points do not decay. At 7, burst for 15% of max HP (min 8, max 35), ignoring Block, plus 3 Poise damage — then the build-up resets to zero. Fleshy targets briefly resist further Bleed after a burst.", "Bleed tokens bind to its proc row (statusTooltipText)");
+    Equal(bleed.Label, "Bleed 4 / 7", "meter status shows value / threshold");
+    var exposed = StatusExplainer.Describe(shipped, JObject.Parse("{frostExposed:{stacks:1,duration:1}}")).Single();
+    Check(exposed.Text.StartsWith("Takes 25% more damage from starstone attacks.") && exposed.Text.EndsWith("Turns left: 1."), "tagged vulnerability percent and turns left: " + exposed.Text);
+    var ordered = StatusExplainer.Describe(shipped, JObject.Parse("{vulnerable:{stacks:1},strength:{stacks:3},weak:{stacks:2}}"));
+    Equal(string.Join(",", ordered.Select(r => r.Id)), "vulnerable,strength,weak", "explanations keep snapshot order");
+    Equal(ordered[1].Line, "Strength ×3 — Attacks deal +1 damage per stack.", "one readable line per status");
+    var unknown = StatusExplainer.Describe(shipped, JObject.Parse("{mysteryHex:{stacks:2}}")).Single();
+    Check(!unknown.Authored && unknown.Name == "Mystery Hex" && unknown.Text == StatusExplainer.UnknownText + " (mysteryHex)" && unknown.Label == "Mystery Hex ×2", "unknown status id uses the clear fallback");
+    Equal(StatusExplainer.Describe(shipped, null).Count, 0, "no statuses → no rows");
+    Equal(StatusExplainer.Panel("Hound · statuses", Array.Empty<StatusExplanation>()), "Hound · statuses\nNo active statuses.", "empty panel wording");
+    Equal(StatusExplainer.Describe((JArray)content["statuses"]!, JObject.Parse("{weak:{stacks:2}}")).Single().Line, ordered[2].Line, "raw table and catalog paths agree");
+    // Real engine snapshots: every status a live enemy carries is explained with authored text.
+    foreach (var session in new[] { attacking, filler })
+        foreach (var e in session.Enemies.OfType<JObject>())
+            foreach (var r in StatusExplainer.Describe(catalog, (JObject)e["statuses"]!))
+                Check(r.Authored && !r.Text.Contains('{'), "live enemy status '" + r.Id + "' explained: " + r.Label);
+    Check(StatusExplainer.Describe(catalog, (JObject)filler.Enemies[0]!["statuses"]!).Any(r => r.Id == "staggered"), "a live Staggered enemy lists Staggered");
+
+    // ---- Explanation gesture and popup placement (ExplainGesture.cs) -----------------------
+    var press = new LongPressTracker(12);
+    press.Begin(7, 100, 100);
+    Check(!press.Move(7, 108, 106) && press.Active, "movement within the 12px slop keeps the long press");
+    Check(press.Fire(7) && !press.Active, "a held press fires once");
+    Check(!press.Fire(7), "a fired press never fires again");
+    press.Begin(7, 100, 100);
+    Check(press.Move(7, 100, 113) && !press.Active && !press.Fire(7), "movement beyond the slop (a scroll) cancels it");
+    press.Begin(7, 100, 100);
+    Check(press.End(7) && !press.Fire(7), "pointer up/cancel/leave before the delay (a short tap) cancels it");
+    press.Begin(7, 100, 100);
+    Check(!press.Move(8, 400, 400) && !press.End(8) && press.Fire(7), "another pointer neither cancels nor fires the tracked press");
+    press.Begin(1, 0, 0); press.Begin(2, 0, 0);
+    Check(!press.Fire(1) && press.Fire(2), "a new press replaces the previous one");
+    press.Begin(3, 0, 0); press.Cancel();
+    Check(!press.Fire(3), "explicit cancel (detach/hide) clears the press");
+    var fits = PopupPlacement.Place(200, 100, 160, 230, 120, 800, 600);
+    Check(!fits.Above && fits.Top == 164 && fits.Left == 85 && fits.MaxHeight == 592, "fits below the anchor; max height is the viewport minus margins");
+    var flip = PopupPlacement.Place(200, 400, 460, 230, 200, 800, 600);
+    Check(flip.Above && flip.Top == 196, "flips above when it does not fit below");
+    var tall = PopupPlacement.Place(200, 200, 260, 230, 5000, 800, 600);
+    Check(tall.MaxHeight == 592 && tall.Top == 4 && tall.Top + tall.MaxHeight <= 596, "a very tall body is bounded to the viewport (and scrolls), never off screen");
+    var edge = PopupPlacement.Place(10, 100, 160, 230, 50, 300, 600);
+    var right = PopupPlacement.Place(295, 100, 160, 230, 50, 300, 600);
+    Check(edge.Left == 4 && right.Left == 66, "horizontal clamp keeps the popup inside both edges");
+    var tiny = PopupPlacement.Place(100, 10, 20, 230, 100, 300, 6);
+    Check(tiny.MaxHeight == 0 && tiny.Top >= 4, "degenerate viewport never yields a negative height");
 }
 catch (Exception error)
 {

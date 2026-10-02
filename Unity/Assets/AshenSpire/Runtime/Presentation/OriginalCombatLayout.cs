@@ -83,6 +83,17 @@ namespace AshenSpire.Presentation
             button.Add(Label(detail, "original-fighter-caption")); button.tooltip = name + ". " + intentText + ". HP " + enemy["hp"] + "/" + enemy["maxHp"] + ". " + detail;
             return button;
         }
+        /// <summary>
+        /// Marks an enemy target unselectable without disabling it, so its status explanation
+        /// (figure and caption) stays reachable. The caller's click action must also be gated.
+        /// The control report treats the class as disabled (see Selectable).
+        /// </summary>
+        public const string TargetUnavailableClass = "target-unavailable";
+        public static void SetTargetAvailable(VisualElement target, bool available)
+        {
+            target.EnableInClassList(TargetUnavailableClass, !available); target.focusable = available;
+        }
+        public static bool Selectable(VisualElement control) => control.enabledInHierarchy && !control.ClassListContains(TargetUnavailableClass);
         public static ScrollView Hand(object owner, string roomKey, string id, Action changed = null)
         {
             var memory = HandMemory.GetValue(owner, _ => new ScrollMemory());

@@ -4,6 +4,8 @@
 // Attach swaps the text intent label for the badge and adds the Poise meter under HP.
 // DATA: Domain/Original/EnemyTelegraph.cs (EnemyTelegraphViewModel) owns every number and
 // every word. MODIFY: look in Resources/EnemyTelegraphs.uss. No rules or saved state here.
+// Explain(element, text) is the shared hover/long-press panel (also card tag blurbs, US-13.4);
+// ExplainStatuses binds StatusExplainer rows to an enemy's figure and status row (US-4.4).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,8 @@ namespace AshenSpire.Presentation
     {
         public const string StyleSheetResource = "EnemyTelegraphs";
         private const long HoverDelayMs = 350, LongPressMs = 450, TouchHideMs = 4000;
+        // A touch that travels this far is a scroll or drag, not a long press.
+        private const float LongPressSlop = 12;
         // Glyphs the authored font map does not list (↑ ☾) are in NotoSansSymbols.
         private const string SymbolFallbackFont = "Fonts/NotoSansSymbols-Regular";
         private static StyleSheet _sheet;
@@ -87,48 +91,129 @@ namespace AshenSpire.Presentation
             return meter;
         }
 
+        /// <summary>
+        /// US-4.4: the enemy figure and its status row explain every active status (authored
+        /// tooltip text) on hover or long press. A short tap still selects the target.
+        /// </summary>
+        public static void ExplainStatuses(VisualElement slot, string enemyName, string instanceId, JObject enemy, IReadOnlyList<StatusExplanation> statuses)
+        {
+            if (slot == null) return;
+            var text = StatusExplainer.Panel(enemyName + " · statuses", statuses, "Guard " + (enemy?["block"] ?? 0) + " · HP " + enemy?["hp"] + "/" + enemy?["maxHp"]);
+            var caption = slot.Children().FirstOrDefault(c => c.ClassListContains("original-fighter-caption"));
+            if (caption != null)
+            {
+                caption.name = "enemy-status-" + instanceId; caption.pickingMode = PickingMode.Position;
+                caption.AddToClassList("telegraph-status-row");
+                Explain(caption, text);
+            }
+            var figure = slot.Children().FirstOrDefault(c => c.ClassListContains("original-combat-figure"));
+            if (figure != null) { figure.pickingMode = PickingMode.Position; Explain(figure, text); }
+        }
+
         // Runtime UI Toolkit panels never draw `tooltip`, so the explanation is a floating
         // label on the panel root: after a hover delay (mouse) or on a long press (touch/pen).
-        // A long press releases the slot's pointer capture so it does not also select the target.
+        // A long press releases any ancestor's pointer capture (an enemy slot or a card
+        // button) so it does not also select that control. The `tooltip` property is kept.
+        /// <summary>Hover/long-press explanation panel; the first line of `text` is the title.</summary>
+        public static void Explain(VisualElement owner, string text)
+        {
+            if (_sheet == null) _sheet = Resources.Load<StyleSheet>(StyleSheetResource);
+            Tooltip(owner, text);
+        }
+
         private static void Tooltip(VisualElement owner, string text)
         {
             if (string.IsNullOrEmpty(text)) return;
             owner.tooltip = text;
-            VisualElement popup = null; IVisualElementScheduledItem pending = null, expiry = null;
-            void Hide() { pending?.Pause(); expiry?.Pause(); popup?.RemoveFromHierarchy(); popup = null; }
+            VisualElement popup = null; IVisualElementScheduledItem pending = null, expiry = null, leaving = null;
+            // Owners sit inside Buttons whose Clickable captures the pointer after pointer-down,
+            // so move/up/cancel go to that ancestor, not to the owner. Track the press from the
+            // panel root in the TrickleDown phase (it sees every captured event) and unregister
+            // as soon as the press ends, fires or the owner leaves the panel.
+            var press = new LongPressTracker(LongPressSlop);
+            VisualElement trackRoot = null;
+            EventCallback<PointerMoveEvent> onMove = null; EventCallback<PointerUpEvent> onUp = null; EventCallback<PointerCancelEvent> onCancel = null;
+            void StopTracking()
+            {
+                if (trackRoot == null) return;
+                trackRoot.UnregisterCallback(onMove, TrickleDown.TrickleDown);
+                trackRoot.UnregisterCallback(onUp, TrickleDown.TrickleDown);
+                trackRoot.UnregisterCallback(onCancel, TrickleDown.TrickleDown);
+                trackRoot = null;
+            }
+            void CancelPress() { press.Cancel(); pending?.Pause(); StopTracking(); }
+            onMove = e => { if (press.Move(e.pointerId, e.position.x, e.position.y)) CancelPress(); };
+            onUp = e => { if (press.End(e.pointerId)) CancelPress(); };
+            onCancel = e => { if (press.End(e.pointerId)) CancelPress(); };
+            void Hide() { CancelPress(); expiry?.Pause(); leaving?.Pause(); popup?.RemoveFromHierarchy(); popup = null; }
             void Show()
             {
                 var root = owner.panel?.visualTree; if (root == null) return;
                 popup?.RemoveFromHierarchy();
-                popup = new VisualElement { pickingMode = PickingMode.Ignore }; popup.AddToClassList("telegraph-tooltip");
+                // Pickable so a long body can be scrolled; the height is bounded to the viewport.
+                popup = new VisualElement { pickingMode = PickingMode.Position }; popup.AddToClassList("telegraph-tooltip");
                 if (_sheet != null) popup.styleSheets.Add(_sheet);
                 var lines = text.Split('\n');
                 popup.Add(Text(lines[0], "telegraph-tooltip-title"));
-                if (lines.Length > 1) popup.Add(Text(string.Join("\n", lines.Skip(1)), "telegraph-tooltip-body"));
+                if (lines.Length > 1)
+                {
+                    var scroll = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+                    scroll.AddToClassList("telegraph-tooltip-scroll"); scroll.style.flexShrink = 1; scroll.style.minHeight = 0;
+                    scroll.Add(Text(string.Join("\n", lines.Skip(1)), "telegraph-tooltip-body"));
+                    popup.Add(scroll);
+                }
                 var anchor = owner.worldBound; const float width = 230;
-                var left = Mathf.Clamp(anchor.center.x - width / 2, 4, Mathf.Max(4, root.layout.width - width - 4));
-                popup.style.position = Position.Absolute; popup.style.width = width;
-                popup.style.left = left; popup.style.top = anchor.yMax + 4;
+                var first = PopupPlacement.Place(anchor.center.x, anchor.yMin, anchor.yMax, width, 0, root.layout.width, root.layout.height);
+                popup.style.position = Position.Absolute; popup.style.width = width; popup.style.flexDirection = FlexDirection.Column;
+                popup.style.left = first.Left; popup.style.top = first.Top; popup.style.maxHeight = first.MaxHeight;
+                // Keep long explanations on screen: below, else above, else clamped (bounded height).
+                var shown = popup;
+                shown.RegisterCallback<GeometryChangedEvent>(_ =>
+                {
+                    var limit = root.layout.height; if (shown.layout.height <= 0 || limit <= 0) return;
+                    var at = PopupPlacement.Place(anchor.center.x, anchor.yMin, anchor.yMax, width, shown.layout.height, root.layout.width, limit);
+                    if (!Mathf.Approximately(shown.resolvedStyle.top, at.Top)) shown.style.top = at.Top;
+                    if (!Mathf.Approximately(shown.resolvedStyle.maxHeight.value, at.MaxHeight)) shown.style.maxHeight = at.MaxHeight;
+                });
+                shown.RegisterCallback<PointerEnterEvent>(_ => leaving?.Pause());
+                shown.RegisterCallback<PointerLeaveEvent>(e => { if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) Hide(); });
+                shown.RegisterCallback<PointerDownEvent>(e =>
+                {
+                    if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) return;
+                    expiry?.Pause(); expiry = owner.schedule.Execute(Hide).StartingIn(TouchHideMs); // reading/scrolling keeps it open
+                });
                 root.Add(popup);
             }
             owner.RegisterCallback<PointerEnterEvent>(e =>
             {
                 if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+                leaving?.Pause(); if (popup != null) return;
                 pending?.Pause(); pending = owner.schedule.Execute(Show).StartingIn(HoverDelayMs);
             });
-            owner.RegisterCallback<PointerLeaveEvent>(e => { if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) Hide(); });
+            // A short grace lets the mouse move onto the popup to scroll it.
+            owner.RegisterCallback<PointerLeaveEvent>(e =>
+            {
+                if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+                pending?.Pause(); leaving?.Pause(); leaving = owner.schedule.Execute(Hide).StartingIn(150);
+            });
             owner.RegisterCallback<PointerDownEvent>(e =>
             {
                 if (e.pointerType == UnityEngine.UIElements.PointerType.mouse) return;
-                var pointerId = e.pointerId; pending?.Pause();
+                CancelPress();
+                var root = owner.panel?.visualTree; if (root == null) return;
+                var pointerId = e.pointerId; press.Begin(pointerId, e.position.x, e.position.y);
+                trackRoot = root;
+                root.RegisterCallback(onMove, TrickleDown.TrickleDown);
+                root.RegisterCallback(onUp, TrickleDown.TrickleDown);
+                root.RegisterCallback(onCancel, TrickleDown.TrickleDown);
                 pending = owner.schedule.Execute(() =>
                 {
-                    var slot = owner.parent; if (slot != null && slot.HasPointerCapture(pointerId)) slot.ReleasePointer(pointerId);
+                    StopTracking();
+                    if (!press.Fire(pointerId)) return; // released, cancelled or moved: a tap or scroll
+                    for (var up = owner.parent; up != null; up = up.parent) if (up.HasPointerCapture(pointerId)) up.ReleasePointer(pointerId);
                     Show(); expiry?.Pause(); expiry = owner.schedule.Execute(Hide).StartingIn(TouchHideMs);
                 }).StartingIn(LongPressMs);
             });
-            owner.RegisterCallback<PointerUpEvent>(e => { if (e.pointerType != UnityEngine.UIElements.PointerType.mouse) pending?.Pause(); });
-            owner.RegisterCallback<PointerCancelEvent>(_ => pending?.Pause());
             owner.RegisterCallback<DetachFromPanelEvent>(_ => Hide());
         }
 

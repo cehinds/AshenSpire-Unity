@@ -48,6 +48,8 @@ namespace AshenSpire.Presentation
                 group.Add(Label((string)row.Card["name"], "stat"));
                 group.Add(Label(OriginalCardCostText.Describe(_game.Cost(row.Instance)), "caption"));
                 group.Add(Label(OriginalCardText.Describe(row.Card, _game.Catalog), "caption"));
+                // US-13.4: tag blurbs are readable here without hover.
+                foreach (var tag in StatusExplainer.CardTags(_game.Catalog, row.Card)) group.Add(Label(tag.Line, "caption"));
                 _root.Add(group);
             }
             _root.Focus(); _report();
