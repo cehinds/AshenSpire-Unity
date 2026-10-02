@@ -13,12 +13,22 @@ namespace AshenSpire.Domain.Original
     public static class OriginalWebSaveImport
     {
         public const int MaximumBytes = 1024 * 1024;
-        private static JToken Canonical(JToken value) => value is JObject obj
+        internal static JToken Canonical(JToken value) => value is JObject obj
             ? new JObject(obj.Properties().OrderBy(p => p.Name, StringComparer.Ordinal).Select(p => new JProperty(p.Name, Canonical(p.Value))))
             : value is JArray array ? new JArray(array.Select(Canonical)) : value.DeepClone();
-        private static string Hash(JObject source)
+        internal static string Hash(JObject source)
         {
             using (var sha = SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(Canonical(source).ToString(Formatting.None)))).Replace("-", "").ToLowerInvariant();
+        }
+        // Strict JSON: one object, no duplicate properties, no trailing data, bounded depth.
+        internal static JObject ParseStrict(string value)
+        {
+            using (var reader = new JsonTextReader(new StringReader(value)) { MaxDepth = 64, DateParseHandling = DateParseHandling.None })
+            {
+                var result = JObject.Load(reader, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
+                if (reader.Read()) throw new ArgumentException("Unexpected data after the save.");
+                return result;
+            }
         }
         public static void ValidateReceipt(JObject run)
         {
@@ -33,21 +43,12 @@ namespace AshenSpire.Domain.Original
         {
             if (string.IsNullOrWhiteSpace(text) || Encoding.UTF8.GetByteCount(text) > MaximumBytes)
                 throw new ArgumentException("Choose an original save JSON file no larger than 1 MB.");
-            JObject Parse(string value)
-            {
-                using (var reader = new JsonTextReader(new StringReader(value)) { MaxDepth = 64, DateParseHandling = DateParseHandling.None })
-                {
-                    var result = JObject.Load(reader, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
-                    if (reader.Read()) throw new ArgumentException("Unexpected data after the save.");
-                    return result;
-                }
-            }
-            var source = Parse(text);
+            var source = ParseStrict(text);
             if (source["archive"] is JObject archive)
             {
                 if ((string)archive["kind"] != "run" || archive["save"]?.Type != JTokenType.String)
                     throw new ArgumentException("Choose a run archive, not a profile archive.");
-                source = Parse((string)archive["save"]);
+                source = ParseStrict((string)archive["save"]);
             }
             if (source["profile"] != null) throw new ArgumentException("This is a profile export. Run import needs an original run save.");
             if (source["schemaVersion"]?.Type != JTokenType.Integer || (int)source["schemaVersion"] != 5)
