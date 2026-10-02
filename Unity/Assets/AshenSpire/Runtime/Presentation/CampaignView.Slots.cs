@@ -24,7 +24,7 @@ namespace AshenSpire.Presentation
         public void WebSaveImport(string notice, Action<string> preview, Action back, Action chooseFile = null, Action<int> browserSlot = null)
         {
             Shell("ASHENEDSPIRE", "IMPORT AN ORIGINAL SAVE");
-            _body.Add(new Label("Paste the JSON from an original AshenSpire run save or exported run archive. Import supports compatible map checkpoints. Finish combat, rewards or shopping in the original game first. Your original file and existing slots stay untouched.") { style = { whiteSpace = WhiteSpace.Normal } });
+            _body.Add(new Label("Paste the JSON from an original AshenSpire run save, exported run archive or exported profile. Run import supports compatible map checkpoints; finish combat, rewards or shopping in the original game first. Profile import adds run history, unlocks and found armaments. Your original file and existing slots stay untouched.") { style = { whiteSpace = WhiteSpace.Normal } });
             if (chooseFile != null) _body.Add(Control("native-web-import-file", "Choose save file", chooseFile, "secondary-button"));
             if (browserSlot != null)
             {
@@ -36,6 +36,18 @@ namespace AshenSpire.Presentation
             field.style.height = 170; _body.Add(field);
             _body.Add(Control("native-web-import-preview", "Check save", () => preview(field.value), "primary-button"));
             _body.Add(Control("native-web-import-back", "Back", back, "secondary-button"));
+            Report();
+        }
+        /// <summary>Profile merge preview. A null action hides its button (nothing new, or no mapped settings).</summary>
+        public void WebProfileImportPreview(string summary, string unmappedSettings, Action importProfile, Action importWithSettings, Action back)
+        {
+            Shell("ASHENEDSPIRE", "REVIEW YOUR PROFILE IMPORT");
+            _body.Add(new Label(summary) { style = { whiteSpace = WhiteSpace.Normal } });
+            _body.Add(new Label("Imported history and unlocks are added to your AshenedSpire profile; nothing already there is removed, and importing the same profile again adds nothing.") { style = { whiteSpace = WhiteSpace.Normal } });
+            if (!string.IsNullOrEmpty(unmappedSettings)) _body.Add(new Label(unmappedSettings) { style = { whiteSpace = WhiteSpace.Normal } });
+            if (importProfile != null) _body.Add(Control("native-web-profile-import-confirm", "Import history and unlocks", importProfile, "primary-button"));
+            if (importWithSettings != null) _body.Add(Control("native-web-profile-import-settings", importProfile != null ? "Import with settings" : "Import settings", importWithSettings, importProfile != null ? "secondary-button" : "primary-button"));
+            _body.Add(Control("native-web-import-cancel", "Cancel", back, "secondary-button"));
             Report();
         }
         public void WebSaveImportPreview(string summary, Action confirm, Action back)

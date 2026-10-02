@@ -124,6 +124,7 @@ namespace AshenSpire.Application
             {
                 try
                 {
+                    if (OriginalWebProfileImport.IsProfile(text)) { PreviewWebProfile(text); return; }
                     var target = _slotSaves.List().FirstOrDefault(s => s.State == OriginalSaveSlotState.Empty);
                     if (target == null) throw new InvalidOperationException("All slots are occupied. Free a slot from Saved climbs before importing.");
                     // An imported checkpoint freezes the shipped original catalog;
@@ -151,6 +152,31 @@ namespace AshenSpire.Application
             browserSlot = slot => AshenedSpire_ReadOriginalSlot(gameObject.name, slot);
 #endif
             _view.WebSaveImport(notice, _previewWebImport, ShowSaveSlots, chooseFile, browserSlot);
+        }
+        // Original profile (history, unlocks, discoveries, settings) merges into the native
+        // profile; settings are applied only when the player asks. Nothing is replaced.
+        private void PreviewWebProfile(string text)
+        {
+            var preview = OriginalWebProfileImport.Merge(text, _originalContent, _profile, _playerSettings);
+            _previewWebImport = null;
+            Action Commit(bool withSettings) => () =>
+            {
+                try
+                {
+                    // Merge again against the live profile so nothing recorded since the preview is lost.
+                    var merge = OriginalWebProfileImport.Merge(text, _originalContent, _profile, _playerSettings);
+                    if (merge.Changed)
+                    {
+                        var previous = _profile; _profile = merge.Profile;
+                        if (!SaveOriginalProfile()) { _profile = previous; ShowWebImport("The profile import could not be saved. Free some storage and try again. Your original profile is unchanged."); return; }
+                    }
+                    if (withSettings) { _playerSettings = merge.Settings; _view.PlayerSettings = _playerSettings; SavePlayerSettings(); }
+                    ShowSaveSlots("Original profile imported: " + merge.ImportedResults + " run results, " + (merge.AddedUnlocks.Count + merge.EarnedUnlocks.Count) + " unlocks" + (withSettings ? ", " + merge.MappedSettings.Count + " settings." : "."));
+                }
+                catch (Exception error) { ShowWebImport("Import refused: " + error.Message); }
+            };
+            var unmapped = preview.UnmappedSettings.Count == 0 ? "" : "Not carried over: " + string.Join("; ", preview.UnmappedSettings.Select(u => u.Split(':')[0]));
+            _view.WebProfileImportPreview(preview.Summary(), unmapped, preview.Changed ? Commit(false) : null, preview.MappedSettings.Count > 0 ? Commit(true) : null, ShowSaveSlots);
         }
         private void ShowSaveSlots(string notice)
         {
