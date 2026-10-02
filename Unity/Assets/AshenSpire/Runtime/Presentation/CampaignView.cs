@@ -607,6 +607,8 @@ namespace AshenSpire.Presentation
         private sealed class ControlList
         {
             public ControlBounds[] Controls; public float PanelWidth, PanelHeight; public string[] Labels;
+            /// <summary>The app root's classes (display options, palette, high contrast) for settings playtests.</summary>
+            public string[] RootClasses;
             public int LayoutAttempts;
         }
         private void Report(bool refreshTouchTargets = true)
@@ -652,7 +654,7 @@ namespace AshenSpire.Presentation
             // supplementary glyph can be split into invalid UTF-8 log envelopes.
             var report = Newtonsoft.Json.JsonConvert.SerializeObject(new ControlList {
                 Controls = controls, PanelWidth = width, PanelHeight = height,
-                LayoutAttempts = _controlReportAttempts + 1,
+                LayoutAttempts = _controlReportAttempts + 1, RootClasses = _root.GetClasses().ToArray(),
                 Labels = surface.Query<Label>().ToList().Where(label => !FeelDriver.InOverlay(label)).Select(label => label.text).ToArray() }, // hover copies are not controls
                 new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
             // Web console messages have a finite byte limit. Expanded creators

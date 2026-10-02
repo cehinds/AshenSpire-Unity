@@ -8,7 +8,8 @@
 // object in; this file edits it and raises PlayerSettingsChanged / ContentModsChanged.
 // APPLIED HERE: text size (per text element, from its resolved USS size), colorblind palette
 // (root class palette-*, Resources/OriginalPalette.uss), high contrast (root class
-// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), and the
+// high-contrast, Resources/OriginalTheme.uss), display options (root classes from Domain
+// OriginalDisplayOptions; OriginalTheme.uss / OriginalCards.uss), map key bindings (MapView.KeyAction), and the
 // feel settings (FeelDriver.Configure → Domain FeelSettings.From: speed bucket, reduced
 // motion, reduce flashes, shake, hit-stop) that CombatFeedback reads.
 // VERIFY IN EDITOR: open Settings, move each slider, pick a palette, rebind a map key.
@@ -158,7 +159,7 @@ namespace AshenSpire.Presentation
             SettingToggle("shop-sell", "Merchant buys back", s.ShopSell, v => s.ShopSell = v);
             SettingChoice("swap-cost-rule", "Weapon swap cost", OriginalPlayerSettings.SwapCostRuleIds, s.SwapCostRule, v => s.SwapCostRule = v);
             _body.Add(Text("Merchant buys back offers a Sell row for relics and flasks. Weapon swap cost: Flat charges the same for every weapon; Gear lets talismans and relics change it; Category prices it by the weapon you draw. Both apply from the next climb or Continue.", "caption"));
-            // Display (US-15.1). Saved; Fullscreen applies now, the rest set root classes for the styles to follow.
+            // Display (US-15.1). Every row applies on change (Changed → ApplyPlayerSettings) and on load.
             _body.Add(Text("Display", "caption"));
             SettingToggle("fullscreen", "Fullscreen", s.Fullscreen, v => { s.Fullscreen = v; Screen.fullScreen = v; });
             SettingChoice("ui-size", "UI size", OriginalPlayerSettings.UiSizes, s.UiSize, v => s.UiSize = v);
@@ -169,7 +170,7 @@ namespace AshenSpire.Presentation
             SettingToggle("map-header-relics", "Relics in map header", s.MapHeaderRelics, v => s.MapHeaderRelics = v);
             SettingToggle("map-header-seed", "Seed in map header", s.MapHeaderSeed, v => s.MapHeaderSeed = v);
             SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
-            _body.Add(Text("UI size, accent, card motif, map header and control hints are saved; their styles are still being tuned.", "caption"));
+            _body.Add(Text("UI size scales the whole interface; L and XL grow only as far as the screen fits. Accent tints highlights, borders and primary buttons. Card motif colours class cards: Wash tints the body, Accent puts your accent on the border with a rarity pip, Band adds a class stripe. Compact tightens the map header; relics and seed show in a line under it. Control hints list keyboard shortcuts under the map and combat in wide windows.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
@@ -348,19 +349,13 @@ namespace AshenSpire.Presentation
             _body.Add(field);
             return field;
         }
-        // Display options (US-15.1) as root classes. No USS rules read them yet; tuning is editor follow-up.
-        private static readonly string[] DisplayClassPrefixes = { "ui-size-", "accent-", "card-motif-", "motif-strength-", "map-header-" };
+        // Display options (US-15.1) as root classes (Domain OriginalDisplayOptions.RootClasses).
+        // OriginalTheme.uss styles accent, map header and control hints from them; OriginalCards.uss
+        // the card motif and its strength. UI size is PanelSettings.scale (RunController.Settings.cs).
         private void ApplyDisplayClasses(OriginalPlayerSettings settings)
         {
-            foreach (var name in _root.GetClasses().Where(c => DisplayClassPrefixes.Any(p => c.StartsWith(p, StringComparison.Ordinal))).ToList()) _root.RemoveFromClassList(name);
-            _root.AddToClassList("ui-size-" + settings.UiSize.ToLowerInvariant());
-            _root.AddToClassList("accent-" + settings.Accent);
-            _root.AddToClassList("card-motif-" + settings.CardMotif);
-            _root.AddToClassList("motif-strength-" + settings.CardMotifStrength);
-            _root.AddToClassList("map-header-" + settings.MapHeaderDensity);
-            _root.EnableInClassList("map-header-no-relics", !settings.MapHeaderRelics);
-            _root.EnableInClassList("map-header-no-seed", !settings.MapHeaderSeed);
-            _root.EnableInClassList("no-control-hints", !settings.ControlHints);
+            foreach (var name in _root.GetClasses().Where(OriginalDisplayOptions.IsDisplayClass).ToList()) _root.RemoveFromClassList(name);
+            foreach (var name in OriginalDisplayOptions.RootClasses(settings)) _root.AddToClassList(name);
         }
         private Toggle SettingToggle(string id, string label, bool value, Action<bool> changed)
         {

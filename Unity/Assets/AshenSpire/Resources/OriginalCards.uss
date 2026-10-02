@@ -60,3 +60,39 @@
 
 .original-card .original-card-name { -unity-font: resource("Fonts/Cinzel-Regular"); }
 .original-card .original-card-art { -unity-font: resource("Fonts/NotoSansSymbols2-Regular"); }
+
+/* Card motif (Settings → Display → Card motif / Motif strength; HTML styles/ui.css).
+   CampaignView puts card-motif-{off,wash,accent,band} and motif-strength-{subtle,normal,strong}
+   on the app root (Domain OriginalDisplayOptions). OriginalCardView adds .original-card-motif,
+   tinted inline with the owning class's cardTint, and .original-card-pip. Opacities are
+   balance.ui.cardMotifStrength (.06/.10/.17; Accent x 1.3); UnityTests/Mods checks they match. */
+.original-card .original-card-motif {
+    display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    border-radius: 7px; opacity: 0.1;
+}
+.original-card .original-card-pip {
+    display: none; position: absolute; right: 6px; bottom: 6px; width: 9px; height: 9px;
+    border-radius: 9px; background-color: rgb(120,112,92);
+}
+/* wash: the class tints the card body; rarity keeps the border. */
+.card-motif-wash .original-card .original-card-motif { display: flex; }
+.card-motif-wash.motif-strength-subtle .original-card .original-card-motif { opacity: 0.06; }
+.card-motif-wash.motif-strength-strong .original-card .original-card-motif { opacity: 0.17; }
+/* accent: your accent takes the border, rarity moves to a corner pip, the class is a centred sigil. */
+.card-motif-accent .original-card.card { border-color: var(--ash-gold); }
+.card-motif-accent .original-card.card.selected { border-color: #f1cf87; }
+.card-motif-accent .original-card.card:focus { border-color: rgb(232,220,192); }
+.card-motif-accent .original-card .original-card-pip { display: flex; }
+.card-motif-accent .original-card.rarity-uncommon .original-card-pip { background-color: rgb(127,168,201); }
+.card-motif-accent .original-card.rarity-rare .original-card-pip { background-color: var(--ash-gold); }
+.card-motif-accent .original-card.rarity-special .original-card-pip { background-color: rgb(106,58,122); }
+.card-motif-accent .original-card .original-card-motif {
+    display: flex; left: 18%; right: 18%; top: 24%; bottom: 24%; border-radius: 200px; opacity: 0.13;
+}
+.card-motif-accent.motif-strength-subtle .original-card .original-card-motif { opacity: 0.078; }
+.card-motif-accent.motif-strength-strong .original-card .original-card-motif { opacity: 0.221; }
+/* band: a class stripe along the top and an accent rule under the art. Strength does not apply. */
+.card-motif-band .original-card .original-card-motif {
+    display: flex; bottom: auto; height: 5px; border-radius: 0; opacity: 1;
+}
+.card-motif-band .original-card .original-card-art { border-bottom-width: 2px; border-bottom-color: var(--ash-gold); }
