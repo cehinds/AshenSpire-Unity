@@ -1,14 +1,14 @@
 {
-  "sourceCommit": "b0509e6cd5b065b4a558b9fdd819fa9f9eba8c25",
+  "sourceCommit": "ecf7c8d3d7c2028916e086cf0593d707dc6e673f",
   "sources": {
-    "src/engine/save.js": "93572fa3c20f87c60715ad5b657dd1bdd77c838762d126546fb25719cb89e6bd",
+    "src/engine/save.js": "c5fafedc5696108fadc0897dc013675c86d9df4aaeb1d774ae3b4b3afe3ed449",
     "src/model/unlocks.js": "16a55b397c19d816cf371737dc19f8463cec8d663bd76e9c31637b284d78d435",
     "src/model/startingKits.js": "50b3826d7511587b42063b73118139079986f6f7012c00ac9f75e82a6c1a3920",
     "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46",
-    "src/main.js": "34a420dfeabe358af3417f1f123e839b91a67cf6bd8b4224df39449cadbb3b0c",
+    "src/main.js": "cdfc13bb57f801706992602457fa60917896d78bf0e41ba4e1ad77f558e13184",
     "src/ui/screens/settings.js": "7581377c311aa9d633b6b103b4bf45470d8f3dbe604b04050701315acaa4297d"
   },
-  "outputSha256": "bd79be54dda49ae4f2f4685fca359ce266b4246a803942be0be5a5e12a57c4d7",
+  "outputSha256": "521841ef2c7bf3d58a34f6e8f16a01aff9854235f5e8d1b7f712b21fc72619b2",
   "fixtures": {
     "fresh": {
       "status": "ok",
