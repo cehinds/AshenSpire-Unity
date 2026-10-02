@@ -17,6 +17,7 @@ export function serializeCombatSnapshot(combat) {
     version: COMBAT_SNAPSHOT_VERSION,
     equipmentProfileRuleSnapshot: combat.equipmentProfileRuleSnapshot,
     equipmentAttackSlotCount: combat.equipmentAttackSlotCount,
+    ...(combat.poolDeck ? { poolDeck: true } : {}),
     itemUpgradeLevels: combat.itemUpgradeLevels,
     itemMounts: combat.itemMounts,
     equipmentPoolDeficits: combat.equipmentPoolDeficits,
@@ -62,6 +63,7 @@ export function restoreCombatSnapshot({ registries, rng, snapshot, fallbackAttac
     equipmentAttackSlotCount: Number.isFinite(saved.equipmentAttackSlotCount)
       ? saved.equipmentAttackSlotCount
       : (Number.isFinite(fallbackAttackSlotCount) ? fallbackAttackSlotCount : undefined),
+    ...(saved.poolDeck === true ? { poolDeck: true } : {}),
     itemUpgradeLevels: saved.itemUpgradeLevels || Object.fromEntries(
       Object.entries(saved.armamentLevels || {}).map(([id, level]) => [`armament/${id}`, level]),
     ),

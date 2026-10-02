@@ -1,4 +1,5 @@
 import { tokenRe } from './validate.js';
+import { isPoolDeckRun } from './cardRemoval.js';
 import {
   applyMountOverrides, extraMountInstances, mountKey, ownerItemRef,
 } from './cardMounts.js';
@@ -2000,6 +2001,9 @@ function adoptWanted(inst, wanted) {
 
 export function reconcileGrantedCards(registries, run) {
   if (!run.deck) run.deck = [];
+  // A dealt deck (Sealed, Draft) is never dealt the equipment's lent cards
+  // (model/cardRemoval.js isPoolDeckRun): every full restamp leaves it as is.
+  if (isPoolDeckRun(run)) return run.deck;
   const desired = desiredGrantInstances(registries, run);
   const wanted = new Map(desired.map((d) => [d.instanceId, d]));
   const present = new Set();
@@ -2181,6 +2185,8 @@ export function itemMountInstances(registries, run, piece, { authored = false } 
  * Deterministic instance ids keep the sweep idempotent and combat-save-stable.
  */
 export function reconcileGrantedCardsInCombat(registries, run, piles) {
+  // A dealt deck's fight is left as dealt, too (model/cardRemoval.js).
+  if (isPoolDeckRun(run)) return;
   const desired = desiredGrantInstances(registries, run);
   const wanted = new Map(desired.map((d) => [d.instanceId, d]));
   const present = new Set();

@@ -28,7 +28,7 @@ const {createRegistries} = await load('src/model/registries.js');
 const {createRunState, createIdGen, createDeck} = await load('src/model/state.js');
 const {createRng, seedToString} = await load('src/engine/rng.js');
 const {createSaveManager, createMemoryStorage} = await load('src/engine/save.js');
-const {isPoolDeckRun, dealtAttackSlotCount} = await load('src/model/cardRemoval.js');
+const {isPoolDeckRun, dealtAttackSlotCount, POOL_DECK_RULE} = await load('src/model/cardRemoval.js');
 const {buildActMap} = await load('src/engine/actmap.js');
 const {rollEncounter, rollRuneReward, rollCardRewardIds, rollFlaskDrop, rollRelicReward, rollArmamentDrop, buildShopStock} = await load('src/engine/encounters.js');
 const {createCombat} = await load('src/engine/combat.js');
@@ -58,7 +58,7 @@ function climb(classId, seed, custom = {ascension: 0, mods: {}, deckMode: 'stand
     run.deck = createDeck(ids, createIdGen('rc'));
   } else if (deckMode === 'draft') run.deck = createDeck(['strike', 'strike', 'strike', 'strike', 'defend', 'defend', 'defend'], createIdGen('rc'));
   // main.js newRun: the dealt deck's birth attack quota is the slots it holds (the Sealed/Draft reload fix).
-  if (isPoolDeckRun(run)) run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);
+  if (isPoolDeckRun(run)) { run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck); run.poolDeckRule = POOL_DECK_RULE; }
   if (mods.cursedStart) run.deck.push(...createDeck(['guilt'], createIdGen('cx')));
   if (mods.hoarder) run.cinders += registries.balance.customMods.hoarderCinders;
   if (deckMode === 'draft') {
@@ -70,8 +70,8 @@ function climb(classId, seed, custom = {ascension: 0, mods: {}, deckMode: 'stand
       run.deck.push({instanceId: idGen(), cardId: offer[0], upgraded: false}); pool.splice(pool.indexOf(offer[0]), 1);
     }
   }
-  // main.js startClimb: a dealt deck (picks included) gets its equipment faces (a subset stamp).
-  if (isPoolDeckRun(run)) stampDeck(registries, run, run.deck, {adoptEquipmentBonuses: false, reconcileEquipmentPools: false});
+  // main.js startClimb: a dealt deck (picks included) gets its equipment faces (no lent card is dealt).
+  if (isPoolDeckRun(run)) stampDeck(registries, run, undefined, {adoptEquipmentBonuses: false, reconcileEquipmentPools: false});
   const g = {run, rng, saves, storage};
   g.run.mapGraph = buildActMap(registries, rng, contentAct(g), runShape(g), {history: run.history});
   return g;
@@ -113,7 +113,7 @@ function startFight(g, pool) {
 }
 function buildCombat(g, encounterId) {
   const run = g.run; const enc = registries.encounters.get(encounterId); const cm = combatMods(g, enc.pool);
-  return createCombat({registries, rng: g.rng, player: {classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout},
+  return createCombat({registries, rng: g.rng, player: {classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, ...(isPoolDeckRun(run) ? {poolDeck: true} : {}), equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout},
     enemyIds: enc.enemies, hpMult: cm.hpMult, enemyStatuses: cm.enemyStatuses, swapCostRule: resolveSwapCostRule(registries, g.saves.loadMeta()), playerStatuses: [...cm.playerStatuses, ...runMods(registries, run.loadout, run.class).startStatuses]});
 }
 const opening = c => ({turn: c.turn, phase: c.phase, energy: c.player.energy, hand: c.piles.hand.map(x => x.instanceId), draw: c.piles.draw.map(x => x.instanceId), discard: c.piles.discard.map(x => x.instanceId),

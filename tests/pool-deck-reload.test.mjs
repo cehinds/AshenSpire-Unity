@@ -1,7 +1,7 @@
 // Sealed and Draft runs reload (Custom Climb deck modes, main.js newRun).
-// Ported from the original's tests/pool-deck-reload.test.mjs (branch
-// claude/fix-sealed-draft-reload); only the mid-fight builder differs, since
-// this src/ copy predates engine/runCombat.js.
+// Ported from the original's tests/pool-deck-reload.test.mjs (cehinds/AshenSpire
+// #1479); only the fight builder differs, since this src/ copy predates
+// engine/runCombat.js.
 //
 // The bug: both modes deal the starting deck from a pool AFTER createRunState
 // composed one from the equipment, so the run kept a birth attack quota
@@ -10,10 +10,13 @@
 // match authored N" — and archived it. Found while building the Unity save
 // import, whose room-reference exporter recorded both modes as `archived`.
 //
-// The rule now: a pool-built deck's birth attack quota is the slots it was
-// dealt (model/cardRemoval.js dealtAttackSlotCount) — none — written at the
-// deal and, for a save written before that, healed at the load door; the load
-// restamps the deck as it is, so the equipment's lent cards are not dealt back.
+// The rule now (model/cardRemoval.js): a pool-built deck's birth attack quota
+// is the slots it was dealt — none — written at the deal with the
+// `poolDeckRule` marker; a save written before that (no marker) is healed once
+// at the load door and marked, and a marked save is held to its quota like any
+// run. A pool deck is never dealt the equipment's lent cards (kit basics,
+// weapon arts, Dodge Roll) at any restamp door: the load, the end of a fight,
+// an Armoury change, a mid-fight swap, a resumed fight.
 // A Standard run keeps the composed rule: a deck missing its slots is refused.
 //
 // main.js cannot be imported headless, so `deal` mirrors newRun's non-UI half
@@ -27,9 +30,9 @@ import { createRegistries } from '../src/model/registries.js';
 import { createRunState, createIdGen, createDeck } from '../src/model/state.js';
 import { createRng, seedToString } from '../src/engine/rng.js';
 import { createSaveManager, createMemoryStorage } from '../src/engine/save.js';
-import { createCombat } from '../src/engine/combat.js';
 import { commitCombatSnapshot } from '../src/engine/combatSnapshot.js';
-import { isPoolDeckRun, dealtAttackSlotCount } from '../src/model/cardRemoval.js';
+import { dispatch, createCombat } from '../src/engine/combat.js';
+import { isPoolDeckRun, dealtAttackSlotCount, POOL_DECK_RULE } from '../src/model/cardRemoval.js';
 import { stampDeck } from '../src/model/loadout.js';
 
 const registries = createRegistries(contentBundle);
@@ -60,7 +63,7 @@ function deal(classId, deckMode, { fixed = true } = {}) {
     run.deck = createDeck(BASE, createIdGen('rc'));
   }
   const composedQuota = run.equipmentAttackSlotCount;
-  if (fixed && isPoolDeckRun(run)) run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);
+  if (fixed && isPoolDeckRun(run)) { run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck); run.poolDeckRule = POOL_DECK_RULE; }
   if (deckMode === 'draft') {
     // ui/screens/draft.js: three rounds of three offers; take the first.
     const idGen = createIdGen('df');
@@ -73,7 +76,7 @@ function deal(classId, deckMode, { fixed = true } = {}) {
     }
   }
   // main.js startClimb: the dealt deck (picks included) gets its equipment faces.
-  if (fixed && isPoolDeckRun(run)) stampDeck(registries, run, run.deck, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });
+  if (fixed && isPoolDeckRun(run)) stampDeck(registries, run, undefined, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });
   saves.saveRun(run, rng);
   return { run, rng, saves, storage, composedQuota };
 }
@@ -81,6 +84,11 @@ function deal(classId, deckMode, { fixed = true } = {}) {
 const savedDeck = (storage) => JSON.parse(storage.getItem('sote_run_v1')).deck;
 const ids = (deck) => deck.map((c) => `${c.instanceId}:${c.cardId}`);
 const cards = (deck) => JSON.parse(JSON.stringify(deck));
+const lent = (deck) => deck.filter((c) => c && (c.grantedBy || c.kitRole || c.equipmentRole === 'weaponArt' || c.equipmentRole === 'granted'));
+const piles = (p) => Object.fromEntries(['draw', 'hand', 'discard', 'exhaust'].map((k) => [k, ids(p[k])]));
+// This copy predates engine/runCombat.js: main.js startFight's createCombat, as the room exporter builds it.
+const fight = (run, rng) => createCombat({ registries, rng, enemyIds: registries.encounters.get('loneSoldier').enemies, hpMult: 1, enemyStatuses: [], playerStatuses: [],
+  player: { classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, ...(isPoolDeckRun(run) ? { poolDeck: true } : {}), equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout } });
 
 for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft'], ['reaver', 'sealed'], ['herald', 'draft']]) {
   test(`${deckMode} (${classId}): a save the game writes reloads with its deck exactly`, () => {
@@ -88,6 +96,8 @@ for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft'], [
     assert.ok(composedQuota > 0, 'the fixture needs a class whose composed deck has attack slots');
     assert.equal(run.deck.filter((c) => c.equipmentRole === 'attack').length, 0, 'a dealt deck holds no composed attack slot');
     assert.equal(run.equipmentAttackSlotCount, 0, 'the dealt deck\'s quota is what it was dealt');
+    assert.equal(run.poolDeckRule, POOL_DECK_RULE, 'the deal marks the run as held to the dealt-deck rule');
+    assert.deepEqual(lent(run.deck), [], 'the deal and its stamp deal no lent card');
     // The live climb's first full restamp (an Armoury swap) used to throw too.
     assert.doesNotThrow(() => stampDeck(registries, structuredClone(run)));
     const before = cards(savedDeck(storage));
@@ -99,11 +109,19 @@ for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft'], [
     assert.equal(back.custom.deckMode, deckMode);
   });
 
-  test(`${deckMode} (${classId}): the end-of-fight restamp no longer throws, and its deck reloads exactly`, () => {
+  test(`${deckMode} (${classId}): the end-of-fight restamp and an Armoury change keep the dealt deck`, () => {
     const { run, rng, saves, storage } = deal(classId, deckMode);
+    const dealt = ids(run.deck);
     // main.js after every fight: stampDeck(registries, run, undefined, …) — the full
     // restamp that threw "attack instance count 0 does not match authored N" before.
     stampDeck(registries, run, undefined, { adoptEquipmentBonuses: false });
+    assert.deepEqual(ids(run.deck), dealt, 'the end of a fight deals no lent card');
+    // main.js's Armoury onChange: a new loadout, then the full restamp.
+    run.loadout.sets.rightHand[1] = 'dagger';
+    run.loadout.active.rightHand = 1;
+    stampDeck(registries, run);
+    assert.deepEqual(ids(run.deck), dealt, 'an Armoury change deals no lent card either');
+    assert.deepEqual(lent(run.deck), []);
     saves.saveRun(run, rng);
     const before = cards(savedDeck(storage));
     const back = saves.loadRun(registries, 1);
@@ -123,8 +141,9 @@ for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft'], [
     const row = status.ledger.entries.find((e) => e.site === 'save.js:dealtAttackSlotCount');
     assert.ok(row, 'the heal is in the ledger, by site');
     assert.equal(row.field, 'equipmentAttackSlotCount');
-    assert.deepEqual(row.was, { run: composedQuota, snapshot: null });
+    assert.deepEqual(row.was, { run: composedQuota, snapshot: null, poolDeckRule: undefined });
     assert.equal(back.equipmentAttackSlotCount, 0);
+    assert.equal(back.poolDeckRule, POOL_DECK_RULE, 'the heal marks the run, so it runs once');
     assert.deepEqual(ids(back.deck), before, 'the kit and weapon arts the deal took are not dealt back');
     // Healed once: the next save and load has nothing left to heal.
     saves.saveRun(back, createRng(SEED));
@@ -133,20 +152,50 @@ for (const [classId, deckMode] of [['starseer', 'sealed'], ['rogue', 'draft'], [
   });
 }
 
-test('sealed: a mid-fight Save Game written before the fix reloads its fight', () => {
-  const { run, rng, saves } = deal('starseer', 'sealed', { fixed: false });
-  const enc = registries.encounters.get('loneSoldier');
-  // This copy predates engine/runCombat.js; main.js startFight's createCombat, as the room exporter builds it.
-  const combat = createCombat({ registries, rng, enemyIds: enc.enemies, hpMult: 1, enemyStatuses: [], playerStatuses: [],
-    player: { classId: run.class, attributes: run.attributes, maxHp: run.maxHp, hp: run.hp, maxMana: run.maxMana, mana: run.mana, maxStamina: run.maxStamina, stamina: run.stamina, energyMax: run.energyMax, drawPerTurn: run.drawPerTurn, damageBySchoolAdd: run.damageBySchoolAdd, equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot, equipmentAttackSlotCount: run.equipmentAttackSlotCount, equipmentPoolDeficits: run.equipmentPoolDeficits, itemUpgradeLevels: run.itemUpgradeLevels, itemMounts: run.itemMounts, armamentLevels: run.armamentLevels, deck: run.deck, relicIds: run.relics, flasks: run.flasks, flaskCharges: run.flaskCharges, loadout: run.loadout } });
-  commitCombatSnapshot({ run, combat, nodeId: 'n0', encounterId: enc.id });
+for (const fixed of [true, false]) {
+  test(`sealed: a mid-fight Save Game ${fixed ? 'the game writes' : 'written before the fix'} reloads its fight pile for pile`, () => {
+    const { run, rng, saves } = deal('starseer', 'sealed', { fixed });
+    const combat = fight(run, rng);
+    assert.equal(combat.poolDeck, true, 'a dealt deck\'s fight carries the rule');
+    commitCombatSnapshot({ run, combat, nodeId: 'n0', encounterId: 'loneSoldier' });
+    // A fight saved before the fix knew nothing of the rule.
+    if (!fixed) delete run.combatEntered.snapshot.poolDeck;
+    else assert.equal(run.combatEntered.snapshot.poolDeck, true, 'the snapshot carries the rule');
+    const before = piles(run.combatEntered.snapshot.piles);
+    saves.saveRun(run, rng);
+    const back = saves.loadRun(registries, 1);
+    assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
+    const snap = back.combatEntered.snapshot;
+    assert.equal(snap.equipmentAttackSlotCount, 0);
+    assert.deepEqual(piles(snap.piles), before, 'no lent card is dealt into the resumed fight');
+    if (!fixed) {
+      const row = saves.runStatus().ledger.entries.find((e) => e.site === 'save.js:dealtAttackSlotCount');
+      assert.ok(row && row.was.snapshot > 0 && row.now.snapshot === 0, 'the snapshot heal is named');
+    }
+  });
+}
+
+test('sealed: a mid-fight weapon swap deals no lent card into the piles', () => {
+  const { run, rng } = deal('starseer', 'sealed');
+  run.loadout.sets.rightHand[1] = 'dagger';
+  const combat = fight(run, rng);
+  combat.player.energy = 10;
+  const before = Object.values(piles(combat.piles)).flat().sort();
+  dispatch(combat, { type: 'swapArmament', slotId: 'rightHand', setIndex: 1 });
+  assert.equal(combat.loadout.active.rightHand, 1, 'the swap happened');
+  assert.deepEqual(Object.values(piles(combat.piles)).flat().sort(), before);
+});
+
+test('sealed: a marked save that lost an attack card is refused, not healed (Codex review)', () => {
+  // A current pool run that grew an attack basic (deck editor: quota 1,
+  // attack:0) and then lost the card: the marker says this is no pre-fix
+  // save, so the quota is not rewritten to 0 and the damage is refused.
+  const { run, rng, saves } = deal('starseer', 'sealed');
+  run.equipmentAttackSlotCount = 1;
   saves.saveRun(run, rng);
-  const back = saves.loadRun(registries, 1);
-  assert.ok(back, `reload refused: ${saves.runStatus().reason}`);
-  const snap = back.combatEntered.snapshot;
-  assert.equal(snap.equipmentAttackSlotCount, 0);
-  const row = saves.runStatus().ledger.entries.find((e) => e.site === 'save.js:dealtAttackSlotCount');
-  assert.ok(row && row.was.snapshot > 0 && row.now.snapshot === 0, 'the snapshot heal is named');
+  assert.equal(saves.loadRun(registries, 1), null);
+  assert.equal(saves.runStatus().state, 'archived');
+  assert.match(saves.runStatus().reason, /attack instance count 0 does not match authored 1/);
 });
 
 test('standard: a deck missing its composed attack slots is still refused', () => {
@@ -187,13 +236,13 @@ test('main.js newRun writes the dealt deck\'s quota after the deal, and startCli
   const src = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const sealed = src.indexOf("run.deck = createDeck(sealedDeckIds(classId), createIdGen('rc'));");
   const draft = src.indexOf("run.deck = createDeck(draftBaseIds(), createIdGen('rc'));");
-  const quota = src.indexOf('if (isPoolDeckRun(run)) run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);');
+  const quota = src.indexOf('run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);\n    run.poolDeckRule = POOL_DECK_RULE;');
   const showDraft = src.indexOf("if (deckMode === 'draft') return showDraft();");
   assert.ok(sealed > 0 && draft > sealed, 'the deal this test mirrors moved');
   assert.ok(quota > draft && quota < showDraft, 'the quota must follow the deal and precede the draft and the first persist');
   const climb = src.slice(src.indexOf('function startClimb()'), src.indexOf('function showPrologue()'));
-  const stamp = climb.indexOf('if (isPoolDeckRun(run)) stampDeck(registries, run, run.deck, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });');
-  assert.ok(stamp > 0 && stamp < climb.indexOf('persist();'), 'startClimb must stamp a dealt deck (a subset stamp) before its first persist');
+  const stamp = climb.indexOf('if (isPoolDeckRun(run)) stampDeck(registries, run, undefined, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });');
+  assert.ok(stamp > 0 && stamp < climb.indexOf('persist();'), 'startClimb must stamp a dealt deck before its first persist');
   const body = src.slice(src.indexOf('function sealedDeckIds'), src.indexOf('function draftBaseIds'));
   assert.match(body, /\['strike', 'strike', 'strike', 'strike', 'defend', 'defend', 'defend'\]/);
   assert.match(body, /rng\.pick\('misc', pool\)/);
