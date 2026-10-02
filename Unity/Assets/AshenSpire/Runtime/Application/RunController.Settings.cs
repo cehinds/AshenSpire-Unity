@@ -5,7 +5,8 @@
 // touching the file system, so the shipped catalog is built exactly as before.
 // SAVE: AshenSpire.Settings.v1 (OriginalPlayerSettings.ToJson) plus the three legacy ints
 // AshenSpire.ReducedMotion / FastMotion / Muted, which older builds and code paths read.
-// APPLY: UI size -> PanelSettings.scale (restored on disable); SFX/UI/music buses from
+// APPLY: Interface size slider x UI size choice -> PanelSettings.scale (OriginalDisplayOptions.PanelScale,
+// re-fitted on screen changes, restored on disable); SFX/UI/music buses from
 // AudioBusLevels.From (Domain: master multiplied, mute -> 0, music off -> 0).
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
 // WebGL (and Android, whose StreamingAssets sit inside the APK) need web requests, which are
@@ -65,11 +66,7 @@ namespace AshenSpire.Application
         private void ApplyPlayerSettings()
         {
             if (_playerSettings == null) return;
-            if (_panelSettings != null && !float.IsNaN(_panelScaleBase))
-            {
-                var scale = _panelScaleBase * (float)_playerSettings.UiScale;
-                if (_panelSettings.scale != scale) _panelSettings.scale = scale;
-            }
+            ApplyPanelScale();
             var levels = AudioBusLevels.From(_playerSettings);
             _audio?.SetVolumeScale((float)levels.Sfx);
             _audio?.SetInterfaceVolumeScale((float)levels.Ui);
@@ -79,6 +76,19 @@ namespace AshenSpire.Application
             // The music bus is already master × music; the director's own master stays at 100.
             _music?.SetMuted(_playerSettings.Muted);
             if (!_playerSettings.Muted) _music?.ApplySettings(100, levels.MusicPercent, levels.MusicOn);
+        }
+        /// <summary>Interface size slider × UI size (Domain OriginalDisplayOptions.PanelScale). The panel scales with
+        /// the screen height (match 1), so at multiplier 1 it is referenceHeight tall and width × referenceHeight / height
+        /// wide; L and XL are capped against that. Called on settings change, on load and when the screen changes.</summary>
+        private void ApplyPanelScale()
+        {
+            if (_playerSettings == null || _panelSettings == null || float.IsNaN(_panelScaleBase)) return;
+            var height = Math.Max(1, Screen.height);
+            var referenceHeight = (double)_panelSettings.referenceResolution.y;
+            var logicalHeight = referenceHeight / _panelScaleBase;
+            var logicalWidth = Screen.width * referenceHeight / height / _panelScaleBase;
+            var scale = _panelScaleBase * (float)OriginalDisplayOptions.PanelScale(_playerSettings.UiScale, _playerSettings.UiSize, logicalWidth, logicalHeight);
+            if (_panelSettings.scale != scale) _panelSettings.scale = scale;
         }
         private void PlayInterfaceSound() => _audio?.PlayInterface();
         private void PreviewSound() => _audio?.Play("guard");

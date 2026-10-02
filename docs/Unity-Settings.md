@@ -40,7 +40,7 @@ on screen or in sound.
 | Merchant buys back | `shopSell` | on/off | on | HTML `shopSell`. Added in schema 3. |
 | Weapon swap cost | `swapCostRule` | `flat`, `gear`, `category` | `flat` | HTML `balance.equipment.swapCostRules` / `swapCostRule`. Added in schema 3. |
 | Fullscreen | `fullscreen` | on/off | off | HTML `fullscreen`. Added in schema 3. |
-| UI size (HTML chips) | `uiSize` | `Auto`, `S`, `M`, `L`, `XL` | `Auto` | HTML `uiScale` chips. Unity's numeric `uiScale` slider above is separate and still drives `PanelSettings.scale`. Added in schema 3. |
+| UI size (HTML chips) | `uiSize` | `Auto`, `S`, `M`, `L`, `XL` | `Auto` | HTML `uiScale` chips. Multiplied with the numeric `uiScale` slider above into `PanelSettings.scale` (see Display options). Added in schema 3. |
 | Accent color | `accent` | `gold`, `crimson`, `frost`, `verdant`, `violet` | `gold` | Added in schema 3. |
 | Card motif / strength | `cardMotif`, `cardMotifStrength` | `off`, `wash`, `accent`, `band` / `subtle`, `normal`, `strong` | `wash` / `normal` | HTML `balance.ui.cardMotif(Modes)`. Added in schema 3. |
 | Map header | `mapHeaderDensity`, `mapHeaderRelics`, `mapHeaderSeed` | `comfortable`, `compact` / on/off / on/off | `comfortable`, on, on | Added in schema 3. |
@@ -178,16 +178,37 @@ climb or Continue.
   was changed and before any swap.
 - **Combat pacing — applied** (it is the existing animation speed; see below).
 
-## Display options (US-15.1, data side)
+## Display options (US-15.1)
 
-All are saved and validated. **Fullscreen** is applied when the toggle changes
-(`Screen.fullScreen`; on Web this needs the click that changes it). The others are applied
-only as root USS classes, with no styles yet: `ui-size-auto|s|m|l|xl`, `accent-<name>`,
-`card-motif-<mode>`, `motif-strength-<strength>`, `map-header-comfortable|compact`,
-`map-header-no-relics`, `map-header-no-seed`, `no-control-hints`.
-**Editor follow-up:** write the USS for those classes (accent tokens, card motif frames,
-compact map header), decide how the `uiSize` chips relate to the numeric `uiScale` slider,
-and hide the map-header relics/seed and any control-hint bar when their classes are set.
+All are saved and validated, and every one applies the moment it changes in Settings and
+again when the game starts (`CampaignView.ApplyPlayerSettings`, `RunController.ApplyPlayerSettings`).
+The mapping is pure data in `Domain/Original/OriginalDisplayOptions.cs`: `RootClasses(settings)`
+gives the root USS classes, `PanelScale(...)` the UI size. `UnityTests/Mods` (DisplayChecks)
+checks it and that the USS sheets restate the shipped `balance.ui` numbers.
+
+| Option | What it does now | Where |
+|---|---|---|
+| **Fullscreen** | `Screen.fullScreen` when toggled; a saved *on* is restored at start (not on phones). On Web this needs the click that changes it. | `CampaignView.PlayerSettings.cs` |
+| **UI size** (`Auto`, `S`, `M`, `L`, `XL`) | Scales the whole interface through `PanelSettings.scale`, multiplied with the *Interface size* slider. Factors are the HTML `balance.ui.uiScale.named`: S .85, M 1, L 1.2, XL 1.45; Auto is 1 because the panel already scales with the screen height. As in the HTML game a named size is a ceiling: L and XL grow only while the logical panel stays at least 430 × 600, and never below the slider alone, so on a portrait phone they change nothing. Re-fitted when the window or safe area changes. Root class `ui-size-<size>` is set too (no style reads it). | `RunController.Settings.cs` `ApplyPanelScale` |
+| **Accent color** | Replaces the `--ash-gold` token (highlights, focus and hover borders, primary buttons, slider handles, section headings, selected targets) with the HTML accent: crimson `#c1453a`, frost `#7fa8c9`, verdant `#8bae54`, violet `#a06cc8`. *Gold* keeps the Unity theme's own `#d6b475`, so the default look is unchanged. Rarity colours and hard-coded card colours are not accent-driven. | `OriginalTheme.uss` `.app.accent-*` |
+| **Card motif** | Colours class cards with their class's `cardTint` (content `classes[].cardTint`); colorless cards keep the plain frame. *Wash* tints the whole card body; *Accent* puts your accent on the card border, moves rarity to a corner pip and draws a centred class sigil; *Band* draws a 5 px class stripe across the top and an accent rule under the art; *Off* shows none. | `OriginalCardView.cs` (`.original-card-motif`, `.original-card-pip`), `OriginalCards.uss` |
+| **Motif strength** | Opacity of the wash: subtle .06, normal .10, strong .17 (HTML `balance.ui.cardMotifStrength`); the Accent sigil uses × 1.3. Band ignores it. | `OriginalCards.uss` `.motif-strength-*` |
+| **Map header** (`comfortable`, `compact`) | *Compact* tightens the header above the map (smaller title without its rule, smaller stats and purse lines, no margins). The Unity map already hides the character figure that HTML Compact removes. | `OriginalTheme.uss` `.map-header-compact` |
+| **Relics in map header** | The map screen shows one line under the header: `Seed …` and `Relics · names` (names, because most relic icons have no bundled glyph font). Off hides the relic part. The line ellipsizes instead of pushing the map down. | `OriginalRunPanel.MapHeaderExtras`, `.map-header-no-relics` |
+| **Seed in map header** | Off hides the seed part of that line. | `.map-header-no-seed` |
+| **Control hints** | A line of the current keyboard shortcuts (from your key bindings) under the map and under combat. Like the HTML hint bar, it only shows in wide windows (`.ui-wide`, 900+ logical px); phones never show it. Off hides it. Gamepad prompts are not part of it yet. | `OriginalRunPanel.ControlHints`, `OriginalTheme.uss` `.control-hints` |
+
+Root classes: `ui-size-auto|s|m|l|xl`, `accent-<name>`, `card-motif-<mode>`,
+`motif-strength-<strength>`, `map-header-comfortable|compact`, plus `map-header-no-relics`,
+`map-header-no-seed` and `no-control-hints` when those are off. The control report
+(`ASHENSPIRE_CONTROLS`) now carries `RootClasses`, and `tools/native-settings-playtest.cjs`
+asserts each choice reaches the root immediately, survives a reload, and that UI size S
+widens the logical panel.
+
+**Needs the editor / a rebuild to confirm visually:** the accent colours on every screen,
+the motif layer behind card text (draw order, rounded corners, the band stripe against the
+3 px top border), the compact header and the seed/relics line on a phone map, the control
+hint line in a wide window, and L/XL on a desktop window.
 
 ## Gamepad (US-15.3)
 

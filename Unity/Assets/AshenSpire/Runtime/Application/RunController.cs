@@ -384,6 +384,7 @@ namespace AshenSpire.Application
             var referenceHeight = ViewportLayout.ReferenceHeight(displayHeight);
             _panelSettings.referenceResolution = new Vector2Int(430, referenceHeight);
             _view?.SetDisplayHeight(displayHeight);
+            ApplyPanelScale(); // RunController.Settings.cs: L/XL UI sizes are capped by the screen they fit.
             var scale = (float)referenceHeight / Math.Max(1, Screen.height);
             var root = GetComponent<UIDocument>().rootVisualElement;
             root.style.paddingTop = (Screen.height - _safeArea.yMax) * scale;
