@@ -1,5 +1,9 @@
 /* Shared dark-fantasy materials. Presenters own state; screen sheets own geometry. */
 .app { --ash-background: #101311; --ash-panel: #1b201c; --ash-inset: #121713; --ash-edge: #4b5040; --ash-ink: #efe6d3; --ash-muted: #b8b19d; --ash-gold: #d6b475; background-color: var(--ash-background); color: var(--ash-ink); }
+/* High contrast (Settings → Accessibility; CampaignView puts high-contrast on the root). Token swap only,
+   like the HTML body.hi-contrast in styles/base.css: brighter ink and secondary text, stronger edges.
+   Visual tuning beyond these tokens is not done yet. */
+.app.high-contrast { --ash-ink: #fdf6e6; --ash-muted: #cdbf9e; --ash-edge: #85714f; }
 .body { max-width: 1000px; padding: 24px 20px 32px; }
 .body.has-fixed-actions { padding-bottom: 110px; }
 .button { background-color: var(--ash-panel); border-color: var(--ash-edge); color: var(--ash-ink); border-radius: 6px; padding: 12px 16px; }

@@ -90,8 +90,10 @@ These rules come from SPEC §7.4 and `src/ui/fx.js`.
 ### Build 22 settings wiring
 
 `FeelDriver.Configure(OriginalPlayerSettings)` now consumes the saved settings
-directly. Animation speed below 100% selects slow pacing, 100–199% selects normal,
-and 200% selects fast; Instant overrides pacing. Screen shake respects its toggle
+directly. The mapping lives in Domain (`FeelSettings.From` / `FeelSettings.SpeedFor`)
+and is tested in `UnityTests/Feel`. Animation speed below 100% selects slow pacing,
+100–199% selects normal, and 200% selects fast; Instant overrides pacing. The saved
+Reduce flashes setting sets `FeelSettings.ReduceFlashes`. Screen shake respects its toggle
 and intensity. Reduced motion suppresses both shake and hit-stop.
 
 The HTML reference has no hit-stop. Unity's optional setting now holds only the
