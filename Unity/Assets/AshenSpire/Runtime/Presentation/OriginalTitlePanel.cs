@@ -10,7 +10,7 @@ namespace AshenSpire.Presentation
     public sealed class OriginalTitlePanel : VisualElement
     {
         public OriginalTitlePanel(Action begin, Action resume, bool canResume, Action collection,
-            Action cooperative, Action settings, Action extras, Action saves = null)
+            Action cooperative, Action settings, Action extras, Action saves = null, bool unsavedProgress = false)
         {
             AddToClassList("original-title");
             var wordmark = new Label("ASHENEDSPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
@@ -19,7 +19,9 @@ namespace AshenSpire.Presentation
             Add(Ornament());
             var invitation = new Label(canResume ? "Your climb is waiting." : "Gather your cards. Brave the Spire.");
             invitation.AddToClassList("original-title-invitation"); Add(invitation);
-            var primary = canResume ? Entry("native-continue", "Continue the climb", resume) : Entry("native-new", "Begin a new climb", begin);
+            // US-13.3 loadSlot: when the climb in memory could not be saved, Continue would replace it with
+            // the older saved checkpoint, so it needs a hold or a second tap (HoldConfirmButton).
+            var primary = canResume ? (unsavedProgress ? Held("native-continue", "Continue the saved climb", resume) : Entry("native-continue", "Continue the climb", resume)) : Entry("native-new", "Begin a new climb", begin);
             primary.AddToClassList("title-primary"); Add(primary);
             var menu = new VisualElement(); menu.AddToClassList("title-menu-grid"); Add(menu);
             menu.Add(canResume ? Entry("native-new", "New climb", begin) : Entry("native-continue", "Continue", resume, false));
@@ -35,6 +37,12 @@ namespace AshenSpire.Presentation
         {
             var button = new Button(action) { name = id, text = label.ToUpperInvariant() };
             button.AddToClassList("button"); button.AddToClassList("original-menu-entry"); button.SetEnabled(enabled); return button;
+        }
+        private static Button Held(string id, string label, Action action)
+        {
+            var button = Entry(id, label, null);
+            HoldConfirmButton.Bind(button, AshenSpire.Domain.Original.ConfirmationPolicy.LoadSlot, action);
+            return button;
         }
         private static VisualElement Ornament()
         {

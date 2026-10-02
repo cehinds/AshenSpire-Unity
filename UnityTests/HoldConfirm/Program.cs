@@ -135,6 +135,41 @@ try
     Check(!off.Tap(0) && off.Tap(10), "with the hold off, tap-twice still confirms");
     Check(Throws(() => new HoldConfirmState(600, 0)), "a zero arm window is rejected");
 
+    // ---- Route registry: every DESTRUCTIVE action is routed or says why it has no UI ----
+    const string runtime = "Unity/Assets/AshenSpire/Runtime/";
+    var routes = ConfirmationPolicy.UnityRoutes;
+    foreach (var id in policy.DestructiveActions)
+        Check(routes.Any(r => r.ActionId == id), "route registry covers DESTRUCTIVE " + id);
+    foreach (var route in routes)
+    {
+        Check(policy.Knows(route.ActionId) && policy.RequiresHold(route.ActionId), "registry entry " + route.ActionId + " is a DESTRUCTIVE action in the data");
+        if (!route.Routed) { Check(!string.IsNullOrWhiteSpace(route.Unrouted) && !routes.Any(r => r.Routed && r.ActionId == route.ActionId), route.ActionId + " is explicitly unrouted: " + route.Unrouted); continue; }
+        Equal((string)typeof(ConfirmationPolicy).GetField(route.Constant)?.GetValue(null), route.ActionId, route.ActionId + " constant ConfirmationPolicy." + route.Constant);
+        var source = Read(runtime + route.Source);
+        // Direct binding, a Destructive(...) helper, or the slot review page Confirm(..., actionId, ...), which binds actionId.
+        var bound = Regex.IsMatch(source, @"(HoldConfirmButton\.Bind\([^;]*|Destructive\([^;]*)ConfirmationPolicy\." + route.Constant + @"\b", RegexOptions.Singleline)
+            || (Regex.IsMatch(source, @"Confirm\([^;]*ConfirmationPolicy\." + route.Constant + @"\b") && source.Contains("HoldConfirmButton.Bind(commit, actionId"));
+        Check(bound, route.ActionId + " (" + route.Controls + ") is bound through HoldConfirmButton in " + route.Source);
+    }
+    // Reverse: any Presentation use of a policy constant is a registered route.
+    var presentation = Path.Combine(root, runtime + "Presentation");
+    foreach (var file in Directory.GetFiles(presentation, "*.cs").Where(f => Path.GetFileName(f) != "HoldConfirmButton.cs"))
+    {
+        var relative = "Presentation/" + Path.GetFileName(file);
+        foreach (Match use in Regex.Matches(File.ReadAllText(file), @"ConfirmationPolicy\.(\w+)"))
+        {
+            var constant = use.Groups[1].Value;
+            Check(routes.Any(r => r.Routed && r.Source == relative && r.Constant == constant), relative + " uses ConfirmationPolicy." + constant + " and is registered");
+        }
+    }
+    // Unrouted actions really have no Unity control: no UI string offers to quit unsaved or abandon.
+    var literals = Directory.GetFiles(presentation, "*.cs").SelectMany(f => Regex.Matches(File.ReadAllText(f), "\"(?:[^\"\\\\]|\\\\.)*\"").Select(m => m.Value)).ToList();
+    Check(!literals.Any(l => Regex.IsMatch(l, @"without saving|\bquit\b", RegexOptions.IgnoreCase)), "no Presentation string offers quit-without-saving (action.quitWithoutSaving unrouted)");
+    Check(!literals.Any(l => Regex.IsMatch(l, @"\babandon|forfeit|give up", RegexOptions.IgnoreCase)), "no Presentation string offers abandon-run (action.abandonRun unrouted)");
+    Check(Regex.IsMatch(Read(runtime + "Presentation/OriginalRunPanel.cs"), @"""native-menu"", [^;]*""Save and return to title"""), "native-menu saves before leaving (why quitWithoutSaving has no control)");
+    var slots = Read(runtime + "Application/RunController.Slots.cs");
+    Check(slots.Contains("Unsaved(true)") && Regex.Matches(slots, @"Unsaved\(false\)").Count >= 3, "RunController flags unsaved progress on a failed save and clears it on save/load/new");
+
     // ---- Presentation wiring (source contract; the compiled UI is checked by playtests) ---
     var runPanel = Read("Unity/Assets/AshenSpire/Runtime/Presentation/OriginalRunPanel.cs");
     Check(Regex.IsMatch(runPanel, @"Destructive\(""native-remove-"" \+ id,[^;]*ConfirmationPolicy\.RemoveCard"), "merchant card removal routes through the hold-to-confirm button");

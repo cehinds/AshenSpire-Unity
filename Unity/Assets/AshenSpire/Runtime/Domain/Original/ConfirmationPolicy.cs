@@ -16,6 +16,22 @@ namespace AshenSpire.Domain.Original
 {
     public enum ConfirmationLevel { None, Reversible, Commitment, Destructive }
 
+    /// <summary>One place a confirmation action is (or deliberately is not) presented in Unity.</summary>
+    public sealed class ConfirmationRoute
+    {
+        public ConfirmationRoute(string actionId, string constant, string controls, string source, string unrouted = null)
+        { ActionId = actionId; Constant = constant; Controls = controls; Source = source; Unrouted = unrouted; }
+        public static ConfirmationRoute None(string actionId, string reason) => new ConfirmationRoute(actionId, null, null, null, reason);
+        public string ActionId { get; }
+        /// <summary>The ConfirmationPolicy constant the source passes to HoldConfirmButton.</summary>
+        public string Constant { get; }
+        public string Controls { get; }
+        /// <summary>Path under Unity/Assets/AshenSpire/Runtime, or null when unrouted.</summary>
+        public string Source { get; }
+        public string Unrouted { get; }
+        public bool Routed => Source != null;
+    }
+
     public sealed class ConfirmationPolicy
     {
         /// <summary>Resources.Load path of the imported copy.</summary>
@@ -23,6 +39,24 @@ namespace AshenSpire.Domain.Original
         public const string RemoveCard = "action.removeCard";
         public const string OverwriteSave = "action.overwriteSave";
         public const string DeleteSave = "action.deleteSave";
+        public const string LoadSlot = "action.loadSlot";
+        public const string QuitWithoutSaving = "action.quitWithoutSaving";
+        public const string AbandonRun = "action.abandonRun";
+
+        /// <summary>Where each DESTRUCTIVE action meets the Unity UI. UnityTests/HoldConfirm asserts this
+        /// covers every DESTRUCTIVE action in the data, that each routed source binds its constant
+        /// through HoldConfirmButton, and that an unrouted action states why.</summary>
+        public static readonly IReadOnlyList<ConfirmationRoute> UnityRoutes = new[]
+        {
+            new ConfirmationRoute(RemoveCard, nameof(RemoveCard), "native-remove-<instanceId>", "Presentation/OriginalRunPanel.cs"),
+            new ConfirmationRoute(RemoveCard, nameof(RemoveCard), "coop-remove-<instanceId>", "Presentation/OriginalCoopPanel.cs"),
+            new ConfirmationRoute(OverwriteSave, nameof(OverwriteSave), "native-slot-confirm (after native-slot-<n>-new)", "Presentation/OriginalSlotPanel.cs"),
+            new ConfirmationRoute(DeleteSave, nameof(DeleteSave), "native-slot-confirm (after native-slot-<n>-delete)", "Presentation/OriginalSlotPanel.cs"),
+            new ConfirmationRoute(LoadSlot, nameof(LoadSlot), "native-slot-<n>-continue while the climb in memory has unsaved progress", "Presentation/OriginalSlotPanel.cs"),
+            new ConfirmationRoute(LoadSlot, nameof(LoadSlot), "title native-continue while the climb in memory has unsaved progress", "Presentation/OriginalTitlePanel.cs"),
+            ConfirmationRoute.None(QuitWithoutSaving, "Unity has no quit-without-saving control: native-menu always saves before returning to title, and a failed save keeps the climb in memory (RunController.Menu/SaveOriginalSlot)."),
+            ConfirmationRoute.None(AbandonRun, "Unity has no abandon-run control; a climb ends only in victory or defeat, or by deleting/overwriting its slot (routed above)."),
+        };
 
         private readonly Dictionary<string, ConfirmationLevel> _policies = new Dictionary<string, ConfirmationLevel>(StringComparer.Ordinal);
         private readonly Dictionary<string, string> _actions = new Dictionary<string, string>(StringComparer.Ordinal);

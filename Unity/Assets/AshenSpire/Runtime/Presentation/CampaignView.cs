@@ -43,6 +43,8 @@ namespace AshenSpire.Presentation
         public event Action ProfileRequested;
         public event Action CoopRequested;
         public bool NativeSaveAvailable { get; set; }
+        /// <summary>The climb in memory failed to save; loading a slot would discard it (US-13.3 loadSlot).</summary>
+        public bool NativeUnsavedProgress { get; set; }
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -150,7 +152,7 @@ namespace AshenSpire.Presentation
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
-                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke()));
+                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), NativeUnsavedProgress));
             Report();
         }
         // Keep earlier playable checkpoints and developer tools accessible without

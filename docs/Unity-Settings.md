@@ -124,6 +124,6 @@ a map key, then scroll the map with it. Pick each palette and look at a combat H
 
 ## Hold-to-confirm
 
-Destructive actions (card removal, save overwrite/delete) use hold-to-confirm with the
+Destructive actions (card removal, save overwrite/delete, loading over unsaved progress) use hold-to-confirm with the
 original 600 ms hold; there is no player setting for its duration yet. See
 [Unity-Confirmations.md](Unity-Confirmations.md).

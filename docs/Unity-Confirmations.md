@@ -20,12 +20,30 @@ confirmation.
 
 | Action | Level | Unity control | Hold-to-confirm? |
 |---|---|---|---|
-| `action.removeCard` | DESTRUCTIVE | merchant `native-remove-<instanceId>` | yes |
+| `action.removeCard` | DESTRUCTIVE | merchant `native-remove-<instanceId>`; co-op merchant `coop-remove-<instanceId>` | yes |
 | `action.overwriteSave` | DESTRUCTIVE | slot review `native-slot-confirm` (after `native-slot-<n>-new`) | yes |
 | `action.deleteSave` | DESTRUCTIVE | slot review `native-slot-confirm` (after `native-slot-<n>-delete`) | yes |
-| `action.loadSlot`, `action.quitWithoutSaving`, `action.abandonRun` | DESTRUCTIVE | not routed yet | — |
+| `action.loadSlot` | DESTRUCTIVE | `native-slot-<n>-continue` and the title's `native-continue` | only while the climb in memory has unsaved progress |
+| `action.quitWithoutSaving` | DESTRUCTIVE | none | no Unity control exists |
+| `action.abandonRun` | DESTRUCTIVE | none | no Unity control exists |
 
-The co-op merchant (`OriginalCoopPanel`, `coop-remove-*`) is not routed yet either.
+`ConfirmationPolicy.UnityRoutes` records this table in code. `UnityTests/HoldConfirm` asserts
+that it covers every DESTRUCTIVE action in the data. It also checks that each routed source
+binds its constant through `HoldConfirmButton`, and that every policy constant used in
+`Presentation/` has a registry entry.
+
+**When loading a slot discards progress.** `native-menu` always saves before it returns to
+the title. Normally the title and slot screens therefore have nothing unsaved to lose, and
+Continue stays a one-tap button. If a save fails (`RunController.SaveOriginalSlot`), the
+game keeps the climb in memory so it can retry later. In that case `RunController` sets
+`CampaignView.NativeUnsavedProgress`. Continue on the title and on each slot then needs a
+hold or a second tap, and the slot screen shows a notice explaining why. The next
+successful save, load or new climb clears the flag.
+
+**Actions with no Unity UI.** No Unity control quits without saving or abandons a run.
+A climb ends in victory or defeat, or by deleting or overwriting its slot, and both of
+those are routed. Nothing was invented for these two actions. The test checks that no
+Presentation string offers either one.
 
 ## How it behaves
 
@@ -57,7 +75,9 @@ a tap also opened a modal, the player would need three steps. With arm-then-conf
 whole flow is a single button with no extra element ids. Browser playtests stay simple:
 to commit, a playtest clicks the same id twice. Element ids did not change.
 `tools/native-save-recovery-playtest.cjs` only checks that `native-slot-confirm` exists
-and then cancels, so it needs no edit.
+and then cancels, so it needs no edit. No playtest clicks `coop-remove-*` or forces a
+save failure, so every playtest that uses `native-continue` or `native-slot-<n>-continue`
+still loads with one click.
 
 ## Tests
 
@@ -71,6 +91,6 @@ and then cancels, so it needs no edit.
 - Tapping twice commits, and the arm window expires.
 - The control can be used again after a reset.
 - The disabled-hold path works.
-- The panels are wired to the button.
+- The panels are wired to the button, and the route registry covers every DESTRUCTIVE action.
 
 CI runs it in the `features` shard of `.github/workflows/unity-ci.yml`.
