@@ -205,6 +205,10 @@ static class RoomImportChecks
             // A schema-6 save without the marker was not written by the original's newRun: both refuse it.
             RejectPool(dealt, s => s.Remove("poolDeckRule"), name + ": schema-6 save without the dealt-deck rule refused", "missing its dealt-deck rule");
             RejectPool(dealt, s => { s.Remove("poolDeckRule"); s.Remove("equipmentAttackSlotCount"); }, name + ": schema-6 save without the rule or a quota refused", "missing its dealt-deck rule");
+            // A present but malformed marker is refused even with no quota to check it against.
+            RejectPool(dealt, s => { s["poolDeckRule"] = JValue.CreateNull(); s.Remove("equipmentAttackSlotCount"); }, name + ": null dealt-deck rule with no quota refused", "Malformed original dealt-deck rule");
+            RejectPool(dealt, s => { s["poolDeckRule"] = 2; s.Remove("equipmentAttackSlotCount"); }, name + ": unknown dealt-deck rule with no quota refused", "Malformed original dealt-deck rule");
+            RejectPool(dealt, s => { s["poolDeckRule"] = JValue.CreateNull(); s.Remove("equipmentAttackSlotCount"); s["schemaVersion"] = 5; }, name + ": null dealt-deck rule with no quota refused at schema 5 too", "Malformed original dealt-deck rule");
             // A marked schema-5 save (a build of the fix before the bump) imports as it is.
             var marked5 = (JObject)dealt.DeepClone(); marked5["schemaVersion"] = 5;
             Equal(OriginalGameSession.Restore(Import(marked5.ToString())).RunPlayer["deck"], game.RunPlayer["deck"], name + ": a marked schema-5 save imports the same deck");

@@ -47,12 +47,14 @@ namespace AshenSpire.Domain.Original
         private static int? BirthAttackQuota(JObject source)
         {
             if (source["poolDeckRule"] == null && IsPoolDeck(source) && (int)source["schemaVersion"] >= 6) throw new ArgumentException("This schema-6 " + ((string)source["custom"]["deckMode"] == "sealed" ? "Sealed" : "Draft") + " save is missing its dealt-deck rule (poolDeckRule), so the original game cannot reload it either. Your original save is unchanged.");
+            // Any present marker is validated before a missing quota returns early: a JSON null
+            // (or any other malformed rule) is refused whether or not the save carries a quota.
+            var rule = source["poolDeckRule"];
+            if (rule != null && (rule.Type != JTokenType.Integer || (long)rule != 1 || !IsPoolDeck(source))) throw new ArgumentException("Malformed original dealt-deck rule. Your original save is unchanged.");
             var quota = source["equipmentAttackSlotCount"];
             if (quota == null) return null;
             if (quota.Type != JTokenType.Integer || (long)quota < 0 || (long)quota > int.MaxValue) throw new ArgumentException("Malformed original equipment attack quota. Your original save is unchanged.");
             var attacks = source["deck"].Where(c => (string)c["equipmentRole"] == "attack").ToArray();
-            var rule = source["poolDeckRule"];
-            if (rule != null && (rule.Type != JTokenType.Integer || (long)rule != 1 || !IsPoolDeck(source))) throw new ArgumentException("Malformed original dealt-deck rule. Your original save is unchanged.");
             var mode = IsPoolDeck(source) ? (string)source["custom"]["deckMode"] : "standard";
             if (mode == "standard")
             {

@@ -42,11 +42,15 @@ const BASE = ['strike', 'strike', 'strike', 'strike', 'defend', 'defend', 'defen
 
 // Builds before this fix wrote run schema 5 (the bump to 6 came with the
 // dealt-deck rule), so a pre-fix save is stamped 5 in its slot. Only the
-// stamp is rewritten: the shape is one a schema-5 build wrote.
+// stamp is rewritten: the shape is one a schema-5 build wrote. The old
+// build writes until this build first loads the slot; deal() disarms the
+// shim there, so every later save is this build's own schema-6 save.
 function asSchema5(storage) {
   const set = storage.setItem;
+  let armed = true;
+  storage.disarm = () => { armed = false; };
   storage.setItem = (key, value) => {
-    if (/^sote_run_v1(_s\d+)?$/.test(key)) {
+    if (armed && /^sote_run_v1(_s\d+)?$/.test(key)) {
       const saved = JSON.parse(value);
       if (saved.schemaVersion === RUN_SCHEMA_VERSION) { saved.schemaVersion = 5; value = JSON.stringify(saved); }
     }
@@ -60,6 +64,10 @@ function asSchema5(storage) {
 function deal(classId, deckMode, { fixed = true } = {}) {
   const storage = fixed ? createMemoryStorage() : asSchema5(createMemoryStorage());
   const saves = createSaveManager(storage);
+  if (!fixed) {
+    const load = saves.loadRun.bind(saves);
+    saves.loadRun = (...args) => { storage.disarm(); return load(...args); };
+  }
   saves.ensureProfile();
   const run = createRunState({ seed: SEED, classId, registries, profileMeta: saves.loadMeta() });
   run.seedString = seedToString(SEED);
@@ -442,6 +450,9 @@ test('schema 6 brings the dealt-deck rule: a 6 save loads as it is, a 5 pool sav
     assert.ok(rows.some((row) => row.site === 'save.js:dealtAttackSlotCount'), 'the heal is named');
     // Saved again, it is a schema-6 save carrying the marker, and loads clean.
     saves.saveRun(back, createRng(SEED));
+    const resaved = JSON.parse(storage.getItem('sote_run_v1'));
+    assert.equal(resaved.schemaVersion, 6, 'the resave is this build\'s own schema-6 save');
+    assert.equal(resaved.poolDeckRule, POOL_DECK_RULE);
     assert.ok(saves.loadRun(registries, 1));
     assert.equal(saves.runStatus().state, 'ok');
   }
