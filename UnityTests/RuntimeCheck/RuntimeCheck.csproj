@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles every Runtime assembly (Domain, Original, Application, Presentation)
+       against Unity's published reference assemblies, C# 9 / .NET Standard 2.1.
+       NuGet only carries UnityEngine.Modules 2021.3, so Unity6Shims.cs supplies the
+       few newer UI Toolkit types the project uses; tools/unity-runtime-check.mjs
+       accepts only the listed Unity 6 gaps and fails on every other error. -->
+  <PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><LangVersion>9.0</LangVersion><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>CS0618;CS0649;CS0414;CS0169;CS0067</NoWarn></PropertyGroup>
+  <ItemGroup><PackageReference Include="UnityEngine.Modules" Version="2021.3.33" /><PackageReference Include="Newtonsoft.Json" Version="13.0.2" /></ItemGroup>
+  <ItemGroup><Compile Include="Unity6Shims.cs" /><Compile Include="../../Unity/Assets/AshenSpire/Runtime/**/*.cs" /></ItemGroup>
+</Project>

@@ -1,0 +1,35 @@
+/* RunSummary.uss — end-of-run door (RunSummaryView.cs). Values follow the
+   pinned HTML reference: styles/kit.css (.as-pagedoor, .as-decide,
+   .as-title-l, .as-detailcard, .as-statstrip/.as-chip, .as-kitline) and
+   styles/base.css tokens (--bg #0d0b08, --panel #241d15, --line #3a3226,
+   --line-soft #4a4034, --parchment #e8dcc0, --muted #7a6f5a, --gold #c9a227,
+   kit --danger #d4622e, --ink-dim #b9ac91). USS has no text-transform, so
+   RunSummaryView upper-cases the title, eyebrows and chip keys itself. */
+.run-summary { align-self: center; width: 100%; max-width: 640px; margin: 12px 0; background-color: #171310; border-width: 1px; border-color: #544632; border-radius: 3px; }
+.run-summary-head { flex-direction: column; padding: 14px 18px 12px; border-bottom-width: 1px; border-bottom-color: #3a3226; }
+.run-summary-door-eyebrow { font-size: 11px; letter-spacing: 2px; color: #7a6f5a; margin: 0; }
+.run-summary-door-title { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 20px; color: #e8dcc0; margin: 2px 0 0; }
+.run-summary-body { flex-direction: column; padding: 24px 20px 18px; }
+.run-summary-title { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 34px; letter-spacing: 2px; -unity-text-align: middle-center; white-space: normal; color: #e8dcc0; margin: 0; }
+.run-summary-title--loss { color: #d4622e; }
+.run-summary-ornament { margin: 14px 0 18px; }
+.run-summary-card { flex-direction: column; padding: 14px 16px; margin: 0 0 12px; background-color: #241d15; border-width: 1px; border-color: #c9a227; border-radius: 3px; }
+.run-summary-card-eyebrow { font-size: 11px; letter-spacing: 2px; color: #7a6f5a; margin: 0; }
+.run-summary-card-name { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 20px; color: #c9a227; margin: 2px 0 3px; }
+.run-summary-card-line { font-size: 15px; -unity-font-style: bold; color: #e8dcc0; margin: 0; white-space: normal; }
+.run-summary-card-meta { font-size: 12px; letter-spacing: 1px; color: #7a6f5a; margin: 2px 0 0; }
+.run-summary-stats { flex-direction: row; flex-wrap: wrap; align-items: flex-end; margin: 4px 0 14px; }
+.run-summary-chip { flex-direction: row; align-items: flex-end; margin: 0 18px 8px 0; }
+.run-summary-chip-key { font-size: 11px; letter-spacing: 1px; color: #7a6f5a; border-bottom-width: 1px; border-bottom-color: #4a4034; margin: 0 6px 0 0; }
+.run-summary-chip-value { font-size: 17px; -unity-font-style: bold; color: #e8dcc0; margin: 0; }
+.run-summary-earned-line { flex-direction: row; flex-wrap: wrap; align-items: flex-end; }
+.run-summary-earned-kind { font-size: 12px; color: #b9ac91; margin: 0 0 0 6px; }
+.run-summary-section-head { flex-direction: column; margin: 6px 0 4px; }
+.run-summary-deck-title { -unity-font: resource("Fonts/Cinzel-Regular"); font-size: 17px; color: #e8dcc0; margin: 2px 0 0; }
+.run-summary-deck { flex-direction: row; flex-wrap: wrap; margin: 6px 0 16px; }
+.run-summary-deck-item { flex-direction: row; align-items: flex-end; margin: 0 16px 6px 0; }
+.run-summary-deck-glyph { color: #c9a227; font-size: 13px; margin: 0 6px 0 0; }
+.run-summary-deck-name { color: #b9ac91; font-size: 14px; border-bottom-width: 1px; border-bottom-color: #4a4034; margin: 0; }
+.run-summary-deck-item--upgraded .run-summary-deck-name { color: #ead287; }
+.run-summary-buttons { flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+.run-summary-buttons > .button { flex-grow: 1; min-width: 150px; min-height: 44px; margin: 4px; }

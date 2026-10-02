@@ -7,8 +7,9 @@ import {resolve,join} from 'node:path';
 import {collectHistory,resolvePullRequests,materializeHistory,publicHistory} from './unity-build-history.mjs';
 import {materializePublished} from './unity-git-blobs.mjs';
 import {planChannelStorage,channelAssetUrl,parseChannelPresentation} from './unity-channel-storage.mjs';
-import {planArchiveHosting} from './unity-archive-hosting.mjs';
+import {planArchiveHosting,retainedCodeBuildIds} from './unity-archive-hosting.mjs';
 import {createHash} from 'node:crypto';
+import {attachBuildReviews} from './unity-build-reviews.mjs';
 const root=process.cwd(),out=resolve(process.env.UNITY_PAGES_OUT || '_site'),channels=['dev','test','release','main'];
 // Explicit local preview refs never move branches or alter the deployment defaults.
 const channelRefs=Object.fromEntries(channels.map(channel=>[channel,process.env[`UNITY_PAGES_${channel.toUpperCase()}_REF`]||`origin/${channel}`]));
@@ -16,11 +17,12 @@ const git=(args,encoding='utf8')=>execFileSync('git',args,{cwd:root,encoding,max
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const repo='https://github.com/cehinds/AshenSpire-Unity';
 const style=`*{box-sizing:border-box}body{margin:0;background:#11171b;color:#e5e3db;font:16px/1.6 system-ui}main{max-width:1120px;margin:auto;padding:52px 22px}a{color:#e9bd78}h1{font:clamp(32px,6vw,60px)/1.1 Georgia}h2{font:28px Georgia}.kicker{text-transform:uppercase;letter-spacing:.2em;color:#c6a46f;font-size:12px}.muted{color:#a6b0b3}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}.card{border:1px solid #354044;border-radius:14px;background:#1b252a;padding:24px}.button{display:inline-block;padding:12px 20px;border:1px solid #d6aa68;border-radius:8px;background:#d6aa68;color:#152025;text-decoration:none;margin:8px 10px 8px 0;font-weight:650}.secondary{background:none;color:#e9bd78}.shots{display:flex;gap:16px;overflow:auto;padding:8px 0 20px}.shots img{max-height:460px;border:1px solid #354044;border-radius:10px}code{word-break:break-all;font-size:12px}nav{display:flex;gap:20px;flex-wrap:wrap}section{margin:35px 0}li{margin-bottom:8px}.badge{display:inline-block;background:#3e3426;color:#f0ca8b;border-radius:20px;padding:4px 12px;font-size:12px}`;
-const page=(title,body)=>`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · AshenSpire Unity</title><style>${style}</style><main>${body}</main></html>`;
+const page=(title,body)=>`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · AshenedSpire</title><style>${style}</style><main>${body}</main></html>`;
 mkdirSync(out,{recursive:true});writeFileSync(join(out,'.nojekyll'),'');
 // Branch names are display data; generated IDs alone become directory names.
 const batches=git(['for-each-ref','--format=%(refname:short)','refs/remotes/origin/']).trim().split('\n').filter(ref=>ref.startsWith('origin/')&&ref!=='origin/HEAD'&&!channels.includes(ref.slice(7))).map(ref=>({ref,branch:ref.slice(7),id:'batch-'+createHash('sha256').update(ref.slice(7)).digest('hex').slice(0,16)}));
 const history=collectHistory(root,{...channelRefs,...Object.fromEntries(batches.map(batch=>[batch.id,batch.ref]))});
+attachBuildReviews(root,history,[...Object.values(channelRefs),...batches.map(batch=>batch.ref)]);
 const selectedChannels=[];
 for(const channel of channels){
  const ref=channelRefs[channel];let manifest;
@@ -40,7 +42,8 @@ for(const selected of selectedChannels){
 }
 const selectedByChannel=new Map(selectedChannels.map(selected=>[selected.channel,selected]));
 await resolvePullRequests(history.builds,'cehinds/AshenSpire-Unity');
-materializeHistory(root,out,history,{remoteRuntime:true});
+const localCodeBuildIds=retainedCodeBuildIds(history.builds,Object.values(storage.channels).map(channel=>channel.archiveId));
+materializeHistory(root,out,history,{remoteRuntime:true,localCodeBuildIds:[...localCodeBuildIds]});
 const buildById=new Map(history.builds.map(build=>[build.id,build]));
 const dateLabel=value=>value&&!Number.isNaN(Date.parse(value))?new Date(value).toISOString().slice(0,16).replace('T',' ')+' UTC':'Build date unknown';
 const prLinks=build=>build.pullRequests.length?build.pullRequests.map(pr=>`<a href="${escape(pr.url)}">PR #${pr.number}${pr.state?' · '+escape(pr.state):''}</a>`).join(', '):'<span class="muted">Associated PR unknown</span>';
@@ -54,9 +57,12 @@ function buildPage(build,prefix){
   if(!Array.isArray(presentation.screenshots)||presentation.screenshots.length>32||presentation.screenshots.some(path=>typeof path!=='string'||!build.paths.includes(path)||!/^Published\/[A-Za-z0-9_./-]+\.png$/.test(path)))throw Error('Invalid archived screenshots');
   shots=presentation.screenshots;
  }
- const gallery=shots.length?`<section><h2>Screenshots from this build</h2><div class="shots">${shots.map(path=>{const url=`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${build.commit}/${path}`;return `<a href="${url}"><img loading="lazy" src="${url}" alt="${escape(path.split('/').pop())}"></a>`;}).join('')}</div></section>`:'';
+ const review=build.review,shotCommit=review?.commit||build.commit;
+ if(review)shots=review.screenshots;
+ const reviewLinks=review?`<p><a href="${repo}/blob/${review.commit}/${escape(review.guide)}">Current review notes</a> · <a href="${repo}/blob/${review.commit}/${review.validation}">Source-matched validation</a></p>`:'';
+ const gallery=shots.length?`<section><h2>Screenshots from this build</h2>${reviewLinks}<div class="shots">${shots.map(path=>{const url=`https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/${shotCommit}/${path}`;return `<a href="${url}"><img loading="lazy" src="${url}" alt="${escape(path.split('/').pop())}"></a>`;}).join('')}</div></section>`:'';
 
- return `<nav><a href="${prefix}">Latest channels</a><a href="${prefix}history/">All previous builds</a></nav><p class="kicker">Archived build ${escape(build.buildNumber)}</p><h1>AshenSpire ${escape(build.manifest.version)}</h1><p>Built ${escape(build.builtAt || 'date unknown')} · ${prLinks(build)}</p><p class="muted">Compiled runtime bytes and version labels are preserved. The launcher fetches its data file from this exact public Git commit; its hosting receipt records the URL change. Older versions may have known bugs and different save formats.</p><a class="button" href="${prefix}builds/${build.id}/Web/">Play this build</a>${['Web.zip','Windows.zip','Android.apk','Companion.zip'].filter(file=>build.paths.includes(`Published/${file}`)).map(file=>`<a class="button secondary" href="${exact}/${file}?raw=true">Download ${escape(file)}</a>`).join('')}<p>Source <code>${escape(build.manifest.sourceCommit || 'unknown')}</code> · <a href="${repo}/commit/${build.commit}">Archive commit ${build.commit.slice(0,12)}</a></p><p><a href="${prefix}builds/${build.id}/build.json">Original build manifest</a> · <a href="${prefix}builds/${build.id}/hosting.json">Hosting receipt</a> · <a href="${exact}">All evidence at this exact commit</a></p><section><h2>Changes recorded with this build</h2>${shortChanges(build)}<a href="${exact}/changelog.json">Full archived changelog</a></section>${gallery}`;
+ return `<nav><a href="${prefix}">Latest channels</a><a href="${prefix}history/">All previous builds</a></nav><p class="kicker">Archived build ${escape(build.buildNumber)}</p><h1>AshenedSpire ${escape(build.manifest.version)}</h1><p>Built ${escape(build.builtAt || 'date unknown')} · ${prLinks(build)}</p><p class="muted">Compiled runtime bytes and version labels are preserved. The launcher fetches its data file from this exact public Git commit; its hosting receipt records the URL change. Older versions may have known bugs and different save formats.</p><a class="button" href="${prefix}builds/${build.id}/Web/">Play this build</a>${['Web.zip','Windows.zip','Android.apk','Companion.zip'].filter(file=>build.paths.includes(`Published/${file}`)).map(file=>`<a class="button secondary" href="${exact}/${file}?raw=true">Download ${escape(file)}</a>`).join('')}<p>Source <code>${escape(build.manifest.sourceCommit || 'unknown')}</code> · <a href="${repo}/commit/${build.commit}">Archive commit ${build.commit.slice(0,12)}</a></p><p><a href="${prefix}builds/${build.id}/build.json">Original build manifest</a> · <a href="${prefix}builds/${build.id}/hosting.json">Hosting receipt</a> · <a href="${exact}">All evidence at this exact commit</a></p><section><h2>Changes recorded with this build</h2>${shortChanges(build)}<a href="${exact}/changelog.json">Full archived changelog</a></section>${gallery}`;
 }
 for(const build of history.builds){writeFileSync(join(out,'builds',build.id,'index.html'),page(`Build ${build.buildNumber}`,buildPage(build,'../../')));}
 for(const channel of channels){
@@ -69,7 +75,7 @@ const summaries=[];
 for(const channel of channels){
  const dir=join(out,channel);mkdirSync(dir,{recursive:true});
  const ref=channelRefs[channel],selected=selectedByChannel.get(channel),manifest=selected?.manifest,paths=selected?.paths??[];
- let body=`<nav><a href="../">All builds</a>${channels.filter(c=>c!==channel).map(c=>`<a href="../${c}/">${c}</a>`).join('')}</nav><p class="kicker">${channel} channel</p><h1>AshenSpire</h1>`;
+ let body=`<nav><a href="../">All builds</a>${channels.filter(c=>c!==channel).map(c=>`<a href="../${c}/">${c}</a>`).join('')}</nav><p class="kicker">${channel} channel</p><h1>AshenedSpire</h1>`;
  if(!manifest){body+='<p>No build has been selected for this channel yet.</p><p class="muted">Promotion is separate from publishing. The dev build is the current work in progress.</p>';summaries.push({channel,available:false});}
  else{
   // Keep each channel's document URL/save context. Only a recognized launch
@@ -80,7 +86,7 @@ for(const channel of channels){
   const copied=materializePublished(root,commit,plan.copyPaths,dir);
   if(plan.player.rewritten){
    const archive=buildById.get(plan.archiveId);
-   const hosted=planArchiveHosting(git(['show',`${archive.commit}:Published/Web/index.html`]),archive);
+   const hosted=planArchiveHosting(git(['show',`${archive.commit}:Published/Web/index.html`]),archive,{remoteCode:!localCodeBuildIds.has(archive.id)});
    let launch=plan.player.html;
    for(const [name,url] of Object.entries(hosted.dataUrls)){
     const pattern=new RegExp('(\\b'+name+'\\s*:\\s*)([\"\'])([^\"\']+)\\2','g');
@@ -132,7 +138,7 @@ for(const channel of channels){
 const latestPreview=[...history.builds].sort((a,b)=>Date.parse(b.builtAt||0)-Date.parse(a.builtAt||0))[0];
 const previewCard=latestPreview?`<section class="card"><p class="kicker">Latest committed preview &#183; Build ${escape(latestPreview.buildNumber)}</p><h2>${escape(latestPreview.manifest.version)}</h2><p>${escape(dateLabel(latestPreview.builtAt))} &#183; ${prLinks(latestPreview)}</p><a class="button" href="builds/${latestPreview.id}/Web/">Play latest preview</a><a class="button secondary" href="builds/${latestPreview.id}/">Changes, screenshots and downloads</a></section>`:'';
 const cards=summaries.map(s=>`<article class="card"><p class="kicker">${s.channel}</p><h2>${s.available?escape(s.manifest.version):'Awaiting a build'}</h2><p>${s.available?escape(s.manifest.stage):'No candidate selected'}</p><a href="${s.channel}/">${s.available?'Play, changes & screenshots':'View channel'} →</a></article>`).join('');
-writeFileSync(join(out,'index.html'),page('Build library',`<nav><a href="${repo}">Source repository</a><a href="history/">Browse previous builds</a><a href="batches/">Development batches</a><a href="reference/AshenSpire.html">Original browser snapshot (initial fork)</a></nav><p class="kicker">AshenSpire · Development library</p><h1>Follow the ember.<br>Play the next build.</h1><p class="muted">A mobile-first Unity rebuild of the original game. Every channel keeps its own playable build, changelog and evidence.</p>${previewCard}<section class="grid">${cards}</section><p class="muted">Dev: work in progress · Test: selected testing candidate · Release: release candidate · Main: approved stable game.</p>`));
+writeFileSync(join(out,'index.html'),page('Build library',`<nav><a href="${repo}">Source repository</a><a href="history/">Browse previous builds</a><a href="batches/">Development batches</a><a href="reference/AshenSpire.html">Original browser snapshot (initial fork)</a></nav><p class="kicker">AshenedSpire · Development library</p><h1>Follow the ember.<br>Play the next build.</h1><p class="muted">A mobile-first Unity rebuild of the original game. Every channel keeps its own playable build, changelog and evidence.</p>${previewCard}<section class="grid">${cards}</section><p class="muted">Dev: work in progress · Test: selected testing candidate · Release: release candidate · Main: approved stable game.</p>`));
 mkdirSync(join(out,'history'),{recursive:true});
 writeFileSync(join(out,'history','index.html'),page('Previous builds',`<nav><a href="../">Latest channels</a></nav><p class="kicker">Playable development history</p><h1>Previous builds</h1><p>Version format: game release · roadmap milestone · incremental upgrade · patch. Foundation work remains below 0.1.0.0; 1.0.0.0 denotes the completed game. Older three-part labels are retained as originally built.</p>${channels.map(channel=>{const items=history.channels[channel].map(id=>buildById.get(id));return `<section id="${channel}"><h2><a href="../${channel}/#history">${channel}</a></h2>${items.length?`<div class="grid">${items.map((build,i)=>buildCard(build,`../${channel}/`,items[i-1])).reverse().join('')}</div>`:'<p>No build selected for this channel.</p>'}</section>`;}).join('')}`));
 const batchCards=[];

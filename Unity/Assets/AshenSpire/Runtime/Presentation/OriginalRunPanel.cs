@@ -4,7 +4,9 @@
 // MODIFY: labels/layout here; original content and domain components own all rules.
 // COSTS: OriginalCardCostText formats authoritative costs and resource shortages.
 // MAP: OriginalMapBoard owns display preferences; route choices still enter the session.
-// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here.
+// END: Victory/Defeat render RunSummaryView (F11) from the RunSummary the caller passes.
+// No global subscriptions, saved state, timers or MonoBehaviour lifecycle here (the only
+// ticking is HoldConfirmButton's element-scoped scheduler on destructive buttons).
 using System;
 using System.Linq;
 using AshenSpire.Domain.Original;
@@ -13,7 +15,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 namespace AshenSpire.Presentation
 {
-    public sealed class OriginalRunPanel
+    public sealed partial class OriginalRunPanel
     {
         private readonly VisualElement _root;
         private readonly OriginalGameSession _game;
@@ -21,6 +23,7 @@ namespace AshenSpire.Presentation
         private readonly VisualElement _actionHost;
         private readonly bool _diagnostics;
         private readonly OriginalMapViewServices _mapView;
+        private readonly RunSummary _summary; private readonly Action _history; private VisualElement _summaryButtons;
         private VisualElement _actions, _combatTools;
         private string _target, _selected;
         private Label _notice;
@@ -28,17 +31,19 @@ namespace AshenSpire.Presentation
         public Image PlayerImage { get; private set; }
         public Image EnemyImage { get; private set; }
         public VisualElement Stage { get; private set; }
-        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null)
-        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; Render(); }
+        public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null, RunSummary summary = null, Action history = null, OriginalPlayerSettings settings = null)
+        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; _settings = settings; BindCombatKeys(); Render(); }
         private void Render()
         {
+            _backAction = null;
+            _root.RemoveFromClassList("combat-inspection");
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             var combatSurface = _game.Phase == OriginalRunPhase.Combat;
             if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
-            _combatTools = null;
+            _combatTools = null; _summaryButtons = null;
             _root.Clear(); _root.AddToClassList("native-run"); _actions?.RemoveFromHierarchy(); var p = _game.Player; var run = _game.RunPlayer;
             if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));
-            else
+            else if (!RunSummary.IsTerminal(_game.Phase))
             {
             Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading");
             _root.Add(OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject));
@@ -58,12 +63,12 @@ namespace AshenSpire.Presentation
                 case OriginalRunPhase.EventResult:
                     Text((string)_game.Room["resultText"] ?? "Your choice is made.", "lead"); Button("native-event-leave", "Continue the climb", _game.LeaveEvent); break;
                 case OriginalRunPhase.Victory:
-                    Text("THE SPIRE FALLS SILENT", "node-title"); Text("All three acts are complete. Your final run remains saved.", "lead"); break;
                 case OriginalRunPhase.Defeat:
-                    Text("ASH RETURNS TO ASH", "node-title"); Text("The climb ends here. Your run remains available to inspect.", "lead"); break;
+                    _summaryButtons = RunSummaryView.Mount(_root, _summary ?? RunSummary.FromSession(_game), _history); break;
             }
-            Button("native-deck", "Deck and equipment", Deck, _combatTools);
-            Button("native-menu", "Save and return to title", _menu, _combatTools);
+            Button("native-deck", "Deck and equipment", Deck, _combatTools ?? _summaryButtons);
+            Button("native-menu", _summaryButtons != null ? "Return to title" : "Save and return to title", _menu, _combatTools ?? _summaryButtons).EnableInClassList("primary", _summaryButtons != null);
+            if (combatSurface) _root.Focus();
             if (_diagnostics) ReportNativeState();
             _report();
         }
@@ -125,13 +130,15 @@ namespace AshenSpire.Presentation
             stage.Add(OriginalCombatLayout.Player(figure, _game.Player));
             var enemies = _game.Enemies.OfType<JObject>().Where(x => (bool?)x["alive"] == true).ToArray();
             if (!enemies.Any(x => (string)x["id"] == _target)) _target = (string)enemies.FirstOrDefault()?["id"];
-            EnemyImage = null;
+            EnemyImage = null; var telegraphs = _game.Telegraphs();
             foreach (var enemy in enemies)
             {
                 var id = (string)enemy["id"]; var definition = _game.Catalog.Record("enemies", (string)enemy["enemyId"]);
                 var target = OriginalCombatLayout.Enemy(enemy, (string)definition["name"], "native-target-" + id,
                     () => { _target = id; Render(); }, id == _target, out var image);
                 if (id == _target) EnemyImage = image;
+                EnemyTelegraphView.Attach(target, telegraphs.FirstOrDefault(t => t.InstanceId == id));
+                EnemyTelegraphView.ExplainStatuses(target, (string)definition["name"], id, enemy, StatusExplainer.Describe(_game.Catalog, enemy["statuses"] as JObject));
                 stage.Add(target);
             }
             _root.Add(stage);
@@ -150,7 +157,13 @@ namespace AshenSpire.Presentation
             var shortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
             var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selectedCard["name"];
             Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
-            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), _game.EndTurn, _actions);
+            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), EndTurnChoice, _actions);
+            foreach (var kind in new[] { "draw", "discard", "exhaust" })
+            {
+                var pile = kind;
+                Button("native-pile-" + pile, PileName(pile) + " · " + _game.Pile(pile).Count, () => ShowPile(pile), _combatTools);
+            }
+            Button("native-combat-keys", "Keyboard controls", ShowCombatKeys, _combatTools);
             Button("native-hand-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report(); }, _combatTools);
             Button("native-hand-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report(); }, _combatTools);
             Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
@@ -185,7 +198,19 @@ namespace AshenSpire.Presentation
             }
             if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
             { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
-            Button("native-rewards-continue", "Continue · leave unclaimed rewards", _game.ContinueRewards);
+            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Auto: Continue takes every
+            // pending reward that was not skipped, so each pending kind gets a Skip (ids stay outside the
+            // native-reward-* prefix the playtests treat as "take"). Manual: Continue leaves the rest.
+            var mode = OriginalGameplayOptions.RewardCollectMode(_game.Catalog.Data(), _settings?.RewardCollect);
+            if (mode == "auto")
+                foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
+                {
+                    if (room["states"][kind] != null) continue;
+                    var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
+                    if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
+                }
+            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · leave unclaimed rewards", () => _game.ContinueRewards(mode));
+            if (mode == "auto") Text("Continue takes everything you didn't skip, picking a card for you.", "caption");
         }
         private void Shop()
         {
@@ -259,9 +284,9 @@ namespace AshenSpire.Presentation
         }
         private void RemoveCards()
         {
-            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice");
+            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("REMOVE A CARD", "heading"); _notice = Text("", "notice"); Text("Removal is permanent: hold a card's button until the bar fills, or tap it twice.", "caption");
             foreach (var card in ((JArray)_game.RunPlayer["deck"]).OfType<JObject>().Where(x => string.IsNullOrEmpty((string)x["grantedBy"]) && string.IsNullOrEmpty((string)x["equipmentAttackSlotId"])))
-            { var id = (string)card["instanceId"]; Button("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
+            { var id = (string)card["instanceId"]; Destructive("native-remove-" + id, "Remove " + (string)_game.Resolve(card)["name"], ConfirmationPolicy.RemoveCard, () => _game.Service("removeCard", new JObject { ["instanceId"] = id })); }
             Button("native-service-back", "Back", Render); _report();
         }
         private void Mounts()
@@ -290,6 +315,7 @@ namespace AshenSpire.Presentation
         }
         private void Deck()
         {
+            _backAction = Render;
             _mapView?.SetMapSurface?.Invoke(false);
             OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
@@ -300,6 +326,7 @@ namespace AshenSpire.Presentation
         }
         private void Equipment()
         {
+            _backAction = Deck;
             _mapView?.SetMapSurface?.Invoke(false);
             OriginalCombatLayout.SetSurface(_root, false);
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("EQUIPMENT", "heading"); _notice = Text("", "notice");
@@ -317,9 +344,11 @@ namespace AshenSpire.Presentation
                     if ((int)run["loadout"]["active"][slotId] != index)
                     {
                         var allowance = combat && (string)_game.Catalog.Data()["balance"]["equipment"]["swapCostKind"] == "allowance";
-                        var price = combat ? (int)_game.SwapPrice(slotId, set)["cost"] : 0;
+                        var receipt = combat ? _game.SwapPrice(slotId, set) : null; var price = combat ? (int)receipt["cost"] : 0;
                         var button = Button("native-set-" + slotId + "-" + index, "Use set " + (index + 1) + (combat ? allowance ? " · 1 swap (" + _game.SwapsLeft + " left)" : " · " + price + " actions" : ""), () => _game.SelectSet(slotId, set));
                         button.SetEnabled(!combat || (allowance ? _game.SwapsLeft > 0 : (int)_game.Player["energy"] >= price));
+                        // Weapon swap cost setting (US-15.2): name the live rule and how it reached the price.
+                        if (combat && !allowance) Text(OriginalGameplayOptions.DescribeSwapPrice(receipt, (JObject)_game.Catalog.Data()["balance"]["equipment"]), "caption");
                     }
                     if (combat) continue;
                     foreach (var item in owned.Where(x => WeaponLoadout.Fits(slot, x)))
@@ -335,6 +364,13 @@ namespace AshenSpire.Presentation
         private Button Button(string id, string text, Action command, VisualElement parent = null)
         {
             var button = new Button(() => Execute(command)) { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button); return button;
+        }
+        // US-13.3: the action's confirmation level comes from confirmation-policies.json;
+        // DESTRUCTIVE actions commit only after a hold or a second tap (HoldConfirmButton).
+        private Button Destructive(string id, string text, string actionId, Action command, VisualElement parent = null)
+        {
+            var button = new Button { text = text, name = id }; button.AddToClassList("button"); (parent ?? _root).Add(button);
+            HoldConfirmButton.Bind(button, actionId, () => Execute(command), _report); return button;
         }
         private void Execute(Action command)
         {

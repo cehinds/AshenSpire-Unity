@@ -1,0 +1,943 @@
+{
+ "sourceCommit": "b0509e6cd5b065b4a558b9fdd819fa9f9eba8c25",
+ "metaSchemaVersion": 2,
+ "fixtures": {
+  "fresh": {
+   "note": "Fresh schema-2 profile; no runs, unlocks or settings.",
+   "meta": "{\"schemaVersion\":2,\"settings\":{},\"results\":[],\"discoveredArmaments\":[],\"discoveryReceipts\":[]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"ok\",\n  \"profile\": \"{\\\"schemaVersion\\\":2,\\\"settings\\\":{},\\\"results\\\":[],\\\"discoveredArmaments\\\":[],\\\"discoveryReceipts\\\":[]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "ok",
+    "reason": null,
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {},
+    "results": [],
+    "discoveredArmaments": [],
+    "discoveryReceipts": []
+   }
+  },
+  "history": {
+   "note": "Five finished runs (2 victories, 1 custom), three found armaments, original settings.",
+   "meta": "{\"schemaVersion\":2,\"settings\":{\"reducedMotion\":true,\"screenShake\":false,\"animSpeed\":\"fast\",\"musicVolume\":30,\"sfxVolume\":60,\"muteAudio\":false,\"uiScale\":\"L\",\"textSize\":\"XL\",\"colorblindSafe\":true,\"musicEnabled\":false,\"highContrast\":true,\"mapMode\":\"fog\",\"holdConfirm\":\"long\",\"seenTutorial\":true},\"results\":[{\"victory\":false,\"seed\":\"EMBERFALL\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":5,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"ASHCROWN\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":3,\"floor\":15,\"fightsWon\":14,\"damageDealt\":560,\"damageTaken\":126,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]},{\"victory\":false,\"seed\":\"GLOAMING\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":2,\"floor\":9,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"CUSTOMCLIMB\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":1,\"floor\":3,\"fightsWon\":2,\"damageDealt\":80,\"damageTaken\":18,\"name\":\"Forsaken\",\"custom\":true,\"ascension\":2,\"bosses\":[]},{\"victory\":true,\"seed\":\"LASTLIGHT\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":3,\"floor\":15,\"fightsWon\":15,\"damageDealt\":600,\"damageTaken\":135,\"name\":\"Vigil\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]}],\"discoveredArmaments\":[\"dagger\",\"katana\"],\"discoveryReceipts\":[{\"kind\":\"armamentDiscovery\",\"pieceId\":\"dagger\",\"first\":true,\"source\":\"monster\",\"runSeed\":\"EMBERFALL\",\"sequence\":1},{\"kind\":\"armamentDiscovery\",\"pieceId\":\"katana\",\"first\":true,\"source\":\"elite\",\"runSeed\":\"ASHCROWN\",\"sequence\":2}],\"progress\":{\"runs\":5,\"wins\":2,\"maxAct\":3,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"],\"wonClasses\":[\"reaver\",\"herald\"]},\"found\":[\"dagger\",\"katana\",\"halberd\"],\"unlocked\":[\"winAsReaver\",\"beatStitchedKing\",\"beatBlightedValkyrie\",\"ashChildUnlock\",\"reachAshenCrown\",\"beatFellWarden\",\"beatKingAsHerald\",\"reachStitchedCourt\",\"rack2Right\",\"rack3Right\",\"rack2Left\",\"rogueBeatWarden\",\"rogueReachCrown\",\"winTwice\",\"rack3Left\"]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"ok\",\n  \"profile\": \"{\\\"schemaVersion\\\":2,\\\"settings\\\":{\\\"reducedMotion\\\":true,\\\"screenShake\\\":false,\\\"animSpeed\\\":\\\"fast\\\",\\\"musicVolume\\\":30,\\\"sfxVolume\\\":60,\\\"muteAudio\\\":false,\\\"uiScale\\\":\\\"L\\\",\\\"textSize\\\":\\\"XL\\\",\\\"colorblindSafe\\\":true,\\\"musicEnabled\\\":false,\\\"highContrast\\\":true,\\\"mapMode\\\":\\\"fog\\\",\\\"holdConfirm\\\":\\\"long\\\",\\\"seenTutorial\\\":true},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"EMBERFALL\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":5,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"ASHCROWN\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":14,\\\"damageDealt\\\":560,\\\"damageTaken\\\":126,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"GLOAMING\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":2,\\\"floor\\\":9,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"CUSTOMCLIMB\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":1,\\\"floor\\\":3,\\\"fightsWon\\\":2,\\\"damageDealt\\\":80,\\\"damageTaken\\\":18,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":true,\\\"ascension\\\":2,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"LASTLIGHT\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":15,\\\"damageDealt\\\":600,\\\"damageTaken\\\":135,\\\"name\\\":\\\"Vigil\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]}],\\\"discoveredArmaments\\\":[\\\"dagger\\\",\\\"katana\\\"],\\\"discoveryReceipts\\\":[{\\\"kind\\\":\\\"armamentDiscovery\\\",\\\"pieceId\\\":\\\"dagger\\\",\\\"first\\\":true,\\\"source\\\":\\\"monster\\\",\\\"runSeed\\\":\\\"EMBERFALL\\\",\\\"sequence\\\":1},{\\\"kind\\\":\\\"armamentDiscovery\\\",\\\"pieceId\\\":\\\"katana\\\",\\\"first\\\":true,\\\"source\\\":\\\"elite\\\",\\\"runSeed\\\":\\\"ASHCROWN\\\",\\\"sequence\\\":2}],\\\"progress\\\":{\\\"runs\\\":5,\\\"wins\\\":2,\\\"maxAct\\\":3,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"],\\\"wonClasses\\\":[\\\"reaver\\\",\\\"herald\\\"]},\\\"found\\\":[\\\"dagger\\\",\\\"katana\\\",\\\"halberd\\\"],\\\"unlocked\\\":[\\\"winAsReaver\\\",\\\"beatStitchedKing\\\",\\\"beatBlightedValkyrie\\\",\\\"ashChildUnlock\\\",\\\"reachAshenCrown\\\",\\\"beatFellWarden\\\",\\\"beatKingAsHerald\\\",\\\"reachStitchedCourt\\\",\\\"rack2Right\\\",\\\"rack3Right\\\",\\\"rack2Left\\\",\\\"rogueBeatWarden\\\",\\\"rogueReachCrown\\\",\\\"winTwice\\\",\\\"rack3Left\\\"]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "ok",
+    "reason": null,
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {
+     "reducedMotion": true,
+     "screenShake": false,
+     "animSpeed": "fast",
+     "musicVolume": 30,
+     "sfxVolume": 60,
+     "muteAudio": false,
+     "uiScale": "L",
+     "textSize": "XL",
+     "colorblindSafe": true,
+     "musicEnabled": false,
+     "highContrast": true,
+     "mapMode": "fog",
+     "holdConfirm": "long",
+     "seenTutorial": true
+    },
+    "results": [
+     {
+      "victory": false,
+      "seed": "EMBERFALL",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 1,
+      "floor": 5,
+      "fightsWon": 4,
+      "damageDealt": 160,
+      "damageTaken": 36,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "ASHCROWN",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 14,
+      "damageDealt": 560,
+      "damageTaken": 126,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "GLOAMING",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 2,
+      "floor": 9,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "CUSTOMCLIMB",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 1,
+      "floor": 3,
+      "fightsWon": 2,
+      "damageDealt": 80,
+      "damageTaken": 18,
+      "name": "Forsaken",
+      "custom": true,
+      "ascension": 2,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "LASTLIGHT",
+      "class": "herald",
+      "className": "Herald",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 15,
+      "damageDealt": 600,
+      "damageTaken": 135,
+      "name": "Vigil",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     }
+    ],
+    "discoveredArmaments": [
+     "dagger",
+     "katana"
+    ],
+    "discoveryReceipts": [
+     {
+      "kind": "armamentDiscovery",
+      "pieceId": "dagger",
+      "first": true,
+      "source": "monster",
+      "runSeed": "EMBERFALL",
+      "sequence": 1
+     },
+     {
+      "kind": "armamentDiscovery",
+      "pieceId": "katana",
+      "first": true,
+      "source": "elite",
+      "runSeed": "ASHCROWN",
+      "sequence": 2
+     }
+    ],
+    "progress": {
+     "runs": 5,
+     "wins": 2,
+     "maxAct": 3,
+     "bosses": [
+      "stitchedKing",
+      "blightedValkyrie",
+      "fellWarden"
+     ],
+     "wonClasses": [
+      "reaver",
+      "herald"
+     ]
+    },
+    "found": [
+     "dagger",
+     "katana",
+     "halberd"
+    ],
+    "unlocked": [
+     "winAsReaver",
+     "beatStitchedKing",
+     "beatBlightedValkyrie",
+     "ashChildUnlock",
+     "reachAshenCrown",
+     "beatFellWarden",
+     "beatKingAsHerald",
+     "reachStitchedCourt",
+     "rack2Right",
+     "rack3Right",
+     "rack2Left",
+     "rogueBeatWarden",
+     "rogueReachCrown",
+     "winTwice",
+     "rack3Left"
+    ]
+   }
+  },
+  "historyLater": {
+   "note": "The history profile re-exported after three more finished runs.",
+   "meta": "{\"schemaVersion\":2,\"settings\":{\"reducedMotion\":true,\"screenShake\":false,\"animSpeed\":\"fast\",\"musicVolume\":30,\"sfxVolume\":60,\"muteAudio\":false,\"uiScale\":\"L\",\"textSize\":\"XL\",\"colorblindSafe\":true,\"musicEnabled\":false,\"highContrast\":true,\"mapMode\":\"fog\",\"holdConfirm\":\"long\",\"seenTutorial\":true},\"results\":[{\"victory\":false,\"seed\":\"EMBERFALL\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":5,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"ASHCROWN\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":3,\"floor\":15,\"fightsWon\":14,\"damageDealt\":560,\"damageTaken\":126,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]},{\"victory\":false,\"seed\":\"GLOAMING\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":2,\"floor\":9,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"CUSTOMCLIMB\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":1,\"floor\":3,\"fightsWon\":2,\"damageDealt\":80,\"damageTaken\":18,\"name\":\"Forsaken\",\"custom\":true,\"ascension\":2,\"bosses\":[]},{\"victory\":true,\"seed\":\"LASTLIGHT\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":3,\"floor\":15,\"fightsWon\":15,\"damageDealt\":600,\"damageTaken\":135,\"name\":\"Vigil\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]},{\"victory\":false,\"seed\":\"SECONDWIND\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":1,\"floor\":6,\"fightsWon\":5,\"damageDealt\":200,\"damageTaken\":45,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"STARFALL\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":3,\"floor\":15,\"fightsWon\":13,\"damageDealt\":520,\"damageTaken\":117,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]},{\"victory\":false,\"seed\":\"EMBERFALL\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":2,\"floor\":10,\"fightsWon\":9,\"damageDealt\":360,\"damageTaken\":81,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]}],\"discoveredArmaments\":[\"dagger\",\"katana\",\"warhammer\"],\"discoveryReceipts\":[{\"kind\":\"armamentDiscovery\",\"pieceId\":\"dagger\",\"first\":true,\"source\":\"monster\",\"runSeed\":\"EMBERFALL\",\"sequence\":1},{\"kind\":\"armamentDiscovery\",\"pieceId\":\"katana\",\"first\":true,\"source\":\"elite\",\"runSeed\":\"ASHCROWN\",\"sequence\":2},{\"kind\":\"armamentDiscovery\",\"pieceId\":\"warhammer\",\"first\":true,\"source\":\"boss\",\"runSeed\":\"STARFALL\",\"sequence\":3}],\"progress\":{\"runs\":8,\"wins\":3,\"maxAct\":3,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"],\"wonClasses\":[\"reaver\",\"herald\",\"starseer\"]},\"found\":[\"dagger\",\"katana\",\"halberd\",\"warhammer\"],\"unlocked\":[\"winAsReaver\",\"beatStitchedKing\",\"beatBlightedValkyrie\",\"ashChildUnlock\",\"reachAshenCrown\",\"beatFellWarden\",\"beatKingAsHerald\",\"reachStitchedCourt\",\"rack2Right\",\"rack3Right\",\"rack2Left\",\"rogueBeatWarden\",\"rogueReachCrown\",\"winTwice\",\"rack3Left\",\"winAsStarseer\",\"graveWardenUnlock\"]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"ok\",\n  \"profile\": \"{\\\"schemaVersion\\\":2,\\\"settings\\\":{\\\"reducedMotion\\\":true,\\\"screenShake\\\":false,\\\"animSpeed\\\":\\\"fast\\\",\\\"musicVolume\\\":30,\\\"sfxVolume\\\":60,\\\"muteAudio\\\":false,\\\"uiScale\\\":\\\"L\\\",\\\"textSize\\\":\\\"XL\\\",\\\"colorblindSafe\\\":true,\\\"musicEnabled\\\":false,\\\"highContrast\\\":true,\\\"mapMode\\\":\\\"fog\\\",\\\"holdConfirm\\\":\\\"long\\\",\\\"seenTutorial\\\":true},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"EMBERFALL\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":5,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"ASHCROWN\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":14,\\\"damageDealt\\\":560,\\\"damageTaken\\\":126,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"GLOAMING\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":2,\\\"floor\\\":9,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"CUSTOMCLIMB\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":1,\\\"floor\\\":3,\\\"fightsWon\\\":2,\\\"damageDealt\\\":80,\\\"damageTaken\\\":18,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":true,\\\"ascension\\\":2,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"LASTLIGHT\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":15,\\\"damageDealt\\\":600,\\\"damageTaken\\\":135,\\\"name\\\":\\\"Vigil\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"SECONDWIND\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":1,\\\"floor\\\":6,\\\"fightsWon\\\":5,\\\"damageDealt\\\":200,\\\"damageTaken\\\":45,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"STARFALL\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":13,\\\"damageDealt\\\":520,\\\"damageTaken\\\":117,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"EMBERFALL\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":2,\\\"floor\\\":10,\\\"fightsWon\\\":9,\\\"damageDealt\\\":360,\\\"damageTaken\\\":81,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]}],\\\"discoveredArmaments\\\":[\\\"dagger\\\",\\\"katana\\\",\\\"warhammer\\\"],\\\"discoveryReceipts\\\":[{\\\"kind\\\":\\\"armamentDiscovery\\\",\\\"pieceId\\\":\\\"dagger\\\",\\\"first\\\":true,\\\"source\\\":\\\"monster\\\",\\\"runSeed\\\":\\\"EMBERFALL\\\",\\\"sequence\\\":1},{\\\"kind\\\":\\\"armamentDiscovery\\\",\\\"pieceId\\\":\\\"katana\\\",\\\"first\\\":true,\\\"source\\\":\\\"elite\\\",\\\"runSeed\\\":\\\"ASHCROWN\\\",\\\"sequence\\\":2},{\\\"kind\\\":\\\"armamentDiscovery\\\",\\\"pieceId\\\":\\\"warhammer\\\",\\\"first\\\":true,\\\"source\\\":\\\"boss\\\",\\\"runSeed\\\":\\\"STARFALL\\\",\\\"sequence\\\":3}],\\\"progress\\\":{\\\"runs\\\":8,\\\"wins\\\":3,\\\"maxAct\\\":3,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"],\\\"wonClasses\\\":[\\\"reaver\\\",\\\"herald\\\",\\\"starseer\\\"]},\\\"found\\\":[\\\"dagger\\\",\\\"katana\\\",\\\"halberd\\\",\\\"warhammer\\\"],\\\"unlocked\\\":[\\\"winAsReaver\\\",\\\"beatStitchedKing\\\",\\\"beatBlightedValkyrie\\\",\\\"ashChildUnlock\\\",\\\"reachAshenCrown\\\",\\\"beatFellWarden\\\",\\\"beatKingAsHerald\\\",\\\"reachStitchedCourt\\\",\\\"rack2Right\\\",\\\"rack3Right\\\",\\\"rack2Left\\\",\\\"rogueBeatWarden\\\",\\\"rogueReachCrown\\\",\\\"winTwice\\\",\\\"rack3Left\\\",\\\"winAsStarseer\\\",\\\"graveWardenUnlock\\\"]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "ok",
+    "reason": null,
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {
+     "reducedMotion": true,
+     "screenShake": false,
+     "animSpeed": "fast",
+     "musicVolume": 30,
+     "sfxVolume": 60,
+     "muteAudio": false,
+     "uiScale": "L",
+     "textSize": "XL",
+     "colorblindSafe": true,
+     "musicEnabled": false,
+     "highContrast": true,
+     "mapMode": "fog",
+     "holdConfirm": "long",
+     "seenTutorial": true
+    },
+    "results": [
+     {
+      "victory": false,
+      "seed": "EMBERFALL",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 1,
+      "floor": 5,
+      "fightsWon": 4,
+      "damageDealt": 160,
+      "damageTaken": 36,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "ASHCROWN",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 14,
+      "damageDealt": 560,
+      "damageTaken": 126,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "GLOAMING",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 2,
+      "floor": 9,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "CUSTOMCLIMB",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 1,
+      "floor": 3,
+      "fightsWon": 2,
+      "damageDealt": 80,
+      "damageTaken": 18,
+      "name": "Forsaken",
+      "custom": true,
+      "ascension": 2,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "LASTLIGHT",
+      "class": "herald",
+      "className": "Herald",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 15,
+      "damageDealt": 600,
+      "damageTaken": 135,
+      "name": "Vigil",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "SECONDWIND",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 1,
+      "floor": 6,
+      "fightsWon": 5,
+      "damageDealt": 200,
+      "damageTaken": 45,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "STARFALL",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 13,
+      "damageDealt": 520,
+      "damageTaken": 117,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "EMBERFALL",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 2,
+      "floor": 10,
+      "fightsWon": 9,
+      "damageDealt": 360,
+      "damageTaken": 81,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     }
+    ],
+    "discoveredArmaments": [
+     "dagger",
+     "katana",
+     "warhammer"
+    ],
+    "discoveryReceipts": [
+     {
+      "kind": "armamentDiscovery",
+      "pieceId": "dagger",
+      "first": true,
+      "source": "monster",
+      "runSeed": "EMBERFALL",
+      "sequence": 1
+     },
+     {
+      "kind": "armamentDiscovery",
+      "pieceId": "katana",
+      "first": true,
+      "source": "elite",
+      "runSeed": "ASHCROWN",
+      "sequence": 2
+     },
+     {
+      "kind": "armamentDiscovery",
+      "pieceId": "warhammer",
+      "first": true,
+      "source": "boss",
+      "runSeed": "STARFALL",
+      "sequence": 3
+     }
+    ],
+    "progress": {
+     "runs": 8,
+     "wins": 3,
+     "maxAct": 3,
+     "bosses": [
+      "stitchedKing",
+      "blightedValkyrie",
+      "fellWarden"
+     ],
+     "wonClasses": [
+      "reaver",
+      "herald",
+      "starseer"
+     ]
+    },
+    "found": [
+     "dagger",
+     "katana",
+     "halberd",
+     "warhammer"
+    ],
+    "unlocked": [
+     "winAsReaver",
+     "beatStitchedKing",
+     "beatBlightedValkyrie",
+     "ashChildUnlock",
+     "reachAshenCrown",
+     "beatFellWarden",
+     "beatKingAsHerald",
+     "reachStitchedCourt",
+     "rack2Right",
+     "rack3Right",
+     "rack2Left",
+     "rogueBeatWarden",
+     "rogueReachCrown",
+     "winTwice",
+     "rack3Left",
+     "winAsStarseer",
+     "graveWardenUnlock"
+    ]
+   }
+  },
+  "veteran": {
+   "note": "Twenty-five runs: the original history keeps 20 while progress counts every run.",
+   "meta": "{\"schemaVersion\":2,\"settings\":{},\"results\":[{\"victory\":false,\"seed\":\"VET5\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":3,\"floor\":9,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET6\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":1,\"floor\":10,\"fightsWon\":9,\"damageDealt\":360,\"damageTaken\":81,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET7\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":2,\"floor\":11,\"fightsWon\":10,\"damageDealt\":400,\"damageTaken\":90,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET8\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":3,\"floor\":12,\"fightsWon\":11,\"damageDealt\":440,\"damageTaken\":99,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET9\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":1,\"floor\":13,\"fightsWon\":3,\"damageDealt\":120,\"damageTaken\":27,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET10\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":2,\"floor\":14,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET11\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":3,\"floor\":4,\"fightsWon\":5,\"damageDealt\":200,\"damageTaken\":45,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET12\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":5,\"fightsWon\":6,\"damageDealt\":240,\"damageTaken\":54,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET13\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":2,\"floor\":6,\"fightsWon\":7,\"damageDealt\":280,\"damageTaken\":63,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET14\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":3,\"floor\":7,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET15\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":1,\"floor\":8,\"fightsWon\":9,\"damageDealt\":360,\"damageTaken\":81,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET16\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":2,\"floor\":9,\"fightsWon\":10,\"damageDealt\":400,\"damageTaken\":90,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET17\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":3,\"floor\":10,\"fightsWon\":11,\"damageDealt\":440,\"damageTaken\":99,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET18\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":1,\"floor\":11,\"fightsWon\":3,\"damageDealt\":120,\"damageTaken\":27,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET19\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":2,\"floor\":12,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET20\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":3,\"floor\":13,\"fightsWon\":5,\"damageDealt\":200,\"damageTaken\":45,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET21\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":1,\"floor\":14,\"fightsWon\":6,\"damageDealt\":240,\"damageTaken\":54,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]},{\"victory\":false,\"seed\":\"VET22\",\"class\":\"rogue\",\"className\":\"Rogue\",\"act\":2,\"floor\":4,\"fightsWon\":7,\"damageDealt\":280,\"damageTaken\":63,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":false,\"seed\":\"VET23\",\"class\":\"herald\",\"className\":\"Herald\",\"act\":3,\"floor\":5,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"VET24\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":6,\"fightsWon\":9,\"damageDealt\":360,\"damageTaken\":81,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]}],\"discoveredArmaments\":[],\"discoveryReceipts\":[],\"progress\":{\"runs\":25,\"wins\":9,\"maxAct\":3,\"bosses\":[\"stitchedKing\"],\"wonClasses\":[\"reaver\",\"herald\",\"rogue\",\"starseer\"]},\"unlocked\":[\"winAsReaver\",\"beatStitchedKing\",\"beatKingAsHerald\",\"rack3Right\",\"reachStitchedCourt\",\"rack2Right\",\"reachAshenCrown\",\"rack2Left\",\"rogueReachCrown\",\"winTwice\",\"rack3Left\",\"graveWardenUnlock\",\"winAsRogue\",\"winAsStarseer\"]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"ok\",\n  \"profile\": \"{\\\"schemaVersion\\\":2,\\\"settings\\\":{},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"VET5\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":3,\\\"floor\\\":9,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET6\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":1,\\\"floor\\\":10,\\\"fightsWon\\\":9,\\\"damageDealt\\\":360,\\\"damageTaken\\\":81,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET7\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":2,\\\"floor\\\":11,\\\"fightsWon\\\":10,\\\"damageDealt\\\":400,\\\"damageTaken\\\":90,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET8\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":3,\\\"floor\\\":12,\\\"fightsWon\\\":11,\\\"damageDealt\\\":440,\\\"damageTaken\\\":99,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET9\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":1,\\\"floor\\\":13,\\\"fightsWon\\\":3,\\\"damageDealt\\\":120,\\\"damageTaken\\\":27,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET10\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":2,\\\"floor\\\":14,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET11\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":3,\\\"floor\\\":4,\\\"fightsWon\\\":5,\\\"damageDealt\\\":200,\\\"damageTaken\\\":45,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET12\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":5,\\\"fightsWon\\\":6,\\\"damageDealt\\\":240,\\\"damageTaken\\\":54,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET13\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":2,\\\"floor\\\":6,\\\"fightsWon\\\":7,\\\"damageDealt\\\":280,\\\"damageTaken\\\":63,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET14\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":3,\\\"floor\\\":7,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET15\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":1,\\\"floor\\\":8,\\\"fightsWon\\\":9,\\\"damageDealt\\\":360,\\\"damageTaken\\\":81,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET16\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":2,\\\"floor\\\":9,\\\"fightsWon\\\":10,\\\"damageDealt\\\":400,\\\"damageTaken\\\":90,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET17\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":3,\\\"floor\\\":10,\\\"fightsWon\\\":11,\\\"damageDealt\\\":440,\\\"damageTaken\\\":99,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET18\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":1,\\\"floor\\\":11,\\\"fightsWon\\\":3,\\\"damageDealt\\\":120,\\\"damageTaken\\\":27,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET19\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":2,\\\"floor\\\":12,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET20\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":3,\\\"floor\\\":13,\\\"fightsWon\\\":5,\\\"damageDealt\\\":200,\\\"damageTaken\\\":45,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET21\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":1,\\\"floor\\\":14,\\\"fightsWon\\\":6,\\\"damageDealt\\\":240,\\\"damageTaken\\\":54,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET22\\\",\\\"class\\\":\\\"rogue\\\",\\\"className\\\":\\\"Rogue\\\",\\\"act\\\":2,\\\"floor\\\":4,\\\"fightsWon\\\":7,\\\"damageDealt\\\":280,\\\"damageTaken\\\":63,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":false,\\\"seed\\\":\\\"VET23\\\",\\\"class\\\":\\\"herald\\\",\\\"className\\\":\\\"Herald\\\",\\\"act\\\":3,\\\"floor\\\":5,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"VET24\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":6,\\\"fightsWon\\\":9,\\\"damageDealt\\\":360,\\\"damageTaken\\\":81,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]}],\\\"discoveredArmaments\\\":[],\\\"discoveryReceipts\\\":[],\\\"progress\\\":{\\\"runs\\\":25,\\\"wins\\\":9,\\\"maxAct\\\":3,\\\"bosses\\\":[\\\"stitchedKing\\\"],\\\"wonClasses\\\":[\\\"reaver\\\",\\\"herald\\\",\\\"rogue\\\",\\\"starseer\\\"]},\\\"unlocked\\\":[\\\"winAsReaver\\\",\\\"beatStitchedKing\\\",\\\"beatKingAsHerald\\\",\\\"rack3Right\\\",\\\"reachStitchedCourt\\\",\\\"rack2Right\\\",\\\"reachAshenCrown\\\",\\\"rack2Left\\\",\\\"rogueReachCrown\\\",\\\"winTwice\\\",\\\"rack3Left\\\",\\\"graveWardenUnlock\\\",\\\"winAsRogue\\\",\\\"winAsStarseer\\\"]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "ok",
+    "reason": null,
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {},
+    "results": [
+     {
+      "victory": false,
+      "seed": "VET5",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 3,
+      "floor": 9,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET6",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 1,
+      "floor": 10,
+      "fightsWon": 9,
+      "damageDealt": 360,
+      "damageTaken": 81,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET7",
+      "class": "herald",
+      "className": "Herald",
+      "act": 2,
+      "floor": 11,
+      "fightsWon": 10,
+      "damageDealt": 400,
+      "damageTaken": 90,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET8",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 3,
+      "floor": 12,
+      "fightsWon": 11,
+      "damageDealt": 440,
+      "damageTaken": 99,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET9",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 1,
+      "floor": 13,
+      "fightsWon": 3,
+      "damageDealt": 120,
+      "damageTaken": 27,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET10",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 2,
+      "floor": 14,
+      "fightsWon": 4,
+      "damageDealt": 160,
+      "damageTaken": 36,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET11",
+      "class": "herald",
+      "className": "Herald",
+      "act": 3,
+      "floor": 4,
+      "fightsWon": 5,
+      "damageDealt": 200,
+      "damageTaken": 45,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET12",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 1,
+      "floor": 5,
+      "fightsWon": 6,
+      "damageDealt": 240,
+      "damageTaken": 54,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET13",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 2,
+      "floor": 6,
+      "fightsWon": 7,
+      "damageDealt": 280,
+      "damageTaken": 63,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET14",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 3,
+      "floor": 7,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET15",
+      "class": "herald",
+      "className": "Herald",
+      "act": 1,
+      "floor": 8,
+      "fightsWon": 9,
+      "damageDealt": 360,
+      "damageTaken": 81,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET16",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 2,
+      "floor": 9,
+      "fightsWon": 10,
+      "damageDealt": 400,
+      "damageTaken": 90,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET17",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 3,
+      "floor": 10,
+      "fightsWon": 11,
+      "damageDealt": 440,
+      "damageTaken": 99,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET18",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 1,
+      "floor": 11,
+      "fightsWon": 3,
+      "damageDealt": 120,
+      "damageTaken": 27,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET19",
+      "class": "herald",
+      "className": "Herald",
+      "act": 2,
+      "floor": 12,
+      "fightsWon": 4,
+      "damageDealt": 160,
+      "damageTaken": 36,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET20",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 3,
+      "floor": 13,
+      "fightsWon": 5,
+      "damageDealt": 200,
+      "damageTaken": 45,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET21",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 1,
+      "floor": 14,
+      "fightsWon": 6,
+      "damageDealt": 240,
+      "damageTaken": 54,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     },
+     {
+      "victory": false,
+      "seed": "VET22",
+      "class": "rogue",
+      "className": "Rogue",
+      "act": 2,
+      "floor": 4,
+      "fightsWon": 7,
+      "damageDealt": 280,
+      "damageTaken": 63,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": false,
+      "seed": "VET23",
+      "class": "herald",
+      "className": "Herald",
+      "act": 3,
+      "floor": 5,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "VET24",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 1,
+      "floor": 6,
+      "fightsWon": 9,
+      "damageDealt": 360,
+      "damageTaken": 81,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     }
+    ],
+    "discoveredArmaments": [],
+    "discoveryReceipts": [],
+    "progress": {
+     "runs": 25,
+     "wins": 9,
+     "maxAct": 3,
+     "bosses": [
+      "stitchedKing"
+     ],
+     "wonClasses": [
+      "reaver",
+      "herald",
+      "rogue",
+      "starseer"
+     ]
+    },
+    "unlocked": [
+     "winAsReaver",
+     "beatStitchedKing",
+     "beatKingAsHerald",
+     "rack3Right",
+     "reachStitchedCourt",
+     "rack2Right",
+     "reachAshenCrown",
+     "rack2Left",
+     "rogueReachCrown",
+     "winTwice",
+     "rack3Left",
+     "graveWardenUnlock",
+     "winAsRogue",
+     "winAsStarseer"
+    ]
+   }
+  },
+  "schema1": {
+   "note": "Schema-1 profile (found without discoveredArmaments); the original migrates it.",
+   "meta": "{\"schemaVersion\":1,\"settings\":{\"reducedMotion\":true},\"results\":[{\"victory\":false,\"seed\":\"EMBERFALL\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":5,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]},{\"victory\":true,\"seed\":\"ASHCROWN\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":3,\"floor\":15,\"fightsWon\":14,\"damageDealt\":560,\"damageTaken\":126,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"]}],\"progress\":{\"runs\":2,\"wins\":1,\"maxAct\":3,\"bosses\":[\"stitchedKing\",\"blightedValkyrie\",\"fellWarden\"],\"wonClasses\":[\"reaver\"]},\"unlocked\":[\"winAsReaver\",\"beatStitchedKing\"],\"found\":[\"dagger\"]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"migrated\",\n  \"profile\": \"{\\\"schemaVersion\\\":1,\\\"settings\\\":{\\\"reducedMotion\\\":true},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"EMBERFALL\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":5,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]},{\\\"victory\\\":true,\\\"seed\\\":\\\"ASHCROWN\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":3,\\\"floor\\\":15,\\\"fightsWon\\\":14,\\\"damageDealt\\\":560,\\\"damageTaken\\\":126,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"]}],\\\"progress\\\":{\\\"runs\\\":2,\\\"wins\\\":1,\\\"maxAct\\\":3,\\\"bosses\\\":[\\\"stitchedKing\\\",\\\"blightedValkyrie\\\",\\\"fellWarden\\\"],\\\"wonClasses\\\":[\\\"reaver\\\"]},\\\"unlocked\\\":[\\\"winAsReaver\\\",\\\"beatStitchedKing\\\"],\\\"found\\\":[\\\"dagger\\\"]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "migrated",
+    "reason": "migrated from schemaVersion 1",
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {
+     "reducedMotion": true
+    },
+    "results": [
+     {
+      "victory": false,
+      "seed": "EMBERFALL",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 1,
+      "floor": 5,
+      "fightsWon": 4,
+      "damageDealt": 160,
+      "damageTaken": 36,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": []
+     },
+     {
+      "victory": true,
+      "seed": "ASHCROWN",
+      "class": "reaver",
+      "className": "Reaver",
+      "act": 3,
+      "floor": 15,
+      "fightsWon": 14,
+      "damageDealt": 560,
+      "damageTaken": 126,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing",
+       "blightedValkyrie",
+       "fellWarden"
+      ]
+     }
+    ],
+    "progress": {
+     "runs": 2,
+     "wins": 1,
+     "maxAct": 3,
+     "bosses": [
+      "stitchedKing",
+      "blightedValkyrie",
+      "fellWarden"
+     ],
+     "wonClasses": [
+      "reaver"
+     ]
+    },
+    "unlocked": [
+     "winAsReaver",
+     "beatStitchedKing"
+    ],
+    "found": [
+     "dagger"
+    ],
+    "discoveredArmaments": [
+     "dagger"
+    ],
+    "discoveryReceipts": []
+   }
+  },
+  "schema0": {
+   "note": "Unversioned pre-#67 profile without a progress tally.",
+   "meta": "{\"settings\":{\"muteAudio\":true},\"results\":[{\"victory\":false,\"seed\":\"GLOAMING\",\"class\":\"starseer\",\"className\":\"Starseer\",\"act\":2,\"floor\":9,\"fightsWon\":8,\"damageDealt\":320,\"damageTaken\":72,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[\"stitchedKing\"]}]}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"ok\",\n  \"profile\": \"{\\\"settings\\\":{\\\"muteAudio\\\":true},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"GLOAMING\\\",\\\"class\\\":\\\"starseer\\\",\\\"className\\\":\\\"Starseer\\\",\\\"act\\\":2,\\\"floor\\\":9,\\\"fightsWon\\\":8,\\\"damageDealt\\\":320,\\\"damageTaken\\\":72,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[\\\"stitchedKing\\\"]}]}\"\n}",
+   "status": {
+    "ok": true,
+    "state": "ok",
+    "reason": null,
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": false
+   },
+   "loaded": {
+    "settings": {
+     "muteAudio": true
+    },
+    "results": [
+     {
+      "victory": false,
+      "seed": "GLOAMING",
+      "class": "starseer",
+      "className": "Starseer",
+      "act": 2,
+      "floor": 9,
+      "fightsWon": 8,
+      "damageDealt": 320,
+      "damageTaken": 72,
+      "name": "Forsaken",
+      "custom": false,
+      "ascension": 0,
+      "bosses": [
+       "stitchedKing"
+      ]
+     }
+    ]
+   }
+  },
+  "newer": {
+   "note": "A profile written by a newer original build.",
+   "meta": "{\"schemaVersion\":3,\"settings\":{},\"results\":[{\"victory\":false,\"seed\":\"EMBERFALL\",\"class\":\"reaver\",\"className\":\"Reaver\",\"act\":1,\"floor\":5,\"fightsWon\":4,\"damageDealt\":160,\"damageTaken\":36,\"name\":\"Forsaken\",\"custom\":false,\"ascension\":0,\"bosses\":[]}],\"progress\":{\"runs\":1,\"wins\":0,\"maxAct\":1,\"bosses\":[],\"wonClasses\":[]},\"unlocked\":[],\"futureLedger\":{\"x\":1}}",
+   "exported": "{\n  \"exportedAt\": \"2026-10-02T00:00:00.000Z\",\n  \"game\": \"Ashen Spire\",\n  \"note\": \"This is your profile exactly as it was stored.\",\n  \"state\": \"newer\",\n  \"profile\": \"{\\\"schemaVersion\\\":3,\\\"settings\\\":{},\\\"results\\\":[{\\\"victory\\\":false,\\\"seed\\\":\\\"EMBERFALL\\\",\\\"class\\\":\\\"reaver\\\",\\\"className\\\":\\\"Reaver\\\",\\\"act\\\":1,\\\"floor\\\":5,\\\"fightsWon\\\":4,\\\"damageDealt\\\":160,\\\"damageTaken\\\":36,\\\"name\\\":\\\"Forsaken\\\",\\\"custom\\\":false,\\\"ascension\\\":0,\\\"bosses\\\":[]}],\\\"progress\\\":{\\\"runs\\\":1,\\\"wins\\\":0,\\\"maxAct\\\":1,\\\"bosses\\\":[],\\\"wonClasses\\\":[]},\\\"unlocked\\\":[],\\\"futureLedger\\\":{\\\"x\\\":1}}\"\n}",
+   "status": {
+    "ok": false,
+    "state": "newer",
+    "reason": "profile schemaVersion 3 is newer than this build (2)",
+    "archiveId": null,
+    "recoveredFrom": null,
+    "quarantined": true
+   },
+   "loaded": {
+    "schemaVersion": 2,
+    "settings": {},
+    "results": [],
+    "discoveredArmaments": [],
+    "discoveryReceipts": []
+   }
+  }
+ }
+}

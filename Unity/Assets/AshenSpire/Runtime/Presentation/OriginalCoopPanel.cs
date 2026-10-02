@@ -99,6 +99,7 @@ namespace AshenSpire.Presentation
                 case "shop": Shop(); break;
                 case "shrine": Shrine(); break;
                 case "event": Event(); break;
+                case "complete" when RunSummaryView.FromCoopView(_view, _catalog) is RunSummary summary: RunSummaryView.Mount(_body, summary, null); break;
                 case "complete": Text((string)Scene["result"] == "victory" ? "THE SPIRE FALLS SILENT" : "ASH RETURNS TO ASH", "node-title"); Text("Your party's climb is complete.", "lead"); break;
                 default: Text("Waiting for the next room…", "lead"); break;
             }
@@ -161,8 +162,11 @@ namespace AshenSpire.Presentation
             {
                 var id = (string)enemy["id"];
                 var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
-                    () => { _target = id; Render(); }, id == _target, out _);
-                target.SetEnabled(!friendly); stage.Add(target);
+                    () => { if (friendly) return; _target = id; Render(); }, id == _target, out _);
+                EnemyTelegraphView.Attach(target, EnemyTelegraphView.FromSnapshot(enemy, Body, _balance));
+                EnemyTelegraphView.ExplainStatuses(target, Name("enemies", (string)enemy["enemyId"]), id, enemy, StatusExplainer.Describe(_catalog, enemy["statuses"] as JObject));
+                // Not SetEnabled(false): disabling propagates and would block the status explanation.
+                OriginalCombatLayout.SetTargetAvailable(target, !friendly); stage.Add(target);
             }
             _body.Add(stage);
             _combatTools = OriginalCombatLayout.Utilities("coop-combat-tools", _report);
@@ -267,7 +271,7 @@ namespace AshenSpire.Presentation
             if ((string)Scene["kind"] == "shop")
             {
                 foreach (var card in (Run["deck"] as JArray ?? new JArray()).Where(c => string.IsNullOrEmpty((string)c["grantedBy"]) && string.IsNullOrEmpty((string)c["equipmentAttackSlotId"])))
-                    Command("remove-" + card["instanceId"], "Remove " + Name("cards", (string)card["cardId"]) + " · " + Room["removeCost"] + " cinders", Service("removeCard", new JObject { ["instanceId"] = card["instanceId"].DeepClone() }), (int?)Room["removeCost"] <= (int?)Run["cinders"]);
+                    Destructive("remove-" + card["instanceId"], "Remove " + Name("cards", (string)card["cardId"]) + " · " + Room["removeCost"] + " cinders", ConfirmationPolicy.RemoveCard, Service("removeCard", new JObject { ["instanceId"] = card["instanceId"].DeepClone() }), (int?)Room["removeCost"] <= (int?)Run["cinders"]);
                 foreach (var sale in new OriginalRunServices(_catalog).Sellables(Run)) Command("sell-" + sale["kind"] + "-" + sale["index"], "Sell " + sale["name"] + " · receive " + sale["price"] + " cinders", Service("sell", (JObject)sale.DeepClone()));
             }
             if ((string)Scene["kind"] == "shrine")
@@ -418,6 +422,13 @@ namespace AshenSpire.Presentation
         private void Statuses(JObject statuses) { if (statuses != null && statuses.Count > 0) Text(string.Join(" · ", statuses.Properties().Select(s => Human(s.Name) + " " + (s.Value["stacks"] ?? s.Value["meter"]?["value"]))), "caption"); }
         private static Image Picture(string art) { var image = new Image { image = Resources.Load<Texture2D>("Art/" + art), scaleMode = ScaleMode.ScaleToFit }; image.AddToClassList("fighter"); return image; }
         private Button Button(string id, string text, Action action) { var button = new Button(() => { try { action(); } catch (Exception e) { ShowError(e.Message); } }) { name = "coop-" + id, text = text }; button.AddToClassList("button"); _body.Add(button); return button; }
+        // US-13.3: DESTRUCTIVE actions (confirmation-policies.json) send only after a hold or a second tap.
+        private Button Destructive(string id, string text, string actionId, JObject intent, bool enabled)
+        {
+            var button = new Button { name = "coop-" + id, text = text }; button.AddToClassList("button"); _body.Add(button);
+            HoldConfirmButton.Bind(button, actionId, () => { try { Send(intent); } catch (Exception e) { ShowError(e.Message); } }, _report);
+            button.SetEnabled(enabled); return button;
+        }
         private Button Command(string id, string text, JObject intent, bool enabled = true) { var button = Button(id, text, () => Send(intent)); button.SetEnabled(enabled); return button; }
         private void Send(JObject intent)
         {

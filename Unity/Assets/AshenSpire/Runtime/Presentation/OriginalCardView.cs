@@ -6,8 +6,9 @@
 // FONT: Fonts/GlyphFonts.json maps complete authored Unicode strings to bundled
 // static monochrome fonts, including supplementary codepoints. Update that map
 // after changing icons/tags; see Fonts/README.md. A caller may override card art.
-// ACCESS: FullText exposes every label; the same text is the tooltip. Visible
-// descriptions and tags wrap without clipping, so touch users lose no details.
+// ACCESS: FullText exposes every label and tag blurb; the same text is the tooltip.
+// Tag chips open their blurb on hover or long press (EnemyTelegraphView.Explain), and
+// pile inspection lists the blurbs, so touch users lose no details (US-13.4).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace AshenSpire.Presentation
         private static readonly Dictionary<string, Font> GlyphFontCache = new Dictionary<string, Font>(StringComparer.Ordinal);
         public string FullText { get; }
         public Label Art { get; }
+        internal Func<OriginalCardView> Ghost { get; }
 
         public OriginalCardView(OriginalContentCatalog catalog, JObject card, JObject cost,
             JObject player, bool selected, Action clicked, string controlId, Font glyphFont = null) : base(clicked)
@@ -74,21 +76,23 @@ namespace AshenSpire.Presentation
             var band = Text(typeName, "original-card-type");
             if (TryColor((string)type?["color"], out var typeColor))
             {
-                band.style.color = typeColor;
+                band.style.color = Color.Lerp(typeColor, new Color32(245, 231, 204, 255), .65f);
                 band.style.backgroundColor = Color.Lerp(new Color32(42, 36, 28, 255), typeColor, .15f);
             }
             Add(band);
             // Explicit empty profile tags remain empty; an equipped attack must
             // never accidentally inherit the base card's unrelated tag junction.
-            var ids = card["cardTags"] is JArray explicitTags ? explicitTags.Values<string>() : catalog.Tags("card", card);
-            var tagNames = new List<string>(); var tagRow = new VisualElement(); tagRow.AddToClassList("original-card-tags"); tagRow.pickingMode = PickingMode.Ignore;
-            foreach (var id in ids.Distinct(StringComparer.Ordinal))
+            var ids = StatusExplainer.TagIds(catalog, card);
+            var tagNames = new List<string>(); var tagLines = new List<string>(); var tagRow = new VisualElement(); tagRow.AddToClassList("original-card-tags"); tagRow.pickingMode = PickingMode.Ignore;
+            foreach (var explained in StatusExplainer.CardTags(ids, id => metadata.Tags.TryGetValue(id, out var row) ? row : null))
             {
-                if (!metadata.Tags.TryGetValue(id, out var tag)) continue;
-                var label = (string)tag["label"] ?? id; tagNames.Add(label);
+                var tag = metadata.Tags[explained.Id];
+                var label = explained.Label; tagNames.Add(label); tagLines.Add(explained.Line);
                 // Keep the symbol and Latin copy separate: an emoji-only font
                 // must never be applied to the readable tag name beside it.
-                var chip = new VisualElement { pickingMode = PickingMode.Ignore };
+                // US-13.4: the blurb opens on hover or long press (no hover-only text);
+                // a long press releases the card's capture so it does not select the card.
+                var chip = new VisualElement { pickingMode = PickingMode.Position };
                 chip.AddToClassList("card-tags"); chip.AddToClassList("original-card-tag");
                 chip.style.flexDirection = FlexDirection.Row; chip.style.alignItems = Align.Center;
                 var glyph = (string)tag["glyph"] ?? "";
@@ -97,10 +101,11 @@ namespace AshenSpire.Presentation
                     var symbol = Text(glyph); ApplyGlyphFont(symbol, glyph); symbol.style.marginRight = 3; chip.Add(symbol);
                 }
                 var tagCopy = Text(label); tagCopy.style.flexShrink = 1; tagCopy.style.minWidth = 0; chip.Add(tagCopy);
-                chip.tooltip = (string)tag["blurb"];
+                EnemyTelegraphView.Explain(chip, string.IsNullOrEmpty(explained.Blurb) ? null : label + "\n" + explained.Blurb);
                 if (TryColor((string)tag["color"], out var color))
                 {
-                    chip.style.color = color; var edge = new Color(color.r, color.g, color.b, .45f);
+                    chip.style.color = Color.Lerp(color, new Color32(245, 231, 204, 255), .65f);
+                    var edge = new Color(color.r, color.g, color.b, .45f);
                     chip.style.borderTopColor = edge; chip.style.borderBottomColor = edge; chip.style.borderLeftColor = edge; chip.style.borderRightColor = edge;
                     chip.style.backgroundColor = new Color(color.r, color.g, color.b, .12f);
                 }
@@ -111,8 +116,13 @@ namespace AshenSpire.Presentation
             if (shortage != null) Add(Text(shortage, "card-shortage", "original-card-shortage"));
             FullText = title + ". " + typeName + ". " + costText + ". " +
                 (tagNames.Count == 0 ? "" : string.Join(", ", tagNames) + ". ") + description +
-                (shortage == null ? "" : " " + shortage);
+                (shortage == null ? "" : " " + shortage) +
+                (tagLines.Count == 0 ? "" : "\n" + string.Join("\n", tagLines));
             tooltip = FullText;
+            // card.hover lift/scale, only inside a hand rail. The lift is drawn by an unnamed,
+            // unpickable copy in FeelDriver's overlay, so this control never moves or reorders.
+            Ghost = () => { var copy = new OriginalCardView(catalog, card, cost, player, selected, null, "", glyphFont); copy.Art.text = Art.text; copy.Art.style.unityFont = Art.style.unityFont; return copy; };
+            FeelDriver.HandCardHover(this);
         }
 
         private static void ApplyGlyphFont(Label label, string glyph)

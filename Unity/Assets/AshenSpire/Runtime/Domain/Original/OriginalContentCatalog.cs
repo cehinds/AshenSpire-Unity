@@ -16,7 +16,10 @@ namespace AshenSpire.Domain.Original
         private readonly JObject _content;
         private readonly TagCatalog _tags;
         public string Version => (string)_content["version"];
-        public OriginalContentCatalog(string json)
+        public OriginalContentCatalog(string json) : this(json, OriginalContentValidation.DefaultFile) { }
+        /// <param name="sourceName">File name used in validation messages (e.g. "content.json").</param>
+        /// <exception cref="OriginalContentValidationException">Lists every cross-table reference problem, not just the first.</exception>
+        public OriginalContentCatalog(string json, string sourceName)
         {
             _content = JObject.Parse(json, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
             foreach (var table in new[] { "cards", "classes", "statuses", "stances", "enemies", "encounters", "events", "flasks", "relics", "attributes", "creationModes", "unlocks" })
@@ -31,7 +34,9 @@ namespace AshenSpire.Domain.Original
                 }
             }
             _tags = new TagCatalog(_content);
-            OriginalContentValidation.ValidateReferences(_content);
+            // References only, as before (all problems in one exception). Full schema checks run where content is
+            // authored (CSV import, mod packs), so content frozen inside older saves keeps loading.
+            OriginalContentValidation.ValidateReferences(_content, sourceName);
             var cards = ((JArray)_content["cards"]).Select(x => (string)x["id"]).ToHashSet();
             foreach (var hero in _content["classes"])
             {
@@ -41,11 +46,21 @@ namespace AshenSpire.Domain.Original
             }
             foreach (var config in ((JObject)_content["mapConfigs"]).Properties()) ActMapGenerator.Validate((JObject)config.Value);
             foreach (var table in new[] { "cards", "statuses", "stances", "enemies", "relics", "events", "flasks", "scripts" }) ValidateBehaviors(_content[table]);
+            // Optional: content frozen in a save made before hand rules existed has none, and its fights stay legacy.
+            if (_content["handRules"] != null)
+            {
+                HandRules.Validate(_content["handRules"]);
+                var classIds = ((JArray)_content["classes"]).Select(x => (string)x["id"]).ToHashSet();
+                if (_content["handRules"]["classStarting"] is JObject classStarting)
+                    foreach (var entry in classStarting.Properties()) if (!classIds.Contains(entry.Name)) throw new ArgumentException("Hand rules: classStarting names unknown class " + entry.Name);
+            }
             var rules = DerivedStatCalculator.Resolve((JObject)_content["derivedStatRules"]);
             foreach (var mode in ((JObject)_content["attributeRules"]["presets"]).Properties()) foreach (var hero in _content["classes"])
                 foreach (var rule in rules.Properties()) DerivedStatCalculator.Receipt(rules, rule.Name, (JObject)mode.Value[(string)hero["id"]], (JObject)hero);
         }
         public JObject Data() => (JObject)_content.DeepClone();
+        /// <summary>The authored solo hand rules (SPEC §4.1), or null when this content predates them.</summary>
+        public JObject SoloHandRules => (JObject)_content["handRules"]?.DeepClone();
         private void ValidateBehaviors(JToken node)
         {
             if (node is JObject record)

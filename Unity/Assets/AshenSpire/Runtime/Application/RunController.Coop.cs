@@ -27,7 +27,7 @@ namespace AshenSpire.Application
         private const string CoopReceiptsKey = "AshenSpire.Unity.Coop.Receipts.v1";
         private void OpenCoop()
         {
-            LoadOriginalProfile();
+            if (!TryLoadOriginalProfile()) return;
             if (_coopDraft == null)
             {
                 var endpoint = PlayerPrefs.GetString("AshenSpire.Unity.Coop.Endpoint", "ws://127.0.0.1:8795/lan");
@@ -46,11 +46,12 @@ namespace AshenSpire.Application
             {
                 // The companion validates a baseline character against its own data.
                 // Earned local kits cannot be asserted as trusted host unlocks.
-                _view.NativeCreation(_originalContent, new AttributeProgression(OriginalRules("progression")), OriginalRules("mechanics"), (player, seed) =>
+                _view.NativeCreation(CoopContent(), new AttributeProgression(OriginalRules("progression")), OriginalRules("mechanics"), (player, seed) =>
                 {
                     _coopCharacter = player; _coopCharacter["seed"] = seed; ShowCoopConnect("Wanderer selected. Join the companion when ready.");
-                }, new OriginalProfile(_originalContent).Snapshot());
+                }, new OriginalProfile(CoopContent()).Snapshot());
             }, ConnectCoop, () => { CloseCoop(); Menu(); });
+            _view.PersistenceNotice(_profileNotice);
         }
         private void ConnectCoop(bool rejoin)
         {
@@ -141,9 +142,11 @@ namespace AshenSpire.Application
         private void RenderCoop(string notice = null)
         {
             if (_coopSnapshot == null) return;
+            MusicCoop();
             if ((bool?)_coopSnapshot["lobby"]?["started"] != true)
                 _view.CoopLobby(_coopSnapshot, _coopHost, ready => SendCoopEnvelope("ready", new JObject { ["ready"] = ready }), () => SendCoopEnvelope("start", new JObject { ["sequence"] = 1 }), seed => SendCoopEnvelope("seed", new JObject { ["seed"] = seed }), endless => SendCoopEnvelope("endless", new JObject { ["enabled"] = endless }), LeaveCoop, notice, seatId => SendCoopEnvelope("removeSeat", new JObject { ["seatId"] = seatId }));
-            else _view.CoopGame((JObject)_coopSnapshot["game"], _originalContent, OriginalRules("event-choices"), CoopIntent, LeaveCoop);
+            else _view.CoopGame((JObject)_coopSnapshot["game"], CoopContent(), OriginalRules("event-choices"), CoopIntent, LeaveCoop);
+            _view.PersistenceNotice(_profileNotice);
         }
         private void CoopIntent(JObject intent)
         {
@@ -161,7 +164,7 @@ namespace AshenSpire.Application
             {
                 _profile.Finish((string)run["runId"], run, (string)_coopSnapshot["game"]["scene"]["result"] == "victory"); changed = true;
             }
-            if (changed) _profileSaves.Save(_profile.Snapshot());
+            if (changed || _profileWritePending) SaveOriginalProfile();
         }
         private void ReportCoop()
         {

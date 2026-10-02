@@ -64,6 +64,7 @@ row in the table below — no game-code changes.
 | Equipment + armour-set art (`assets/equipment/*.webp`) | weapon layers and per-class/per-set bodies, composited at runtime | procedurally modeled + rendered by this repo's own Blender pipeline (`tools/equipment-blender.py`, headless, reading the same `content/source/weapons.csv` + `outfits.csv` the game reads; regenerate with `blender --background --factory-startup --python tools/equipment-blender.py -- assets/equipment`) | AshenSpire | CC0 |
 | Equipment component reference strips (`assets/equipment/components/v1/**/*.webp`) | five-view modeling and inventory-art references for 39 class equipment components | generated for this project from project-owner-supplied character paintings; indexed by `assets/equipment/components/v1/manifest.json` | AshenSpire | CC0 |
 | Painted equipment turnaround sheets (`docs/low-poly-fighters/*.png`) | the eight reference sheets on the *Low-Poly Fighters — Painted Poses* page (`docs/low-poly-fighters/index.html`) — every equipment piece per class in five orthographic views (top, right, bottom, left, back), two sheets per class: the garments and the kit (hands, feet, weapon) | **AI-generated** painted sheets supplied by the owner (owner statement, 2026-09-05), delivered as `{knight,monk,rogue,wizard}-{wearables,equipment}-turnaround.png` and renamed on commit to the names the page reads. Reference only — nothing loads them at runtime; the shipped per-piece equipment art is the `assets/equipment/*.webp` row above. The painted **pose** sheets that page also shows are covered by the *Pose sprites* row. | AshenSpire (AI-generated) | CC0 |
+| Procedural music beds (`src/content/music.js` BEDS; Unity catalog `Unity/Assets/AshenSpire/Resources/Audio/music-catalog.json`) | per-context score (title, map, combat, elite, boss, shop, rest, victory), synthesized at runtime, no audio files | original to this project, generated in code by `src/ui/audio.js` | AshenSpire | CC0 |
 | Unicode emoji glyphs (⚔ 🩸 💎 ☄ …) | card/relic/status/enemy icons, sigils | Unicode standard; rendered by the player's OS/browser emoji font | Unicode / OS vendor | Not embedded — system-rendered |
 | Cinzel (display), Inter (body) | typography | referenced by `font-family` with robust system fallbacks (Georgia / system-ui); **not bundled** in v1 | Google Fonts | SIL OFL (when self-hosted) |
 
@@ -72,6 +73,25 @@ row in the table below — no game-code changes.
 > author, license). Self-host the Cinzel/Inter `woff2` under `assets/fonts/` with
 > an `@font-face` block and a row here — the fallbacks keep the game readable
 > until then.
+
+## Optional music folder (`music/`)
+
+Free third-party tracks for the **Custom music folder** setting (Settings → Advanced → Debug → *Custom music folder*, set to `music/` when served). The folder is **not bundled** into `AshenSpire.html`; with the setting empty (the default) the game plays only its built-in generated score. Every license below was read on the track's own page.
+
+| File | Context | Title | Author | License | Source |
+|---|---|---|---|---|---|
+| `title/the_wraiths_of_winter.ogg` | title | The Wraiths of Winter | HitCtrl | CC-BY 3.0 | https://opengameart.org/content/fantasy-music-the-wraiths-of-winter |
+| `map/rpg_ambient_4_the_dark_wood.ogg` | map | RPG Ambient 4 (The Dark Wood) | HitCtrl | CC-BY 3.0 | https://opengameart.org/content/rpg-ambient-4-the-dark-woods |
+| `combat/omens.mp3` | combat | Omens | Eliot Corley (el-corleo) | CC-BY 3.0 | https://opengameart.org/content/omens |
+| `combat/a_fight_in_the_fields.mp3` | combat | A Fight in the Fields | Jonathan Shaw (www.jshaw.co.uk) | CC-BY 3.0 | https://opengameart.org/content/a-fight-in-the-fields-rpg-orchestral-essentials-combat-music |
+| `elite/five_armies.mp3` | elite | Five Armies | Kevin MacLeod (incompetech.com) | CC-BY 4.0 | https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100366 |
+| `boss/blackmoor_colossus.mp3` | boss | Colossal Boss Battle Theme (Blackmoor Colossus) | Matthew Pablo (http://www.matthewpablo.com) | CC-BY 3.0 | https://opengameart.org/content/colossal-boss-battle-theme |
+| `boss/final_confrontation.mp3` | boss | Final Confrontation | tcarisland | CC-BY 4.0 | https://opengameart.org/content/final-confrontation |
+| `shop/the_old_tower_inn.mp3` | shop | Medieval: The Old Tower Inn | RandomMind | CC0 | https://opengameart.org/content/medieval-the-old-tower-inn |
+| `rest/peaceful_scene.ogg` | rest | Peaceful Scene | Peter Eastman (peastman) | CC-BY 3.0 | https://opengameart.org/content/peaceful-scene |
+| `victory/the_precipice_of_victory.mp3` | victory | The Precipice of Victory | Jonathan Shaw (www.jshaw.co.uk) | CC-BY 3.0 | https://opengameart.org/content/the-precipice-of-victory-rpg-orchestral-essentials-battle-results-music |
+
+Kevin MacLeod's requested line: "Five Armies" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
 
 ## Code
 

@@ -1,13 +1,20 @@
-// Authoring acceptance: independently imported CSV additions execute in native combat.
+// Authoring acceptance: schema validation (US-16.3, always), then — given a content.json path —
+// independently imported CSV additions execute in native combat.
+// Run from the repository root: dotnet run --project UnityTests/OriginalAuthoring [-- <content.json>]
 using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 var root = Directory.GetCurrentDirectory();
-var catalog = new OriginalContentCatalog(File.ReadAllText(args[0]));
+Console.WriteLine($"Original schema validation: {ValidationChecks.Run(root)} checks passed");
+if (args.Length == 0) return;
+var catalog = new OriginalContentCatalog(File.ReadAllText(args[0]), Path.GetFileName(args[0]));
 var mechanics = JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/mechanics.json")));
 var progression = new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(root,"GameContent/Unity/Original/progression.json"))));
 var checks = 0;
 void Check(bool yes,string name) { if (!yes) throw new Exception(name); checks++; }
-var creation = new CreationModel(catalog,"reaver","standard",progression);
+// Standard creation ("leanStandard"): each class's preset row (web src/model/attributes.js:171-174), nothing
+// left to spend; mirrors LeanAllocation in UnityTests/Parity/OwnerCreationChecks.cs.
+CreationModel Lean(string cls){var creation=new CreationModel(catalog,cls,"leanStandard",progression);if(!creation.CanBegin)throw new Exception("Standard preset left points for "+cls);return creation;}
+var creation = Lean("reaver");
 var player = new OriginalCharacterBuilder(catalog,progression,mechanics).Build(creation,"authoringKit");
 Check((string)player["loadout"]!["sets"]!["rightHand"]![0] == "authoringSword","CSV weapon equipped through authored kit");
 Check(player["deck"]!.Any(c => (string)c["equipmentRole"] == "attack"),"weapon supplies stable attack cards");

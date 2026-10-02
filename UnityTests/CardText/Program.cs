@@ -72,6 +72,36 @@ Check(OriginalCardText.Describe(formulaDef,catalog).Contains("{damage}"),"static
 Check(OriginalCardText.Describe(formulaDef,catalog,new JObject()).StartsWith("Deal 6 damage"),"formula context delegates to evaluator without bonus folding");
 var weaponReceipts = WeaponTextChecks.Run(catalog, combat, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Check, out var weaponCommands);
 commands += weaponCommands;
+
+// US-13.4: every tag on every authored card yields its blurb through StatusExplainer.CardTags,
+// the same id path the card face draws (explicit cardTags, else the catalog junction).
+var shippedJson = JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/content.json")));
+var shipped = new OriginalContentCatalog(shippedJson.ToString());
+var tagRows = shippedJson["tags"]!.OfType<JObject>().ToDictionary(x => (string)x["id"]!);
+var taggedCards = 0; var tagLines = 0;
+foreach (var card in shippedJson["cards"]!.OfType<JObject>())
+{
+    var frozenCard = card.DeepClone();
+    var ids = StatusExplainer.TagIds(shipped, card).ToArray();
+    var rows = StatusExplainer.CardTags(shipped, card);
+    Check(JToken.DeepEquals(card, frozenCard), card["id"] + " tag explanation is read-only");
+    foreach (var id in ids) Check(tagRows.ContainsKey(id), card["id"] + " tag '" + id + "' has an authored tag row");
+    Check(rows.Select(r => r.Id).SequenceEqual(ids), card["id"] + " explains every tag in face order");
+    foreach (var row in rows)
+    {
+        var blurb = (string)tagRows[row.Id]["blurb"]!;
+        Check(!string.IsNullOrWhiteSpace(blurb) && row.Blurb == blurb && row.Line == (string)tagRows[row.Id]["label"]! + " — " + blurb, card["id"] + " tag '" + row.Id + "' yields its blurb");
+        tagLines++;
+    }
+    if (ids.Length > 0) taggedCards++;
+}
+Check(taggedCards > 0 && tagLines >= taggedCards, "tag blurbs reachable for " + taggedCards + " authored cards (" + tagLines + " lines)");
+var untagged = (JObject)shippedJson["cards"]!.OfType<JObject>().First(x => StatusExplainer.TagIds(shipped, x).Any()).DeepClone();
+untagged["cardTags"] = new JArray();
+Check(StatusExplainer.CardTags(shipped, untagged).Count == 0, "explicit empty cardTags stay empty");
+untagged["cardTags"] = new JArray("noSuchTag");
+Check(StatusExplainer.CardTags(shipped, untagged).Count == 0, "an unknown tag id is skipped like the card face");
+Console.WriteLine("Card tag blurbs: " + taggedCards + " cards, " + tagLines + " lines");
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);

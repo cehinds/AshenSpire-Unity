@@ -38,6 +38,11 @@ public static class FeedbackChecks
             Check(samples.Length == (int)(22050 * cue.SoundDuration) && samples.All(v => float.IsFinite(v) && Math.Abs(v) <= .6f) && samples.Any(v => Math.Abs(v) > .01f) && samples[0] == 0 && Math.Abs(samples[^1]) < .001f && samples.SequenceEqual(FeedbackSound.Synthesize(cue)), cue.Id + " sound is deterministic, bounded and fades to silence");
         }
         Check(JsonSerializer.Serialize(run.State, options) == state, "feedback and synthesis leave model state and RNG unchanged");
+        var tick = FeedbackSound.InterfaceClick();
+        Check(tick.Length == (int)(22050 * .065f), "interface tick is short at the runtime sample rate");
+        Check(tick.All(v => float.IsFinite(v) && Math.Abs(v) <= .6f) && tick.Any(v => Math.Abs(v) > .01f), "interface tick contains finite bounded audio");
+        Check(tick[0] == 0 && Math.Abs(tick[^1]) < .001f, "interface tick fades at both ends");
+        Check(tick.SequenceEqual(FeedbackSound.InterfaceClick()), "interface sound is deterministic and independent of combat RNG");
         Console.WriteLine($"Feedback: {count} checks passed");
     }
 }

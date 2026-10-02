@@ -1,0 +1,50 @@
+// First-visit onboarding through real player input. No preference or save injection.
+const fs=require('node:fs'),path=require('node:path');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const {NativeUiDriver}=require('./native-ui-driver.cjs');
+let browser,ui;
+(async()=>{
+ const url=process.argv[2],output=path.resolve(process.argv[3]);
+ browser=await chromium.launch({channel:'msedge',headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ const results=[];
+ for(const viewport of [{width:320,height:640},{width:1440,height:900}]){
+  const context=await browser.newContext({viewport}),page=await context.newPage();
+  ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));
+  await ui.open(url,{dismissWelcome:false});
+  const labels=()=>ui.controls.Labels||[];
+  ui.check(ui.has('native-welcome-continue')&&!ui.has('native-new'),'first visit shows welcome before any new-climb action');
+  ui.check(labels().includes('ASHENEDSPIRE'),'welcome uses the Unity game name');
+  ui.check((await page.title()).includes('AshenedSpire'),'browser tab uses the Unity game name');
+  await ui.shot('01-welcome');
+  await ui.click('native-welcome-guide');
+  ui.check(labels().includes('READ THE BATTLE'),'guide begins with card and target selection');
+  await ui.click('native-guide-next');
+  ui.check(labels().includes('SPEND YOUR RESOURCES'),'guide explains resources');
+  await ui.click('native-guide-previous');
+  ui.check(labels().includes('READ THE BATTLE'),'previous restores the previous lesson');
+  for(let step=0;step<3;step++)await ui.click('native-guide-next');
+  ui.check(labels().includes('CLIMB TOGETHER')&&!ui.has('native-guide-next'),'guide ends at the shared-climb lesson');
+  await ui.shot('02-field-guide');await ui.click('native-guide-back');
+  ui.check(ui.has('native-welcome-continue'),'finishing guide returns to welcome without starting a climb');
+  await ui.click('native-welcome-continue');
+  ui.check(ui.has('native-new')&&!ui.has('native-continue'),'entering opens a fresh title without creating a save');
+  await ui.shot('03-renamed-title');await ui.click('title-extras');await ui.click('native-about');
+  ui.check(labels().includes('ABOUT THE GAME'),'About is reachable from Extras');
+  ui.check(labels().some(text=>text.includes('AI assistants')),'About acknowledges AI-assisted development');
+  ui.check(labels().some(text=>text.includes('recorded music')),'About describes the imported soundtrack accurately');
+  ui.check(labels().some(text=>text.includes('does not contact an AI service')),'About explains runtime AI behavior');
+  await ui.shot('04-about');await ui.click('native-about-back');await ui.click('extras-back');
+  ui.controls=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});
+  await ui.until(()=>ui.has('native-new')||ui.has('native-welcome-continue'),'reloaded landing');
+  ui.check(ui.has('native-new')&&!ui.has('native-welcome-continue'),'welcome acknowledgement persists through reload');
+  await ui.click('settings',false);await ui.click('settings-section-5',false);await ui.click('native-guide');
+  ui.check(labels().includes('READ THE BATTLE'),'field guide remains available from Settings');
+  await ui.click('native-guide-back');ui.check(ui.has('settings-section-5'),'guide returns to Settings');
+  await ui.click('settings-section-5',false);await ui.click('back',false);await ui.click('native-new');
+  ui.check(ui.has('native-begin'),'normal character creation remains reachable after onboarding');
+  ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);
+  results.push({viewport,checks:ui.checks.length});await context.close();
+ }
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,results,checks:results.reduce((n,r)=>n+r.checks,0),physicalDevice:false},null,2));
+ console.log('Compiled onboarding passed: '+results.reduce((n,r)=>n+r.checks,0));await browser.close();
+})().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

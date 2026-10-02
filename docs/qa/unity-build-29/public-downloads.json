@@ -1,0 +1,32 @@
+{
+  "commit": "1b92c1d56a78c104dd9bdd996ac64892d4a2910e",
+  "buildNumber": 29,
+  "sourceDigest": "7717600e2683ae8c3eb39a37b9452ced96bab6d56a8ebbaf2daacc5dc8dde92f",
+  "verifiedAt": "2026-09-29T09:17:37.974Z",
+  "results": [
+    {
+      "file": "Web.zip",
+      "url": "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/1b92c1d56a78c104dd9bdd996ac64892d4a2910e/Published/Web.zip",
+      "bytes": 86592811,
+      "sha256": "f9958a1a9c552c685ab37bbe4bb3e01aef7fc4797b3fb8c6dae4d92e650e7abf"
+    },
+    {
+      "file": "Windows.zip",
+      "url": "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/1b92c1d56a78c104dd9bdd996ac64892d4a2910e/Published/Windows.zip",
+      "bytes": 103784846,
+      "sha256": "46450a0bf32bfb07ef95e1205d67b189fd4bac5f68d3a11618b5cc6b6f7c592c"
+    },
+    {
+      "file": "Android.apk",
+      "url": "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/1b92c1d56a78c104dd9bdd996ac64892d4a2910e/Published/Android.apk",
+      "bytes": 93079924,
+      "sha256": "31ce7dec51f9bb2961f5460a5350dd5b00faf2c46597ddebd1144db8d4af1731"
+    },
+    {
+      "file": "Companion.zip",
+      "url": "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/1b92c1d56a78c104dd9bdd996ac64892d4a2910e/Published/Companion.zip",
+      "bytes": 47548842,
+      "sha256": "8ced79f8552c354ca8363df195d66ed9623ae2f0eb49f091e925ec0b4e9f4794"
+    }
+  ]
+}

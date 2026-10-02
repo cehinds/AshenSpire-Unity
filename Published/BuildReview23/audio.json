@@ -1,0 +1,128 @@
+{
+  "success": true,
+  "checks": [
+    "opening Settings produces exactly one interface cue",
+    "interface preview plays once",
+    "control refresh does not duplicate audio callbacks",
+    "keyboard submit produces exactly one interface cue",
+    "dragging away from a button cancels its sound",
+    "interface cues reach running Web Audio with nonzero PCM and gain",
+    "SFX zero silences combat preview",
+    "SFX zero silences combat preview (no Web Audio transient started)",
+    "SFX zero leaves interface sounds audible",
+    "UI zero silences interface preview",
+    "UI zero silences interface preview (no Web Audio transient started)",
+    "UI zero leaves combat preview audible",
+    "Master volume has a nonzero intermediate value",
+    "Interface sounds has a nonzero intermediate value",
+    "live interface volume applies without reopening Settings",
+    "interface gain equals campaign tuning times master times UI level",
+    "actual Web Audio gain matches the selected interface bus",
+    "mute suppresses interface preview",
+    "mute suppresses interface preview (no Web Audio transient started)",
+    "mute suppresses combat preview",
+    "mute suppresses combat preview (no Web Audio transient started)",
+    "master zero suppresses interface preview",
+    "master zero suppresses interface preview (no Web Audio transient started)",
+    "master zero suppresses combat preview",
+    "master zero suppresses combat preview (no Web Audio transient started)",
+    "reopening Settings produces one cue",
+    "newly created preview binds once",
+    "title button audio works after reload",
+    "interface volume survives player reload",
+    "reloaded preview plays exactly once",
+    "reloaded setting controls actual playback gain",
+    "no browser or Unity errors"
+  ],
+  "initialPcm": [
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 1,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 1,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.30000001192092896,
+      "contextState": "running"
+    }
+  ],
+  "scaledPcm": {
+    "duration": 0.06498866213151927,
+    "peak": 0.35193508863449097,
+    "gain": 0.1134600043296814,
+    "contextState": "running"
+  },
+  "volumeCalculation": {
+    "campaign": 0.3,
+    "master": 0.61,
+    "ui": 0.62,
+    "observed": 0.113460004
+  },
+  "observations": [
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 1,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.1860000044107437,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 1,
+      "contextState": "running"
+    },
+    {
+      "duration": 0.06498866213151927,
+      "peak": 0.35193508863449097,
+      "gain": 0.1860000044107437,
+      "contextState": "running"
+    }
+  ],
+  "settingsPersisted": true,
+  "physicalDevice": false,
+  "listeningAccepted": false
+}

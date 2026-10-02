@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {planArchiveHosting} from './unity-archive-hosting.mjs';
+import {planArchiveHosting,retainedCodeBuildIds} from './unity-archive-hosting.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const commit='1234567890abcdef1234567890abcdef12345678';
@@ -37,6 +37,23 @@ test('hash-only URL suffixes and unqueried URLs remain exact',()=>{
  assert.ok(plan.dataUrls.dataUrl.endsWith('/Web.data#piece'));assert.ok(plan.html.includes('codeUrl:"Build/Web.wasm"'));
 });
 test('complete SHA256 Git object IDs remain immutable',()=>{const build=fixture();build.commit='c'.repeat(64);assert.ok(planArchiveHosting(original,build).dataUrls.dataUrl.includes('/'+'c'.repeat(64)+'/'));});
+test('historical code uses exact committed bytes without changing loader, identity or URL suffixes',()=>{
+ const build=fixture(),plan=planArchiveHosting(original,build,{remoteCode:true});
+ const base='https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/'+commit+'/Published/Web/Build/';
+ assert.equal(plan.html,original.replace("dataUrl:'Build/","dataUrl:'"+base).replace('codeUrl:"Build/','codeUrl:"'+base));
+ assert.deepEqual(plan.omittedPaths,['Published/Web/Build/Web.data','Published/Web/Build/Web.wasm']);
+ assert.equal(plan.dataUrls.codeUrl,base+'Web.wasm?build=old#code');
+ assert.equal(plan.receipt.runtime.length,2);assert.equal(plan.receipt.schemaVersion,2);
+ assert.equal(plan.receipt.runtime[1].sha256,build.manifest.files['Web/Build/Web.wasm']);
+ assert.throws(()=>planArchiveHosting(original,build,{remoteCode:'true'}));
+});
+test('current channels and four newest previews retain local streaming code without dropping history',()=>{
+ const builds=Array.from({length:8},(_,i)=>({id:'build-'+String(i).padStart(20,'0'),builtAt:`2026-09-${String(i+10).padStart(2,'0')}T00:00:00Z`}));
+ const before=JSON.stringify(builds),kept=retainedCodeBuildIds(builds,[builds[0].id,builds[6].id]);
+ assert.deepEqual([...kept].sort(),[0,4,5,6,7].map(i=>builds[i].id));assert.equal(JSON.stringify(builds),before);
+ assert.throws(()=>retainedCodeBuildIds(builds,['build-'+'f'.repeat(20)]));
+ assert.throws(()=>retainedCodeBuildIds(builds,[],0));
+});
 for(const bad of ['main','1234567','a'.repeat(39),'a'.repeat(41),'A'.repeat(40),'../main','a'.repeat(40)+'?x'])test('reject unsafe/incomplete commit '+bad,()=>rejected(original,build=>build.commit=bad));
 for(const name of ['dataUrl','codeUrl','frameworkUrl']){
  test('reject duplicate '+name+' even when the other occurrence is unknown',()=>rejected(original.replace('saveKey:',name+":'https://elsewhere.invalid/runtime',saveKey:")));

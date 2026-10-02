@@ -31,6 +31,7 @@ jobs:
       - name: Verify archive, URL, integrity and storage contracts
         run: |
           node tools/unity-build-history.test.mjs
+          node tools/unity-build-reviews.test.mjs
           node tools/unity-archive-hosting.test.mjs
           node tools/unity-channel-storage.test.mjs
           node tools/unity-git-blobs.test.mjs

@@ -1,0 +1,383 @@
+// CampaignView.PlayerSettings.cs — the settings screen sections for OriginalPlayerSettings,
+// grouped like the HTML game (Game, Audio, Accessibility, Controls, Content mods).
+// HOOKS (CampaignView.cs): Settings() calls ExtendSettings(motion, fast, mute) after building
+// its original toggles, and RefreshTouchTargets() calls ScheduleTextScale(). The original
+// toggles keep their names (reduced-motion / fast-motion / mute-sound), labels and callbacks
+// for the browser playtests; they are only moved under the group headings.
+// OWNERSHIP: RunController (RunController.Settings.cs) loads, saves and passes the settings
+// object in; this file edits it and raises PlayerSettingsChanged / ContentModsChanged.
+// APPLIED HERE: text size (per text element, from its resolved USS size), colorblind palette
+// (root class palette-*, Resources/OriginalPalette.uss), high contrast (root class
+// high-contrast, Resources/OriginalTheme.uss), map key bindings (MapView.KeyAction), and the
+// feel settings (FeelDriver.Configure → Domain FeelSettings.From: speed bucket, reduced
+// motion, reduce flashes, shake, hit-stop) that CombatFeedback reads.
+// VERIFY IN EDITOR: open Settings, move each slider, pick a palette, rebind a map key.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using AshenSpire.Domain.Original;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace AshenSpire.Presentation
+{
+    public sealed partial class CampaignView
+    {
+        private static readonly string[] PaletteClasses = { "palette-protanopia", "palette-deuteranopia", "palette-tritanopia" };
+        private static readonly List<string> PaletteChoices = new List<string> { "None", "Protanopia", "Deuteranopia", "Tritanopia" };
+        private OriginalPlayerSettings _playerSettings;
+        private IReadOnlyList<string> _modStatusLines = Array.Empty<string>();
+        private VisualElement _modStatusBox;
+        private bool _paletteLoaded, _textScaled;
+        private int _textScaleAttempts;
+        private IVisualElementScheduledItem _textScaleJob;
+        private string _capturingAction;
+        private sealed class BaseFontSize { public float Value; public bool Skip; }
+        private readonly ConditionalWeakTable<TextElement, BaseFontSize> _baseFontSizes = new ConditionalWeakTable<TextElement, BaseFontSize>();
+
+        /// <summary>Raised after the player changes any setting; the settings object is already updated.</summary>
+        public event Action PlayerSettingsChanged;
+        /// <summary>Raised when "Load content mods" changes; PlayerSettings.LoadContentMods is already updated.</summary>
+        public event Action<bool> ContentModsChanged;
+        public OriginalPlayerSettings PlayerSettings
+        {
+            get => _playerSettings;
+            set { _playerSettings = value; ApplyPlayerSettings(); }
+        }
+        /// <summary>Lines shown under Content mods: loaded packs, refused packs and loader errors.</summary>
+        public IReadOnlyList<string> ContentModStatus
+        {
+            get => _modStatusLines;
+            set { _modStatusLines = value ?? Array.Empty<string>(); RenderModStatus(); }
+        }
+
+        private void ApplyPlayerSettings()
+        {
+            var settings = _playerSettings;
+            if (settings == null) return;
+            _reducedMotion = settings.ReducedMotion;
+            _fast = settings.QuickAnimations;
+            FeelDriver.Configure(settings);
+            _muted = settings.Muted;
+            MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
+            ApplyPalette();
+            _root.EnableInClassList(HighContrastClass, settings.HighContrast);
+            ApplyDisplayClasses(settings);
+            // A saved Fullscreen = true is restored on load; false leaves the platform default
+            // (phones run fullscreen, and the toggle itself applies either value immediately).
+            if (settings.Fullscreen && !Screen.fullScreen && !UnityEngine.Application.isMobilePlatform) Screen.fullScreen = true;
+            ScheduleTextScale();
+        }
+
+        /// <summary>Root USS class for the High contrast setting (HTML body.hi-contrast).</summary>
+        public const string HighContrastClass = "high-contrast";
+
+        /// <summary>The bare Reduced motion / Quick animations toggles, or every saved feel setting when present.</summary>
+        private void ConfigureFeel()
+        {
+            if (_playerSettings != null) FeelDriver.Configure(_playerSettings);
+            else FeelDriver.Configure(_reducedMotion, _fast);
+        }
+
+        private void ApplyPalette()
+        {
+            var palette = _playerSettings?.ColorblindPalette ?? ColorblindPalette.None;
+            if (palette != ColorblindPalette.None && !_paletteLoaded)
+            {
+                var sheet = Resources.Load<StyleSheet>("OriginalPalette");
+                if (sheet != null) _root.styleSheets.Add(sheet);
+                _paletteLoaded = true;
+            }
+            foreach (var name in PaletteClasses) _root.RemoveFromClassList(name);
+            if (palette != ColorblindPalette.None) _root.AddToClassList("palette-" + OriginalPlayerSettings.PaletteName(palette));
+        }
+
+        // Text size: USS sizes are absolute, so each text element is scaled from its own
+        // resolved size. At the default (1.0) nothing is touched until the player changes it.
+        private void ScheduleTextScale()
+        {
+            if (_disposed) return;
+            var scale = (float)(_playerSettings?.TextScale ?? 1);
+            _root.EnableInClassList("large-text", scale > 1.25f);
+            if (Mathf.Approximately(scale, 1) && !_textScaled) return;
+            _textScaleAttempts = 0;
+            _textScaleJob?.Pause();
+            _textScaleJob = _root.schedule.Execute(ApplyTextScale).StartingIn(30);
+        }
+        private void ApplyTextScale()
+        {
+            if (_disposed) return;
+            var scale = (float)(_playerSettings?.TextScale ?? 1);
+            var pending = false;
+            foreach (var text in _root.Query<TextElement>().ToList())
+            {
+                if (!_baseFontSizes.TryGetValue(text, out var size))
+                {
+                    // Elements that size their own text in code (the title wordmark) are left alone.
+                    if (text.style.fontSize.keyword != StyleKeyword.Null) { _baseFontSizes.Add(text, new BaseFontSize { Skip = true }); continue; }
+                    if (float.IsNaN(text.layout.width) || !(text.resolvedStyle.fontSize > 0)) { pending = true; continue; }
+                    size = new BaseFontSize { Value = text.resolvedStyle.fontSize };
+                    _baseFontSizes.Add(text, size);
+                }
+                if (size.Skip) continue;
+                text.style.fontSize = Mathf.Approximately(scale, 1) ? new StyleLength(StyleKeyword.Null) : new StyleLength(size.Value * scale);
+            }
+            _textScaled = true;
+            if (pending && ++_textScaleAttempts < 10) _textScaleJob = _root.schedule.Execute(ApplyTextScale).StartingIn(60);
+            else Report(false); // Measure after font sizes settle, without scheduling another scaling pass.
+        }
+
+        private void ExtendSettings(Toggle motion, Toggle fast, Toggle mute)
+        {
+            var s = _playerSettings;
+            if (s == null) return; // No settings object: keep the original three toggles only.
+            _capturingAction = null;
+            motion.RemoveFromHierarchy(); fast.RemoveFromHierarchy(); mute.RemoveFromHierarchy();
+
+            // GAME
+            _body.Add(Text("GAME", "heading"));
+            _body.Add(fast);
+            SliderInt speed = null; Toggle instant = null; DropdownField pacing = null;
+            void SyncQuick() { _fast = s.QuickAnimations; fast.SetValueWithoutNotify(_fast); speed?.SetValueWithoutNotify(Percent(s.AnimationSpeed)); if (speed != null) speed.label = "Animation speed · " + Percent(s.AnimationSpeed) + "%"; instant?.SetValueWithoutNotify(s.InstantAnimations); pacing?.SetValueWithoutNotify(Title(s.CombatPacing)); }
+            fast.RegisterValueChangedCallback(e =>
+            {
+                s.InstantAnimations = false;
+                s.AnimationSpeed = e.newValue ? OriginalPlayerSettings.LegacyFastAnimationSpeed : 1;
+                SyncQuick(); if (speed != null) speed.label = "Animation speed · " + Percent(s.AnimationSpeed) + "%";
+                Changed();
+            });
+            speed = SettingSlider("animation-speed", "Animation speed", 50, 200, Percent(s.AnimationSpeed), v => { s.AnimationSpeed = v / 100.0; SyncQuick(); });
+            instant = SettingToggle("instant-animations", "Instant animations", s.InstantAnimations, v => { s.InstantAnimations = v; SyncQuick(); });
+            _body.Add(Text("Below 100% uses slow pacing; 100 to 199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
+            // Combat pacing (HTML animSpeed) is the same setting as the speed slider and Instant, shown as its four buckets.
+            pacing = SettingChoice("combat-pacing", "Combat pacing", OriginalPlayerSettings.CombatPacings, s.CombatPacing, v => { s.CombatPacing = v; SyncQuick(); });
+            // Gameplay (US-15.2): HTML Advanced → Gameplay / Tuning rows.
+            SettingChoice("reward-collect", "Reward collection", OriginalPlayerSettings.RewardCollectModes, s.RewardCollect, v => s.RewardCollect = v);
+            _body.Add(Text("Auto: Continue takes everything you didn't skip, picking a card for you. Manual: Continue means done; only what you chose comes along.", "caption"));
+            SettingToggle("shop-sell", "Merchant buys back", s.ShopSell, v => s.ShopSell = v);
+            SettingChoice("swap-cost-rule", "Weapon swap cost", OriginalPlayerSettings.SwapCostRuleIds, s.SwapCostRule, v => s.SwapCostRule = v);
+            _body.Add(Text("Merchant buys back offers a Sell row for relics and flasks. Weapon swap cost: Flat charges the same for every weapon; Gear lets talismans and relics change it; Category prices it by the weapon you draw. Both apply from the next climb or Continue.", "caption"));
+            // Display (US-15.1). Saved; Fullscreen applies now, the rest set root classes for the styles to follow.
+            _body.Add(Text("Display", "caption"));
+            SettingToggle("fullscreen", "Fullscreen", s.Fullscreen, v => { s.Fullscreen = v; Screen.fullScreen = v; });
+            SettingChoice("ui-size", "UI size", OriginalPlayerSettings.UiSizes, s.UiSize, v => s.UiSize = v);
+            SettingChoice("accent-color", "Accent color", OriginalPlayerSettings.Accents, s.Accent, v => s.Accent = v);
+            SettingChoice("card-motif", "Card motif", OriginalPlayerSettings.CardMotifs, s.CardMotif, v => s.CardMotif = v);
+            SettingChoice("card-motif-strength", "Motif strength", OriginalPlayerSettings.CardMotifStrengths, s.CardMotifStrength, v => s.CardMotifStrength = v);
+            SettingChoice("map-header-density", "Map header", OriginalPlayerSettings.MapHeaderDensities, s.MapHeaderDensity, v => s.MapHeaderDensity = v);
+            SettingToggle("map-header-relics", "Relics in map header", s.MapHeaderRelics, v => s.MapHeaderRelics = v);
+            SettingToggle("map-header-seed", "Seed in map header", s.MapHeaderSeed, v => s.MapHeaderSeed = v);
+            SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
+            _body.Add(Text("UI size, accent, card motif, map header and control hints are saved; their styles are still being tuned.", "caption"));
+            SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
+            SliderInt intensity = null;
+            SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
+            intensity = SettingSlider("screen-shake-intensity", "Shake intensity", 0, 100, Percent(s.ScreenShakeIntensity), v => s.ScreenShakeIntensity = v / 100.0);
+            intensity.SetEnabled(s.ScreenShake);
+            SettingToggle("hit-stop", "Hit-stop", s.HitStop, v => s.HitStop = v);
+            _body.Add(Text("Reduced motion disables screen shake and hit-stop.", "caption"));
+
+            // AUDIO
+            _body.Add(Text("AUDIO", "heading"));
+            _body.Add(mute);
+            mute.RegisterValueChangedCallback(e => { s.Muted = e.newValue; Changed(); });
+            SettingSlider("volume-master", "Master volume", 0, 100, Percent(s.MasterVolume), v => s.MasterVolume = v / 100.0);
+            SettingSlider("volume-sfx", "Sound effects", 0, 100, Percent(s.SfxVolume), v => s.SfxVolume = v / 100.0);
+            SettingSlider("volume-music", "Music volume", 0, 100, Percent(s.MusicVolume), v => s.MusicVolume = v / 100.0);
+            SettingToggle("music-enabled", "Music", s.MusicEnabled, v => s.MusicEnabled = v);
+            SettingSlider("volume-ui", "Interface sounds", 0, 100, Percent(s.UiVolume), v => s.UiVolume = v / 100.0);
+            AddButton("preview-interface-sound", "Preview interface sound", () => { });
+            AddButton("preview-sound-effect", "Preview combat sound", () => SoundPreviewRequested?.Invoke()).AddToClassList("no-interface-sound");
+            _body.Add(Text("Master volume controls all sound. Interface sounds, combat effects and music have separate levels. Music volume changes the playing track immediately; Music off stops it. Mute silences everything, previews too, and is remembered.", "caption"));
+
+            // ACCESSIBILITY
+            _body.Add(Text("ACCESSIBILITY", "heading"));
+            _body.Add(motion);
+            motion.RegisterValueChangedCallback(e => { s.ReducedMotion = e.newValue; Changed(); });
+            SettingToggle("reduce-flashes", "Reduce flashes", s.ReduceFlashes, v => s.ReduceFlashes = v);
+            SettingToggle("high-contrast", "High contrast", s.HighContrast, v => s.HighContrast = v);
+            _body.Add(Text("Reduce flashes skips the bright hit flash and the glowing attack lunge; damage numbers stay. High contrast brightens secondary text and borders.", "caption"));
+            SettingSlider("text-scale", "Text size", 80, 160, Percent(s.TextScale), v => s.TextScale = v / 100.0);
+            var palette = new DropdownField("Colorblind palette", PaletteChoices, (int)s.ColorblindPalette) { name = "colorblind-palette" };
+            palette.AddToClassList("setting");
+            palette.RegisterValueChangedCallback(e =>
+            {
+                if (!OriginalPlayerSettings.TryParsePalette(e.newValue, out var chosen)) return;
+                s.ColorblindPalette = chosen; ApplyPalette(); Changed();
+            });
+            _body.Add(palette);
+
+            // CONTROLS
+            _body.Add(Text("CONTROLS", "heading"));
+            _body.Add(Text("Keyboard keys for the map and solo combat. Choose an action, then press a key. Esc cancels or closes an inspection. Enter activates a focused button. Combat shortcuts wait until the key is released; inspection screens block combat actions.", "caption"));
+            var keyMessage = Text("", "caption");
+            var keyButtons = new Dictionary<string, Button>();
+            void ShowKeys()
+            {
+                foreach (var pair in keyButtons)
+                    pair.Value.text = OriginalKeyBindings.Label(pair.Key) + " · " + (pair.Key == _capturingAction ? "press a key…" : s.KeyBindings.TryGetValue(pair.Key, out var key) ? OriginalKeyBindings.DisplayKey(key) : "unbound");
+            }
+            foreach (var action in OriginalKeyBindings.MapActions.Concat(OriginalKeyBindings.CombatActions))
+            {
+                var id = action;
+                var button = AddButton("key-" + id, "", () => { _capturingAction = id; keyMessage.text = "Press a key for " + OriginalKeyBindings.Label(id) + ". Esc cancels."; ShowKeys(); keyButtons[id].Focus(); Report(); });
+                button.RegisterCallback<KeyDownEvent>(e =>
+                {
+                    if (_capturingAction != id || e.keyCode == KeyCode.None) return;
+                    e.StopImmediatePropagation();
+                    _capturingAction = null;
+                    if (e.keyCode == KeyCode.Escape) keyMessage.text = "Unchanged.";
+                    else if (e.keyCode == KeyCode.Tab || e.keyCode == KeyCode.LeftControl || e.keyCode == KeyCode.RightControl || e.keyCode == KeyCode.LeftAlt || e.keyCode == KeyCode.RightAlt || e.keyCode == KeyCode.LeftShift || e.keyCode == KeyCode.RightShift || e.keyCode == KeyCode.LeftCommand || e.keyCode == KeyCode.RightCommand)
+                        keyMessage.text = "Choose a key other than Tab or a modifier; these stay available for navigation.";
+                    else if (s.TryBind(id, e.keyCode.ToString(), out var holder))
+                    { keyMessage.text = OriginalKeyBindings.Label(id) + " is now " + OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + "."; Changed(); }
+                    else keyMessage.text = OriginalKeyBindings.DisplayKey(e.keyCode.ToString()) + " is already used by " + OriginalKeyBindings.Label(holder) + ". Choose another key, or reset the keys.";
+                    ShowKeys(); Report();
+                });
+                keyButtons[id] = button;
+            }
+            var conflicts = s.KeyConflicts();
+            keyMessage.text = conflicts.Count == 0 ? "" : string.Join("\n", conflicts.Select(c => c.Key + " is bound to " + string.Join(" and ", c.Actions.Select(OriginalKeyBindings.Label)) + ". Rebind one of them."));
+            if (conflicts.Count > 0) keyMessage.AddToClassList("notice");
+            _body.Add(keyMessage);
+            AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
+            ShowKeys();
+            // Gamepad (US-15.3, domain side): bindings are saved and conflict-checked like keys; OriginalGamepad
+            // resolves presses. No pad is read yet (the project has no Input System package).
+            _body.Add(Text("Gamepad buttons. Saved now; controller input arrives in a later build.", "caption"));
+            var padMessage = Text("", "caption");
+            var padChoices = new List<string> { "unbound" }; padChoices.AddRange(OriginalGamepad.Buttons.Select(OriginalGamepad.Label));
+            var padFields = new Dictionary<string, DropdownField>();
+            void ShowPad() { foreach (var pair in padFields) pair.Value.SetValueWithoutNotify(s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
+            foreach (var action in OriginalGamepad.PadOnlyActions.Concat(OriginalKeyBindings.MapActions).Concat(OriginalKeyBindings.CombatActions).Where(a => !a.StartsWith("card", StringComparison.Ordinal)))
+            {
+                var id = action;
+                var field = new DropdownField(PadLabel(id), padChoices, 0) { name = "pad-" + id };
+                field.AddToClassList("setting");
+                field.RegisterValueChangedCallback(e =>
+                {
+                    var button = OriginalGamepad.Buttons.FirstOrDefault(b => OriginalGamepad.Label(b) == e.newValue);
+                    if (button == null) { padMessage.text = "Choose a button; reset restores the defaults."; ShowPad(); Report(); return; }
+                    if (s.TryBindGamepad(id, button, out var holder)) { padMessage.text = PadLabel(id) + " is now " + e.newValue + "."; Changed(); }
+                    else padMessage.text = e.newValue + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.";
+                    ShowPad(); Report();
+                });
+                _body.Add(field); padFields[id] = field;
+            }
+            var padConflicts = s.GamepadConflicts();
+            padMessage.text = padConflicts.Count == 0 ? "" : string.Join("\n", padConflicts.Select(c => OriginalGamepad.Label(c.Key) + " is bound to " + string.Join(" and ", c.Actions.Select(PadLabel)) + ". Rebind one of them."));
+            _body.Add(padMessage);
+            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); padMessage.text = "Gamepad buttons reset to their defaults."; ShowPad(); Changed(); });
+            ShowPad();
+
+            // CONTENT MODS (the HTML game files these under Advanced)
+            _body.Add(Text("CONTENT MODS", "heading"));
+            var mods = new Toggle("Load content mods") { value = s.LoadContentMods, name = "load-content-mods" };
+            mods.AddToClassList("setting");
+            mods.RegisterValueChangedCallback(e => { s.LoadContentMods = e.newValue; ContentModsChanged?.Invoke(e.newValue); Report(); });
+            _body.Add(mods);
+            _body.Add(Text("Off by default. When on, packs in StreamingAssets/Mods are checked and merged into the content of new runs.", "caption"));
+            _modStatusBox = new VisualElement { name = "content-mod-status" };
+            _body.Add(_modStatusBox);
+            RenderModStatus();
+        }
+
+        // Reparent the existing controls after construction; callbacks, IDs and
+        // saved values stay with the same elements. Every section remains open.
+        private void ComposeSettingsSections()
+        {
+            _body.AddToClassList("settings-screen");
+            var navigation = new VisualElement(); navigation.AddToClassList("settings-navigation");
+            VisualElement section = null; var index = 0;
+            foreach (var child in _body.Children().ToList())
+            {
+                if (child.name == "back") continue;
+                if (child.ClassListContains("heading"))
+                {
+                    section = new VisualElement { focusable = true }; section.AddToClassList("settings-section");
+                    _body.Add(section);
+                    var target = section;
+                    navigation.Add(Control("settings-section-" + index++, ((Label)child).text,
+                        () =>
+                        {
+                            target.Focus();
+                            // Align the heading, rather than merely exposing the
+                            // section's bottom edge as ScrollTo does for tall groups.
+                            var y = target.worldBound.y - _scroll.contentContainer.worldBound.y - 12;
+                            _scroll.scrollOffset = new Vector2(_scroll.scrollOffset.x, Mathf.Max(0, y));
+                            Report();
+                        }, "settings-jump"));
+                }
+                if (section != null) section.Add(child);
+            }
+            _body.Insert(2, navigation);
+            _body.Q<Button>("back")?.BringToFront();
+        }
+
+        private void RenderModStatus()
+        {
+            if (_modStatusBox == null || _modStatusBox.panel == null) return;
+            _modStatusBox.Clear();
+            foreach (var line in _modStatusLines)
+                _modStatusBox.Add(Text(line, line.StartsWith("[", StringComparison.Ordinal) || line.StartsWith("Refused", StringComparison.Ordinal) ? "notice" : "caption"));
+            Report();
+        }
+
+        private void Changed()
+        {
+            ApplyPlayerSettings();
+            PlayerSettingsChanged?.Invoke();
+            Report();
+        }
+        private static int Percent(double value) => (int)Math.Round(value * 100);
+        private static string Title(string value) => string.IsNullOrEmpty(value) ? value : char.ToUpperInvariant(value[0]) + value.Substring(1);
+        private static string PadLabel(string action) => action == "cancel" ? "Cancel / back" : action == "menu" ? "Open menu" : OriginalKeyBindings.Label(action);
+        /// <summary>A closed-set choice; shows each value capitalized and hands the canonical value back.</summary>
+        private DropdownField SettingChoice(string id, string label, string[] values, string value, Action<string> changed)
+        {
+            var shown = values.Select(Title).ToList();
+            var field = new DropdownField(label, shown, Math.Max(0, Array.IndexOf(values, value))) { name = id };
+            field.AddToClassList("setting");
+            field.RegisterValueChangedCallback(e =>
+            {
+                var index = shown.IndexOf(e.newValue);
+                if (index < 0) return;
+                changed(values[index]); Changed();
+            });
+            _body.Add(field);
+            return field;
+        }
+        // Display options (US-15.1) as root classes. No USS rules read them yet; tuning is editor follow-up.
+        private static readonly string[] DisplayClassPrefixes = { "ui-size-", "accent-", "card-motif-", "motif-strength-", "map-header-" };
+        private void ApplyDisplayClasses(OriginalPlayerSettings settings)
+        {
+            foreach (var name in _root.GetClasses().Where(c => DisplayClassPrefixes.Any(p => c.StartsWith(p, StringComparison.Ordinal))).ToList()) _root.RemoveFromClassList(name);
+            _root.AddToClassList("ui-size-" + settings.UiSize.ToLowerInvariant());
+            _root.AddToClassList("accent-" + settings.Accent);
+            _root.AddToClassList("card-motif-" + settings.CardMotif);
+            _root.AddToClassList("motif-strength-" + settings.CardMotifStrength);
+            _root.AddToClassList("map-header-" + settings.MapHeaderDensity);
+            _root.EnableInClassList("map-header-no-relics", !settings.MapHeaderRelics);
+            _root.EnableInClassList("map-header-no-seed", !settings.MapHeaderSeed);
+            _root.EnableInClassList("no-control-hints", !settings.ControlHints);
+        }
+        private Toggle SettingToggle(string id, string label, bool value, Action<bool> changed)
+        {
+            var toggle = new Toggle(label) { value = value, name = id };
+            toggle.AddToClassList("setting");
+            toggle.RegisterValueChangedCallback(e => { changed(e.newValue); Changed(); });
+            _body.Add(toggle);
+            return toggle;
+        }
+        private SliderInt SettingSlider(string id, string label, int min, int max, int value, Action<int> changed)
+        {
+            var slider = new SliderInt(label + " · " + value + "%", min, max) { name = id, value = value };
+            slider.AddToClassList("setting");
+            slider.style.minHeight = Mathf.Max(52, ViewportLayout.MinimumTouchHeight(_displayHeight));
+            slider.RegisterValueChangedCallback(e => { slider.label = label + " · " + e.newValue + "%"; changed(e.newValue); Changed(); });
+            _body.Add(slider);
+            return slider;
+        }
+    }
+}

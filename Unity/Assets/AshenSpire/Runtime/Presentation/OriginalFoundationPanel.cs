@@ -100,11 +100,11 @@ namespace AshenSpire.Presentation
                 classChoices.Add(chooseClass);
             }
             _target = Section("native-creation-character-section", "CHARACTER · Attributes");
-            Choices("foundation-mode", "Allocation", _catalog.Table("creationModes"), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
+            Choices("foundation-mode", "Allocation", CreationModel.VisibleModes(_catalog), _creation.ModeId, value => { _creation.Select(_creation.ClassId, value); Creation(); });
             Label("Unspent points: " + _creation.Remaining, "creation-unspent");
             Label(_creation.TotalPoints + " total points · " + _creation.Minimum + " minimum per attribute", "caption");
             var attributes = new VisualElement(); attributes.AddToClassList("creation-attributes"); _target.Add(attributes);
-            var benefits = _progression.Benefits(_creation.Attributes());
+            var benefits = _progression.Benefits(_creation.Attributes(), _creation.Rules);
             foreach (var attribute in _creation.Attributes().Properties())
             {
                 var id = attribute.Name;
@@ -226,7 +226,7 @@ namespace AshenSpire.Presentation
         }
         private void Catalog()
         {
-            Header("ASHEN SPIRE COMPENDIUM");
+            Header("ASHENEDSPIRE COMPENDIUM");
             var names = new List<string> { "cards", "classes", "relics", "statuses", "stances", "enemies", "encounters", "events", "flasks", "equipment.armaments", "equipment.armour", "equipment.startingKits", "unlocks" };
             Select("foundation-table", "Table", names, _table, value => { _table = value; Catalog(); });
             var query = new TextField("Find name or ID") { value = _search, name = "foundation-search" }; query.AddToClassList("seed-field"); query.RegisterValueChangedCallback(e => _search = e.newValue); _root.Add(query);
@@ -244,6 +244,14 @@ namespace AshenSpire.Presentation
         private void Detail(JObject row)
         {
             Header((string)row["name"] ?? (string)row["label"] ?? (string)row["id"]);
+            if (_table == "enemies")
+            {
+                var figure = OriginalEnemyFigure.Create((string)row["id"]);
+                figure.style.height = 280;
+                figure.style.width = Length.Percent(100);
+                figure.style.flexShrink = 0;
+                _root.Add(figure);
+            }
             Label((string)row["description"] ?? (string)row["textTemplate"] ?? (string)row["text"] ?? (string)row["flavor"] ?? "", "lead");
             var json = new TextField("Original record") { value = row.ToString(), multiline = true, isReadOnly = true, name = "foundation-record" }; json.AddToClassList("report-field"); json.AddToClassList("foundation-field"); _root.Add(json);
             Button("foundation-record-back", "Back to results", Catalog); _report();

@@ -1,0 +1,74 @@
+# AshenSpire Unity changelog
+
+One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
+The root CHANGELOG.md belongs to the HTML game and is not updated here.
+
+## 0.0.30.0 · build 31 · 2026-10-02
+
+- US-13.3 hold-to-confirm; US-13.2/7.4/8.3 settings a11y+audio; US-15.1-15.3 gameplay/display/gamepad options; US-0.6 web profile and active-room import; US-16.3 content schema validation
+
+## 0.0.29.0 · build 30 · 2026-10-02
+
+- US-4.4/US-13.4: enemy status and card tag explanations on long press/hover (no hover-only information)
+
+## 0.0.28.1 · build 29 · 2026-09-29
+
+- F00 US-0.3: keep the legacy combat flask and inspection content above the fixed action bar.
+
+## 0.0.28.0 · build 28 · 2026-09-28
+
+- Add original-game map-save import with preview, empty-slot protection, frozen rules and browser file/slot reads; broader import and Foundation acceptance remain open.
+- Add original-engine card parity, invalid-save, duplicate and failed-storage checks plus a compiled browser import test.
+
+## 0.0.27.0 · build 27 · 2026-09-29
+
+- F00 US-0.4: AshenedSpire branding, welcome and in-game guide; current-build Foundation validation
+
+## 0.0.26.0 · build 26 · 2026-09-29
+
+- Refine title, settings, collection and combat presentation for desktop and phone.
+
+## 0.0.25.0 · build 25 · 2026-09-28
+
+- F00/F10: Preserve damaged profiles, report storage failures and retry finished-run saves. Compact Web records fit all three slots and backups, with verified recovery during legacy Unity record conversion. Compact records require build 25 or newer; owner acceptance remains open.
+
+## 0.0.24.0 · build 24 · 2026-09-28
+
+- F00 US-0.3: Combat pile inspection, retained-card discard choices and saved solo keyboard bindings; compiled acceptance in progress.
+
+## 0.0.23.0 · build 23 · 2026-09-28
+
+- Independent interface audio, live volume and sound previews
+
+## 0.0.22.0 · build 22 · 2026-09-27
+
+- Connect live audio and feedback settings; import music and add compiled enemy portrait review
+
+## 0.0.21.0 · build 21 · 2026-09-25
+
+- F02 US-2.2 / F03: lean stat scale (ruleset 6, ratings, item weight scale), Standard and Assign-points creation modes, web solo hand rules with per-class opening hands of 4-6 (owner 2026-09-24/25)
+- Policy bot gate records wins and gates errors (owner 2026-09-25: "Record wins, gate errors")
+
+## 0.0.20.0 · build 20 · 2026-09-25
+
+- F07: feel profile — 39 HTML motion timings, CSS cubic-bezier curves, speed/reduced-motion scaling (domain ready; tween wiring pending Unity editor)
+
+## 0.0.19.0 · build 19 · 2026-09-25
+
+- F11: end-of-run summary matching the HTML game-over screen (domain ready; UI wiring pending Unity editor)
+
+## 0.0.18.0 · build 18 · 2026-09-25
+
+- F04: enemy telegraph view-model — intent glyph/value/tooltip/severity and Poise meter data (domain ready; UI Toolkit wiring pending Unity editor)
+
+## 0.0.17.0 · build 17 · 2026-09-25
+
+- F08: data-driven music director and credited track catalog (domain ready; AudioSource adapter pending Unity editor)
+
+## 0.0.16.0 · build 16 · 2026-09-25
+
+- F16/F15: content mod packs (add/override/remove, validated) and versioned customization settings with key-binding conflicts (domain ready; runtime wiring pending Unity editor)
+
+## 0.0.15.0 · build 15 · 2026-09-24
+
+- F10: three run save slots, verified writes, legacy migration and 20-result archive (domain ready; UI wiring pending Unity editor)

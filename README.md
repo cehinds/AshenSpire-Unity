@@ -1,6 +1,11 @@
-# AshenSpire Unity
+# AshenedSpire
 
 A mobile-first Unity rebuild of [AshenSpire](https://github.com/cehinds/AshenSpire), with native parity measured against original `dev` at `b17a7f4543e1710f49fae8b58880121690a314de`.
+
+The Unity version is named **AshenedSpire**. Existing repository paths, namespaces,
+save identifiers and download filenames remain compatible with earlier builds.
+See the [core phases and milestone status](docs/Unity-Milestones.md) and
+[original-game comparison](docs/Unity-Upstream-Review.md).
 
 Choose Reaver, Rogue, Herald or Starseer and climb the original three acts. Native C# owns combat, weapon-sourced cards, equipment, services, rewards, custom modes, progression, saves and cooperative runs. Original portraits, armour, tints and four sprite styles preserve the game's identity. The earlier nine-encounter adaptation remains available from the title screen and build history.
 

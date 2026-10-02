@@ -9,6 +9,12 @@ AshenSpire.html -text
 Published/** -text
 Unity/** text=auto eol=lf
 Unity/**/*.png -text
+Unity/**/*.mp3 -text
+Unity/**/*.ogg -text
+Unity/**/*.wav -text
+Unity/**/*.aiff -text
+Unity/**/*.aif -text
+Unity/**/*.flac -text
 GameContent/** text eol=lf
 GameContent/**/*.png -text
 UnityTests/** text eol=lf

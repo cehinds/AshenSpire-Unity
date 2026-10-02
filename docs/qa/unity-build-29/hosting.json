@@ -1,0 +1,27 @@
+{
+  "assembledAt": "2026-09-29T09:23:25.646Z",
+  "candidateCommit": "1b92c1d56a78c104dd9bdd996ac64892d4a2910e",
+  "build29ArchiveId": "build-67f23b1003062ce36102",
+  "archiveCount": 31,
+  "siteBytes": 401678934,
+  "siteMiB": 383.0708827972412,
+  "budgetMiB": 950,
+  "navigation": {
+    "checks": 3458,
+    "pages": 582,
+    "passed": true
+  },
+  "runtime": {
+    "checks": 564,
+    "archives": 31,
+    "passed": true
+  },
+  "publicDownloadsVerified": true,
+  "publicPagesDeployed": false,
+  "ownerAccepted": false,
+  "limits": [
+    "Local assembly only; public Pages still requires owner integration and deployment.",
+    "Runtime checks verify launcher contracts, local hashes and remote HEAD/CORS responses, not all archived gameplay.",
+    "Historical sampled browser boots are recorded separately under build-28 hosting evidence."
+  ]
+}

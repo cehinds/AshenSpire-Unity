@@ -1,0 +1,66 @@
+{
+  "success": true,
+  "results": [
+    {
+      "buildNumber": "legacy-0.1.0-abcfffa7",
+      "id": "build-5741ef1d0f5cabcfffa7",
+      "unity": "6000.4.10f1",
+      "remoteCode": true,
+      "requests": [
+        "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/3e8777b4ab76b1df091b05c8a60812e452474956/Published/Web/Build/Web.wasm",
+        "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/3e8777b4ab76b1df091b05c8a60812e452474956/Published/Web/Build/Web.wasm"
+      ],
+      "warnings": [
+        "HTTP Response Header \"Content-Type\" configured incorrectly on the server for file https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/3e8777b4ab76b1df091b05c8a60812e452474956/Published/Web/Build/Web.wasm , should be \"application/wasm\". Startup time performance will suffer."
+      ],
+      "consoleErrors": [
+        "wasm streaming compile failed: TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'.",
+        "falling back to ArrayBuffer instantiation"
+      ],
+      "expectedMimeFallback": true,
+      "unexpectedErrors": [],
+      "compiledUiReports": 0,
+      "success": true
+    },
+    {
+      "buildNumber": 20,
+      "id": "build-134a62ad5d716a565c06",
+      "unity": "6000.6.0f1",
+      "remoteCode": true,
+      "requests": [
+        "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/4707586249119afa1023fafe9db81d820b144a55/Published/Web/Build/Web.wasm?build=dd0ee867ec2fa4f028cbf9a5ddb5c74ea8c3462eb92f802c43a72a17794be1f6",
+        "https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/4707586249119afa1023fafe9db81d820b144a55/Published/Web/Build/Web.wasm?build=dd0ee867ec2fa4f028cbf9a5ddb5c74ea8c3462eb92f802c43a72a17794be1f6"
+      ],
+      "warnings": [
+        "HTTP Response Header \"Content-Type\" configured incorrectly on the server for file https://raw.githubusercontent.com/cehinds/AshenSpire-Unity/4707586249119afa1023fafe9db81d820b144a55/Published/Web/Build/Web.wasm?build=dd0ee867ec2fa4f028cbf9a5ddb5c74ea8c3462eb92f802c43a72a17794be1f6 , should be \"application/wasm\". Startup time performance will suffer.",
+        "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+      ],
+      "consoleErrors": [
+        "wasm streaming compile failed: TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'.",
+        "falling back to ArrayBuffer instantiation"
+      ],
+      "expectedMimeFallback": true,
+      "unexpectedErrors": [],
+      "compiledUiReports": 1,
+      "success": true
+    },
+    {
+      "buildNumber": 28,
+      "id": "build-6019a6efd590ace5bd9c",
+      "unity": "6000.6.0f1",
+      "remoteCode": false,
+      "requests": [
+        "http://127.0.0.1:8802/builds/build-6019a6efd590ace5bd9c/Web/Build/Web.wasm?build=f3de4f1487e5653fbc87932d05623326255e252d11275ebb5f654835c17ab05f"
+      ],
+      "warnings": [
+        "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+      ],
+      "consoleErrors": [],
+      "expectedMimeFallback": false,
+      "unexpectedErrors": [],
+      "compiledUiReports": 1,
+      "success": true
+    }
+  ],
+  "physicalDevice": false
+}

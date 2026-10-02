@@ -126,4 +126,18 @@ check('remote mode verifies every Web Git blob including omitted data',()=>{
  }
 });
 check('remote mode never silently replaces an exact local archive index',()=>assert.throws(()=>materializeHistory(root,localOut,only,{remoteRuntime:true}),/Archive collision/));
+check('historical code can move to the exact commit while retained players keep local wasm',()=>{
+ const oldOut=join(root,'historical-code'),keptOut=join(root,'retained-code');
+ materializeHistory(root,oldOut,only,{remoteRuntime:true,localCodeBuildIds:[]});
+ materializeHistory(root,keptOut,only,{remoteRuntime:true,localCodeBuildIds:[build.id]});
+ assert.equal(existsSync(join(oldOut,'builds',build.id,'Web/Build/Web.wasm')),false);
+ assert.deepEqual(readFileSync(join(keptOut,'builds',build.id,'Web/Build/Web.wasm')),payloads['Web/Build/Web.wasm']);
+ const receipt=JSON.parse(readFileSync(join(oldOut,'builds',build.id,'hosting.json')));
+ assert.equal(receipt.runtime.length,2);assert.equal(receipt.runtime[1].sha256,build.manifest.files['Web/Build/Web.wasm']);
+});
+check('omitted historical code is still verified before publication',()=>{
+ const bad=structuredClone(only);bad.builds[0].manifest.files['Web/Build/Web.wasm']='0'.repeat(64);
+ assert.throws(()=>materializeHistory(root,join(root,'bad-historical-code'),bad,{remoteRuntime:true,localCodeBuildIds:[]}),/hash mismatch/);
+ assert.throws(()=>materializeHistory(root,join(root,'unknown-retention'),only,{remoteRuntime:true,localCodeBuildIds:['unknown']}),/retention selection/);
+});
 console.log(`${checks} checks passed`);

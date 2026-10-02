@@ -14,6 +14,22 @@ Reject(new JObject{["classId"]="reaver",["modeId"]="standard",["hp"]=999},"clien
 Reject(new JObject{["classId"]="reaver",["modeId"]="standard",["profileMeta"]=new JObject()},"client unlocks refused");
 Reject(new JObject{["classId"]="reaver",["modeId"]="pointbuy",["attributes"]=new JObject{["strength"]=15,["dexterity"]=15,["constitution"]=15,["wisdom"]=15,["intelligence"]=15}},"overbudget rejected");
 Reject(new JObject{["classId"]="reaver",["modeId"]="pointbuy",["attributes"]=new JObject{["strength"]=10.5}},"partial/fractional attrs refused");
+// Lean scale: all 1s plus 3 points, maximum 4, total 8. "lean" is Assign points; "leanStandard" (the default) is Standard.
+JObject Lean(int str,int dex,int con,int wis,int intel)=>new JObject{["strength"]=str,["dexterity"]=dex,["constitution"]=con,["wisdom"]=wis,["intelligence"]=intel};
+Reject(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(4,4,4,4,4)},"lean all 4s refused");
+Reject(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(5,1,1,1,1)},"lean attribute above maximum refused");
+var leanSetup=factory.ValidatePlayerSetup(new JObject{["classId"]="reaver",["modeId"]="lean",["attributes"]=Lean(3,1,2,1,1)});
+Check((string?)leanSetup["modeId"]=="lean"&&JToken.DeepEquals(leanSetup["attributes"],Lean(3,1,2,1,1)),"lean {3,1,2,1,1} accepted");
+string? unspent=null;try{factory.ValidatePlayerSetup(new JObject{["classId"]="reaver",["modeId"]="lean"});}catch(ArgumentException error){unspent=error.Message;}
+Check(unspent!=null&&unspent.Contains("Spend all points"),"Assign points setup without attributes refused: "+unspent);
+// Standard (the default): no attributes needed, the class preset is used; the player may still move points.
+var defaultSetup=factory.ValidatePlayerSetup(new JObject{["classId"]="starseer"});
+Check((string?)defaultSetup["modeId"]=="leanStandard"&&JToken.DeepEquals(defaultSetup["attributes"],Lean(1,1,1,2,3)),"default mode is Standard with the Starseer preset");
+var standardSetup=factory.ValidatePlayerSetup(new JObject{["classId"]="reaver",["modeId"]="leanStandard"});
+Check(JToken.DeepEquals(standardSetup["attributes"],Lean(3,1,2,1,1)),"Standard setup with no attributes accepted on the Reaver preset");
+var movedSetup=factory.ValidatePlayerSetup(new JObject{["classId"]="reaver",["modeId"]="leanStandard",["attributes"]=Lean(2,2,2,1,1)});
+Check(JToken.DeepEquals(movedSetup["attributes"],Lean(2,2,2,1,1)),"Standard setup with a moved point accepted");
+Reject(new JObject{["classId"]="reaver",["modeId"]="leanStandard",["attributes"]=Lean(4,1,2,1,1)},"Standard overspend refused");
 await using var host=await Peer.Open(endpoint);await using var guest=await Peer.Open(endpoint);
 async Task<JObject> Hello(Peer peer,string cls,bool hosting){await peer.Send("hello",new JObject{["joinToken"]=options.JoinToken,["hostToken"]=hosting?options.HostToken:null,["name"]=cls,["setup"]=new JObject{["classId"]=cls,["modeId"]="standard"}},"hello");return(JObject)(await peer.Next(m=>(string?)m["type"]=="welcome"))["payload"]!;}
 var hw=await Hello(host,"reaver",true);var gw=await Hello(guest,"starseer",false);var hid=(string)hw["seatId"]!;var gid=(string)gw["seatId"]!;
@@ -47,7 +63,14 @@ await using var rejoined=await Peer.Open(endpoint);await rejoined.Send("hello",n
 File.WriteAllText(Path.Combine(LanTestPaths.OutputRoot,"native-receipt.json"),new JObject{["checks"]=checks,["acceptedCommands"]=commands,["scene"]=hv["scene"]!["kind"]!.DeepClone(),["transport"]="two real ClientWebSocket peers",["gameRules"]="OriginalCoopRun + OriginalCoopCombat",["browserEvidence"]=false}.ToString());
 Console.WriteLine($"PASS {checks} real native co-op WebSocket checks; {commands} accepted/retry commands; encounter rewards reached.");
 await host.DisposeAsync();await rejoined.DisposeAsync();await late.DisposeAsync();
-await Task.Delay(150); var start = new System.Diagnostics.ProcessStartInfo("node") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true }; start.ArgumentList.Add(LanTestPaths.BridgeHarness); start.Environment["AS_LAN_JSLIB"] = LanTestPaths.JsLib; start.Environment["LAN_URL"] = endpoint.ToString(); start.Environment["HOST_RESUME"] = (string)hw["resumeToken"]!; start.Environment["GUEST_RESUME"] = (string)gw["resumeToken"]!; using var bridge = System.Diagnostics.Process.Start(start)!; var output = await bridge.StandardOutput.ReadToEndAsync(); var errors = await bridge.StandardError.ReadToEndAsync(); await bridge.WaitForExitAsync(); Check(bridge.ExitCode == 0,"Bridge harness failed: " + errors); Console.Write(output);
+// Closing the client is not the server's disconnect receipt. Wait for the room
+// to release every seat before the bridge tries to reclaim those same tokens.
+using var statusClient = new HttpClient { BaseAddress = new Uri(app.Urls.Single()) };
+var disconnectDeadline = DateTime.UtcNow.Add(LanTestPaths.ReplyTimeout);
+var connections = -1;
+do { connections = (int)JObject.Parse(await statusClient.GetStringAsync("/api/lan/info"))["connections"]!; if (connections == 0) break; await Task.Delay(50); } while (DateTime.UtcNow < disconnectDeadline);
+Check(connections == 0, "previous native peers are released before bridge rejoin");
+var start = new System.Diagnostics.ProcessStartInfo("node") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true }; start.ArgumentList.Add(LanTestPaths.BridgeHarness); start.Environment["AS_LAN_JSLIB"] = LanTestPaths.JsLib; start.Environment["LAN_URL"] = endpoint.ToString(); start.Environment["HOST_RESUME"] = (string)hw["resumeToken"]!; start.Environment["GUEST_RESUME"] = (string)gw["resumeToken"]!; using var bridge = System.Diagnostics.Process.Start(start)!; var output = await bridge.StandardOutput.ReadToEndAsync(); var errors = await bridge.StandardError.ReadToEndAsync(); await bridge.WaitForExitAsync(); Check(bridge.ExitCode == 0,"Bridge harness failed: " + errors); Console.Write(output);
 await app.StopAsync();
 
 

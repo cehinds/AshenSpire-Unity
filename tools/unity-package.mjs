@@ -13,6 +13,14 @@ const digest=unitySourceDigest(sourceFiles,path=>readFileSync(join(root,path)));
 const version=JSON.parse(readFileSync(join(root,'GameContent/Unity/version.json'),'utf8'));
 if(!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version.Version)||!Number.isSafeInteger(version.BuildNumber)||version.BuildNumber<1||!version.Stage)throw Error('Invalid four-part version/build metadata');
 const destination=join(root,'Published');
+// These exports are tracked in ordinary Git and served from immutable commits.
+// Refuse an unpushable package before it can become a checkpoint.
+function verifyGitFileSizes(paths){
+ for(const path of paths){
+  const bytes=statSync(join(destination,path)).size;
+  if(bytes>100*1024*1024)throw Error(`Published/${path} is ${(bytes/1024/1024).toFixed(2)} MiB; GitHub's ordinary Git file limit is 100 MiB. Reduce the export or implement a verified external download path before publishing.`);
+ }
+}
 execFileSync(process.env.PYTHON || (process.platform==='win32'?'python':'python3'),[join(root,'tools/validate-companion.py'),root],{cwd:root,stdio:'inherit'});
 execFileSync(process.env.PYTHON || (process.platform==='win32'?'python':'python3'),[join(root,'tools/validate-unity-targets.py'),root],{cwd:root,stdio:'inherit'});
 function platformStamp(platform,path){
@@ -32,6 +40,7 @@ function verifyWebExport(directory){
 const platformReceipts={Windows:platformStamp('Windows',join(destination,'Windows.build-source.json')),Android:platformStamp('Android',join(destination,'Android.build-source.json'))};
 if(process.argv.includes('--check')){
  const manifest=JSON.parse(readFileSync(join(destination,'build.json'),'utf8'));
+ verifyGitFileSizes(Object.keys(manifest.files||{}));
  for(const required of ['Windows.zip','Android.apk','Companion.zip','Companion.build.json','Windows.build-source.json','Android.build-source.json'])if(!manifest.files?.[required])throw Error(`Missing mandatory package manifest entry: ${required}`);
  if(manifest.sourceDigest!==digest)throw new Error('Unity source differs from packaged build. Run tools/build-unity.ps1 before publishing.');
  if(manifest.version!==version.Version||manifest.buildNumber!==version.BuildNumber)throw Error('Package version/build number differs from version.json');
@@ -64,6 +73,7 @@ if(process.argv.includes('--check')){
  for(const file of ['Windows.zip','Android.apk'])manifest.files[file]=createHash('sha256').update(readFileSync(join(destination,file))).digest('hex');
  for(const file of ['Windows.build-source.json','Android.build-source.json','Companion.zip','Companion.build.json']){manifest.files[file]=createHash('sha256').update(readFileSync(join(destination,file))).digest('hex');}
  manifest.platforms={Web:buildStamp,...platformReceipts};
+ verifyGitFileSizes(Object.keys(manifest.files));
  writeFileSync(join(destination,'build.json'),JSON.stringify(manifest,null,2)+'\n');
  console.log(`Packaged ${Object.keys(manifest.files).length} Unity Web files; source ${digest}`);
 }

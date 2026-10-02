@@ -1,0 +1,23 @@
+/* OriginalPalette.uss — colorblind palettes. CampaignView.PlayerSettings.cs loads this sheet
+   and puts palette-protanopia / palette-deuteranopia / palette-tritanopia on the root when
+   the player picks one. It only re-colors the red/green (and blue/green) pairs that carry
+   meaning: health vs stamina pools, mana vs stamina cost badges, warnings. */
+
+/* Red-green (protanopia, deuteranopia): health becomes a dark vermilion, stamina a bright
+   amber, so the two pools differ in lightness as well as hue. Mana stays blue. */
+.palette-protanopia .combat-screen .original-pool-fill,
+.palette-deuteranopia .combat-screen .original-pool-fill { background-color: rgb(166,66,0); }
+.palette-protanopia .combat-screen .original-pool.stamina .original-pool-fill,
+.palette-deuteranopia .combat-screen .original-pool.stamina .original-pool-fill { background-color: rgb(214,160,20); }
+.palette-protanopia .original-card .original-card-stamina,
+.palette-deuteranopia .original-card .original-card-stamina { background-color: rgb(46,36,6); border-color: rgb(230,159,0); }
+.palette-protanopia .notice,
+.palette-deuteranopia .notice { color: rgb(240,190,90); }
+.palette-protanopia .card.unaffordable > .cost,
+.palette-deuteranopia .card.unaffordable > .cost { color: rgb(240,190,90); }
+
+/* Blue-yellow (tritanopia): mana moves to a reddish purple so it no longer matches the
+   green stamina pool; health keeps its red. */
+.palette-tritanopia .combat-screen .original-pool.mana .original-pool-fill { background-color: rgb(160,80,140); }
+.palette-tritanopia .original-card .original-card-mana { background-color: rgb(45,18,40); border-color: rgb(204,121,167); color: rgb(250,225,240); }
+.palette-tritanopia .combat-screen .original-pool.stamina .original-pool-fill { background-color: rgb(40,120,110); }

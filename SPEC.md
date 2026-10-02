@@ -321,7 +321,7 @@ nowhere else**. The order is fixed:
 
 1. **Bound cards are dealt first.** Anything equipment brings: cards from a piece carrying
    the `bound` tag (`equipmentGrants.csv`), a weapon package's `grantedCards`, its
-   `weaponArtDefaults`, the class signature, and `startingDeck.global.grants`. These are
+   `armamentCardDefaults`, the class signature, and `startingDeck.global.grants`. These are
    never capped, never dropped and never refused. They belong to the equipment, not the run.
 2. **Base cards fill what the cap leaves.** `filler = max(0, cap − bound)`, split between
    attack and guard by the class's `strikeBias`. An odd remainder goes to whichever role
@@ -347,7 +347,7 @@ the base strikes and defends (gear only re-skins them), the class signature, glo
 rewards. Item-owned cards ride with the item: equip it and they arrive, unequip it and they
 leave, equip it again and they return identical. **If the item is not equipped, its cards are
 gone** (owner ruling, 2026-09-03). This is one rule with three authoring sources feeding it —
-a weapon package's `grantedCards`, its `weaponArtDefaults`, and the `bound` table
+a weapon package's `grantedCards`, its `armamentCardDefaults`, and the `bound` table
 (`equipmentGrants.csv`, gated by the `bound` tag on any piece, armour included) — and one
 reconcile that applies it on every equip transition, in or out of combat. Item-owned
 instances carry deterministic ids and the owner's namespaced ref, so the reconcile is
@@ -370,7 +370,7 @@ its mounts, and **seat** a run-owned card in an emptied or open mount.
 
 - **Extract.** The card becomes the run's own — a run-owned instance joins the deck and stays
   whatever the item does — and the mount it left is never dead: it shows its kind's **fallback**
-  until something is seated. A weapon-art mount falls back to the unarmed technique (the Dodge
+  until something is seated. An armament-card mount falls back to the unarmed technique (the Dodge
   Roll), read from `unarmedProfiles`; a granted mount falls back to nothing; any item may
   override its fallback under `cardMounts.fallbackByItem`. A fallback is the mount's, not the
   item's, and is never itself extractable.
@@ -682,6 +682,112 @@ Enemy definition shape (content file):
 }
 ```
 
+### 4.7 Weapon Arts — the charged weapon ability *(PROPOSED, not yet approved)*
+
+**Why.** An armament today changes the starting cards (`mods`) and lends its item-owned cards
+(§3.8), then does nothing a player *chooses* in a fight. A Weapon Art gives every weapon one
+active ability that is **off the deck**, **always visible**, and **charged by fighting with that
+weapon** — so the weapon is a decision every combat, and every hit visibly fills something.
+
+**Relation to what exists — the old mount is renamed.** The name "weapon art" currently belongs
+to the item-owned *card* a weapon lends into the deck (the `weaponArt` mount kind, §3.8). That
+card is renamed **Armament Card** so "Weapon Art" means only this off-deck ability. The
+Armament Card keeps every behaviour it has today (deck card, item-owned, extractable/seatable,
+Dodge Roll fallback); only its names change:
+
+| Old | New |
+|---|---|
+| mount kind `weaponArt` (`balance.equipment.cardMounts.kinds`) | `armamentCard` |
+| `equipmentRole: 'weaponArt'` | `equipmentRole: 'armamentCard'` |
+| instance id / mount key prefix `weaponArt:` (`mountKey.weaponArt`) | `armamentCard:` (`mountKey.armamentCard`) |
+| weapon package field `weaponArtDefaults` | `armamentCardDefaults` |
+| weapons column `weaponArtManaCost` | `armamentCardManaCost` |
+| player-facing "Weapon Art" (Armoury, smith, compendium) | "Armament Card" |
+
+**Save migration.** One pure, idempotent step at the load door (§3.12), in run and active-combat
+snapshots alike: rewrite `equipmentRole`, instance-id prefixes and `run.itemMounts` keys from
+the old words to the new. It consumes no RNG, replays nothing, and moves no card between piles.
+A save already on the new words passes through unchanged; a save carrying **both** words for
+one mount is archived fail-closed rather than merged. The Unity port and its parity references
+(`UnityTests/Parity/*`) take the same rename in the same implementation PR.
+
+This Weapon Art is the consumer the `uniqueSkillStaminaCost` column has been waiting for
+(`validate.js` holds it at 0 "until an explicit unique-skill consumer exists"); the column is
+renamed `weaponArtStaminaCost`. A Weapon Art is never a card, never enters a pile, and cannot
+be extracted, seated or removed.
+
+**Entity** — `WeaponArt` (new schema in `model/schemas.js`, registry `weaponArts`,
+authored in `content/source/weaponArts.csv` + effects in `src/content/weaponArts.js`):
+
+| Field | Meaning |
+|---|---|
+| `id, name, icon, textTemplate` | Display; text uses the §3.13 templating so previews use `previewDamage`. |
+| `charge` | Integer meter maximum (shipped range 3–6). |
+| `startCharge` | Charge at `combatStart` (default 0). |
+| `chargeOn` | Triggers (§3.6) whose `do` is the new opcode `gainArtCharge {amount}`. Default authored set: +1 per attack hit dealt by a card this weapon's hand generated (`eventIsAttack` + new predicate `eventCardFromHand {hand: 'self'}`), +2 on `enemyStaggered`. |
+| `targeted` | `enemy` \| none — same targeting rule as cards. |
+| `effects` | Effect DSL (§3.4). Any opcode a card may use. |
+| `upgrade` | Partial override applied at armament Smithing tier ≥ 1 (same shape and rule as card upgrades, §4.3). |
+
+Weapons gain one column, `weaponArt` (id, required for `kind=weapon`, optional for shields).
+`weaponArtStaminaCost` becomes live: the Stamina paid on use, **in addition to** a full meter;
+shipped values stay 0 so the meter is the only gate until the owner tunes it.
+
+**Rules.**
+
+1. **One meter per equipped hand.** Two weapons → two arts, two meters. Unarmed hands have
+   none. A two-handed weapon (`handsRequired: 2`) has one.
+2. **Use** is a new player intent `useWeaponArt(hand, targetId?)`. Legal on the player's turn
+   when that hand's meter is full and Stamina covers `weaponArtStaminaCost`. It costs **no
+   Actions/energy** and each hand's art is limited to **once per turn**
+   (`balance.weaponArt.usesPerTurnPerHand`, default 1). Two armed hands may therefore use
+   both arts in the same turn (owner ruling, 2026-09-25).
+3. **Spend:** meter → 0, then effects enqueue on the action queue (§3.9) like a played card,
+   emitting new event `weaponArtUsed(hand, artId)`. It is **not** `cardPlayed`: card-count
+   predicates (`everyNthCardThisCombat`, `cardsPlayedThisTurn`) do not see it.
+4. **Charge is combat-scoped.** It resets to `startCharge` each combat, caps at `charge`
+   (overflow is lost) and is saved in the combat snapshot, never on the run.
+5. **Swapping** an armament mid-combat (§3.8 swap cost rules) sets the new hand's meter to the
+   new art's `startCharge`; the old meter is lost. A swap never refunds charge.
+6. **Relics/perks** may interact through the same doors: the `gainArtCharge` opcode and the
+   `weaponArtUsed` event. No art-specific engine code (Law 2).
+
+**Shipped M-set (one per shipped weapon; numbers PROVISIONAL, owned by the balance pass):**
+
+| Weapon | Art | Charge | Effect | Upgrade |
+|---|---|---|---|---|
+| Straight Sword | Riposte | 3 | Gain 6 Block. Deal 8. | 9 / 11 |
+| Greatsword | Crushing Arc | 5 | Deal 14 to ALL enemies. 6 Poise damage to ALL. | 18 / 8 |
+| Dagger | Quickstep Cuts | 3 | Deal 3×3. Draw 1. | 4×3 |
+| Shortbow | Pinning Shot | 4 | Deal 10. Apply 2 Weak. | 13 / 2 Weak, 1 Vulnerable |
+| Katana | Unsheathe | 4 | Deal 12. Apply 5 Bleed. | 15 / 7 Bleed |
+| Halberd | Sweeping Guard | 4 | Deal 8 to ALL. Gain 8 Block. | 11 / 11 |
+| Warhammer | Earthshaker | 5 | 16 Poise damage. Deal 6. | 20 Poise / 9 |
+| Twinblade | Whirlwind | 4 | Deal 2×6 split randomly among enemies. | 3×6 |
+| Battleaxe | War Cry | 4 | Gain 2 Strength this combat. | 3 Strength |
+| Buckler (shield) | Parry | 2 | Gain Block equal to the next enemy intent's attack total (max 20). | max 30 |
+| Kite / Tower Shield | Brace | 3 | Gain 12 Block. Retain Block next turn. | 16 |
+
+**UI (§7.2).** One Weapon Art button per armed hand beside the Actions orb: icon, a segmented meter
+(one pip per point of `charge`), and the templated text on hover/long-press. Full meter → the
+button glows and pulses once with a sound; use → a short flourish on the weapon sprite. The
+Armoury shows each weapon's Weapon Art before equip, so the weapon choice reads as an art choice.
+
+**Validation (§3.14).** Refuse by name: weapon with no/dangling `weaponArt`; `charge < 1`;
+`startCharge > charge`; `chargeOn` hook whose `do` contains anything but `gainArtCharge`;
+negative `weaponArtStaminaCost`; any old-word name from the rename table in content; an upgrade naming a field the base does not have.
+
+**Acceptance.**
+- Headless: a Straight Sword combat fills 3 charge from 3 Strike hits, `useWeaponArt` resolves
+  Riposte, meter returns to 0; a second use of the same hand's art that turn is refused,
+  while the other hand's full art is still usable.
+- Two one-handed weapons show and charge two meters independently.
+- A mid-combat swap resets that hand's meter; a save/load mid-combat preserves both meters.
+- No card-count predicate advances when an art is used.
+- A save carrying `weaponArt:` Armament Card instances loads with them renamed, same piles,
+  same RNG counters; loading it twice is identical to loading it once.
+- `tools/runsim.mjs` reports Weapon Art uses per combat per weapon (target: 1–2 in a normal fight).
+
 ---
 
 ## 5. Content specification
@@ -716,6 +822,69 @@ level-up per full run against the owner's 10–20 per run; 20 / 4 measures 14.8 
 Therefore five purchases cost `20 + 24 + 28 + 32 + 36 = 140` and produce level 6.
 The starting level, first cost, step, points per level and any maximum are content data; the
 worked level-6 result is a curve receipt, not a second hard-coded total or an implied cap.
+
+**Milestone levels** *(PROPOSED, not yet approved)*. A single attribute point is correct but
+barely felt (`Strike = -6 + STR` makes a point worth +1 damage). Milestones layer a **big,
+chosen reward** on top of the existing curve without changing it: the price, `run.levelUps`
+and `pointsPerLevel` stay exactly as above.
+
+- **When.** `balance.levelUp.milestones` is an authored list of level numbers (shipped
+  `[5, 10, 15]`; displayed level, so the 4th, 9th and 14th purchase). With the measured
+  ~14.8 levels per full run, a winning run sees ~2–3 milestones. Content data; any list of
+  distinct ascending integers > the starting level is legal.
+- **What.** Reaching a milestone level opens a **choose 1 of 3** from the `milestone` relic
+  pool — a new value in `RELIC_POOLS`. A milestone perk *is* a relic: same schema, triggers
+  and passives, same icon row, no new entity. The pool is class-filtered by an optional
+  `classes[]` field; no generic source (elite/boss drop, shop, events) may hand out a
+  `milestone`-pool relic, the same exclusion `quest` has.
+- **Rolls.** The three are rolled on a new RNG stream `milestones` (added to `STREAM_NAMES`),
+  so adding milestones shifts no card, relic or armament roll in an existing seed. The offer is
+  written to `run.pendingMilestone = { level, offer: [id, id, id] }` **before** it is shown:
+  a reload shows the same three and never rerolls. Choosing writes
+  `run.milestones.push({ level, relicId })`, adds the relic through the ordinary relic-gain
+  door and clears the pending offer.
+- **Skipping (owner ruling, 2026-09-25).** The player may skip an offer. A skip writes
+  `run.milestones.push({ level, relicId: null })`, grants nothing, clears the pending offer,
+  and is final: the skipped milestone is never re-offered and its three perks are not
+  carried to the next milestone. The screen shows Skip beside the three perks, never as the
+  default focus, so a stray confirm cannot throw a milestone away.
+- **Buying several levels at once** (`levelUpBudget`) that cross more than one milestone
+  queues one offer per milestone, resolved in level order.
+- **Shipped perk set (PROVISIONAL, 9 perks, 3 per tier):** a perk offered at level 5 is drawn
+  from `tier: 1`, at 10 from `tier: 2`, at 15 from `tier: 3` (new optional relic field
+  `tier`, meaningful only in the `milestone` pool).
+
+  | Tier | Perk | Effect |
+  |---|---|---|
+  | 1 | Second Wind | The first time each combat you fall below 50% HP, gain 10 Block. |
+  | 1 | Honed Edge | Weapon Arts start each combat with 1 charge. |
+  | 1 | Deep Pockets | +1 flask capacity (through the `relic` flask-growth row, §5.5.2). |
+  | 2 | Momentum | Every 4th card you play each turn costs 0. |
+  | 2 | Resonance | When you use a Weapon Art, your other hand's art gains 2 charge. |
+  | 2 | Tempered | +1 Action at the start of each turn if you have no Block. |
+  | 3 | Ascendant | +1 card drawn each turn. |
+  | 3 | Warlord | At combat start, gain 2 Strength. |
+  | 3 | Undying | Once per run, when you would die, heal to 30% instead. |
+
+- **Presentation (§7.4).** Every level-up, milestone or not, shows a before → after strip of
+  the numbers it actually moved, computed by the same engine preview (`previewDamage`,
+  derived-stat readout) — e.g. `Strike 9 → 10 · Max HP 52 → 54`. A milestone adds a
+  full-screen beat (flash, sting, the three perk cards dealt face-down then turned). A
+  **next-milestone** line (`Level 7 · milestone at 10`) sits on the shrine's Level-up fold and
+  in the HUD tooltip so every single point reads as progress toward one.
+- **Co-op.** Each member has their own `levelUps`, pending offer and milestones.
+- **Save.** Run schema gains `milestones[]` and `pendingMilestone` (absent = none; no migration
+  invents history for an existing save). `validateRunShape` refuses a `milestones` entry whose
+  level is not in the authored list, is above the run's level, or is duplicated, and any
+  non-null `relicId` the run does not hold; a `null` `relicId` is a legal skip.
+- **Validation.** Refuse by name: non-ascending/duplicate milestone list; a milestone tier with
+  fewer than 3 eligible perks for any class; a `milestone`-pool relic reachable from any
+  generic pool; a `tier` on a non-milestone relic.
+- **Acceptance.** Buying levels 4→5 yields exactly one pending offer of 3 distinct tier-1
+  perks; save/reload shows the same 3; buying 4→11 in one visit yields two offers, 5 then 10;
+  the 5th level costs exactly what it did before this change; skipping the level-5 offer
+  records `{ level: 5, relicId: null }`, adds no relic, and the level-10 offer still arrives
+  from tier 2 as normal.
 
 **Rogue full parity slice.** Rogue ships as a complete fourth class, not a selectable shell:
 

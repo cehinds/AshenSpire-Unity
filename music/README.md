@@ -8,7 +8,7 @@ override just the battle music if you like.
 
 1. Put audio files (`.mp3` or `.ogg`) into the per-context subfolders below.
 2. List them in [`manifest.json`](manifest.json) under the matching context.
-3. In-game: **Settings → Audio → Music folder**, enter the path/URL to this
+3. In-game: **Settings → Advanced → Debug → Custom music folder**, enter the path/URL to this
    folder (e.g. `music/` when the game is served from the project root, or a full
    `https://…` URL). Leave it blank to use the built-in generated score.
 
@@ -52,4 +52,7 @@ music/
   and point the setting at that.
 - **Licensing:** only add tracks you have the right to use. The built-in score is
   fully generated in-code, so the game ships with no third-party audio.
+- **Unity port:** the Unity music catalog is generated from this manifest and
+  requires a credit per file (an optional `"_credits"` object here, which the
+  HTML game ignores). See [`docs/Unity-Music.md`](../docs/Unity-Music.md).
 - **Cross-origin:** remote URLs must send permissive CORS headers to play.
