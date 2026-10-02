@@ -1,5 +1,5 @@
 {
- "sourceCommit": "5e33e91822f771dce28ea2b9f1106ee3be2d452f",
+ "sourceCommit": "01b2c804cf6ffa52656d974cb236d8337b2f6e44",
  "fixtures": {
   "reaver-combat-entry": {
    "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
