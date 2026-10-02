@@ -33,6 +33,8 @@ namespace AshenSpire.Presentation
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
         public OriginalMapViewServices MapView { get; } = new OriginalMapViewServices();
+        /// <summary>Gamepad dispatch for this view (US-15.3); GamepadDriver feeds it each frame.</summary>
+        public GamepadNavigator Gamepad { get; }
         private VisualElement _stage;
         private VisualElement _interruptionCover;
         private Button _returnButton;
@@ -62,6 +64,7 @@ namespace AshenSpire.Presentation
             MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
             MapView.SetMapSurface = SetMapSurface;
             MapView.Report = () => Report();
+            Gamepad = new GamepadNavigator(root, () => _playerSettings, () => Report());
             root.AddToClassList("app");
             root.styleSheets.Add(Resources.Load<StyleSheet>("Expedition"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalTheme"));
@@ -102,7 +105,7 @@ namespace AshenSpire.Presentation
             }
             ScheduleTextScale(); // CampaignView.PlayerSettings.cs; no-op at the default text size.
         }
-        public void Dispose() { _disposed = true; _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
+        public void Dispose() { _disposed = true; Gamepad.Capture = null; Gamepad.Reset(); _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
         public void ShowInterruption(bool canReturn)
         {
             _feedback.Cancel();

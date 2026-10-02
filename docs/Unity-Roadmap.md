@@ -449,6 +449,7 @@ Tests: `UnityTests/CoopRun`, `tools/NativeLan/Tests/*`, `tools/native-coop-ci.cj
   - [x] Build 31 source: Gameplay options (pacing, reward collection default auto, buy-back, swap-cost display) in schema 3 with a Parity `gameplay-options` section (55 checks).
 - [ ] **US-15.3** Keyboard and gamepad bindings with rebinding.
   - [x] Build 31 source: Keyboard bindings and gamepad mapping in schema 3 (`OriginalGamepad`); the gamepad input hook needs the Input System package.
+  - [x] Source: gamepad input through the legacy Input Manager (`GamepadDriver` → `GamepadReader` → `GamepadNavigator`), shared key dispatch, spatial focus, right-stick map pan, press-a-button rebinding; `UnityTests/Gamepad`. Needs a play test with real pads (docs/Unity-Settings.md → Gamepad).
 
 Acceptance: each option persists per channel and changes the named behaviour
 only; defaults match the reference.

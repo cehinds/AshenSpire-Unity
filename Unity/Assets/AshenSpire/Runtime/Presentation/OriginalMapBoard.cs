@@ -176,6 +176,14 @@ namespace AshenSpire.Presentation
                 painter.BeginPath(); painter.MoveTo(new Vector2((float)a.X,(float)a.Y)); painter.LineTo(new Vector2((float)b.X,(float)b.Y)); painter.Stroke();
             }
         }
+        /// <summary>Gamepad right stick (GamepadNavigator): scrolls by panel pixels, positive = down. False while
+        /// an overlay (Routes, Key) covers the map or before the camera exists, so the pad scrolls that instead.</summary>
+        public bool PanBy(double pixels)
+        {
+            if (_camera == null || _detached || _overlay.style.display == DisplayStyle.Flex) return false;
+            Scroll(_scroll + pixels / _scale);
+            return true;
+        }
         private void Scroll(double value)
         {
             if (_camera == null) return;
