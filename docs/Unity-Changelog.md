@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.29.0 · build 30 · 2026-10-02
+
+- US-4.4/US-13.4: enemy status and card tag explanations on long press/hover (no hover-only information)
+
 ## 0.0.28.1 · build 29 · 2026-09-29
 
 - F00 US-0.3: keep the legacy combat flask and inspection content above the fixed action bar.
