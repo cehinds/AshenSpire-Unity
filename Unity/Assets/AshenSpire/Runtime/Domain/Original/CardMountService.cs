@@ -106,10 +106,20 @@ namespace AshenSpire.Domain.Original
             return result;
         }
         public int Cost(string service) => (int)_data["balance"]["smithing"]["services"][service]["cost"];
+        // A Sealed or Draft run never extracts (owner ruling, 2026-10-02; the original's
+        // model/cardExtraction.js extractionRefusal). Its dealt deck takes no card the equipment
+        // lends, and extracting one would hand it a free run-owned copy of exactly that. Read from
+        // the run's own Custom Climb rules every time, never stored, so no save carries it away.
+        // Installing a card the run already owns is unaffected.
+        public const string PoolDeckRefusal = "poolDeck";
+        public const string PoolDeckRefusalText = "A Sealed or Draft deck takes no card the equipment lends, so nothing can be extracted.";
+        public static string ExtractionRefusal(JObject run) => OriginalCustomRunRules.IsPoolDeckRun(run) ? PoolDeckRefusal : null;
         private void Owned(JObject run, string itemRef)
         { if (!new ItemUpgradeService(_catalog).OwnedRefs(run).Contains(itemRef) || itemRef.StartsWith("relic/", StringComparison.Ordinal)) throw new ArgumentException("Item is not carried or worn."); }
         public JObject Extract(JObject run, string itemRef, string mountKey, bool free = false)
         {
+            // Refused before anything is read, and for a free grant too.
+            if (ExtractionRefusal(run) != null) throw new ArgumentException(PoolDeckRefusalText);
             Owned(run, itemRef);
             var mount = MountRows(itemRef, run["itemMounts"] as JObject).FirstOrDefault(x => (string)x["mountKey"] == mountKey && (bool)x["extractable"]) ?? throw new ArgumentException("Mount is not extractable.");
             var cost = Cost("extract"); var stones = ItemUpgradeService.Stones(run); if (!free && stones < cost) throw new ArgumentException("Insufficient Smithing Stones.");
