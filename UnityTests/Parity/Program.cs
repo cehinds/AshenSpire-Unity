@@ -134,6 +134,7 @@ var sections = new (string Name, int Weight, Action Run)[]
     ("combat-session", 20, () => { Console.WriteLine($"CombatSessionChecks: {CombatSessionChecks.Run(Path.Combine(root, "UnityTests/Parity/combat-reference.json"))} checks passed"); }),
     ("native-services", 7, () => { NativeServicesChecks.Run(root); }),
     ("custom-run", 60, () => { CustomRunChecks.Run(root); }),
+    ("pool-deck", 44, () => { PoolDeckChecks.Run(root); }),
     ("swaps", 16, () => { Console.WriteLine($"Paid swaps: {SwapChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), Path.Combine(root, "UnityTests/Parity/swap-reference.json"))} checks passed"); }),
     ("starting-options", 3, () => { Console.WriteLine($"Starting choices: {StartingOptionsChecks.Run(catalog, JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json"))), JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/progression.json"))), Path.Combine(root, "UnityTests/Parity/starting-reference.json"))} checks passed"); }),
     ("event-reachability", 156, () => { EventReachabilityChecks.Run(root); }),

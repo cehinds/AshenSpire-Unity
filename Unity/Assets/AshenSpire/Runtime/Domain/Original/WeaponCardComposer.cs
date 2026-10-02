@@ -3,6 +3,9 @@
 // CreateStartingDeck determines the basic quota ONCE. Recompose preserves it when
 // gear changes, removes departed item grants, and retains earned/upgraded cards.
 // Call ReconcileCombat across ALL four piles; missing mid-fight grants enter discard.
+// A dealt (Sealed/Draft) deck is never dealt lent cards: both reconcile doors take
+// `dealtDeck` (OriginalCustomRunRules.IsPoolDeckRun) as a required argument and, when
+// it is set, restamp equipment faces only and leave item-owned cards exactly as they are.
 // Smith mount overrides and item upgrade layers are separate services, not implicit
 // parameters here. Never use this baseline composer to silently discard their state.
 using System;
@@ -196,26 +199,27 @@ namespace AshenSpire.Domain.Original
             foreach (var card in DesiredGrants(loadout, classId)) deck.Add(card.DeepClone());
             return Order(deck, "grantSource");
         }
-        public JArray Recompose(JArray deck, JObject loadout, string classId, JObject itemMounts = null)
+        public JArray Recompose(JArray deck, JObject loadout, string classId, bool dealtDeck, JObject itemMounts = null)
         {
             var result = (JArray)deck.DeepClone();
             ApplyAttackPlan(BuildAttackPlan(loadout, classId, result.Count(x => (string)x["equipmentRole"] == "attack")), result);
             foreach (var card in result.Where(x => new[] { "guard", "technique" }.Contains((string)x["equipmentRole"])))
             { var profile = RoleSource(loadout, classId, (string)card["equipmentRole"])["profile"]; card["cardId"] = profile["baseCardId"].DeepClone(); card["profileId"] = profile["id"].DeepClone(); }
+            if (dealtDeck) return result;
             var desired = DesiredGrants(loadout, classId, itemMounts); var seen = new HashSet<string>();
             ReconcilePile(result, desired, seen);
             foreach (var card in desired) if (seen.Add((string)card["instanceId"])) result.Add(card.DeepClone());
             return result;
         }
-        public JObject ReconcileCombat(JObject piles, JObject loadout, string classId, int attackSlotCount, JObject itemMounts = null)
+        public JObject ReconcileCombat(JObject piles, JObject loadout, string classId, int attackSlotCount, bool dealtDeck, JObject itemMounts = null)
         {
-            var result = (JObject)piles.DeepClone(); var desired = DesiredGrants(loadout, classId, itemMounts); var seen = new HashSet<string>();
+            var result = (JObject)piles.DeepClone(); var desired = dealtDeck ? new JArray() : DesiredGrants(loadout, classId, itemMounts); var seen = new HashSet<string>();
             var plan = BuildAttackPlan(loadout, classId, attackSlotCount); var allIds = new HashSet<string>();
             foreach (var name in new[] { "hand", "draw", "discard", "exhaust" })
             {
                 var pile = result[name] as JArray ?? throw new ArgumentException("Missing combat pile: " + name);
                 foreach (var card in pile) if (!allIds.Add((string)card["instanceId"])) throw new ArgumentException("Card instance appears in multiple piles.");
-                ApplyAttackPlan(plan, pile, true); ReconcilePile(pile, desired, seen);
+                ApplyAttackPlan(plan, pile, true); if (!dealtDeck) ReconcilePile(pile, desired, seen);
                 foreach (var card in pile.Where(x => new[] { "guard", "technique" }.Contains((string)x["equipmentRole"])))
                 { var profile = RoleSource(loadout, classId, (string)card["equipmentRole"])["profile"]; card["cardId"] = profile["baseCardId"].DeepClone(); card["profileId"] = profile["id"].DeepClone(); }
             }
