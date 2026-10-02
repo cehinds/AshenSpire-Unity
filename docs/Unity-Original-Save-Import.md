@@ -104,7 +104,10 @@ resumes (map, fight rewards, merchant or the start of a fight).
     (`OriginalCustomRunRules.IsPoolDeckRun`) as a required argument, so a
     relic, a service, an Armoury change, a mid-fight swap or the end of a
     fight leaves an imported or native Sealed/Draft deck as dealt (Parity
-    section `pool-deck`).
+    section `pool-deck`). A card the player installs into an item mount at
+    the smith is the player's, not lent: it materializes in its mount and
+    stays through those same doors, while the equipment's own grants and
+    mount fallbacks are swept and never dealt.
   - **Checked against the original.** The imported Sealed and Draft runs open
     the same next encounter and opening hand as the original.
 
