@@ -58,6 +58,7 @@ export function combatSnapshotProblems(snapshot) {
   const problems = [];
   if (snapshot.version !== COMBAT_SNAPSHOT_VERSION) problems.push(`version must be ${COMBAT_SNAPSHOT_VERSION}`);
   if (!Number.isInteger(snapshot.turn) || snapshot.turn < 1) problems.push('turn must be a positive integer');
+  if (snapshot.poolDeck !== undefined && snapshot.poolDeck !== true) problems.push('poolDeck must be true when present');
   if (!PHASES.includes(snapshot.phase)) problems.push(`phase must be one of ${PHASES.join(', ')}`);
   if (!RESULTS.includes(snapshot.result)) problems.push("result must be null, 'victory', or 'defeat'");
   if ((snapshot.phase === 'ended') !== (snapshot.result !== null)) problems.push('phase/result must describe the same ended state');

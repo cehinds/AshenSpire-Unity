@@ -10,7 +10,7 @@
 import { contentBundle } from './content/index.js';
 import { validateContent } from './model/validate.js';
 import { createRegistries } from './model/registries.js';
-import { isPoolDeckRun, dealtAttackSlotCount, POOL_DECK_RULE } from './model/cardRemoval.js';
+import { isPoolDeckMode, dealtAttackSlotCount, POOL_DECK_RULE } from './model/cardRemoval.js';
 import { createRunState, createDeck, createIdGen } from './model/state.js';
 import { runMods, stampDeck, addToStorage, carriedIds, resolveSwapCostRule } from './model/loadout.js';
 import { grantSmithingReward, smithingPlan } from './model/smithing.js';
@@ -834,7 +834,7 @@ function newRun({ classId, seedString, customization, keepsakeId, custom, starti
   // The dealt deck replaced the composed one, attack slots and all, so its
   // birth attack quota is what it holds (none), not the composed deck's; else
   // the first full restamp (an Armoury swap, a reload) refuses the run.
-  if (isPoolDeckRun(run)) {
+  if (isPoolDeckMode(run)) {
     run.equipmentAttackSlotCount = dealtAttackSlotCount(run.deck);
     run.poolDeckRule = POOL_DECK_RULE;
   }
@@ -850,8 +850,8 @@ function startClimb() {
   // A dealt deck (Sealed, Draft, with any picks) was never stamped: give its
   // cards their equipment faces now, as the load door and every later restamp
   // do, so the first fight plays the same cards a reload would. A pool deck is
-  // dealt no lent card by it (model/cardRemoval.js isPoolDeckRun).
-  if (isPoolDeckRun(run)) stampDeck(registries, run, undefined, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });
+  // dealt no lent card by it (model/cardRemoval.js isPoolDeckMode).
+  if (isPoolDeckMode(run)) stampDeck(registries, run, undefined, { adoptEquipmentBonuses: false, reconcileEquipmentPools: false });
   run.mapGraph = buildActMap(registries, rng, contentAct(), runMapShape(), { history: run.history });
   persist();
   showMap();
@@ -1565,7 +1565,7 @@ function enterCombat(nodeId, encounterId, { resuming = false } = {}) {
   const enc = registries.encounters.get(encounterId);
   audio.music(enc.pool === 'boss' ? 'boss' : enc.pool === 'elite' ? 'elite' : 'combat');
   const cm = combatMods(enc.pool);
-  const combat = savedSnapshot ? restoreCombatSnapshot({ registries, rng, snapshot: savedSnapshot, fallbackAttackSlotCount: run.equipmentAttackSlotCount, fallbackPoolDeck: isPoolDeckRun(run) }) : createCombat({
+  const combat = savedSnapshot ? restoreCombatSnapshot({ registries, rng, snapshot: savedSnapshot, fallbackAttackSlotCount: run.equipmentAttackSlotCount, fallbackPoolDeck: isPoolDeckMode(run) }) : createCombat({
     registries,
     rng,
     player: {
@@ -1582,7 +1582,7 @@ function enterCombat(nodeId, encounterId, { resuming = false } = {}) {
       damageBySchoolAdd: run.damageBySchoolAdd,
       equipmentProfileRuleSnapshot: run.equipmentProfileRuleSnapshot,
       equipmentAttackSlotCount: run.equipmentAttackSlotCount,
-      ...(isPoolDeckRun(run) ? { poolDeck: true } : {}),
+      ...(isPoolDeckMode(run) ? { poolDeck: true } : {}),
       equipmentPoolDeficits: run.equipmentPoolDeficits,
       itemUpgradeLevels: run.itemUpgradeLevels,
       itemMounts: run.itemMounts,
