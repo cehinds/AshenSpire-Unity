@@ -164,6 +164,73 @@ internal static class PoolDeckChecks
                 before = Now(); game.SelectSet("rightHand", from); Held("post-fight Armoury", before, true, true);
             }
         }
+        // Smith mounts: a card the player installs into a mount is the player's, not lent, so a
+        // dealt deck keeps it at every door. The lending content also opens one extra mount per
+        // item and makes the loose basics extractable; the reaver's bound armour is the item.
+        {
+            const string classId = "reaver"; const uint seed = 123u;
+            var data = Lending(classId, out var spare).Data();
+            data["balance"]["equipment"]["cardMounts"]["extraMounts"]["enabled"] = true;
+            foreach (var card in new[] { "strike", "defend", "gorefireSlash" }) ((JArray)data["tagging"]).Add(new JObject { ["family"] = "card", ["scope"] = "", ["objectId"] = card, ["tagId"] = "extractable" });
+            var catalog = new OriginalContentCatalog(data.ToString());
+            foreach (var mode in new[] { "sealed", "draft", "standard" })
+            {
+                var pool = mode != "standard"; var label = "mounts/" + mode + "/" + classId;
+                var game = Dealt(catalog, mode, classId, seed, spare);
+                var armourRef = "armor/" + classId + "/" + (string)game.RunPlayer["loadout"]["sets"]["armor"][0];
+                var extraKey = "mount:" + armourRef + ":0"; var boundKey = "bound:" + armourRef + ":defend:0";
+                // The real smith door (OriginalRunContent.ApplyService): an offered smith, the service, its reconcile.
+                void Smith(string service, JObject request)
+                {
+                    var snapshot = game.Snapshot(); var run = (JObject)snapshot["run"]; var room = run["room"].DeepClone();
+                    run["room"]["smith"] = new JObject { ["offered"] = true, ["services"] = new JArray("upgrade", "extract", "install") };
+                    var content = new OriginalRunContent(catalog, reconcile: new OriginalPlayerProjection(catalog, mechanics).Reconcile);
+                    Check(content.ApplyService(run, service, request, new RandomStreams(seed)), label + ": smith " + service);
+                    run["room"] = room; game = OriginalGameSession.Restore(snapshot);
+                }
+                string Loose(params string[] skip) => (string)game.RunPlayer["deck"].First(c => c["equipmentRole"] == null && new[] { "strike", "defend", "gorefireSlash" }.Contains((string)c["cardId"]) && !skip.Contains((string)c["instanceId"]))["instanceId"];
+                var first = Loose(); var firstCard = (string)game.RunPlayer["deck"].First(c => (string)c["instanceId"] == first)["cardId"];
+                Smith("install", new JObject { ["itemRef"] = armourRef, ["mountKey"] = extraKey, ["instanceId"] = first });
+                Smith("extract", new JObject { ["itemRef"] = armourRef, ["mountKey"] = boundKey });
+                var second = Loose(first); var secondCard = (string)game.RunPlayer["deck"].First(c => (string)c["instanceId"] == second)["cardId"];
+                Smith("install", new JObject { ["itemRef"] = armourRef, ["mountKey"] = boundKey, ["instanceId"] = second });
+                var installed = (JArray)game.RunPlayer["deck"].DeepClone();
+                bool Holds(IEnumerable<JToken> cards) => cards.Any(c => (string)c["instanceId"] == extraKey && (string)c["cardId"] == firstCard) && cards.Any(c => (string)c["instanceId"] == boundKey && (string)c["cardId"] == secondCard) && !cards.Any(c => (string)c["instanceId"] == first || (string)c["instanceId"] == second);
+                Check(Holds(installed), label + ": installed cards materialize in their mounts\nACTUAL " + Text(installed));
+                if (pool) Check(installed.Where(Lent).All(c => (string)c["instanceId"] == extraKey || (string)c["instanceId"] == boundKey), label + ": the installs bring no lent card with them");
+                string Canon(IEnumerable<JToken> cards) => Text(new JArray(cards.OrderBy(c => (string)c["instanceId"], StringComparer.Ordinal).Select(c => c.DeepClone())));
+                void Kept(string door, bool resume = false)
+                {
+                    var deck = (JArray)game.RunPlayer["deck"];
+                    Check(Holds(deck), label + " " + door + ": installed cards stay in their mounts\nACTUAL " + Text(deck));
+                    // Order-free: re-wearing the armour appends its mounted cards again, as on a Standard run.
+                    if (pool) Check(Canon(deck) == Canon(installed), label + " " + door + ": deck stays as dealt plus its installs\nEXPECTED " + Text(installed) + "\nACTUAL " + Text(deck));
+                    if (resume) Check(Text(OriginalGameSession.Restore(JObject.Parse(game.Snapshot().ToString())).RunPlayer["deck"]) == Text(deck), label + " " + door + ": resume keeps the deck");
+                }
+                Kept("after the smith", true);
+                var shield = (string)game.RunPlayer["loadout"]["sets"]["leftHand"][0];
+                game.Equip("leftHand", 0, null); Kept("armoury off-hand emptied");
+                var projected = game.RunPlayer; new OriginalPlayerProjection(catalog, mechanics).Reconcile(projected);
+                Check(Text(projected["deck"]) == Text(game.RunPlayer["deck"]), label + ": service reconcile keeps the installs");
+                game.Equip("leftHand", 0, shield); Kept("armoury off-hand restored");
+                game.Equip("rightHand", 1, spare); game.SelectSet("rightHand", 1); Kept("armoury select spare");
+                game.SelectSet("rightHand", 0); Kept("armoury select back");
+                var armour = (string)game.RunPlayer["loadout"]["sets"]["armor"][0];
+                game.Equip("armor", 0, null);
+                Check(!game.RunPlayer["deck"].Any(c => (string)c["instanceId"] == extraKey || (string)c["instanceId"] == boundKey), label + ": armour off takes its mounted cards with it");
+                game.Equip("armor", 0, armour); Kept("armour back on", true);
+                var fightNode = game.LegalNodeIds.First(id => new[] { "monster", "fight" }.Contains((string)game.Map["nodes"][id]["type"]));
+                game.Enter(fightNode); Check(game.Phase == OriginalRunPhase.Combat, label + ": enters a fight");
+                Check(Holds(Piles(game)), label + ": the fight deals the installed cards");
+                game.SwapSet("rightHand", 1);
+                var piles = Piles(game);
+                Check(Holds(piles), label + ": a mid-fight swap keeps the installed cards in the piles");
+                if (pool) Check(Ids(piles).SequenceEqual(Ids(installed)), label + ": a mid-fight swap deals no lent card");
+                Kept("mid-fight swap", true);
+                game = Win(game); Kept("fight end", true);
+                game.SelectSet("rightHand", 0); Kept("post-fight Armoury", true);
+            }
+        }
         Console.WriteLine($"PoolDeckChecks: {checks} dealt-deck reconcile checks passed");
         return checks;
     }

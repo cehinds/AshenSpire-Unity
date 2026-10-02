@@ -5,7 +5,9 @@
 // Call ReconcileCombat across ALL four piles; missing mid-fight grants enter discard.
 // A dealt (Sealed/Draft) deck is never dealt lent cards: both reconcile doors take
 // `dealtDeck` (OriginalCustomRunRules.IsPoolDeckRun) as a required argument and, when
-// it is set, restamp equipment faces only and leave item-owned cards exactly as they are.
+// it is set, want only the cards the player installed into an item's mounts at the
+// smith (PlayerInstalled): the equipment's own grants, arts, empty-hand Dodge Roll and
+// mount fallbacks are swept and never appended, but a paid installed card materializes.
 // Smith mount overrides and item upgrade layers are separate services, not implicit
 // parameters here. Never use this baseline composer to silently discard their state.
 using System;
@@ -205,26 +207,38 @@ namespace AshenSpire.Domain.Original
             ApplyAttackPlan(BuildAttackPlan(loadout, classId, result.Count(x => (string)x["equipmentRole"] == "attack")), result);
             foreach (var card in result.Where(x => new[] { "guard", "technique" }.Contains((string)x["equipmentRole"])))
             { var profile = RoleSource(loadout, classId, (string)card["equipmentRole"])["profile"]; card["cardId"] = profile["baseCardId"].DeepClone(); card["profileId"] = profile["id"].DeepClone(); }
-            if (dealtDeck) return result;
-            var desired = DesiredGrants(loadout, classId, itemMounts); var seen = new HashSet<string>();
+            var desired = Wanted(loadout, classId, dealtDeck, itemMounts); var seen = new HashSet<string>();
             ReconcilePile(result, desired, seen);
             foreach (var card in desired) if (seen.Add((string)card["instanceId"])) result.Add(card.DeepClone());
             return result;
         }
         public JObject ReconcileCombat(JObject piles, JObject loadout, string classId, int attackSlotCount, bool dealtDeck, JObject itemMounts = null)
         {
-            var result = (JObject)piles.DeepClone(); var desired = dealtDeck ? new JArray() : DesiredGrants(loadout, classId, itemMounts); var seen = new HashSet<string>();
+            var result = (JObject)piles.DeepClone(); var desired = Wanted(loadout, classId, dealtDeck, itemMounts); var seen = new HashSet<string>();
             var plan = BuildAttackPlan(loadout, classId, attackSlotCount); var allIds = new HashSet<string>();
             foreach (var name in new[] { "hand", "draw", "discard", "exhaust" })
             {
                 var pile = result[name] as JArray ?? throw new ArgumentException("Missing combat pile: " + name);
                 foreach (var card in pile) if (!allIds.Add((string)card["instanceId"])) throw new ArgumentException("Card instance appears in multiple piles.");
-                ApplyAttackPlan(plan, pile, true); if (!dealtDeck) ReconcilePile(pile, desired, seen);
+                ApplyAttackPlan(plan, pile, true); ReconcilePile(pile, desired, seen);
                 foreach (var card in pile.Where(x => new[] { "guard", "technique" }.Contains((string)x["equipmentRole"])))
                 { var profile = RoleSource(loadout, classId, (string)card["equipmentRole"])["profile"]; card["cardId"] = profile["baseCardId"].DeepClone(); card["profileId"] = profile["id"].DeepClone(); }
             }
             foreach (var card in desired) if (seen.Add((string)card["instanceId"])) ((JArray)result["discard"]).Add(card.DeepClone());
             return result;
+        }
+        // The item-owned instances a reconcile wants: every grant for a composed deck; for a
+        // dealt deck only the player's own cards installed into a mount (an override of an
+        // authored mount, or an extra mount), never what the equipment itself lends.
+        private JArray Wanted(JObject loadout, string classId, bool dealtDeck, JObject itemMounts)
+        {
+            var desired = DesiredGrants(loadout, classId, itemMounts);
+            return dealtDeck ? new JArray(desired.Where(card => PlayerInstalled(card, itemMounts)).Select(card => card.DeepClone())) : desired;
+        }
+        public static bool PlayerInstalled(JToken card, JObject itemMounts)
+        {
+            var owner = CardMountService.Owner(card);
+            return owner != null && itemMounts?[owner]?[(string)card["instanceId"]] is JObject entry && !string.IsNullOrEmpty((string)entry["card"]);
         }
         private static void ReconcilePile(JArray pile, JArray desired, HashSet<string> seen)
         {

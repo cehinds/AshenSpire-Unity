@@ -44,7 +44,8 @@ namespace AshenSpire.Domain.Original
         }
         // A Sealed/Draft ("pool deck") run keeps exactly the deck it was dealt: its birth attack
         // quota is the attack slots it was dealt, and no reconcile ever deals it the equipment's
-        // lent cards (kit basics, weapon arts, Dodge Roll, smith mounts). Mirrors the original's
+        // lent cards (kit basics, weapon arts, Dodge Roll, mount fallbacks); a card the player
+        // installed into a mount at the smith is the player's and still materializes. Mirrors the original's
         // model/cardRemoval.js isPoolDeckRun (cehinds/AshenSpire#1479); WeaponCardComposer's
         // Recompose and ReconcileCombat take this as a required argument so no caller can miss it.
         public static readonly string[] PoolDeckModes = { "sealed", "draft" };
