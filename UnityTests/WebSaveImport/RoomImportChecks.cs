@@ -181,11 +181,39 @@ static class RoomImportChecks
             var message = Refusal(() => Import(Save(fixture.Name)));
             Check(reloads == (message == null), fixture.Name + ": import follows the original load door (" + (message ?? "accepted") + ")");
         }
-        // ---- modes: Sealed and Draft saves are archived by the original load door
+        // ---- modes: Sealed and Draft decks are dealt from a pool; their birth attack quota is
+        // the slots dealt (none), as in the original after its reload fix and natively.
         foreach (var name in new[] { "mode-sealed", "mode-draft" })
-            Refuse(() => Import(Save(name)), name + " refused like the original reload", "cannot reload it either");
-        // ---- modes: ascension/chaos rules and Endless act 4
-        foreach (var name in new[] { "mode-chaos", "mode-endless" })
+        {
+            var game = Game(name); var dealt = JObject.Parse(Save(name));
+            Equal(game.RunPlayer["equipmentAttackSlotCount"], new JValue(0), name + ": dealt deck's attack quota");
+            Equal(dealt["equipmentAttackSlotCount"], new JValue(0), name + ": the original writes the dealt quota");
+            Equal(dealt["poolDeckRule"], new JValue(1), name + ": the original marks the dealt-deck rule");
+            Equal(new JArray(game.RunPlayer["deck"]!.Select(c => c["instanceId"])), new JArray(dealt["deck"]!.Select(c => c["instanceId"])), name + ": card identities unchanged (no kit or weapon arts dealt back)");
+            Equal(game.RunPlayer["custom"]!["deckMode"], dealt["custom"]!["deckMode"], name + ": deck mode kept");
+            Run(game);
+            // A save written before the original's fix kept the composed deck's quota and had no
+            // marker. The original load door heals it to the dealt count (tests/pool-deck-reload.test.mjs);
+            // so does the import.
+            var stale = (JObject)dealt.DeepClone(); stale["equipmentAttackSlotCount"] = 3; stale.Remove("poolDeckRule");
+            var staleSnapshot = Import(stale.ToString()); var healed = OriginalGameSession.Restore(staleSnapshot);
+            Equal(healed.RunPlayer["equipmentAttackSlotCount"], new JValue(0), name + ": pre-fix composed quota converts to the dealt count");
+            Equal(healed.RunPlayer["deck"], game.RunPlayer["deck"], name + ": pre-fix save imports the same deck");
+            Check((int?)staleSnapshot["run"]?["webImport"]?["original"]?["equipmentAttackSlotCount"] == 3, name + ": import receipt keeps the original bytes' quota");
+            RejectPool(dealt, s => ((JArray)s["deck"]!).Add(new JObject { ["instanceId"] = "x1", ["cardId"] = "strike", ["upgraded"] = false, ["equipmentRole"] = "attack", ["equipmentAttackSlotId"] = "attack:1" }), name + ": gap in dealt attack slots refused", "not the ones it was dealt");
+            RejectPool(dealt, s => ((JArray)s["deck"]!).Add(new JObject { ["instanceId"] = "x1", ["cardId"] = "strike", ["upgraded"] = false, ["equipmentRole"] = "attack", ["equipmentAttackSlotId"] = "attack:0" }), name + ": more attack slots than the quota refused", "not the ones it was dealt");
+            RejectPool(dealt, s => s["equipmentAttackSlotCount"] = -1, name + ": malformed quota refused", "Malformed original equipment attack quota");
+            // A marked save is held to its quota, as the original holds it: a lost attack card is corruption.
+            RejectPool(dealt, s => s["equipmentAttackSlotCount"] = 1, name + ": marked save missing an attack card refused", "not the ones it was dealt");
+            RejectPool(dealt, s => s["poolDeckRule"] = 2, name + ": unknown dealt-deck rule refused", "Malformed original dealt-deck rule");
+        }
+        void RejectPool(JObject source, Action<JObject> edit, string label, string contains) { var copy = (JObject)source.DeepClone(); edit(copy); Refuse(() => Import(copy.ToString()), label, contains); }
+        // A Standard deck keeps the composed rule: a quota its deck does not hold is refused,
+        // because the original's load door still archives it.
+        RejectPool(JObject.Parse(Save("mode-chaos")), s => s["equipmentAttackSlotCount"] = (int)s["equipmentAttackSlotCount"]! + 1, "standard deck missing a composed attack slot refused", "cannot reload it either");
+        RejectPool(JObject.Parse(Save("mode-sealed")), s => { s["custom"]!["deckMode"] = "standard"; s.Remove("poolDeckRule"); s["equipmentAttackSlotCount"] = 3; }, "Sealed-shaped deck under Standard rules refused", "cannot reload it either");
+        // ---- modes: Sealed, Draft, ascension/chaos rules and Endless act 4 continue like the original
+        foreach (var name in new[] { "mode-sealed", "mode-draft", "mode-chaos", "mode-endless" })
         {
             var expect = Expect(name); var game = Game(name);
             Equal(new JArray(game.RunPlayer["deck"]!.Select(c => c["cardId"])), expect["deck"], name + " deck");

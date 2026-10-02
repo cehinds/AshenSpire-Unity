@@ -14,7 +14,7 @@ This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
   - [ ] Profile history/unlock/settings import and compatible progressed-save matrix.
     - [ ] Domain merge, fixtures and checks implemented on `feature/unity-us0-6-profile-import` (see [Profile import](#profile-import)); compiled browser/native verification, the progressed run-save matrix and owner acceptance remain open.
   - [ ] Active room conversion (combat, reward, merchant), newer content/rule schemas and mode compatibility.
-    - [ ] Domain conversion, fixtures and checks implemented on `feature/unity-us0-6-active-rooms` (see [Active rooms](#active-rooms)): reward and merchant rooms, fight-entry receipts, entered events, Custom Climb rules and Endless import; exact mid-fight snapshots, Sealed/Draft saves the original cannot reload, custom map shapes and other run schemas are refused by name. Compiled browser/native verification and owner acceptance remain open.
+    - [ ] Domain conversion, fixtures and checks implemented on `feature/unity-us0-6-active-rooms` (see [Active rooms](#active-rooms)): reward and merchant rooms, fight-entry receipts, entered events, Custom Climb rules and Endless import; Sealed and Draft import since the original's reload fix (`feature/unity-us0-6-sealed-draft-import`); exact mid-fight snapshots, custom map shapes and other run schemas are refused by name. Compiled browser/native verification and owner acceptance remain open.
   - [ ] Owner acceptance of the finished import experience.
 
 Open **Saved climbs → Import original-game save**. Web supports choosing a JSON
@@ -76,10 +76,38 @@ resumes (map, fight rewards, merchant or the start of a fight).
   the map at that node, with the event spent. The import is that map checkpoint.
   Shrines and treasure rooms are not saved inside the room by the original.
 - **Modes.** Custom Climb ascension and chaos rules and Endless (including acts
-  past 3) import. Sealed and Draft saves written by the current original fail
-  its own load door (their deck no longer matches the born equipment attack
-  slots) and are refused with that explanation. Custom map-shape climbs are
-  refused for now. Unknown modifiers and deck modes are refused.
+  past 3) import. **Sealed and Draft** import too. Their deck is dealt from a
+  pool after the original composed one from the equipment. Until
+  [cehinds/AshenSpire#1479](https://github.com/cehinds/AshenSpire/pull/1479)
+  the original therefore kept the composed deck's birth attack quota, refused
+  to reload its own save ("attack instance count 0 does not match authored
+  N"), and the import refused it the same way. The fix, ported into this
+  repository's `src/`, holds a dealt deck to its own rule. Its quota is the
+  attack slots it was dealt (`attack:0..k-1`, none on a fresh deal), which is
+  also the native rule (`OriginalCustomRunRules.Initialize`).
+  - **Pre-fix saves.** The original now marks a dealt-deck run
+    `poolDeckRule: 1`. A pool save without the marker was written before
+    the fix and may carry the larger composed quota. The original's load
+    door heals that quota once, to the dealt count, and so does the import
+    (`OriginalWebSaveImport.BirthAttackQuota`). A marked save is held to its
+    quota: one that lost an attack card is refused, as the original refuses
+    it. The import receipt keeps the original bytes.
+  - **Refused.** A gap or a duplicate in the dealt slots, more slots than the
+    quota, or a malformed quota is refused. A Standard deck that lacks its
+    composed slots is still refused, as the original refuses it.
+  - **The dealt deck is kept exactly.** The original never deals a pool
+    deck the equipment's lent cards (kit basics, weapon arts, Dodge Roll) at
+    any restamp: load, end of fight, Armoury change, mid-fight swap or
+    resumed fight. The import's one reconcile therefore keeps exactly the
+    dealt instances. The native runtime's later reconciles
+    (`WeaponCardComposer.Recompose`, on a relic, a service or an equipment
+    change) do not yet know this rule, and would add those cards to an
+    imported or native Sealed/Draft run.
+  - **Checked against the original.** The imported Sealed and Draft runs open
+    the same next encounter and opening hand as the original.
+
+  Custom map-shape climbs are refused for now. Unknown modifiers and deck
+  modes are refused.
 - **Schemas.** `src/engine/save.js` writes run schema 5 and has no newer schema,
   so there is no newer migration to port; other run schemas are refused by
   name as before.
@@ -97,8 +125,11 @@ or purchase are mirrored with their source line, and those screens are hashed in
 the receipt. The checks run with the other WebSaveImport checks.
 
 Open follow-ups: compiled Web/native verification of each room type, owner
-acceptance, exact mid-fight snapshot conversion, custom map shapes, and the
-original's own Sealed/Draft reload refusal.
+acceptance, exact mid-fight snapshot conversion, and custom map shapes.
+Sealed/Draft saves that retired an attack slot (`removedAttackSlotIds`, which
+this `src/` copy predates) are still refused as unknown state. The native
+runtime does not yet apply the original's rule that a dealt deck receives no
+lent cards (see Modes above).
 
 ## Profile import
 

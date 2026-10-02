@@ -86,6 +86,8 @@ export function createCombat({
     equipmentAttackSlotCount: Number.isFinite(player.equipmentAttackSlotCount)
       ? player.equipmentAttackSlotCount
       : undefined,
+    // A Sealed/Draft deck's fight: its swap door deals no lent cards (cardRemoval.js).
+    ...(player.poolDeck === true ? { poolDeck: true } : {}),
     // Namespaced item tiers are the sole current authority. The legacy armament
     // map is accepted only at the load/migration door, never written here.
     itemUpgradeLevels: structuredClone(player.itemUpgradeLevels || {}),
@@ -656,6 +658,7 @@ function doSwapArmament(combat, { slotId, setIndex }) {
     // pile stamp replans from the CURRENT loadout — and the pile holding the
     // slot the replan dropped throws mid-swap.
     equipmentAttackSlotCount: combat.equipmentAttackSlotCount,
+    ...(combat.poolDeck ? { poolDeck: true } : {}),
     itemMounts: combat.itemMounts,
   };
   // Pile stamps are subset calls, so granted/weaponArt instances reconcile
@@ -759,6 +762,7 @@ function doChangeEquipment(combat, { slotId, setIndex, pieceId = null }) {
     itemUpgradeLevels: combat.itemUpgradeLevels,
     equipmentProfileRuleSnapshot: combat.equipmentProfileRuleSnapshot,
     equipmentAttackSlotCount: combat.equipmentAttackSlotCount,
+    ...(combat.poolDeck ? { poolDeck: true } : {}),
     itemMounts: combat.itemMounts,
   };
   reconcileGrantedCardsInCombat(combat.registries, run, combat.piles);
