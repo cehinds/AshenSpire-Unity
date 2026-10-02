@@ -42,7 +42,7 @@ let browser,ui;
    else await ui.command('native-end-turn');
   }else if(s.phase==='Rewards'){
    const reward=ui.controls.Controls.find(c=>c.Id.startsWith('native-reward-')&&c.Enabled&&!c.Id.startsWith('native-reward-card-'));
-   if(reward)await ui.command(reward.Id);else await ui.command('native-rewards-continue');
+   if(reward)await ui.command(reward.Id);else await ui.continueRewards();
   }else if(s.phase==='Shrine'){
    if(!shrine){const before=JSON.stringify(s.run);await ui.click('native-level-up');await ui.click('native-level-up-constitution');await ui.click('native-level-cancel');ui.check(JSON.stringify(ui.state.run)===before,'cancelled level purchase preserves attributes and cinders');
     const con=ui.state.run.attributes.constitution,hp=ui.state.player.maxHp,cinders=ui.state.run.cinders;await ui.click('native-level-up');await ui.click('native-level-up-constitution');await ui.command('native-level-confirm');

@@ -63,6 +63,7 @@ namespace AshenSpire.Presentation
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
             ApplyPalette();
             _root.EnableInClassList(HighContrastClass, settings.HighContrast);
+            ApplyDisplayClasses(settings);
             ScheduleTextScale();
         }
 
@@ -134,8 +135,8 @@ namespace AshenSpire.Presentation
             // GAME
             _body.Add(Text("GAME", "heading"));
             _body.Add(fast);
-            SliderInt speed = null; Toggle instant = null;
-            void SyncQuick() { _fast = s.QuickAnimations; fast.SetValueWithoutNotify(_fast); speed?.SetValueWithoutNotify(Percent(s.AnimationSpeed)); instant?.SetValueWithoutNotify(s.InstantAnimations); }
+            SliderInt speed = null; Toggle instant = null; DropdownField pacing = null;
+            void SyncQuick() { _fast = s.QuickAnimations; fast.SetValueWithoutNotify(_fast); speed?.SetValueWithoutNotify(Percent(s.AnimationSpeed)); if (speed != null) speed.label = "Animation speed · " + Percent(s.AnimationSpeed) + "%"; instant?.SetValueWithoutNotify(s.InstantAnimations); pacing?.SetValueWithoutNotify(Title(s.CombatPacing)); }
             fast.RegisterValueChangedCallback(e =>
             {
                 s.InstantAnimations = false;
@@ -146,6 +147,26 @@ namespace AshenSpire.Presentation
             speed = SettingSlider("animation-speed", "Animation speed", 50, 200, Percent(s.AnimationSpeed), v => { s.AnimationSpeed = v / 100.0; SyncQuick(); });
             instant = SettingToggle("instant-animations", "Instant animations", s.InstantAnimations, v => { s.InstantAnimations = v; SyncQuick(); });
             _body.Add(Text("Below 100% uses slow pacing; 100 to 199% uses normal pacing; 200% uses quick pacing. Instant removes the wind-up.", "caption"));
+            // Combat pacing (HTML animSpeed) is the same setting as the speed slider and Instant, shown as its four buckets.
+            pacing = SettingChoice("combat-pacing", "Combat pacing", OriginalPlayerSettings.CombatPacings, s.CombatPacing, v => { s.CombatPacing = v; SyncQuick(); });
+            // Gameplay (US-15.2): HTML Advanced → Gameplay / Tuning rows.
+            SettingChoice("reward-collect", "Reward collection", OriginalPlayerSettings.RewardCollectModes, s.RewardCollect, v => s.RewardCollect = v);
+            _body.Add(Text("Auto: Continue takes everything you didn't skip, picking a card for you. Manual: Continue means done; only what you chose comes along.", "caption"));
+            SettingToggle("shop-sell", "Merchant buys back", s.ShopSell, v => s.ShopSell = v);
+            SettingChoice("swap-cost-rule", "Weapon swap cost", OriginalPlayerSettings.SwapCostRuleIds, s.SwapCostRule, v => s.SwapCostRule = v);
+            _body.Add(Text("Merchant buys back offers a Sell row for relics and flasks. Weapon swap cost: Flat charges the same for every weapon; Gear lets talismans and relics change it; Category prices it by the weapon you draw. Both apply from the next climb or Continue.", "caption"));
+            // Display (US-15.1). Saved; Fullscreen applies now, the rest set root classes for the styles to follow.
+            _body.Add(Text("Display", "caption"));
+            SettingToggle("fullscreen", "Fullscreen", s.Fullscreen, v => { s.Fullscreen = v; Screen.fullScreen = v; });
+            SettingChoice("ui-size", "UI size", OriginalPlayerSettings.UiSizes, s.UiSize, v => s.UiSize = v);
+            SettingChoice("accent-color", "Accent color", OriginalPlayerSettings.Accents, s.Accent, v => s.Accent = v);
+            SettingChoice("card-motif", "Card motif", OriginalPlayerSettings.CardMotifs, s.CardMotif, v => s.CardMotif = v);
+            SettingChoice("card-motif-strength", "Motif strength", OriginalPlayerSettings.CardMotifStrengths, s.CardMotifStrength, v => s.CardMotifStrength = v);
+            SettingChoice("map-header-density", "Map header", OriginalPlayerSettings.MapHeaderDensities, s.MapHeaderDensity, v => s.MapHeaderDensity = v);
+            SettingToggle("map-header-relics", "Relics in map header", s.MapHeaderRelics, v => s.MapHeaderRelics = v);
+            SettingToggle("map-header-seed", "Seed in map header", s.MapHeaderSeed, v => s.MapHeaderSeed = v);
+            SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
+            _body.Add(Text("UI size, accent, card motif, map header and control hints are saved; their styles are still being tuned.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
@@ -219,6 +240,33 @@ namespace AshenSpire.Presentation
             _body.Add(keyMessage);
             AddButton("keys-reset", "Reset keys", () => { _capturingAction = null; s.ResetKeyBindings(); keyMessage.text = "Map and combat keys reset to their defaults."; ShowKeys(); Changed(); });
             ShowKeys();
+            // Gamepad (US-15.3, domain side): bindings are saved and conflict-checked like keys; OriginalGamepad
+            // resolves presses. No pad is read yet (the project has no Input System package).
+            _body.Add(Text("Gamepad buttons. Saved now; controller input arrives in a later build.", "caption"));
+            var padMessage = Text("", "caption");
+            var padChoices = new List<string> { "unbound" }; padChoices.AddRange(OriginalGamepad.Buttons.Select(OriginalGamepad.Label));
+            var padFields = new Dictionary<string, DropdownField>();
+            void ShowPad() { foreach (var pair in padFields) pair.Value.SetValueWithoutNotify(s.GamepadBindings.TryGetValue(pair.Key, out var b) ? OriginalGamepad.Label(b) : "unbound"); }
+            foreach (var action in OriginalGamepad.PadOnlyActions.Concat(OriginalKeyBindings.MapActions).Concat(OriginalKeyBindings.CombatActions).Where(a => !a.StartsWith("card", StringComparison.Ordinal)))
+            {
+                var id = action;
+                var field = new DropdownField(PadLabel(id), padChoices, 0) { name = "pad-" + id };
+                field.AddToClassList("setting");
+                field.RegisterValueChangedCallback(e =>
+                {
+                    var button = OriginalGamepad.Buttons.FirstOrDefault(b => OriginalGamepad.Label(b) == e.newValue);
+                    if (button == null) { padMessage.text = "Choose a button; reset restores the defaults."; ShowPad(); Report(); return; }
+                    if (s.TryBindGamepad(id, button, out var holder)) { padMessage.text = PadLabel(id) + " is now " + e.newValue + "."; Changed(); }
+                    else padMessage.text = e.newValue + " is already used by " + PadLabel(holder) + ". Choose another button, or reset.";
+                    ShowPad(); Report();
+                });
+                _body.Add(field); padFields[id] = field;
+            }
+            var padConflicts = s.GamepadConflicts();
+            padMessage.text = padConflicts.Count == 0 ? "" : string.Join("\n", padConflicts.Select(c => OriginalGamepad.Label(c.Key) + " is bound to " + string.Join(" and ", c.Actions.Select(PadLabel)) + ". Rebind one of them."));
+            _body.Add(padMessage);
+            AddButton("pad-reset", "Reset gamepad", () => { s.ResetGamepadBindings(); padMessage.text = "Gamepad buttons reset to their defaults."; ShowPad(); Changed(); });
+            ShowPad();
 
             // CONTENT MODS (the HTML game files these under Advanced)
             _body.Add(Text("CONTENT MODS", "heading"));
@@ -280,6 +328,37 @@ namespace AshenSpire.Presentation
             Report();
         }
         private static int Percent(double value) => (int)Math.Round(value * 100);
+        private static string Title(string value) => string.IsNullOrEmpty(value) ? value : char.ToUpperInvariant(value[0]) + value.Substring(1);
+        private static string PadLabel(string action) => action == "cancel" ? "Cancel / back" : action == "menu" ? "Open menu" : OriginalKeyBindings.Label(action);
+        /// <summary>A closed-set choice; shows each value capitalized and hands the canonical value back.</summary>
+        private DropdownField SettingChoice(string id, string label, string[] values, string value, Action<string> changed)
+        {
+            var shown = values.Select(Title).ToList();
+            var field = new DropdownField(label, shown, Math.Max(0, Array.IndexOf(values, value))) { name = id };
+            field.AddToClassList("setting");
+            field.RegisterValueChangedCallback(e =>
+            {
+                var index = shown.IndexOf(e.newValue);
+                if (index < 0) return;
+                changed(values[index]); Changed();
+            });
+            _body.Add(field);
+            return field;
+        }
+        // Display options (US-15.1) as root classes. No USS rules read them yet; tuning is editor follow-up.
+        private static readonly string[] DisplayClassPrefixes = { "ui-size-", "accent-", "card-motif-", "motif-strength-", "map-header-" };
+        private void ApplyDisplayClasses(OriginalPlayerSettings settings)
+        {
+            foreach (var name in _root.GetClasses().Where(c => DisplayClassPrefixes.Any(p => c.StartsWith(p, StringComparison.Ordinal))).ToList()) _root.RemoveFromClassList(name);
+            _root.AddToClassList("ui-size-" + settings.UiSize.ToLowerInvariant());
+            _root.AddToClassList("accent-" + settings.Accent);
+            _root.AddToClassList("card-motif-" + settings.CardMotif);
+            _root.AddToClassList("motif-strength-" + settings.CardMotifStrength);
+            _root.AddToClassList("map-header-" + settings.MapHeaderDensity);
+            _root.EnableInClassList("map-header-no-relics", !settings.MapHeaderRelics);
+            _root.EnableInClassList("map-header-no-seed", !settings.MapHeaderSeed);
+            _root.EnableInClassList("no-control-hints", !settings.ControlHints);
+        }
         private Toggle SettingToggle(string id, string label, bool value, Action<bool> changed)
         {
             var toggle = new Toggle(label) { value = value, name = id };

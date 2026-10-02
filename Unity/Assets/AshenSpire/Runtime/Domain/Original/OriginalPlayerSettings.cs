@@ -6,6 +6,9 @@
 // Reading never throws: bad or out-of-range values are clamped or defaulted and listed
 // in Adjustments. RunController loads/saves it and keeps the legacy flags written;
 // CampaignView.PlayerSettings.cs is the settings screen (needs an editor play test).
+// Schema 3 adds the HTML gameplay options (rewardCollect, shopSell, swapCostRule; combat pacing
+// is AnimationSpeed/InstantAnimations), display options (data side) and gamepad bindings.
+// Allowed values and defaults are the HTML src/ui/screens/settings.js rows and balance tables.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,8 +21,11 @@ namespace AshenSpire.Domain.Original
 
     public sealed class OriginalPlayerSettings
     {
-        /// <summary>2 added reduceFlashes, highContrast and audio.musicEnabled (absent in schema 1: off, off, on).</summary>
-        public const int SchemaVersion = 2;
+        /// <summary>2 added reduceFlashes, highContrast and audio.musicEnabled (absent in schema 1: off, off, on).
+        /// 3 added the gameplay options (rewardCollect, shopSell, swapCostRule), the display options
+        /// (fullscreen, uiSize, accent, cardMotif, cardMotifStrength, mapHeader*, controlHints) and
+        /// gamepadBindings. A schema-1 or schema-2 record gets their defaults and a migration note.</summary>
+        public const int SchemaVersion = 3;
         /// <summary>The key keeps its v1 name so existing saves are found; schemaVersion inside the record is what changes.</summary>
         public const string StorageKey = "AshenSpire.Settings.v1";
         public const string LegacyReducedMotionKey = "AshenSpire.ReducedMotion", LegacyFastMotionKey = "AshenSpire.FastMotion", LegacyMutedKey = "AshenSpire.Muted";
@@ -43,6 +49,24 @@ namespace AshenSpire.Domain.Original
             ["card7"] = "Alpha7", ["card8"] = "Alpha8", ["card9"] = "Alpha9",
         };
 
+        // ---- Schema 3: closed sets and defaults, copied from the HTML reference --------------
+        /// <summary>HTML animSpeed ("Combat pacing", fx.js ANIM_SPEEDS). Stored as AnimationSpeed/InstantAnimations.</summary>
+        public static readonly string[] CombatPacings = { "slow", "normal", "fast", "instant" };
+        /// <summary>balance.ui.rewardCollect.modes / .def.</summary>
+        public static readonly string[] RewardCollectModes = { "auto", "manual" };
+        public const string DefaultRewardCollect = "auto";
+        /// <summary>balance.equipment.swapCostRules ids / balance.equipment.swapCostRule.</summary>
+        public static readonly string[] SwapCostRuleIds = { "flat", "gear", "category" };
+        public const string DefaultSwapCostRule = "flat";
+        /// <summary>HTML uiScale chips. Unity's numeric uiScale slider keeps its own field; this is the HTML choice.</summary>
+        public static readonly string[] UiSizes = { "Auto", "S", "M", "L", "XL" };
+        public static readonly string[] Accents = { "gold", "crimson", "frost", "verdant", "violet" };
+        /// <summary>balance.ui.cardMotifModes / balance.ui.cardMotif.</summary>
+        public static readonly string[] CardMotifs = { "off", "wash", "accent", "band" };
+        public const string DefaultCardMotif = "wash";
+        public static readonly string[] CardMotifStrengths = { "subtle", "normal", "strong" };
+        public static readonly string[] MapHeaderDensities = { "comfortable", "compact" };
+
         public double TextScale = 1, UiScale = 1, AnimationSpeed = 1;
         /// <summary>Skip feedback timelines entirely; AnimationSpeed is kept for when it is turned off.</summary>
         public bool InstantAnimations;
@@ -60,6 +84,40 @@ namespace AshenSpire.Domain.Original
         public bool MusicEnabled = true;
         /// <summary>Read StreamingAssets/Mods when content loads. Off by default: the shipped content only.</summary>
         public bool LoadContentMods;
+
+        // Gameplay (US-15.2). Read live by the run: OriginalGameplayOptions.ProfileSettings copies
+        // shopSell and swapCostRule into run.profileMeta.settings; rewardCollect is passed to Continue.
+        /// <summary>auto: Continue takes every pending, un-skipped reward (a card is picked); manual: only what was chosen.</summary>
+        public string RewardCollect = DefaultRewardCollect;
+        /// <summary>HTML shopSell ("Merchant buys back"): the merchant's Sell rows. Off removes them.</summary>
+        public bool ShopSell = true;
+        /// <summary>HTML swapCostRule ("Weapon swap cost"): which balance.equipment.swapCostRules row prices a swap.</summary>
+        public string SwapCostRule = DefaultSwapCostRule;
+        // Display (US-15.1, data side). Applied as root USS classes; visual tuning is editor follow-up.
+        public bool Fullscreen;
+        public string UiSize = "Auto", Accent = "gold", CardMotif = DefaultCardMotif, CardMotifStrength = "normal", MapHeaderDensity = "comfortable";
+        public bool MapHeaderRelics = true, MapHeaderSeed = true, ControlHints = true;
+        private readonly Dictionary<string, string> _pad = new Dictionary<string, string>(OriginalGamepad.DefaultBindings, StringComparer.Ordinal);
+        /// <summary>Action → gamepad button id (OriginalGamepad.Buttons). Resolve presses with OriginalGamepad.Action.</summary>
+        public IReadOnlyDictionary<string, string> GamepadBindings => _pad;
+
+        /// <summary>HTML "Combat pacing": the FeelSettings.SpeedFor bucket of AnimationSpeed, or instant.
+        /// Setting it picks the bucket's representative speed (slow .5, normal 1, fast 2).</summary>
+        public string CombatPacing
+        {
+            get => InstantAnimations ? "instant" : AnimationSpeed >= LegacyFastAnimationSpeed ? "fast" : AnimationSpeed >= 1 ? "normal" : "slow";
+            set
+            {
+                switch (value)
+                {
+                    case "instant": InstantAnimations = true; break;
+                    case "slow": InstantAnimations = false; AnimationSpeed = AnimationSpeedMin; break;
+                    case "normal": InstantAnimations = false; AnimationSpeed = 1; break;
+                    case "fast": InstantAnimations = false; AnimationSpeed = LegacyFastAnimationSpeed; break;
+                    default: throw new ArgumentException("Unknown combat pacing: " + value);
+                }
+            }
+        }
         /// <summary>Whether packs apply to this content load. Co-op (host, guest, companion) always uses the
         /// shipped content so every seat runs the same rules; the toggle only affects solo play.</summary>
         public bool ContentModsActive(bool coop) => LoadContentMods && !coop;
@@ -104,9 +162,31 @@ namespace AshenSpire.Domain.Original
                 .Select(g => (g.Key, g.Select(p => p.Key).OrderBy(x => x, StringComparer.Ordinal).ToArray())).OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase).ToArray();
         private static string NormalizeKey(string key) => string.IsNullOrWhiteSpace(key) ? null : key.Trim();
 
+        /// <summary>Binds a gamepad button unless another action holds it (same rule as TryBind). Unknown buttons throw.</summary>
+        public bool TryBindGamepad(string action, string button, out string conflictingAction)
+        {
+            conflictingAction = null;
+            if (string.IsNullOrWhiteSpace(action)) throw new ArgumentException("An action name is required.");
+            var id = OriginalGamepad.Normalize(button) ?? throw new ArgumentException("Unknown gamepad button: " + button);
+            conflictingAction = _pad.Where(p => p.Key != action && p.Value == id).Select(p => p.Key).OrderBy(x => x, StringComparer.Ordinal).FirstOrDefault();
+            if (conflictingAction != null) return false;
+            _pad[action] = id; return true;
+        }
+        /// <summary>Binds and gives the previous button of <paramref name="action"/> to the action that held <paramref name="button"/>.</summary>
+        public void BindGamepadSwapping(string action, string button)
+        {
+            if (TryBindGamepad(action, button, out var other)) return;
+            if (_pad.TryGetValue(action, out var old)) _pad[other] = old; else _pad.Remove(other);
+            _pad[action] = OriginalGamepad.Normalize(button);
+        }
+        public void ResetGamepadBindings() { _pad.Clear(); foreach (var pair in OriginalGamepad.DefaultBindings) _pad[pair.Key] = pair.Value; }
+        /// <summary>Every gamepad button bound to more than one action, with those actions.</summary>
+        public IReadOnlyList<(string Key, string[] Actions)> GamepadConflicts() => FindConflicts(_pad);
+
         public JObject ToJson()
         {
             var keys = new JObject(); foreach (var pair in _keys.OrderBy(p => p.Key, StringComparer.Ordinal)) keys[pair.Key] = pair.Value;
+            var pad = new JObject(); foreach (var pair in _pad.OrderBy(p => p.Key, StringComparer.Ordinal)) pad[pair.Key] = pair.Value;
             return new JObject
             {
                 ["schemaVersion"] = SchemaVersion, ["textScale"] = TextScale, ["uiScale"] = UiScale,
@@ -116,6 +196,10 @@ namespace AshenSpire.Domain.Original
                 ["colorblindPalette"] = PaletteName(ColorblindPalette),
                 ["audio"] = new JObject { ["master"] = MasterVolume, ["music"] = MusicVolume, ["sfx"] = SfxVolume, ["ui"] = UiVolume, ["muted"] = Muted, ["musicEnabled"] = MusicEnabled },
                 ["keyBindings"] = keys, ["loadContentMods"] = LoadContentMods,
+                ["rewardCollect"] = RewardCollect, ["shopSell"] = ShopSell, ["swapCostRule"] = SwapCostRule,
+                ["fullscreen"] = Fullscreen, ["uiSize"] = UiSize, ["accent"] = Accent, ["cardMotif"] = CardMotif, ["cardMotifStrength"] = CardMotifStrength,
+                ["mapHeaderDensity"] = MapHeaderDensity, ["mapHeaderRelics"] = MapHeaderRelics, ["mapHeaderSeed"] = MapHeaderSeed, ["controlHints"] = ControlHints,
+                ["gamepadBindings"] = pad,
             };
         }
         public OriginalPlayerSettings Clone() => FromJson(ToJson(), out _);
@@ -167,7 +251,7 @@ namespace AshenSpire.Domain.Original
             }
             if (version.Type != JTokenType.Integer || (long)version < 1) { notes.Add("unknown schemaVersion " + version + "; defaults used"); return s; }
             if ((long)version > SchemaVersion) notes.Add("schemaVersion " + version + " is newer than " + SchemaVersion + "; known fields read");
-            else if ((long)version < SchemaVersion) notes.Add("migrated schema " + version + " to schema " + SchemaVersion); // 1 → 2: new fields keep their defaults
+            else if ((long)version < SchemaVersion) notes.Add("migrated schema " + version + " to schema " + SchemaVersion); // 1 → 2 → 3: new fields keep their defaults
             double Number(JToken value, string name, double fallback, double min, double max)
             {
                 if (value == null) return fallback;
@@ -215,6 +299,39 @@ namespace AshenSpire.Domain.Original
                 foreach (var conflict in s.KeyConflicts()) notes.Add("key " + conflict.Key + " is bound to " + string.Join(", ", conflict.Actions));
             }
             else if (json["keyBindings"] != null) notes.Add("keyBindings was not an object; defaults used");
+            // Schema 3. Choices match case-insensitively and are stored in their canonical spelling;
+            // anything else keeps the default and is noted.
+            string Choice(string name, string fallback, string[] allowed)
+            {
+                var value = json[name];
+                if (value == null) return fallback;
+                var match = value.Type == JTokenType.String ? allowed.FirstOrDefault(a => string.Equals(a, ((string)value).Trim(), StringComparison.OrdinalIgnoreCase)) : null;
+                if (match == null) notes.Add(name + " '" + value + "' is unknown; " + fallback + " used");
+                return match ?? fallback;
+            }
+            s.RewardCollect = Choice("rewardCollect", s.RewardCollect, RewardCollectModes);
+            s.ShopSell = Bool(json["shopSell"], "shopSell", s.ShopSell);
+            s.SwapCostRule = Choice("swapCostRule", s.SwapCostRule, SwapCostRuleIds);
+            s.Fullscreen = Bool(json["fullscreen"], "fullscreen", s.Fullscreen);
+            s.UiSize = Choice("uiSize", s.UiSize, UiSizes);
+            s.Accent = Choice("accent", s.Accent, Accents);
+            s.CardMotif = Choice("cardMotif", s.CardMotif, CardMotifs);
+            s.CardMotifStrength = Choice("cardMotifStrength", s.CardMotifStrength, CardMotifStrengths);
+            s.MapHeaderDensity = Choice("mapHeaderDensity", s.MapHeaderDensity, MapHeaderDensities);
+            s.MapHeaderRelics = Bool(json["mapHeaderRelics"], "mapHeaderRelics", s.MapHeaderRelics);
+            s.MapHeaderSeed = Bool(json["mapHeaderSeed"], "mapHeaderSeed", s.MapHeaderSeed);
+            s.ControlHints = Bool(json["controlHints"], "controlHints", s.ControlHints);
+            if (json["gamepadBindings"] is JObject pad)
+            {
+                foreach (var property in pad.Properties())
+                {
+                    var button = property.Value.Type == JTokenType.String ? OriginalGamepad.Normalize((string)property.Value) : null;
+                    if (button == null) { notes.Add("gamepadBindings." + property.Name + " '" + property.Value + "' is not a gamepad button; " + (s._pad.ContainsKey(property.Name) ? "default kept" : "ignored")); continue; }
+                    s._pad[property.Name] = button; // unknown actions survive for newer builds
+                }
+                foreach (var conflict in s.GamepadConflicts()) notes.Add("gamepad button " + conflict.Key + " is bound to " + string.Join(", ", conflict.Actions));
+            }
+            else if (json["gamepadBindings"] != null) notes.Add("gamepadBindings was not an object; defaults used");
             return s;
         }
         public static string PaletteName(ColorblindPalette palette) => palette.ToString().ToLowerInvariant();

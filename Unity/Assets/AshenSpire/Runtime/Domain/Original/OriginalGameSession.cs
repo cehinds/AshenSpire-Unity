@@ -138,7 +138,22 @@ namespace AshenSpire.Domain.Original
         public void DrinkFlask(int slot, string target = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkFlask(slot, target); CommitCombat(); });
         public void Service(string service, JObject request) => Change(() => { if (!_run.UseService(service, request)) throw new ArgumentException("This service is unavailable here or its requirements are not met."); });
         public void Reward(string kind, string id = null) => Change(() => { if (!_run.CollectReward(kind, id)) throw new ArgumentException("That reward cannot be collected."); });
+        /// <summary>Continue as "manual": only what was already chosen comes along (the pre-setting behaviour).</summary>
         public void ContinueRewards() => Change(() => _run.ContinueRewards(false));
+        /// <summary>Continue under the Reward collection setting (OriginalGameplayOptions.RewardCollectMode):
+        /// auto takes every pending, un-skipped, unblocked reward and picks a card on the cardRewards stream.</summary>
+        public void ContinueRewards(string mode) => Change(() => _run.ContinueRewards(OriginalGameplayOptions.RewardCollectMode(_catalog.Data(), mode) == "auto"));
+        /// <summary>Mark a pending reward skipped, so an auto Continue leaves it (the HTML Skip).</summary>
+        public void SkipReward(string kind) => Change(() => { if (!_run.SkipReward(kind)) throw new ArgumentException("That reward cannot be skipped."); });
+        /// <summary>Merge gameplay options into the run's profileMeta.settings (see OriginalGameplayOptions).
+        /// Not a command: Changed is raised only when a value differed, so the caller saves.</summary>
+        public bool ApplyProfileSettings(JObject settings)
+        {
+            var before = Snapshot();
+            try { if (!_run.SetProfileSettings(settings)) return false; _projectionPlayer = _run.Player(); }
+            catch { RestoreState(before); throw; }
+            Changed?.Invoke(); return true;
+        }
         public void ChooseEvent(string id) => Change(() => { if (!_run.ChooseEvent(id)) throw new ArgumentException("This choice's requirements are not met."); });
         public void LeaveEvent() => Change(() => _run.LeaveEvent());
         public void Rest() => Change(() => _run.Rest());

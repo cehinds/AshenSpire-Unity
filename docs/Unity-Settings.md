@@ -35,10 +35,33 @@ on screen or in sound.
 | Music | `audio.musicEnabled` | on/off | on | Music off silences only the music bus. Added in schema 2. |
 | Key bindings | `keyBindings` | action → key name | see below | |
 | Load content mods | `loadContentMods` | on/off | **off** | Mods are opt-in and solo only; co-op always uses the shipped content. See [MODDING.md](MODDING.md). |
+| Combat pacing | *(none: `animationSpeed` / `instantAnimations`)* | `slow`, `normal`, `fast`, `instant` | `normal` | HTML `animSpeed`. `CombatPacing` reads and sets the same speed fields (slow 0.5, normal 1, fast 2, instant), so it can never disagree with the slider. |
+| Reward collection | `rewardCollect` | `auto`, `manual` | `auto` | HTML `balance.ui.rewardCollect`. Added in schema 3. See *Gameplay options*. |
+| Merchant buys back | `shopSell` | on/off | on | HTML `shopSell`. Added in schema 3. |
+| Weapon swap cost | `swapCostRule` | `flat`, `gear`, `category` | `flat` | HTML `balance.equipment.swapCostRules` / `swapCostRule`. Added in schema 3. |
+| Fullscreen | `fullscreen` | on/off | off | HTML `fullscreen`. Added in schema 3. |
+| UI size (HTML chips) | `uiSize` | `Auto`, `S`, `M`, `L`, `XL` | `Auto` | HTML `uiScale` chips. Unity's numeric `uiScale` slider above is separate and still drives `PanelSettings.scale`. Added in schema 3. |
+| Accent color | `accent` | `gold`, `crimson`, `frost`, `verdant`, `violet` | `gold` | Added in schema 3. |
+| Card motif / strength | `cardMotif`, `cardMotifStrength` | `off`, `wash`, `accent`, `band` / `subtle`, `normal`, `strong` | `wash` / `normal` | HTML `balance.ui.cardMotif(Modes)`. Added in schema 3. |
+| Map header | `mapHeaderDensity`, `mapHeaderRelics`, `mapHeaderSeed` | `comfortable`, `compact` / on/off / on/off | `comfortable`, on, on | Added in schema 3. |
+| Control hints | `controlHints` | on/off | on | Added in schema 3. |
+| Gamepad bindings | `gamepadBindings` | action → button id | see below | Added in schema 3. |
+
+Choices are matched without case and stored in the spelling above. An unknown choice keeps
+the default and adds a note such as `swapCostRule 'both' is unknown; flat used`.
 
 Default key bindings are exactly the keys the map board handles today, as Unity
 `KeyCode` names: `mapScrollUp` = `PageUp`, `mapScrollDown` = `PageDown`, `mapTop` =
 `Home`, `mapBottom` = `End`.
+
+Default gamepad buttons (`OriginalGamepad.DefaultBindings`) follow the HTML `input.js`
+`defBtn` wherever Unity has the same action: `combatPlay` = `south` (0), `cancel` = `east`
+(1), `endTurn` = `west` (2), `combatDeck` = `north` (3), `menu` = `start` (9), `flask1` =
+`leftTrigger` (6), `flask2` = `rightTrigger` (7), `flask3` = `leftStick` (10). The HTML
+shoulders cycle tabs; Unity has no tab ring, so `targetPrevious` / `targetNext` use
+`leftShoulder` / `rightShoulder`. `mapScrollUp` / `mapScrollDown` use `dpadUp` / `dpadDown`.
+Other actions start unbound. Button ids are the 16 W3C standard-gamepad buttons in index
+order (`south` … `dpadRight`).
 
 ## Saving and loading
 
@@ -59,14 +82,17 @@ Values of the wrong type fall back to the default. Every change is added to
 
 ## Migration
 
-`schemaVersion` is `2`. The storage key keeps its `v1` name so existing saves are found.
+`schemaVersion` is `3`. The storage key keeps its `v1` name so existing saves are found.
 Loading checks these cases in order:
 
-1. **A v1 or v2 record is stored.** It is read with clamping. A schema-1 record has no
+1. **A v1, v2 or v3 record is stored.** It is read with clamping. A schema-1 record has no
    `reduceFlashes`, `highContrast` or `audio.musicEnabled`; they get their defaults (off,
-   off, on) and the note `migrated schema 1 to schema 2` is added. The next save writes
-   schema 2. A newer `schemaVersion` is still read field by field (known fields only), and
-   a note is added. A non-boolean value in a new field falls back to its default with a note.
+   off, on). A schema-1 or schema-2 record has none of the schema-3 fields (gameplay,
+   display, `gamepadBindings`); they get the defaults in the table above. Either way one
+   note is added (`migrated schema 1 to schema 3` or `migrated schema 2 to schema 3`) and
+   the next save writes schema 3. A newer `schemaVersion` is still read field by field
+   (known fields only), and a note is added. A non-boolean value or unknown choice in a new
+   field falls back to its default with a note.
 2. **Nothing is stored.** The old PlayerPrefs ints are migrated:
    `AshenSpire.ReducedMotion` = 1 turns on reduced motion.
    `AshenSpire.FastMotion` = 1 sets animation speed 2, which halves durations exactly like
@@ -98,6 +124,71 @@ keeps working.
   older build.
 - `ResetKeyBindings()` restores the defaults.
 
+Gamepad bindings work the same way: `TryBindGamepad`, `BindGamepadSwapping`,
+`ResetGamepadBindings()` and `GamepadConflicts()`. The difference is that the button set is
+closed: an unknown button id is refused by `TryBindGamepad` and, in a saved record, keeps
+the action's default with a note. Unknown actions are kept.
+
+## Gameplay options (US-15.2)
+
+The HTML game reads these from `meta.settings` while it plays. Unity runs read
+`run.profileMeta.settings`, so `RunController.BindOriginal` calls
+`OriginalGameSession.ApplyProfileSettings(OriginalGameplayOptions.ProfileSettings(settings))`
+whenever a run is bound (new climb or Continue). That merges `shopSell` and `swapCostRule`
+into the run, changes nothing else, and is a no-op when the values already match.
+Settings is reached from the title screen only, so a change applies from the next new
+climb or Continue.
+
+- **Reward collection — applied.** `OriginalRunPanel.Rewards` resolves the mode with
+  `OriginalGameplayOptions.RewardCollectMode` (the content dial, like `reward.js`
+  `collectMode`) and calls `OriginalGameSession.ContinueRewards(mode)`. *Auto* takes every
+  pending, unskipped, unblocked reward in `REWARD_KIND_ORDER` and picks a card on the
+  `cardRewards` stream, exactly like `rewardplan.resolveContinue` with `reward.js` `pickFn`.
+  *Manual* is the earlier Unity Continue unchanged. In auto mode each pending reward has a
+  Skip control (`native-skip-reward-<kind>`; not `native-reward-*`, which the playtests
+  treat as "take"), and an explicit skip is respected. **The default is now auto (HTML),
+  so a fresh profile's Continue collects what is left.** The compiled playtests that replay
+  a manual domain script use `NativeUiDriver.continueRewards()`, which skips every pending
+  kind first and so keeps their exact replay. Co-op rewards are unchanged.
+- **Merchant buys back — applied.** `OriginalRunServices.Sellables` already returns no rows
+  when `profileMeta.settings.shopSell` is false; the setting now reaches it.
+- **Weapon swap cost — applied.** `OriginalCombatEquipment.Rule` already resolved
+  `profileMeta.settings.swapCostRule` like `loadout.resolveSwapCostRule` (unknown id → the
+  content default). The equipment screen in combat now shows one line per set from
+  `OriginalGameplayOptions.DescribeSwapPrice` (rule label, base or category, gear delta,
+  price). Difference from the HTML: the HTML freezes the rule when a fight starts; Unity
+  freezes it at the fight's first swap (`equipmentSwapRule`). Because Settings is only
+  reachable from the title, this shows only when a saved fight is continued after the rule
+  was changed and before any swap.
+- **Combat pacing — applied** (it is the existing animation speed; see below).
+
+## Display options (US-15.1, data side)
+
+All are saved and validated. **Fullscreen** is applied when the toggle changes
+(`Screen.fullScreen`; on Web this needs the click that changes it). The others are applied
+only as root USS classes, with no styles yet: `ui-size-auto|s|m|l|xl`, `accent-<name>`,
+`card-motif-<mode>`, `motif-strength-<strength>`, `map-header-comfortable|compact`,
+`map-header-no-relics`, `map-header-no-seed`, `no-control-hints`.
+**Editor follow-up:** write the USS for those classes (accent tokens, card motif frames,
+compact map header), decide how the `uiSize` chips relate to the numeric `uiScale` slider,
+and hide the map-header relics/seed and any control-hint bar when their classes are set.
+
+## Gamepad (US-15.3, domain side)
+
+`OriginalGamepad` (Domain/Original) holds the button ids, the defaults and a pure resolver:
+`Action(bindings, button, contextActions)` names the bound action for a press in a context
+(map or combat action list, plus `cancel` / `menu` where they apply), and
+`KeyName(action, keyBindings)` gives the keyboard key that action dispatches as (`cancel`
+→ `Escape`, `menu` → none), so a pad press can enter the existing key-action path the way
+HTML `input.js` does. The Settings screen lists a button choice per action
+(`pad-<action>`, `pad-reset`) with the same conflict refusal.
+**Not wired to input:** `Unity/Packages/manifest.json` does not reference
+`com.unity.inputsystem`, and no package was added. Follow-up: add the Input System (or
+read the legacy joystick axes), map each device control to an `OriginalGamepad` button id
+(`FromStandardIndex` covers the standard layout), call `Action`, then raise the bound key
+through `OriginalRunPanel.CombatTools` / `OriginalMapBoard.Key`, and the menu callback for
+`menu`.
+
 ## Wiring (done; needs editor play test)
 
 Hook lines in existing files are marked with a comment that names the new file.
@@ -105,7 +196,7 @@ Hook lines in existing files are marked with a comment that names the new file.
 | Where | What it does |
 |---|---|
 | `RunController.Settings.cs` (new) | `InstallPlayerSettings()` runs in `OnEnable` after the view exists. It calls `LoadOrMigrate`. The three legacy ints then win for reduced motion, quick animations and mute, because an older build on the same device may have changed them. Every change saves `AshenSpire.Settings.v1` **and** writes `AshenSpire.ReducedMotion`, `AshenSpire.FastMotion` (= `QuickAnimations`) and `AshenSpire.Muted`. So the older code paths (`RunController.Settings/Mute`, the `CampaignView` constructor) keep working. |
-| `CampaignView.PlayerSettings.cs` (new) | The settings screen, grouped like the HTML game: **Game** (Quick animations, animation speed, instant, interface size, screen shake + intensity, hit-stop), **Audio** (Mute sound, master/SFX/music/interface volume), **Accessibility** (Reduced motion, Reduce flashes, High contrast, text size, colorblind palette), **Controls** (map keys, conflict message, reset), **Content mods**. The original toggles keep their names (`reduced-motion`, `fast-motion`, `mute-sound`) and labels; they are only moved under the headings. New control names: `animation-speed`, `instant-animations`, `ui-scale`, `screen-shake`, `screen-shake-intensity`, `hit-stop`, `volume-master`, `volume-sfx`, `volume-music`, `music-enabled`, `volume-ui`, `reduce-flashes`, `high-contrast`, `text-scale`, `colorblind-palette`, `key-mapScrollUp` … `key-mapBottom`, `keys-reset`, `load-content-mods`. |
+| `CampaignView.PlayerSettings.cs` (new) | The settings screen, grouped like the HTML game: **Game** (Quick animations, animation speed, instant, interface size, screen shake + intensity, hit-stop), **Audio** (Mute sound, master/SFX/music/interface volume), **Accessibility** (Reduced motion, Reduce flashes, High contrast, text size, colorblind palette), **Controls** (map keys, conflict message, reset), **Content mods**. The original toggles keep their names (`reduced-motion`, `fast-motion`, `mute-sound`) and labels; they are only moved under the headings. New control names: `animation-speed`, `instant-animations`, `ui-scale`, `screen-shake`, `screen-shake-intensity`, `hit-stop`, `volume-master`, `volume-sfx`, `volume-music`, `music-enabled`, `volume-ui`, `reduce-flashes`, `high-contrast`, `text-scale`, `colorblind-palette`, `key-mapScrollUp` … `key-mapBottom`, `keys-reset`, `load-content-mods`. Schema 3 adds, without new headings (the section jump ids `settings-section-0…5` are unchanged): in **Game** `combat-pacing`, `reward-collect`, `shop-sell`, `swap-cost-rule`, then a *Display* group `fullscreen`, `ui-size`, `accent-color`, `card-motif`, `card-motif-strength`, `map-header-density`, `map-header-relics`, `map-header-seed`, `control-hints`; in **Controls** `pad-<action>` and `pad-reset`. |
 | `OriginalKeyBindings.cs` (new) | Turns bindings (Unity `KeyCode` names, case-insensitive) into map actions. `OriginalMapBoard.Key` asks `OriginalMapViewServices.KeyAction`. Without bindings it uses the old four keys. |
 | `Resources/OriginalTheme.uss` | `high-contrast` on the root swaps the ink, secondary-text and edge colour tokens (the same idea as the HTML `body.hi-contrast`). Visual tuning is not done. |
 | `FeelSettings.From` / `SpeedFor` (Domain, `FeelProfile.cs`) | Maps animation speed, Instant, Reduced motion, Reduce flashes, shake, intensity and hit-stop to the feel settings. `FeelDriver.Configure(OriginalPlayerSettings)` only forwards the fields. Tested in `UnityTests/Feel`. |
@@ -145,3 +236,11 @@ restart. Turn on Reduce flashes and check that a hit no longer flashes the figur
 number still pops. Turn on High contrast and check that captions get brighter. Turn Music
 off and on, and mute then unmute: music should stop and come back at the same level. Check that the values persist and that the three legacy toggles still match. Rebind
 a map key, then scroll the map with it. Pick each palette and look at a combat HUD.
+
+Schema-3 play test: set Reward collection to Manual, win a fight, press Continue and check
+that only what you took came along; set Auto, skip the card, press Continue and check that
+the cinders and other rows were taken but no card. Turn Merchant buys back off and check the
+merchant has no Sell rows. Set Weapon swap cost to Category, Continue a climb, open the
+Armoury in a fight and read the swap price line for a heavy and a quick weapon. Toggle
+Fullscreen on desktop and Web. Change a gamepad button to one already used and check the
+refusal names the holder.

@@ -150,6 +150,10 @@ namespace AshenSpire.Application
         private void BindOriginal(OriginalGameSession value)
         {
             if (_originalGame != null) _originalGame.Changed -= RefreshOriginal;
+            // Gameplay options (merchant buy-back, swap cost rule) are read from run.profileMeta.settings,
+            // as the HTML reads meta.settings live: new and continued runs get the current values.
+            // RunController.Settings.cs; Domain OriginalGameplayOptions.
+            value.ApplyProfileSettings(OriginalGameplayOptions.ProfileSettings(_playerSettings));
             _originalGame = value; TrackSummary(value); _originalGame.Changed += RefreshOriginal;
         }
         private void RefreshOriginal()
