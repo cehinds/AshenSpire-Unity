@@ -64,6 +64,10 @@ namespace AshenSpire.Domain.Original
         };
         /// <summary>Actions whose key is re-sent while a d-pad direction repeats. Everything else (combat) acts once per press.</summary>
         public static readonly string[] RepeatingActions = { "mapScrollUp", "mapScrollDown" };
+        /// <summary>Map actions. OriginalMapBoard.Key handles their keys only on the map viewport, so the pad sends
+        /// them there (whatever map node has focus) while a map is shown, rather than to the focused element.</summary>
+        public static readonly string[] MapActions = { "mapScrollUp", "mapScrollDown", "mapTop", "mapBottom" };
+        public static bool IsMapAction(string action) => action != null && Array.IndexOf(MapActions, action) >= 0;
 
         /// <summary>The button that confirms / activates focused controls: whatever Play is bound to (default south).</summary>
         public static string ConfirmButton(IReadOnlyDictionary<string, string> padBindings)

@@ -259,4 +259,28 @@ namespace AshenSpire.Domain.Original
             }
         }
     }
+
+    /// <summary>
+    /// Keeps a press that rebinding captured from also navigating. A d-pad press reaches the reader as a Press
+    /// and, in the same Step, a Navigate for that button; after the capture ends, that Navigate (and the repeats
+    /// of the same hold) must not move focus or run the button's new action. Call Captured when a capture
+    /// consumes a press, Suppress for every later signal, and EndStep after each Step's batch.
+    /// </summary>
+    public sealed class GamepadCaptureFilter
+    {
+        private string _held;
+        private bool _sameStep;
+        public void Captured(string button) { _held = OriginalGamepad.Normalize(button); _sameStep = true; }
+        /// <summary>True when <paramref name="signal"/> is the captured button's own navigation: in the capturing
+        /// Step, or a repeat of that hold. A fresh press of the same button (not a repeat) navigates again.</summary>
+        public bool Suppress(PadSignal signal)
+        {
+            if (_held == null || signal.Kind != PadSignalKind.Navigate) return false;
+            if (signal.Button == _held && (_sameStep || signal.Repeat)) return true;
+            _held = null; // A fresh press, or another direction or the stick: the captured hold is over.
+            return false;
+        }
+        public void EndStep() => _sameStep = false;
+        public void Reset() { _held = null; _sameStep = false; }
+    }
 }

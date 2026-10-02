@@ -29,6 +29,7 @@ namespace AshenSpire.Presentation
         private readonly GamepadReader _reader = new GamepadReader(GamepadLayout.XInput);
         private string _lastFocusName;
         private bool _navigateKeyHandled;
+        private readonly GamepadCaptureFilter _captured = new GamepadCaptureFilter();
 
         /// <summary>True when the most recent input came from a gamepad (shared by every view in the process).</summary>
         public static bool LastInputWasGamepad { get; private set; }
@@ -41,11 +42,11 @@ namespace AshenSpire.Presentation
         { _root = root; _settings = settings; _report = report; }
 
         /// <summary>Forget held buttons (focus loss, view disposed): a held button fires again only after release.</summary>
-        public void Reset() => _reader.Reset();
+        public void Reset() { _reader.Reset(); _captured.Reset(); }
 
         public void Tick(GamepadFrame frame, double time)
         {
-            if (_root?.panel == null) { _reader.Reset(); return; }
+            if (_root?.panel == null) { Reset(); return; }
             var signals = _reader.Step(frame, time);
             if (_reader.Active || signals.Count > 0) MarkDevice(true);
             foreach (var signal in signals)
@@ -53,6 +54,7 @@ namespace AshenSpire.Presentation
                 try { Handle(signal); }
                 catch (Exception error) { Debug.LogException(error); }
             }
+            _captured.EndStep();
         }
 
         /// <summary>Keyboard, mouse or touch input happened: control hints follow the keyboard again.</summary>
@@ -74,11 +76,12 @@ namespace AshenSpire.Presentation
             {
                 case PadSignalKind.Press:
                     var capture = Capture;
-                    if (capture != null && capture(signal.Button)) return;
+                    if (capture != null && capture(signal.Button)) { _captured.Captured(signal.Button); return; }
                     Run(OriginalGamepadNavigation.Plan(PadBindings, KeyBindings, signal.Button));
                     break;
                 case PadSignalKind.Navigate:
                     if (Capture != null) return; // Rebinding: directions neither move focus nor act.
+                    if (_captured.Suppress(signal)) return; // The d-pad press a capture just consumed, and its repeats.
                     if (!signal.Repeat) _navigateKeyHandled = false;
                     var steps = OriginalGamepadNavigation.PlanNavigate(PadBindings, KeyBindings, signal.Direction, signal.Button, signal.Repeat, _navigateKeyHandled);
                     var handledBy = Run(steps);
@@ -101,7 +104,7 @@ namespace AshenSpire.Presentation
         {
             switch (step.Kind)
             {
-                case PadStepKind.Key: return SendKey(step.Key);
+                case PadStepKind.Key: return SendKey(step.Key, step.Action);
                 case PadStepKind.Submit: return Submit();
                 case PadStepKind.Cancel: return CancelPopup();
                 case PadStepKind.Back: return Back();
@@ -119,12 +122,15 @@ namespace AshenSpire.Presentation
             return false;
         }
 
-        private bool SendKey(string key)
+        private bool SendKey(string key, string action)
         {
             if (string.IsNullOrEmpty(key) || !Enum.TryParse(key, true, out KeyCode code) || code == KeyCode.None) return false;
             var focused = Focused;
             if (OriginalGamepadNavigation.IsActivationKey(key) && IsControl(focused)) return false;
             var target = focused != null && focused.panel == _root.panel ? focused : _root;
+            // Map actions go to the shown map's viewport (OriginalMapBoard.Key only handles them there); the
+            // viewport is a container, never a focus target, so a focused node would otherwise swallow them.
+            if (OriginalGamepadNavigation.IsMapAction(action)) { var viewport = MapKeyTarget(); if (viewport != null) target = viewport; }
             bool handled;
             using (var down = KeyDownEvent.GetPooled('\0', code, EventModifiers.None))
             {
@@ -250,6 +256,13 @@ namespace AshenSpire.Presentation
             for (var e = element; e != null; e = e.hierarchy.parent)
                 if (e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.visibility == Visibility.Hidden || !e.visible) return false;
             return true;
+        }
+
+        private VisualElement MapKeyTarget()
+        {
+            VisualElement viewport = null;
+            _root.Query<OriginalMapBoard>().ForEach(m => { if (viewport == null && Rect(m).Valid && m.enabledInHierarchy) viewport = m.KeyTarget; });
+            return viewport;
         }
 
         private void Pan(double x, double y)

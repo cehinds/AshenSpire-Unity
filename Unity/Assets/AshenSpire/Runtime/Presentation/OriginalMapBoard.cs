@@ -178,6 +178,9 @@ namespace AshenSpire.Presentation
         }
         /// <summary>Gamepad right stick (GamepadNavigator): scrolls by panel pixels, positive = down. False while
         /// an overlay (Routes, Key) covers the map or before the camera exists, so the pad scrolls that instead.</summary>
+        /// <summary>Where gamepad map actions are sent as keys (GamepadNavigator): the viewport, which Key requires
+        /// as the event target; null while an overlay covers the map or before the camera exists.</summary>
+        public VisualElement KeyTarget => _camera == null || _detached || _overlay.style.display == DisplayStyle.Flex ? null : _viewport;
         public bool PanBy(double pixels)
         {
             if (_camera == null || _detached || _overlay.style.display == DisplayStyle.Flex) return false;

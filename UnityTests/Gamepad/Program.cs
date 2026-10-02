@@ -162,6 +162,52 @@ try
     Equal(Steps(OriginalGamepadNavigation.Plan(pad, keys, "select")), "Key:Escape Cancel Back", "cancel follows its rebinding");
     settings.ResetGamepadBindings();
 
+    var keyBindingsSource = Read("Unity/Assets/AshenSpire/Runtime/Presentation/OriginalKeyBindings.cs");
+    string[] List(string field) => Regex.Matches(Regex.Match(keyBindingsSource, field + @" = \{(?<v>[^}]*)\}").Groups["v"].Value, "\"(?<a>[^\"]+)\"").Select(m => m.Groups["a"].Value).ToArray();
+
+    // ---- Capture filter (review 4166290105): a captured d-pad press must not also navigate ----
+    {
+        var capReader = new GamepadReader(GamepadLayout.XInput);
+        var cf = new GamepadFrame();
+        var filter = new GamepadCaptureFilter();
+        var capturing = true;
+        var navigated = new List<PadSignal>();
+        var captured = new List<string>();
+        void Tick(double t)
+        {
+            foreach (var signal in capReader.Step(cf, t))
+            {
+                if (signal.Kind == PadSignalKind.Press && capturing) { captured.Add(signal.Button); capturing = false; filter.Captured(signal.Button); continue; }
+                if (signal.Kind == PadSignalKind.Navigate && !capturing && !filter.Suppress(signal)) navigated.Add(signal);
+            }
+            filter.EndStep();
+        }
+        Tick(0);
+        cf.Axes[6] = 1; Tick(.1); // d-pad up: Press (captured, capture ends) + Navigate in the same Step
+        Check(captured.SequenceEqual(new[] { "dpadUp" }) && navigated.Count == 0, "capture: the Navigate of the captured d-pad press in the same Step is suppressed");
+        Tick(.6); Tick(.75);
+        Check(navigated.Count == 0, "capture: repeats of the still-held captured d-pad are suppressed");
+        cf.Axes[6] = 0; Tick(.8); cf.Axes[6] = 1; Tick(.9);
+        Check(navigated.Count == 1 && navigated[0].Direction == PadDirection.Up && !navigated[0].Repeat, "capture: a fresh press of the same d-pad navigates again");
+        cf.Axes[6] = 0; Tick(1);
+        navigated.Clear(); capturing = true; cf.Axes[5] = 1; Tick(1.1);
+        cf.Axes[5] = 0; cf.Axes[6] = 1; Tick(1.2);
+        Check(captured.Last() == "dpadRight" && navigated.Count == 1 && navigated[0].Button == "dpadUp", "capture: another d-pad direction is not suppressed");
+        var f2 = new GamepadCaptureFilter();
+        Check(!f2.Suppress(new PadSignal(PadSignalKind.Navigate, "dpadUp", PadDirection.Up, false, 0, 0)), "capture: nothing captured, nothing suppressed");
+        f2.Captured("south");
+        Check(!f2.Suppress(new PadSignal(PadSignalKind.Navigate, "dpadUp", PadDirection.Up, false, 0, 0)) && !f2.Suppress(new PadSignal(PadSignalKind.Navigate, null, PadDirection.Left, false, 0, 0)), "capture: a captured face button never suppresses d-pad or stick navigation");
+        f2.Captured("dpadDown"); f2.Reset();
+        Check(!f2.Suppress(new PadSignal(PadSignalKind.Navigate, "dpadDown", PadDirection.Down, true, 0, 0)), "capture: Reset forgets the captured hold");
+    }
+
+    // ---- Map actions (review 4166290151): routed to the map viewport ---------------------------
+    Check(new[] { "mapScrollUp", "mapScrollDown", "mapTop", "mapBottom" }.All(OriginalGamepadNavigation.IsMapAction), "map scroll/top/bottom are map actions");
+    Check(!OriginalGamepadNavigation.IsMapAction("combatPlay") && !OriginalGamepadNavigation.IsMapAction(null) && !OriginalGamepadNavigation.IsMapAction("cancel"), "combat, cancel and null are not map actions");
+    Check(OriginalGamepadNavigation.MapActions.SequenceEqual(List("MapActions")), "pad map actions match the keyboard MapActions list");
+    var dpadUpPlan = OriginalGamepadNavigation.PlanNavigate(null, null, PadDirection.Up, "dpadUp");
+    Check(dpadUpPlan.Count == 2 && dpadUpPlan[0].Kind == PadStepKind.Key && dpadUpPlan[0].Action == "mapScrollUp" && OriginalGamepadNavigation.IsMapAction(dpadUpPlan[0].Action), "d-pad up's key step carries the map action so it can be routed to the viewport");
+
     // ---- Helpers -----------------------------------------------------------------------------
     Check(OriginalGamepadNavigation.IsActivationKey("Return") && OriginalGamepadNavigation.IsActivationKey("Space") && !OriginalGamepadNavigation.IsActivationKey("E"), "activation keys are Enter / Space only");
     foreach (var name in new[] { "back", "close", "native-pile-back", "solo-close", "native-discard-cancel" }) Check(OriginalGamepadNavigation.IsBackControl(name), name + " is a back control");
@@ -209,8 +255,6 @@ try
     Equal(OriginalGamepadNavigation.Entry(new List<PadRect>(), view), -1, "entry: nothing focusable → -1");
 
     // ---- Consistency with the keyboard list and the settings screen --------------------------
-    var keyBindingsSource = Read("Unity/Assets/AshenSpire/Runtime/Presentation/OriginalKeyBindings.cs");
-    string[] List(string field) => Regex.Matches(Regex.Match(keyBindingsSource, field + @" = \{(?<v>[^}]*)\}").Groups["v"].Value, "\"(?<a>[^\"]+)\"").Select(m => m.Groups["a"].Value).ToArray();
     var keyboardActions = OriginalGamepad.PadOnlyActions.Concat(List("MapActions")).Concat(List("CombatActions").Where(a => !a.StartsWith("card"))).ToArray();
     Check(keyboardActions.Length > 10 && keyboardActions.SequenceEqual(OriginalGamepadNavigation.Actions), "pad actions = pad-only + keyboard map + combat actions (no card slots), same order");
     Check(OriginalGamepad.DefaultBindings.Keys.All(OriginalGamepadNavigation.Actions.Contains), "every default pad binding is a resolvable action");
@@ -236,7 +280,9 @@ try
     Check(driver.Contains("GamepadLayout.ForPlatform"), "GamepadDriver picks the platform layout");
     var navigator = Read("Unity/Assets/AshenSpire/Runtime/Presentation/GamepadNavigator.cs");
     Check(navigator.Contains("OriginalGamepadNavigation.Plan(") && navigator.Contains("OriginalGamepadNavigation.PlanNavigate(") && navigator.Contains("OriginalGamepadNavigation.Next(") && navigator.Contains("KeyDownEvent.GetPooled"), "GamepadNavigator runs the domain plans and dispatches keys through UI Toolkit");
-    Check(!Regex.IsMatch(navigator, @"\bInput\."), "GamepadNavigator never reads Input directly (GamepadDriver does)");
+    Check(navigator.Contains("_captured.Captured(signal.Button)") && navigator.Contains("_captured.Suppress(signal)") && navigator.Contains("_captured.EndStep()"), "GamepadNavigator filters the captured press's navigation");
+    Check(navigator.Contains("IsMapAction(action)") && navigator.Contains("m.KeyTarget") && Read("Unity/Assets/AshenSpire/Runtime/Presentation/OriginalMapBoard.cs").Contains("public VisualElement KeyTarget"), "GamepadNavigator sends map actions to the map viewport");
+    Check(!Regex.IsMatch(navigator, @"\bInput\."),"GamepadNavigator never reads Input directly (GamepadDriver does)");
     var controller = Read("Unity/Assets/AshenSpire/Runtime/Application/RunController.cs");
     Check(controller.Contains("AddComponent<GamepadDriver>()") && controller.Contains("gamepad.Navigator = _view.Gamepad") && controller.Contains("gamepad.Navigator = null"), "RunController attaches the driver and detaches it on disable");
     var settingsView = Read("Unity/Assets/AshenSpire/Runtime/Presentation/CampaignView.PlayerSettings.cs");

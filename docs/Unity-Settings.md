@@ -242,7 +242,7 @@ button. If the player rebinds End turn to `Z` on the keyboard, the pad's End tur
 | LB / L1, RB / R1 | Previous / next enemy | `LeftArrow` / `RightArrow` |
 | LT / L2, RT / R2, left stick press | Crimson, Azure, first utility flask | `F`, `G`, `H` |
 | Start / Options (`start`) | Menu | Move focus to `native-menu` (Save and return to title) or `menu`. Start never activates it: confirm with A. |
-| D-pad up / down | Map scroll, else move focus | `PageUp` / `PageDown` (handled only while the map viewport has focus), otherwise move focus. Map scroll repeats while held. |
+| D-pad up / down | Map scroll, else move focus | While a route map is shown (no Routes/Key overlay), `PageUp` / `PageDown` is sent to the map viewport, whichever node has focus, so the map scrolls; on the map, use the left stick or d-pad left/right to move between nodes. Elsewhere, move focus. Map scroll repeats while held. |
 | D-pad left / right, left stick | Move focus | Spatial focus move between visible, enabled, focusable leaf controls: cards, Play / End turn, flasks, map nodes, menu and settings rows. On a focused slider, left/right changes it by 5% of its range. On a focused choice, left/right picks the previous or next option. Inside an open dropdown list, directions go to the list. |
 | Right stick | Pan / scroll | Pans the visible route map (stick up shows higher floors). Otherwise it scrolls the scroll view that holds the focus, or the screen. 900 px/s at full tilt. |
 | Select / Share | unbound | |
@@ -262,7 +262,7 @@ release below .3. Pan frames are capped at .1 s.
 button. A held button is refused and the message names the action that holds it (the
 same rule as keys). Esc, or activating the row again, cancels. While a row is waiting,
 pad directions neither move focus nor act. The press that opened the row does not count:
-capture needs a new button-down.
+capture needs a new button-down. A captured d-pad press does not also move focus or run its new action, and neither do its repeats while it stays held (`GamepadCaptureFilter`).
 
 **Control hints.** Unity has no HTML-style hint strip yet. The root element gets the
 class `input-gamepad` while the pad was the last input, for a future strip or USS. The
