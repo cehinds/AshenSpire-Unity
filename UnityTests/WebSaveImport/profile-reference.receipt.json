@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "b0509e6cd5b065b4a558b9fdd819fa9f9eba8c25",
+  "sources": {
+    "src/engine/save.js": "93572fa3c20f87c60715ad5b657dd1bdd77c838762d126546fb25719cb89e6bd",
+    "src/model/unlocks.js": "16a55b397c19d816cf371737dc19f8463cec8d663bd76e9c31637b284d78d435",
+    "src/model/startingKits.js": "50b3826d7511587b42063b73118139079986f6f7012c00ac9f75e82a6c1a3920",
+    "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46",
+    "src/main.js": "34a420dfeabe358af3417f1f123e839b91a67cf6bd8b4224df39449cadbb3b0c",
+    "src/ui/screens/settings.js": "7581377c311aa9d633b6b103b4bf45470d8f3dbe604b04050701315acaa4297d"
+  },
+  "outputSha256": "bd79be54dda49ae4f2f4685fca359ce266b4246a803942be0be5a5e12a57c4d7",
+  "fixtures": {
+    "fresh": {
+      "status": "ok",
+      "results": 0,
+      "unlocked": 0
+    },
+    "history": {
+      "status": "ok",
+      "results": 5,
+      "unlocked": 15
+    },
+    "historyLater": {
+      "status": "ok",
+      "results": 8,
+      "unlocked": 17
+    },
+    "veteran": {
+      "status": "ok",
+      "results": 20,
+      "unlocked": 14
+    },
+    "schema1": {
+      "status": "migrated",
+      "results": 2,
+      "unlocked": 2
+    },
+    "schema0": {
+      "status": "ok",
+      "results": 1,
+      "unlocked": 0
+    },
+    "newer": {
+      "status": "newer",
+      "results": 0,
+      "unlocked": 0
+    }
+  }
+}

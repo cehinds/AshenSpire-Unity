@@ -3,19 +3,20 @@
 // Observer JSON supplies saved customization and rendered timeline diagnostics.
 const fs=require('node:fs'),path=require('node:path');
 const{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const{NativeUiDriver}=require('./native-ui-driver.cjs');
+const{NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const output=path.resolve(process.argv[3]||'TestResults/NativeAppearance');fs.mkdirSync(output,{recursive:true});
  const styles=['animated','rendered','classic','glyph'],tints=['gold','ember','frost','rot','grace'],sigils=['⚔','🛡','🔥','🌙','☀','🐺'];
- const summaries=[];
+ const summaries=[],selection=selectedCases(styles.length);
  for(let index=0;index<styles.length;index++){
   if(process.env.NATIVE_APPEARANCE_STYLE&&styles[index]!==process.env.NATIVE_APPEARANCE_STYLE)continue;
+  if(!selection.includes(index))continue;
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,styles[index]));const feedback=[],pendingShots=[];
   page.on('console',message=>{const value=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=value.indexOf(prefix);if(at<0)return;try{const row=JSON.parse(value.slice(at+prefix.length));feedback.push(row);if(row.Status==='impact'&&pendingShots.length===0)pendingShots.push(page.screenshot({path:path.join(ui.output,'03-combat-impact.png')}));}catch(error){ui.errors.push(error.message);}});
-  await ui.open(process.argv[2]);await ui.click('native-new');await ui.click('foundation-mode-standard');
+  await ui.open(process.argv[2]);await ui.click('native-new');await ui.useStandard();
   await ui.fill('native-name','Style '+styles[index]);
   // Exercise all original choices through actual dropdown interactions before saving.
   for(let n=0;n<tints.length;n++)await ui.choose('native-tint',n);
@@ -26,7 +27,7 @@ let browser,ui;
   const expected={name:'Style '+styles[index],spriteStyle:styles[index],tint:tints[index+1],glyph:sigils[index+1]};
   const identity=()=>Object.entries(expected).every(([key,value])=>ui.state.run.customization[key]===value);
   ui.check(identity(),'native run saves actual chosen style, tint, sigil and name: expected '+JSON.stringify(expected)+'; observed '+JSON.stringify(ui.state.run.customization));
-  ui.check(ui.state.phase==='Map','standard Reaver starts on map');
+  ui.check(ui.state.phase==='Map','Standard Reaver starts on map');
   const route=ui.state.routes.find(row=>['fight','monster'].includes(row.type))||ui.state.routes[0];await ui.command('native-route-'+route.id);ui.check(ui.state.phase==='Combat','seed 1 opening route enters real combat');
   await ui.shot('02-combat-idle-'+styles[index]);
   const row=ui.state.cards.find(row=>row.card.type==='attack'&&row.cost.action<=ui.state.player.energy&&row.cost.mana<=ui.state.player.mana&&row.cost.stamina<=ui.state.player.stamina);ui.check(!!row,'opening hand has a legal attack');
@@ -40,5 +41,5 @@ let browser,ui;
   ui.check(JSON.stringify(ui.state)===saved,'reload preserves exact game state and appearance');ui.check(identity(),'reloaded customization is unchanged');await ui.shot('04-reloaded-'+styles[index]);
   ui.check(ui.errors.length===0,'no browser or Unity errors');fs.writeFileSync(path.join(ui.output,'feedback.json'),JSON.stringify(feedback,null,2));ui.save(true);summaries.push({style:styles[index],checks:ui.checks.length});await context.close();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===styles.length?'all-styles':'case '+selection[0]+'/'+styles.length,styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

@@ -5,7 +5,7 @@
 // Screenshots/receipts are source-matched; viewport emulation is not device proof.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const {NativeUiDriver}=require('./native-ui-driver.cjs');
+const {NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 
 class MapObserver {
  constructor(page,ui){
@@ -43,7 +43,8 @@ let browser,ui,map;
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const desktopOnly=process.argv.slice(4).includes('--desktop-only');
  const cases=[{width:320,height:640},{width:390,height:844},{width:412,height:915},{width:1440,height:900},{width:390,height:844,sealstone:true}];
- for(const config of cases.filter(row=>!desktopOnly||row.width===1440)){
+ const selection=selectedCases(cases.length);
+ for(const config of cases.filter((row,index)=>selection.includes(index)&&(!desktopOnly||row.width===1440))){
   const viewport={width:config.width,height:config.height},sealstone=!!config.sealstone;
   const phone=viewport.width<500,context=await browser.newContext({viewport,deviceScaleFactor:phone?2:1,hasTouch:phone});
   let activeViewport=viewport;const replayed=[];
@@ -52,12 +53,20 @@ let browser,ui,map;
   const getBounds=async rect=>{const canvas=await page.locator('#unity-canvas').boundingBox();return {x:canvas.x+rect.x*canvas.width/ui.controls.PanelWidth,y:canvas.y+rect.y*canvas.height/ui.controls.PanelHeight,width:rect.width*canvas.width/ui.controls.PanelWidth,height:rect.height*canvas.height/ui.controls.PanelHeight};};
   const control=async id=>{
    await ui.until(()=>ui.has(id),'map control '+id);
+   // A route's control bounds can trail the map view after a camera change;
+   // tap only once the controls report agrees with the rendered node.
+   if(id.startsWith('native-route-')){const node=()=>map.value?.nodes.find(n=>'native-route-'+n.id===id),row=()=>ui.controls.Controls.find(r=>r.Id===id);
+    await ui.until(()=>{const n=node(),c=row();return !!n&&!!c&&['x','y','width','height'].every(k=>Math.abs(n[k]-c[k==='x'?'X':k==='y'?'Y':k==='width'?'Width':'Height'])<.5);},'route control matches rendered node '+id,10000);}
    const c=ui.controls.Controls.find(row=>row.Id===id),rect=await getBounds({x:c.X,y:c.Y,width:c.Width,height:c.Height});
    ui.check(inside(rect,{x:0,y:0,...activeViewport},1),'control is on screen: '+id);
    if(id.startsWith('native-route-'))ui.check(inside(rect,await getBounds(map.value.viewport),1),'route is inside clipped map viewport: '+id);
    await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await ui.frames();await page.mouse.down();await page.waitForTimeout(140);await page.mouse.up();await settled();
   };
   const mapControl=async id=>{const before=map.revision;await control('native-map-'+id);await ui.until(()=>map.revision>before,'map response '+id);};
+  // Unity may defer the controls report by a layout pass after the map view
+  // report lands, so control-list assertions wait for the report to catch up
+  // before checking. The assertion itself is unchanged and still fails.
+  const eventually=async(test,label)=>{try{await ui.until(test,label,10000);}catch{}ui.check(test(),label);};
   const snapshot=()=>JSON.stringify(ui.state);
   const unchanged=(before,label)=>ui.check(snapshot()===before&&ui.state.phase==='Map',label);
   const wheel=async()=>{const rect=await getBounds(map.value.viewport),before=map.value.camera.scrollTop,revision=map.revision;await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.wheel(0,before>30?-180:180);await ui.until(()=>map.revision>revision,'map wheel receipt');await settled();ui.check(Math.abs(map.value.camera.scrollTop-before)>1,'wheel moves the map camera');};
@@ -65,8 +74,8 @@ let browser,ui,map;
    const value=map.value,canvas=await page.locator('#unity-canvas').boundingBox(),bounds=await getBounds(value.viewport);
    ui.check(value.scope==='solo',label+': solo map receipt');
    ui.check(bounds.width>0&&bounds.height>0&&inside(bounds,{x:0,y:0,...activeViewport},1),label+': bounded map viewport is on screen');
-   const nodeIds=new Set(value.nodes.map(n=>n.id)),controls=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-   ui.check(controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length))),label+': no hidden node controls');
+   const nodeIds=new Set(value.nodes.map(n=>n.id)),routeControls=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+   await eventually(()=>{const controls=routeControls();return controls.length===nodeIds.size&&controls.every(c=>nodeIds.has(c.Id.slice('native-route-'.length)));},label+': no hidden node controls');
    const legal=value.nodes.filter(n=>n.legal);
    ui.check(legal.length===ui.state.legalNodes.length&&legal.every(n=>ui.state.legalNodes.includes(n.id)),label+': board choices match authoritative legal routes');
    for(const node of legal){ui.check(node.width*canvas.width/ui.controls.PanelWidth>=43.5&&node.height*canvas.height/ui.controls.PanelHeight>=43.5,label+': 44 CSS-pixel route '+node.id);}
@@ -82,21 +91,34 @@ let browser,ui,map;
    ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify(map.receipts,null,2));
    summaries.push({viewport,sealstone,checks:ui.checks.length,touchCancel:phone&&!sealstone,physicalDevice:false});console.log('Map viewport passed: '+viewport.width+'x'+viewport.height+(sealstone?' Sealstone':'')+' ('+ui.checks.length+' checks)');await context.close();
   };
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
+  await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed',sealstone?'BA':'1');await ui.command('native-begin');
   await ui.until(()=>map.value?.scope==='solo','initial map observer');await settled();
   ui.check(ui.state.phase==='Map'&&map.value.mode==='fog','new profile defaults to solo fog');
   if(sealstone){
    // Actual domain-command oracle: work/MapRoutes/.../verified-395.json,
    // SHA-256 65f5a42539f89028c393cdba038fb60002de5b3d2c7215489a948761a9bfef7e.
    // BA is base-35 seed 395. The receipt is evidence, not injected gameplay.
+   // That receipt was recorded with the original Standard Reaver stats (STR 13). The fight
+   // below was re-derived (2026-09-24) by running domain commands through OriginalGameSession
+   // (a scratch beam search over every in-turn play order) for the Standard Reaver preset
+   // {STR 3, DEX 1, CON 2, WIS 1, INT 1}, seed 395, baseline kit, under the lean scale and the
+   // per-class opening hand (Reaver base 3 + 1 at STR 3 = four cards): three strikes kill e1
+   // (25 HP), the hound deals 6 on its first turn, then Technique/Defend/Strike and a Defend hold
+   // it to no further loss, and Gorefire Slash on turn 4 kills e2 with 43/49 HP left. The route
+   // after the fight (n2_2 Unknown treasure offering sealstoneKey, then n3_3/n3_2) is unchanged.
+   const sealstoneHp=43;
    ui.check(ui.state.run.seed===395,'BA creates the verified numeric seed395');
    await inspectTargets('sealstone-entrance');await control('native-route-n1_3');await ui.until(()=>ui.state.phase==='Combat','Sealstone opening fight');
-   for(const [instance,target,phase] of[['starting:0','e2','Combat'],['starting:3','e1','Combat'],['starting:2','e1','Rewards']]){
+   ui.check(ui.state.hand.length===4,'Standard Reaver opens the Sealstone fight on four cards (base 3, +1 at STR 3)');
+   for(const [instance,target,phase,turn,hp] of[['starting:0','e1','Combat',1,49],['starting:3','e1','Combat',1,49],['starting:2','e1','Combat',1,49],['endTurn',null,'Combat',2,43],
+    ['starting:8','e2','Combat',2,43],['starting:4','e2','Combat',2,43],['starting:1','e2','Combat',2,43],['endTurn',null,'Combat',3,43],
+    ['starting:6','e2','Combat',3,43],['endTurn',null,'Combat',4,43],['starting:9','e2','Rewards',4,sealstoneHp]]){
+    if(instance==='endTurn'){await ui.command('native-end-turn');ui.check(ui.state.phase===phase&&ui.state.turn===turn&&ui.state.player.hp===hp,'verified Sealstone fight: turn '+turn+' begins at '+hp+' HP');continue;}
     ui.check(ui.state.hand.some(card=>card.instanceId===instance),'Sealstone trace card is in actual hand: '+instance);
     await ui.click('native-target-'+target);for(let page=0;page<8&&!ui.has('native-card-'+instance)&&ui.has('native-hand-next');page++)await ui.click('native-hand-next');
-    await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===64,'verified Sealstone fight command: '+instance+' to '+target);
+    await ui.click('native-card-'+instance);await ui.command('native-play');ui.check(ui.state.phase===phase&&ui.state.player.hp===hp,'verified Sealstone fight command: '+instance+' to '+target);
    }
-   await ui.command('native-reward-cinders');ui.check(ui.state.room.states.cinders==='taken','opening cinders are actually claimed');await ui.command('native-rewards-continue');
+   await ui.command('native-reward-cinders');ui.check(ui.state.room.states.cinders==='taken','opening cinders are actually claimed');await ui.continueRewards();
    await ui.until(()=>map.value?.camera.nodeId==='n1_3','Sealstone unknown-route decision');await settled();await mapControl('fit');
    ui.check(ui.state.legalNodes.includes('n2_2')&&map.value.nodes.some(n=>n.id==='n2_2'&&n.type==='event'&&!n.revealed),'next treasure remains Unknown before Sealstone ownership');
    await inspectTargets('sealstone-before-unknown');await ui.shot('01-before-unknown');
@@ -104,9 +126,9 @@ let browser,ui,map;
    await mapControl('mode');ui.check(Object.keys(future).every(id=>map.value.nodes.some(n=>n.id===id&&n.type==='event'&&!n.revealed)),'all-paths future outcomes remain Unknown before the claim');map.capture('sealstone-before-paths');await mapControl('mode');
    await control('native-route-n2_2');await ui.until(()=>ui.state.phase==='Rewards','Unknown treasure reward room');
    ui.check(ui.state.room.rewards.relicId==='sealstoneKey','actual Unknown room offers Sealstone Key');await ui.shot('02-sealstone-offer');
-   await ui.command('native-reward-relic');ui.check(ui.state.room.states.relic==='taken','Sealstone reward is accepted and marked taken');await ui.command('native-rewards-continue');
+   await ui.command('native-reward-relic');ui.check(ui.state.room.states.relic==='taken','Sealstone reward is accepted and marked taken');await ui.continueRewards();
    await ui.until(()=>map.value?.camera.nodeId==='n2_2','post-claim revealed map');await settled();await mapControl('fit');
-   ui.check(ui.state.player.hp===64&&ui.state.legalNodes.length===2&&['n3_3','n3_2'].every(id=>ui.state.legalNodes.includes(id)),'verified Sealstone route keeps HP and reaches authored next choices');
+   ui.check(ui.state.player.hp===sealstoneHp&&ui.state.legalNodes.length===2&&['n3_3','n3_2'].every(id=>ui.state.legalNodes.includes(id)),'verified Sealstone route keeps HP and reaches authored next choices');
    ui.check(map.value.mode==='fog'&&map.value.nodes.some(n=>n.id==='n2_2'&&n.current&&n.visited&&n.revealed&&n.type==='treasure'),'claimed Key reveals the current treasure in fog');
    ui.check(Object.keys(future).every(id=>!map.value.nodes.some(n=>n.id===id)),'Key does not expose future hidden fog nodes');
    await inspectTargets('sealstone-revealed-fog');await ui.shot('03-revealed-fog');const fog=snapshot(),fogIds=map.value.nodes.map(n=>n.id).sort();
@@ -125,11 +147,11 @@ let browser,ui,map;
   ui.check(fogEdges.every(e=>fogIds.includes(e.from)&&fogIds.includes(e.to)),'fog edges connect only visible nodes');
   await inspectTargets('all-paths');await ui.shot('02-all-paths');
   await mapControl('glow');ui.check(map.value.shrineGlow===false,'shrine highlight preference can be disabled');unchanged(initial,'highlight toggle does not mutate the run');
-  await mapControl('legend');ui.check(ui.has('native-map-close'),'legend opens a dismissible overlay');
-  const coveredRoutes=ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
-  ui.check(coveredRoutes.length>0&&coveredRoutes.every(c=>!c.Enabled),'legend disables every underlying node control');
+  await mapControl('legend');await eventually(()=>ui.has('native-map-close'),'legend opens a dismissible overlay');
+  const coveredRoutes=()=>ui.controls.Controls.filter(c=>c.Id.startsWith('native-route-'));
+  await eventually(()=>coveredRoutes().length>0&&coveredRoutes().every(c=>!c.Enabled),'legend disables every underlying node control');
   await ui.shot('03-legend');await mapControl('close');
-  await mapControl('routes');ui.check(ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
+  await mapControl('routes');await eventually(()=>ui.state.legalNodes.every(id=>ui.has('native-map-choice-'+id)),'Routes lists all authoritative choices');await ui.shot('04-routes');await mapControl('close');unchanged(initial,'opening and closing map overlays never travels');
   for(let step=0;step<4;step++)await mapControl('zoom-in');
   await wheel();unchanged(initial,'wheel camera movement never travels');
   await mapControl('recenter');
@@ -195,7 +217,7 @@ let browser,ui,map;
     await ui.click('native-card-'+action.instanceId);await ui.command('native-play');
    }else if(kind==='endTurn')await ui.command('native-end-turn');
    else if(kind==='reward')await ui.command('native-reward-'+value+(value==='card'?'-'+action.cardId:''));
-   else if(kind==='continueRewards')await ui.command('native-rewards-continue');
+   else if(kind==='continueRewards')await ui.continueRewards();
    else throw Error('Unexpected first-fight replay command: '+action.command);
    ui.check(matches(action),'HP, MP, stamina, turn and phase match committed replay: '+action.command);
    replayed.push({command:action.command,phase:ui.state.phase,hp:ui.state.player.hp,mana:ui.state.player.mana,stamina:ui.state.player.stamina});
@@ -206,5 +228,5 @@ let browser,ui,map;
   fs.writeFileSync(path.join(ui.output,'first-fight-replay.json'),JSON.stringify({fixture:'UnityTests/Parity/native-browser-replay.json',fixtureSha256:crypto.createHash('sha256').update(traceBytes).digest('hex'),commands:replayed},null,2));
   await finish();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':'full-five-cases',viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:desktopOnly?'desktop-only':selection.length===cases.length?'full-five-cases':'case '+selection[0]+'/'+cases.length,viewports:summaries,checks:summaries.reduce((n,row)=>n+row.checks,0),physicalDevice:false,cooperativeBrowserProof:false},null,2));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);if(map)fs.writeFileSync(path.join(ui.output,'map-views.json'),JSON.stringify({receipts:map.receipts,last:map.value},null,2));}if(browser)await browser.close();process.exitCode=1;});

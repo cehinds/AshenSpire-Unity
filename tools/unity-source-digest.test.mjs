@@ -39,7 +39,7 @@ test('text CRLF is normalized, preserving lone CR and authored UTF-8',()=>{
  assert.notEqual(digest({'a.cs':Buffer.from('one\rtwo')}),digest({'a.cs':Buffer.from('one\ntwo')}));
 });
 
-for(const extension of ['png','jpg','webp','ttf','otf','TTF'])test(extension+' payload preserves every binary byte',()=>{
+for(const extension of ['png','jpg','webp','ttf','otf','TTF','mp3','ogg','wav','aiff','aif','flac','MP3'])test(extension+' payload preserves every binary byte',()=>{
  const path='Unity/Assets/sample.'+extension,bytes=Buffer.from([0xff,0,13,10,0x80,1]);
  assert.equal(digest({[path]:bytes}),sha(Buffer.concat([Buffer.from(path),bytes])));
  assert.notEqual(digest({[path]:bytes}),digest({[path]:Buffer.from([0xff,0,10,0x80,1])}));

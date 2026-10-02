@@ -1,7 +1,16 @@
 # Editing and testing your Unity game
 
-This guide describes the native original-game rebuild at **0.0.11.0 · build 11**.
-Foundation acceptance is still in progress. The earlier
+> **Playing rather than editing?** Read the [Player guide](PLAYER-GUIDE.md).
+> **Picking up the work?** Start at [Continue here](CONTINUE-HERE.md).
+> Feature status lives in the [roadmap's feature tracker](Unity-Roadmap.md#feature-tracker);
+> version rules in [Unity-Versioning.md](Unity-Versioning.md).
+
+This guide describes the native original-game rebuild at **0.0.14.0 · build 14**.
+Foundation acceptance is still in progress. Build 14 restores the original
+visual direction ([visual parity](Unity-Visual-Parity.md)); build 13 improved
+card cost/shortage text ([combat readability](Unity-Combat-Readability.md));
+build 12 restored the branching map ([map foundation](Unity-Map-Foundation.md)).
+Build 11 notes and older evidence below remain as historical records. The earlier
 [campaign editor guide](Content-Authoring-0.6.0.md) and
 [campaign validation report](Content-Authoring-Validation.md) describe preserved
 adaptation checkpoints; their `campaign.json` and `expedition.json` examples do
@@ -32,8 +41,10 @@ Paths below are relative to the repository root.
 | What to change | Authoritative file or component |
 |---|---|
 | Cards, enemies, encounters, classes, relics, events, equipment and tag joins | `GameContent/Unity/Original/content.json` |
-| Per-point bonuses, five-point thresholds and Catch Breath | `GameContent/Unity/Original/progression.json` |
-| Weight, resource and original supplementary mechanics | `GameContent/Unity/Original/mechanics.json` |
+| Attack/Defense/Power Rating weights, rating ids per weapon profile and damage school, the equipment rating addend, and allocation explanations (schema 2, lean scale; owner 2026-09-24) | `GameContent/Unity/Original/progression.json` |
+| Creation modes (`leanStandard` Standard: class presets, nothing unspent, the default; `lean` Assign points: all 1s with `bonusPool` 3 to spend — change the pool on each row's `bonusPool`, total = 5 + pool, range 1–4; `pointbuy`/`standard` kept for saves), Standard presets (`attributeRules.presets.leanStandard`), ruleset-6 derived pools, weapon requirements and flask capacity. Mirror edits byte for byte to `Unity/Assets/AshenSpire/Resources/Original/content.json` | `GameContent/Unity/Original/content.json` (`creationModes`, `attributeRules`, `derivedStatRules`, `equipment.equipmentRequirements`, `balance`) |
+| Solo hand rules (owner 2026-09-24): shared opening/turn draw and capacity, and each class's opening hand in `classStarting` — base Reaver 3, Rogue 4, Herald 4, Starseer 5, +1 once the class's primary stat reaches 3, min 4, max 6 ("Class base 3–5, +1 from stats"; 2026-09-25 "start with 4-6 cards") | `GameContent/Unity/Original/content.json` (`handRules`, `handRules.classStarting`) |
+| Weight (including `itemWeightScale` 0.2), resource, Catch Breath and original supplementary mechanics | `GameContent/Unity/Original/mechanics.json` |
 | Authored event choice/history rules | `GameContent/Unity/Original/event-choices.json` |
 | Custom menu labels/options | `GameContent/Unity/Original/custom-run-options.json`; magnitudes live in `content.json` under `balance.customMods` and `balance.endless` |
 | Run-shape control labels, limits and probe count | `GameContent/Unity/Original/custom-run-options.json` under `mapShape`; generation uses `OriginalMapShape` and `ActMapGenerator` |
@@ -202,7 +213,8 @@ locally; it does not commit, push or publish. iOS export/device validation remai
 separate work. Inspect the actual target log and `build-source.json` instead of
 assuming every platform was rebuilt because Web succeeded.
 
-The current **0.0.11.0 / build 11** exports share full source digest
+The **0.0.11.0 / build 11** exports (historical; the current build 14 record is
+`Published/build.json`) share full source digest
 `eb5ff8e45b16eef61930a9d94ab94cc681e6dd6c4d6a6dc3bea19ea5d2cffe2e`.
 Web was built 2026-09-07 06:25:03.732683 UTC; the all-target builder exited zero.
 Explicit package verification passed 436 companion, 160 target-file and 18

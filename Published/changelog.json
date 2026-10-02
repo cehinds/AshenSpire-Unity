@@ -1,31 +1,22 @@
 {
   "Added": [
-    "Original-style serif title and gold ornaments.",
-    "Authored card faces with licensed symbol fonts and resource medallions.",
-    "Shared simultaneous-enemy battlefield and responsive class preview."
+    "Portrait and landscape flask reachability regression coverage."
   ],
   "Changed": [
-    "Version 0.0.14.0, build 14; matching Web, Windows, Android and companion packages.",
-    "Warm brown/gold presentation and centered desktop or horizontally scrollable phone hands.",
-    "Long descriptions scroll within the hand; Play and End turn remain available."
+    "Browser checks follow the welcome screen and scroll expanded Settings without dragging sliders."
   ],
   "Fixed": [
-    "Missing authored symbols including crossed swords.",
-    "Unicode diagnostic chunks breaking on supplementary glyph boundaries.",
-    "Windows verifier path sorting disagreed with Unity export hashes.",
-    "Co-op escape remains outside command-disabled gameplay content."
+    "Legacy combat and inspection content no longer end behind the fixed action bar."
   ],
   "KnownIssues": [
-    "Foundation and complete HTML visual parity remain open.",
-    "Inventory, rewards, HUD arrangement and fanned-card motion need further reference matching.",
-    "Long card descriptions require vertical scrolling inside the hand.",
-    "Physical Android and graphical Windows play unverified; iOS not built.",
-    "Archive capacity must expand before publishing both retained builds 13 and 14."
+    "The nine counted checks belong to the focused footer suite; campaign and touch scenarios are reported separately, not assigned invented check counts.",
+    "Build 28 native campaign replay and import/portrait checks remain historical evidence; no full Foundation acceptance is claimed.",
+    "Original save import supports compatible schema-5 map checkpoints; profile, active-room and newer-schema compatibility remains open.",
+    "Physical-device play and owner acceptance remain open."
   ],
   "WhatToTest": [
-    "Compare title, creator and combat against the original reference.",
-    "Create Standard Reaver, seed 1; spend actions and inspect card shortages.",
-    "Scroll to the last card and read its full description; save/reload.",
-    "Use the matching companion for a shared fight and reconnect."
+    "Open Extras and the reference campaign; use a flask after taking damage in portrait and landscape.",
+    "Open Settings, scroll to Back and confirm preferences remain unchanged.",
+    "Use the original-save preview with a compatible map checkpoint."
   ]
 }

@@ -14,24 +14,25 @@ namespace AshenSpire.Application
         private JObject ReadMapView(string scope)
         {
             if (scope != "solo" && scope != "coop") throw new ArgumentException("Unknown map viewer scope");
-            LoadOriginalProfile();
+            if (!TryLoadOriginalProfile()) return new JObject();
             if (_mapViewerSettings == null) _mapViewerSettings = _profile.Snapshot()["settings"]?["mapViewer"] is JObject saved ? (JObject)saved.DeepClone() : new JObject();
             return _mapViewerSettings[scope] is JObject state ? (JObject)state.DeepClone() : new JObject();
         }
         private void WriteMapView(string scope, JObject value)
         {
             ReadMapView(scope);
+            if (_profile == null) return;
             _mapViewerSettings[scope] = value.DeepClone(); _mapViewerDirty = true;
             CancelInvoke(nameof(FlushMapView)); Invoke(nameof(FlushMapView), .25f);
         }
         private void FlushMapView()
         {
             CancelInvoke(nameof(FlushMapView));
-            if (!_mapViewerDirty || _profile == null || _profileSaves == null) return;
+            if (!_mapViewerDirty || _profile == null || _slotSaves == null) return;
             try
             {
                 _profile.SetSettings(new JObject { ["mapViewer"] = _mapViewerSettings.DeepClone() });
-                _profileSaves.Save(_profile.Snapshot()); _mapViewerDirty = false;
+                _mapViewerDirty = !SaveOriginalProfile();
             }
             catch (Exception error)
             {

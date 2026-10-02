@@ -1,4 +1,4 @@
-AshenSpire native co-op companion for Windows
+AshenedSpire native co-op companion for Windows
 
 1. Extract this folder next to the matching game's Web folder.
 2. Double-click Start-Companion.cmd. Keep its window open while playing.

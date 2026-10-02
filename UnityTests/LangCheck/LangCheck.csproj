@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles the engine-independent assemblies the way Unity 6 does: C# 9 on the
+       .NET Standard 2.1 API surface, no implicit usings. dotnet test projects use
+       net8.0/C# 12, so without this a newer language feature or API passes locally
+       and only fails in the Unity editor. -->
+  <PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><LangVersion>9.0</LangVersion><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems><TreatWarningsAsErrors>false</TreatWarningsAsErrors></PropertyGroup>
+  <ItemGroup><PackageReference Include="Newtonsoft.Json" Version="13.0.2" /></ItemGroup>
+  <ItemGroup><Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/**/*.cs" /></ItemGroup>
+</Project>

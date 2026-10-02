@@ -1,0 +1,35 @@
+name: Browser playtest setup
+description: >-
+  Node, Playwright Chromium rendering WebGL through Mesa lavapipe, the local
+  co-op companion when asked, and the packaged player served on port 8787.
+inputs:
+  companion:
+    description: Also build the local co-op test companion (needs .NET).
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - uses: actions/setup-dotnet@v4
+      if: inputs.companion == 'true'
+      with:
+        dotnet-version: '8.0.x'
+    - name: Build the local co-op test companion
+      if: inputs.companion == 'true'
+      shell: bash
+      run: dotnet build tools/NativeLan/Companion/AshenSpire.Companion.csproj -c Release
+    - name: Install browser test tooling
+      shell: bash
+      run: |
+        npm install --no-save playwright
+        npx playwright install --with-deps chromium
+        sudo apt-get install -y --no-install-recommends mesa-vulkan-drivers
+        node tools/playwright-lavapipe.cjs
+    - name: Start the packaged player server
+      shell: bash
+      run: |
+        python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web > /tmp/ashenspire-preview.log 2>&1 &
+        for attempt in $(seq 1 50); do curl -sf http://127.0.0.1:8787/build-source.json > /dev/null && exit 0; sleep 0.2; done
+        echo "Packaged player server did not start"; cat /tmp/ashenspire-preview.log; exit 1

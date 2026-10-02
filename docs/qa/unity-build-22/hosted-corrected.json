@@ -1,0 +1,31 @@
+{
+  "url": "https://cehinds.github.io/AshenSpire-Unity/builds/build-515749744afd909728e6/Web/",
+  "build": 22,
+  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+  "commit": "b41e32fa387bd027f88836e3d52a02634f7f0ea9",
+  "started": true,
+  "downloads": [
+    {
+      "file": "Web.zip",
+      "url": "https://github.com/cehinds/AshenSpire-Unity/blob/b41e32fa387bd027f88836e3d52a02634f7f0ea9/Published/Web.zip?raw=true",
+      "status": 200
+    },
+    {
+      "file": "Windows.zip",
+      "url": "https://github.com/cehinds/AshenSpire-Unity/blob/b41e32fa387bd027f88836e3d52a02634f7f0ea9/Published/Windows.zip?raw=true",
+      "status": 200
+    },
+    {
+      "file": "Android.apk",
+      "url": "https://github.com/cehinds/AshenSpire-Unity/blob/b41e32fa387bd027f88836e3d52a02634f7f0ea9/Published/Android.apk?raw=true",
+      "status": 200
+    },
+    {
+      "file": "Companion.zip",
+      "url": "https://github.com/cehinds/AshenSpire-Unity/blob/b41e32fa387bd027f88836e3d52a02634f7f0ea9/Published/Companion.zip?raw=true",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "physicalDevice": false
+}

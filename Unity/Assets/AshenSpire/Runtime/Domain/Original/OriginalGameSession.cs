@@ -27,8 +27,10 @@ namespace AshenSpire.Domain.Original
         public int ActNumber => _run.ActNumber;
         public string[] LegalNodeIds => _run.LegalNodeIds();
         public JArray Hand => _combat?.Hand ?? new JArray();
+        public JArray Pile(string kind) => _combat?.Pile(kind) ?? new JArray();
         public JArray Enemies => _combat?.Enemies ?? new JArray();
         public int Turn => _combat?.Turn ?? 0;
+        public System.Collections.Generic.IReadOnlyList<EnemyTelegraph> Telegraphs() => _combat != null ? _combat.Telegraphs() : Array.Empty<EnemyTelegraph>();
         public JArray EventChoices => _run.EventChoices();
         public JArray DraftChoices => _run.DraftChoices();
         private JArray _lastEvents = new JArray();
@@ -63,6 +65,7 @@ namespace AshenSpire.Domain.Original
                 throw new ArgumentException("Native save is missing its frozen content or rule configuration.");
             _catalog = new OriginalContentCatalog(snapshot["content"].ToString());
             snapshot = (JObject)snapshot.DeepClone();
+            OriginalWebSaveImport.ValidateReceipt((JObject)snapshot["run"]);
             // Early native v1 saves predate kit identity. Only the complete absence
             // of both fields admits the explicit baseline migration; partial IDs fail.
             new OriginalStartingOptions(_catalog).ValidateSaved((JObject)snapshot["run"], snapshot["run"]["profileMeta"] as JObject, legacy: true);
@@ -74,7 +77,7 @@ namespace AshenSpire.Domain.Original
         {
             _projectionPlayer = _run.Player();
             _progression = new AttributeProgression((JObject)_projectionPlayer["progression"]);
-            _profileOverrides = _progression.BaselineProfiles(_catalog);
+            _profileOverrides = (int?)_projectionPlayer["webImport"]?["version"] == 1 ? null : _progression.BaselineProfiles(_catalog);
             _projection = new WeaponCardProjection(_catalog);
         }
         public JObject Snapshot() => _run.Snapshot();
@@ -82,6 +85,7 @@ namespace AshenSpire.Domain.Original
         {
             var run = _projectionPlayer;
             var projection = _projection.Resolve(instance, (JObject)run["loadout"], (string)run["classId"], (JObject)run["attributes"], _profileOverrides);
+            if ((int?)run["webImport"]?["version"] == 1) return (JObject)projection["card"];
             return (JObject)_progression.ResolveCard(projection, (JObject)run["attributes"], _catalog)["card"];
         }
         public JObject Cost(JObject instance) => _combat != null ? _combat.CardCost(instance) : CardMechanics.CostProfile(Resolve(instance));
@@ -92,11 +96,13 @@ namespace AshenSpire.Domain.Original
             if (_run.Room()["combatSnapshot"] is JObject saved) _combat = CombatSession.Restore(_catalog, _mechanics, saved, Resolve);
             else
             {
+                // A new fight snapshots the run's frozen hand rules (web runCombat resolves them per fight);
+                // a run whose frozen content predates them has none and fights the legacy way.
                 var player = _run.Player(); player["energyMax"] = player["energy"].DeepClone(); player["drawPerTurn"] = player["draw"].DeepClone();
                 var encounter = _catalog.Record("encounters", (string)_run.Room()["encounterId"]);
                 var custom = new OriginalCustomRunRules(_catalog.Data()).CombatOptions(player,(string)encounter["pool"]);
                 player["startStatuses"] = new JArray(((JArray)custom["playerStatuses"]).Concat(player["startStatuses"] as JArray ?? new JArray()).Select(row => row.DeepClone()));
-                _combat = new CombatSession(_catalog, _mechanics, _run.CreateRandom(), player, ((JArray)player["deck"]).OfType<JObject>(), encounter["enemies"].Values<string>(), Resolve,(double)custom["hpMult"],(JArray)custom["enemyStatuses"]);
+                _combat = new CombatSession(_catalog, _mechanics, _run.CreateRandom(), player, ((JArray)player["deck"]).OfType<JObject>(), encounter["enemies"].Values<string>(), Resolve,(double)custom["hpMult"],(JArray)custom["enemyStatuses"],_catalog.SoloHandRules);
                 CommitCombat();
             }
         }
@@ -122,13 +128,32 @@ namespace AshenSpire.Domain.Original
         public void Enter(string id) => Change(() => { if (!_run.EnterNode(id)) throw new ArgumentException("Choose a connected route."); });
         public void PickDraft(string cardId) => Change(() => { if (!_run.PickDraft(cardId)) throw new ArgumentException("Choose one of the current draft offers."); });
         public void Play(string instance, string target) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.PlayCard(instance, target); CommitCombat(); });
-        public void EndTurn() => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.EndTurn(); CommitCombat(); });
+        public void EndTurn() => EndTurn(null);
+        /// <summary>End the turn discarding the chosen retained cards; DiscardPlan says how many must or may be chosen.</summary>
+        public void EndTurn(System.Collections.Generic.IEnumerable<string> discardIds) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.EndTurn(discardIds); CommitCombat(); });
+        /// <summary>The current turn-end discard choice (empty and unprompted outside a fight or in a legacy fight).</summary>
+        public JObject DiscardPlan => _combat?.DiscardChoicePlan() ?? new JObject { ["cardIds"] = new JArray(), ["minimum"] = 0, ["maximum"] = 0, ["prompt"] = false };
         public void CatchBreath() => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.CatchBreath(); CommitCombat(); });
         public void DrinkCharge(string kind) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkCharge(kind); CommitCombat(); });
         public void DrinkFlask(int slot, string target = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkFlask(slot, target); CommitCombat(); });
         public void Service(string service, JObject request) => Change(() => { if (!_run.UseService(service, request)) throw new ArgumentException("This service is unavailable here or its requirements are not met."); });
         public void Reward(string kind, string id = null) => Change(() => { if (!_run.CollectReward(kind, id)) throw new ArgumentException("That reward cannot be collected."); });
+        /// <summary>Continue as "manual": only what was already chosen comes along (the pre-setting behaviour).</summary>
         public void ContinueRewards() => Change(() => _run.ContinueRewards(false));
+        /// <summary>Continue under the Reward collection setting (OriginalGameplayOptions.RewardCollectMode):
+        /// auto takes every pending, un-skipped, unblocked reward and picks a card on the cardRewards stream.</summary>
+        public void ContinueRewards(string mode) => Change(() => _run.ContinueRewards(OriginalGameplayOptions.RewardCollectMode(_catalog.Data(), mode) == "auto"));
+        /// <summary>Mark a pending reward skipped, so an auto Continue leaves it (the HTML Skip).</summary>
+        public void SkipReward(string kind) => Change(() => { if (!_run.SkipReward(kind)) throw new ArgumentException("That reward cannot be skipped."); });
+        /// <summary>Merge gameplay options into the run's profileMeta.settings (see OriginalGameplayOptions).
+        /// Not a command: Changed is raised only when a value differed, so the caller saves.</summary>
+        public bool ApplyProfileSettings(JObject settings)
+        {
+            var before = Snapshot();
+            try { if (!_run.SetProfileSettings(settings)) return false; _projectionPlayer = _run.Player(); }
+            catch { RestoreState(before); throw; }
+            Changed?.Invoke(); return true;
+        }
         public void ChooseEvent(string id) => Change(() => { if (!_run.ChooseEvent(id)) throw new ArgumentException("This choice's requirements are not met."); });
         public void LeaveEvent() => Change(() => _run.LeaveEvent());
         public void Rest() => Change(() => _run.Rest());

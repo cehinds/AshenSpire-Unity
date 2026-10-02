@@ -1,0 +1,432 @@
+{
+  "version": "0.0.22.0",
+  "buildNumber": 22,
+  "sourceDigest": "54b429cfb6788b65be1ed34a185c8422841c44439a50f922ecfc60374a11e3ea",
+  "startupMs": 2383,
+  "renderer": "Edge software WebGL",
+  "screenshots": [
+    {
+      "id": "wanderingSoldier",
+      "viewport": "phone",
+      "file": "phone-wanderingSoldier.png",
+      "asset": {
+        "enemyId": "wanderingSoldier",
+        "resource": "Art/painted_wanderingSoldier",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "blightHound",
+      "viewport": "phone",
+      "file": "phone-blightHound.png",
+      "asset": {
+        "enemyId": "blightHound",
+        "resource": "Art/painted_blightHound",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "graveWisp",
+      "viewport": "phone",
+      "file": "phone-graveWisp.png",
+      "asset": {
+        "enemyId": "graveWisp",
+        "resource": "Art/painted_graveWisp",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "wyrmAspirant",
+      "viewport": "phone",
+      "file": "phone-wyrmAspirant.png",
+      "asset": {
+        "enemyId": "wyrmAspirant",
+        "resource": "Art/painted_wyrmAspirant",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "fellWarden",
+      "viewport": "phone",
+      "file": "phone-fellWarden.png",
+      "asset": {
+        "enemyId": "fellWarden",
+        "resource": "Art/painted_fellWarden",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "gildedKnight",
+      "viewport": "phone",
+      "file": "phone-gildedKnight.png",
+      "asset": {
+        "enemyId": "gildedKnight",
+        "resource": "Art/painted_gildedKnight",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtSurgeon",
+      "viewport": "phone",
+      "file": "phone-courtSurgeon.png",
+      "asset": {
+        "enemyId": "courtSurgeon",
+        "resource": "Art/painted_courtSurgeon",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "livingArmor",
+      "viewport": "phone",
+      "file": "phone-livingArmor.png",
+      "asset": {
+        "enemyId": "livingArmor",
+        "resource": "Art/painted_livingArmor",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtDuelist",
+      "viewport": "phone",
+      "file": "phone-courtDuelist.png",
+      "asset": {
+        "enemyId": "courtDuelist",
+        "resource": "Art/painted_courtDuelist",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "stitchedKing",
+      "viewport": "phone",
+      "file": "phone-stitchedKing.png",
+      "asset": {
+        "enemyId": "stitchedKing",
+        "resource": "Art/painted_stitchedKing",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "valkyrieShade",
+      "viewport": "phone",
+      "file": "phone-valkyrieShade.png",
+      "asset": {
+        "enemyId": "valkyrieShade",
+        "resource": "Art/painted_valkyrieShade",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "wyrmLord",
+      "viewport": "phone",
+      "file": "phone-wyrmLord.png",
+      "asset": {
+        "enemyId": "wyrmLord",
+        "resource": "Art/painted_wyrmLord",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "huskBrute",
+      "viewport": "phone",
+      "file": "phone-huskBrute.png",
+      "asset": {
+        "enemyId": "huskBrute",
+        "resource": "Art/Enemies/Painted/HuskBrute",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "stitchedHound",
+      "viewport": "phone",
+      "file": "phone-stitchedHound.png",
+      "asset": {
+        "enemyId": "stitchedHound",
+        "resource": "Art/Enemies/Painted/StitchedHound",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtMarionette",
+      "viewport": "phone",
+      "file": "phone-courtMarionette.png",
+      "asset": {
+        "enemyId": "courtMarionette",
+        "resource": "Art/Enemies/Painted/CourtMarionette",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "ashRevenant",
+      "viewport": "phone",
+      "file": "phone-ashRevenant.png",
+      "asset": {
+        "enemyId": "ashRevenant",
+        "resource": "Art/Enemies/Painted/AshRevenant",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "emberStarvedPilgrim",
+      "viewport": "phone",
+      "file": "phone-emberStarvedPilgrim.png",
+      "asset": {
+        "enemyId": "emberStarvedPilgrim",
+        "resource": "Art/Enemies/Painted/EmberStarvedPilgrim",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "charredColossus",
+      "viewport": "phone",
+      "file": "phone-charredColossus.png",
+      "asset": {
+        "enemyId": "charredColossus",
+        "resource": "Art/Enemies/Painted/CharredColossus",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "blightedValkyrie",
+      "viewport": "phone",
+      "file": "phone-blightedValkyrie.png",
+      "asset": {
+        "enemyId": "blightedValkyrie",
+        "resource": "Art/Enemies/Painted/BlightedValkyrie",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "wanderingSoldier",
+      "viewport": "desktop",
+      "file": "desktop-wanderingSoldier.png",
+      "asset": {
+        "enemyId": "wanderingSoldier",
+        "resource": "Art/painted_wanderingSoldier",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "blightHound",
+      "viewport": "desktop",
+      "file": "desktop-blightHound.png",
+      "asset": {
+        "enemyId": "blightHound",
+        "resource": "Art/painted_blightHound",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "graveWisp",
+      "viewport": "desktop",
+      "file": "desktop-graveWisp.png",
+      "asset": {
+        "enemyId": "graveWisp",
+        "resource": "Art/painted_graveWisp",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "wyrmAspirant",
+      "viewport": "desktop",
+      "file": "desktop-wyrmAspirant.png",
+      "asset": {
+        "enemyId": "wyrmAspirant",
+        "resource": "Art/painted_wyrmAspirant",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "fellWarden",
+      "viewport": "desktop",
+      "file": "desktop-fellWarden.png",
+      "asset": {
+        "enemyId": "fellWarden",
+        "resource": "Art/painted_fellWarden",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "gildedKnight",
+      "viewport": "desktop",
+      "file": "desktop-gildedKnight.png",
+      "asset": {
+        "enemyId": "gildedKnight",
+        "resource": "Art/painted_gildedKnight",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtSurgeon",
+      "viewport": "desktop",
+      "file": "desktop-courtSurgeon.png",
+      "asset": {
+        "enemyId": "courtSurgeon",
+        "resource": "Art/painted_courtSurgeon",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "livingArmor",
+      "viewport": "desktop",
+      "file": "desktop-livingArmor.png",
+      "asset": {
+        "enemyId": "livingArmor",
+        "resource": "Art/painted_livingArmor",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtDuelist",
+      "viewport": "desktop",
+      "file": "desktop-courtDuelist.png",
+      "asset": {
+        "enemyId": "courtDuelist",
+        "resource": "Art/painted_courtDuelist",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "stitchedKing",
+      "viewport": "desktop",
+      "file": "desktop-stitchedKing.png",
+      "asset": {
+        "enemyId": "stitchedKing",
+        "resource": "Art/painted_stitchedKing",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "valkyrieShade",
+      "viewport": "desktop",
+      "file": "desktop-valkyrieShade.png",
+      "asset": {
+        "enemyId": "valkyrieShade",
+        "resource": "Art/painted_valkyrieShade",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "wyrmLord",
+      "viewport": "desktop",
+      "file": "desktop-wyrmLord.png",
+      "asset": {
+        "enemyId": "wyrmLord",
+        "resource": "Art/painted_wyrmLord",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "huskBrute",
+      "viewport": "desktop",
+      "file": "desktop-huskBrute.png",
+      "asset": {
+        "enemyId": "huskBrute",
+        "resource": "Art/Enemies/Painted/HuskBrute",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "stitchedHound",
+      "viewport": "desktop",
+      "file": "desktop-stitchedHound.png",
+      "asset": {
+        "enemyId": "stitchedHound",
+        "resource": "Art/Enemies/Painted/StitchedHound",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "courtMarionette",
+      "viewport": "desktop",
+      "file": "desktop-courtMarionette.png",
+      "asset": {
+        "enemyId": "courtMarionette",
+        "resource": "Art/Enemies/Painted/CourtMarionette",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "ashRevenant",
+      "viewport": "desktop",
+      "file": "desktop-ashRevenant.png",
+      "asset": {
+        "enemyId": "ashRevenant",
+        "resource": "Art/Enemies/Painted/AshRevenant",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "emberStarvedPilgrim",
+      "viewport": "desktop",
+      "file": "desktop-emberStarvedPilgrim.png",
+      "asset": {
+        "enemyId": "emberStarvedPilgrim",
+        "resource": "Art/Enemies/Painted/EmberStarvedPilgrim",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "charredColossus",
+      "viewport": "desktop",
+      "file": "desktop-charredColossus.png",
+      "asset": {
+        "enemyId": "charredColossus",
+        "resource": "Art/Enemies/Painted/CharredColossus",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "blightedValkyrie",
+      "viewport": "desktop",
+      "file": "desktop-blightedValkyrie.png",
+      "asset": {
+        "enemyId": "blightedValkyrie",
+        "resource": "Art/Enemies/Painted/BlightedValkyrie",
+        "width": 512,
+        "height": 512
+      }
+    }
+  ],
+  "allCatalogEnemiesRendered": true,
+  "allEncountersExercised": false,
+  "coopExercised": false,
+  "ownerAccepted": false,
+  "physicalDevice": false
+}

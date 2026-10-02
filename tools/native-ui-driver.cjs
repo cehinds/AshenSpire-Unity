@@ -24,6 +24,18 @@ async function stablePointOf(ui,id,fraction){
  }
  throw Error('Unstable control geometry: '+id);
 }
+// Lean creation rows per class (web attributes.js:171-174). They are the
+// Standard mode's presets (content.json attributeRules.presets.leanStandard,
+// owner 2026-09-24), and the targets assignPoints spends in Assign points mode.
+const LEAN_ATTRIBUTE_ORDER=Object.freeze(['strength','dexterity','constitution','wisdom','intelligence']);
+const LEAN_CLASS_ALLOCATIONS=Object.freeze({
+ reaver:Object.freeze({strength:3,dexterity:1,constitution:2,wisdom:1,intelligence:1}),
+ starseer:Object.freeze({strength:1,dexterity:1,constitution:1,wisdom:2,intelligence:3}),
+ herald:Object.freeze({strength:1,dexterity:1,constitution:2,wisdom:3,intelligence:1}),
+ rogue:Object.freeze({strength:1,dexterity:3,constitution:2,wisdom:1,intelligence:1})
+});
+const LEAN_REAVER=LEAN_CLASS_ALLOCATIONS.reaver;
+const STANDARD_MODE='leanStandard',ASSIGN_MODE='lean';
 class NativeUiDriver {
  constructor(page,output){this.page=page;this.output=output;this.controls=null;this.state=null;this.coop=null;this.layout=0;this.revision=0;this.coopRevision=0;this.errors=[];this.checks=[];this.chunks=new Map();fs.mkdirSync(output,{recursive:true});
   const normalizeControls=controlReportsForPage(page,e=>this.errors.push(e));
@@ -33,7 +45,7 @@ class NativeUiDriver {
  check(value,label){if(!value)throw Error(label);this.checks.push(label);}
  has(id){return this.controls?.Controls.some(c=>c.Id===id&&c.Enabled);}
  async until(test,label,timeout=30000){const end=Date.now()+timeout;while(Date.now()<end){if(test())return;await this.page.waitForTimeout(80);}throw Error('Timed out: '+label);}
- async open(url){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.controls?.Controls.length,'title');}
+ async open(url,{dismissWelcome=true}={}){await this.page.goto(url);const stamp=await this.page.request.get(new URL('build-source.json',url).href);if(!stamp.ok())throw Error('Missing player build receipt');fs.writeFileSync(path.join(this.output,'build-source.json'),await stamp.body());await this.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await this.until(()=>this.has('native-new')||this.has('native-welcome-continue'),'welcome or title');if(dismissWelcome&&this.has('native-welcome-continue')){await this.click('native-welcome-continue');await this.until(()=>this.has('native-new'),'title after welcome');}}
  async frames(){await this.page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
  async key(value){if(value.includes('+')){const [mod,key]=value.split('+');await this.page.keyboard.down(mod);try{await this.key(key);}finally{await this.page.keyboard.up(mod);}return;}await this.page.keyboard.down(value);await this.frames();await this.page.waitForTimeout(100);await this.page.keyboard.up(value);await this.frames();}
  point(id,fraction){return pointOf(this,id,fraction);}
@@ -93,7 +105,10 @@ class NativeUiDriver {
    if(stagnant>=5)throw Error('Cannot reach '+id+': no movement after bounded '+lastReason+' scroll; '+JSON.stringify({rect,boundary}));
    if(vertical){
     // Use a point within the visible rail when possible, otherwise outer body.
-    const x=Math.max(boundary.left+8,Math.min(boundary.right-8,rect.left+rect.width/2));
+    // Settings sliders consume wheel input and change their values. Scroll from
+    // the surrounding gutter instead, so navigation never edits a setting.
+    const settings=report.Controls.some(control=>control.Id==='volume-master');
+    const x=settings?canvas.x+6:Math.max(boundary.left+8,Math.min(boundary.right-8,rect.left+rect.width/2));
     const y=exposed.bottom<=exposed.top?canvas.y+canvas.height*.5:Math.max(boundary.top+20,Math.min(boundary.bottom-20,(rect.top+rect.bottom)/2));
     await this.page.mouse.move(x,y);await this.page.mouse.wheel(0,rect.top<boundary.top?-260:260);lastReason='vertical';
    }else{
@@ -107,11 +122,53 @@ class NativeUiDriver {
   }
   throw Error('Cannot reach '+id+' after bounded measured scrolling');
  }
+ // Standard (the default creation mode, owner 2026-09-24): the class opens on
+ // its preset row with nothing unspent, so a climb can begin at once. If an
+ // earlier step left the Assign points mode selected, choose Standard again.
+ async useStandard(){
+  const unspent=()=>(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled).map(c=>c.Id);
+  if(unspent().length)await this.click('foundation-mode-'+STANDARD_MODE);
+  const left=unspent();if(left.length)throw Error('Standard preset left points unspent: '+left.join(', '));
+ }
+ // Assign points: choose the Assign points mode (every attribute at 1, the
+ // configured pool unspent), then press each +attribute control (target-1)
+ // times in the fixed order strength, dexterity, constitution, wisdom,
+ // intelligence; afterwards no +attribute control may remain enabled, since
+ // a climb only begins once the pool is empty.
+ async assignPoints(targets=LEAN_REAVER){
+  await this.click('foundation-mode-'+ASSIGN_MODE);
+  for(const id of LEAN_ATTRIBUTE_ORDER){const target=targets[id]??1;for(let n=1;n<target;n++)await this.click('attribute-'+id+'-up');}
+  const left=(this.controls?.Controls||[]).filter(c=>/^attribute-[a-z]+-up$/.test(c.Id)&&c.Enabled).map(c=>c.Id);
+  if(left.length)throw Error('Creation points remain after assignment: '+left.join(', '));
+ }
  async fill(id,value){await this.click(id,false,.85);await this.key('Control+a');await this.key('Backspace');await this.page.keyboard.type(value,{delay:80});await this.key('Tab');await this.page.waitForTimeout(200);}
- async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();await this.key('Home');for(let n=0;n<index;n++)await this.key('ArrowDown');await this.key('Enter');await this.page.waitForTimeout(700);}
+ async choose(id,index){await this.click(id,false,.85);await this.page.waitForTimeout(500);await this.frames();const tap=async key=>{await this.page.keyboard.press(key,{delay:40});await this.page.waitForTimeout(160);};await tap('Home');for(let n=0;n<index;n++)await tap('ArrowDown');await tap('Enter');await this.page.waitForTimeout(700);}
  async command(id){const before=this.revision;await this.click(id);await this.until(()=>this.revision>before,'native command '+id);}
+ // Continue rewards leaving whatever is still pending (the "manual" meaning). Under the default
+ // auto Reward collection setting the screen shows Skip controls; skip each pending kind (read from
+ // the authoritative state) first, so Continue takes nothing extra.
+ async continueRewards(){
+  await this.until(()=>this.has('native-rewards-continue'),'reward continue');
+  if(this.controls.Controls.some(c=>c.Id.startsWith('native-skip-reward-')))for(const id of NativeUiDriver.pendingRewardSkips(this.state))await this.command(id);
+  await this.command('native-rewards-continue');
+ }
+ static pendingRewardSkips(s){const room=(s&&s.room)||{},offer=room.rewards||{},states=room.states||{};return ['cinders','card','flask','armament','relic'].filter(k=>!states[k]&&(k==='cinders'?offer.cinders>0:k==='card'?(offer.cardIds||[]).length>0:!!offer[k+'Id'])).map(k=>'native-skip-reward-'+k);}
  async coopCommand(id){const before=this.coopRevision;await this.click(id);await this.until(()=>this.coopRevision>before,'shared command '+id);}
  async shot(name){await this.page.waitForTimeout(250);await this.page.screenshot({path:path.join(this.output,name+'.png')});}
  save(success){fs.writeFileSync(path.join(this.output,'checks.json'),JSON.stringify({success,checks:this.checks,errors:this.errors,state:this.state,coop:this.coop,controls:this.controls,physicalDevice:false},null,2));}
 }
-module.exports={NativeUiDriver};
+// `--case=<index>/<count>` runs one case of a multi-case harness so CI can give
+// each viewport or style its own job. <count> must equal the harness's case
+// count: adding a case fails every split run until the CI matrix lists it, so a
+// split can never silently drop coverage. Without the flag every case runs.
+function selectedCases(count,argv=process.argv){
+ const flag=argv.find(value=>value.startsWith('--case='));
+ if(!flag)return Array.from({length:count},(_,index)=>index);
+ const match=/^--case=(\d+)\/(\d+)$/.exec(flag);
+ if(!match)throw Error('Use --case=<index>/<count>, got '+flag);
+ const index=Number(match[1]),total=Number(match[2]);
+ if(total!==count)throw Error('--case names '+total+' cases but this harness has '+count+'; update the CI matrix');
+ if(index>=count)throw Error('--case index '+index+' is outside 0..'+(count-1));
+ return [index];
+}
+module.exports={NativeUiDriver,selectedCases,LEAN_CLASS_ALLOCATIONS,LEAN_ATTRIBUTE_ORDER,LEAN_REAVER,STANDARD_MODE,ASSIGN_MODE};

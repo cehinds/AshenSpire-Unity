@@ -15,8 +15,21 @@ let browser,ui;
   const ctx=await browser.newContext({viewport,deviceScaleFactor:1}),page=await ctx.newPage();ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));
   const consolePath=path.join(ui.output,'console.ndjson');page.on('console',m=>fs.appendFileSync(consolePath,JSON.stringify({type:m.type(),text:m.text()})+'\n'));
   await ui.open(url);const stamp=JSON.parse(fs.readFileSync(path.join(ui.output,'build-source.json')));ui.check(stamp.sourceDigest===expectedDigest,'source matches designated compiled build');
-  await ui.click('native-new');await ui.click('foundation-mode-standard');await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
-  const card=ui.state.cards.find(row=>row.card.id==='gorefireSlash'||row.card.name==='Gorefire Slash');ui.check(!!card,'authored Gorefire Slash is in starting hand');
+  await ui.click('native-new');await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
+  const signature=()=>ui.state.cards.find(row=>row.card.id==='gorefireSlash'||row.card.name==='Gorefire Slash');
+  ui.check(ui.state.run.deck.some(row=>row.cardId==='gorefireSlash'),'authored Gorefire Slash is in the real starting deck');
+  // The current starting draw is smaller than the old fixture's. Reach the
+  // signature through actual defensive play and draws, never an injected hand.
+  for(let turn=0;turn<3&&!signature();turn++){
+   for(let action=0;action<3&&!signature();action++){
+    const guard=ui.state.cards.find(row=>row.card.id==='technique'||row.card.id==='defend');
+    if(!guard)break;await ui.click('native-card-'+guard.instance.instanceId);
+    if(!ui.has('native-play'))break;await ui.command('native-play');
+   }
+   if(signature())break;await ui.command('native-end-turn');
+   ui.check(ui.state.phase==='Combat','defensive draw sequence stays in combat');
+  }
+  const card=signature();ui.check(!!card,'normal play draws the authored Gorefire Slash');
   const id='native-card-'+card.instance.instanceId;await ui.click(id);ui.check(ui.has('native-play'),'selected Gorefire Slash is affordable');
   const initialState=JSON.stringify(ui.state),snapshots=[];
   const measure=async label=>{
@@ -35,7 +48,8 @@ let browser,ui;
   ui.check(current.card.y<before.card.y-1,'real vertical wheel moves long card upwards');
   ui.check(current.card.y+current.card.height<=current.play.y-1,'entire lower card edge and description end are above Play');
   ui.check(current.card.y+current.card.height>current.canvas.y&&current.card.x+current.card.width>current.canvas.x&&current.card.x<current.canvas.x+current.canvas.width,'description end remains inside the actual canvas');
-  ui.check(current.labels.some(label=>label.includes('Deal 13 damage.')&&label.includes('Apply 3 Bleed.')&&label.includes('Includes +8 total damage from Strength.')),'full authored long description remains in read-only labels');
+  // Confirmed from domain output: UnityTests/CardText/WeaponTextChecks.cs asserts this Gorefire text for the Standard Reaver {3,1,2,1,1}.
+  ui.check(current.labels.some(label=>label.includes('Deal 7 damage.')&&label.includes('Apply 3 Bleed.')&&label.includes('Includes +2 total damage from Attack Rating.')),'full authored long description remains in read-only labels');
   for(const action of[current.play,current.end]){
    ui.check(action.enabled&&action.x>=current.canvas.x-0.1&&action.x+action.width<=current.canvas.x+current.canvas.width+0.1&&action.y>=current.canvas.y&&action.y+action.height<=current.canvas.y+current.canvas.height+0.1,'action remains enabled and fully on canvas: '+action.id);
    ui.check(action.width>=43.9&&action.height>=43.9,'action keeps44CSS target: '+action.id);

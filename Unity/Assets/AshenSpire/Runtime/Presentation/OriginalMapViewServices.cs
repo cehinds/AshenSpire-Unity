@@ -2,6 +2,7 @@
 // CampaignView supplies screen sizing and shell layout; RunController owns local
 // profile preferences. These callbacks never enter gameplay or network commands.
 using System;
+using UnityEngine;
 using Newtonsoft.Json.Linq;
 namespace AshenSpire.Presentation
 {
@@ -12,5 +13,7 @@ namespace AshenSpire.Presentation
         public Func<double> DisplayScale { get; set; }
         public Action<bool> SetMapSurface { get; set; }
         public Action Report { get; set; }
+        /// <summary>Map keyboard action for a key (OriginalKeyBindings); null uses the default keys.</summary>
+        public Func<KeyCode, string> KeyAction { get; set; }
     }
 }

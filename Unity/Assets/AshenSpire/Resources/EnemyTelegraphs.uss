@@ -1,0 +1,41 @@
+/* EnemyTelegraphs.uss — enemy intent badge and Poise meter (F04). Mirrors the HTML
+   `.intent.lg` StatePill (styles/kit.css .as-pill + data-tone) and the skinny gold
+   `.as-meter[data-tone="poise"]`. Colours are the OriginalTheme / base.css tokens:
+   gold #c9a227, danger #d4622e, frost #7fa8c9, violet #a07ad6, line #3a3024,
+   muted #7a6f5a, bg #0d0b08, panel #171310, parchment #e8dcc0.
+   EnemyTelegraphView loads this on each enemy slot; no rule depends on an ancestor. */
+.telegraph-intent { flex-direction: row; align-items: center; justify-content: center; align-self: center;
+  min-height: 24px; margin: 0; padding: 1px 9px; border-width: 1px; border-radius: 12px;
+  border-color: #3a3024; background-color: #171310; }
+.telegraph-intent > Label { margin: 0; padding: 0; -unity-text-align: middle-center; color: #7a6f5a; white-space: nowrap; }
+.telegraph-intent-glyph { font-size: 15px; margin-right: 4px; }
+.telegraph-intent-value { font-size: 14px; -unity-font-style: bold; }
+.telegraph-intent-delay { font-size: 12px; margin-left: 3px; }
+.telegraph-attack { border-color: #d4622e; }
+.telegraph-attack > Label { color: #d4622e; }
+.telegraph-block { border-color: #7fa8c9; }
+.telegraph-block > Label { color: #7fa8c9; }
+.telegraph-buff, .telegraph-staggered { border-color: #c9a227; }
+.telegraph-buff > Label, .telegraph-staggered > Label { color: #c9a227; }
+.telegraph-debuff { border-color: #a07ad6; }
+.telegraph-debuff > Label { color: #a07ad6; }
+/* USS has no dashed border: a delayed attack reads as a hollow, dimmer pill. */
+.telegraph-delayed { background-color: rgba(0,0,0,0); opacity: 0.85; }
+.telegraph-pending { opacity: 1; border-width: 2px; }
+.telegraph-severity-lethal { background-color: #3a1510; border-color: #ff5a3a; border-width: 2px; }
+.telegraph-severity-lethal > Label { color: #ff8a66; }
+.telegraph-intent:hover { background-color: #241d15; }
+
+.telegraph-poise { flex-direction: row; align-items: center; height: 9px; min-height: 9px; flex-shrink: 0; margin: 1px 6px 2px 6px; }
+.telegraph-poise-track { position: relative; flex-grow: 1; height: 6px; border-width: 1px; border-color: #3a3024; border-radius: 3px; background-color: #0d0b08; overflow: hidden; }
+.telegraph-poise-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #c9a227; }
+.telegraph-poise-tick { position: absolute; top: 0; bottom: 0; width: 1px; background-color: rgba(233,220,190,0.55); }
+.telegraph-poise.near-break .telegraph-poise-fill { background-color: #e0b84a; }
+.telegraph-poise.broken .telegraph-poise-track, .telegraph-poise.staggered .telegraph-poise-track { border-color: #c9a227; }
+.telegraph-poise.broken .telegraph-poise-fill { background-color: #ead287; }
+.telegraph-poise-state { font-size: 10px; margin: 0 0 0 3px; padding: 0; color: #c9a227; }
+
+.telegraph-tooltip { padding: 6px 9px; border-width: 1px; border-color: #c9a227; border-radius: 3px; background-color: rgba(23,19,16,0.97); }
+.telegraph-tooltip > Label { margin: 0; padding: 0; white-space: normal; }
+.telegraph-tooltip-title { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 13px; color: #ead287; margin-bottom: 2px; }
+.telegraph-tooltip-body { font-size: 12px; color: #c5b99f; }

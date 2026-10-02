@@ -1,0 +1,25 @@
+{
+  "name": "Profile and slots",
+  "success": true,
+  "checks": [
+    "fresh profile opens without a recovery or storage error",
+    "creation starts and saves a normal climb",
+    "first new climb occupies only slot one",
+    "copy creates a second saved slot",
+    "delete requires the existing confirmation",
+    "cancelling delete preserves the copied climb",
+    "a third complete saved slot fits the real Web storage budget",
+    "copied slot restores the exact checkpoint: 1",
+    "copied slot restores the exact checkpoint: 2",
+    "saved profile loads after browser reload",
+    "all three slots and their updated backups survive reload",
+    "the original saved climb restores exactly",
+    "resumed climb can enter combat and save again",
+    "profile navigation does not change the current combat checkpoint",
+    "served player stayed source matched",
+    "no browser or Unity errors"
+  ],
+  "errors": [],
+  "sourceDigest": "b357d41b5ca103dcc40241eb1fd0637d23920564b18d1fb90d1ba0937131e929",
+  "physicalDevice": false
+}

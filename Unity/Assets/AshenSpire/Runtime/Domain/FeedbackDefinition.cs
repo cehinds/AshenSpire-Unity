@@ -69,6 +69,13 @@ namespace AshenSpire.Domain
     // Shared by the Unity audio adapter and .NET validation; independent from game RNG.
     public static class FeedbackSound
     {
+        // A quiet, short selection tick. Uses the same deterministic synthesizer as
+        // combat cues, but never consumes gameplay RNG or inherits a combat tag.
+        public static float[] InterfaceClick(int rate = 22050) => Synthesize(new FeedbackCue
+        {
+            Frequency = 740, EndFrequency = 520, SoundDuration = .065f, Noise = .035f
+        }, rate);
+
         public static float[] Synthesize(FeedbackCue cue, int rate = 22050)
         {
             var samples = new float[(int)(rate * cue.SoundDuration)];

@@ -4,6 +4,8 @@ import vm from 'node:vm';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const messages = new Map(), pending = new Map();
+const replyTimeout = Number(process.env.AS_LAN_TEST_TIMEOUT_MS || 10000);
+if (!Number.isInteger(replyTimeout) || replyTimeout < 1000 || replyTimeout > 120000) throw new Error('AS_LAN_TEST_TIMEOUT_MS must be 1000..120000.');
 const context = vm.createContext({ WebSocket, TextEncoder, JSON,
  LibraryManager: { library: {} }, mergeInto: (target, source) => Object.assign(target, source), UTF8ToString: x => x,
  SendMessage: (receiver, method, payload) => { assert.equal(method, 'OnNativeLanEvent'); const row = JSON.parse(payload); if (!messages.has(receiver)) messages.set(receiver, []); messages.get(receiver).push(row); pending.get(receiver)?.(); }
@@ -12,9 +14,12 @@ vm.runInContext(fs.readFileSync(process.env.AS_LAN_JSLIB ?? new URL('../../../..
 const library = context.LibraryManager.library; context.AshenSpireLan = library.$AshenSpireLan;
 let checks = 0;
 async function next(receiver, predicate) {
- const end = Date.now() + 10000;
+ const end = Date.now() + replyTimeout;
  while (Date.now() < end) {
   const queue = messages.get(receiver) ?? []; const i = queue.findIndex(predicate); if (i >= 0) return queue.splice(i,1)[0];
+  const rejected = queue.find(row => row.type === 'message' && JSON.parse(row.data).type === 'error');
+  if (rejected) throw new Error(receiver + ' bridge rejected: ' + JSON.parse(rejected.data).payload.code);
+  if (queue.some(row => row.type === 'close')) throw new Error(receiver + ' bridge closed before the expected reply');
   await new Promise(resolve => { const timer=setTimeout(resolve,50); pending.set(receiver,()=>{clearTimeout(timer);resolve();}); });
  }
  throw new Error('Timed out waiting for ' + receiver);

@@ -1,0 +1,1852 @@
+{
+  "workflow": "https://github.com/cehinds/AshenSpire-Unity/actions/runs/36343224950",
+  "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+  "success": true,
+  "checks": 748,
+  "commands": [
+    {
+      "index": 0,
+      "command": "enter:n1_5",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 1,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 2,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 3,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 4,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 5,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 6,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 7,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 8,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 9,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 10,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 11,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 12,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 13,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 37
+    },
+    {
+      "index": 14,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 37
+    },
+    {
+      "index": 15,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 37
+    },
+    {
+      "index": 16,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 37
+    },
+    {
+      "index": 17,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 37
+    },
+    {
+      "index": 18,
+      "command": "enter:n2_4",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 19,
+      "command": "flask:blightCoating",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 20,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 21,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 22,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 30
+    },
+    {
+      "index": 23,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 24,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 25,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 26,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 27,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 28,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 29,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 30,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 31,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 32,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 33,
+      "command": "enter:n3_3",
+      "phase": "Event",
+      "hp": 42
+    },
+    {
+      "index": 34,
+      "command": "event:leave",
+      "phase": "EventResult",
+      "hp": 42
+    },
+    {
+      "index": 35,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 36,
+      "command": "enter:n4_3",
+      "phase": "Shrine",
+      "hp": 42
+    },
+    {
+      "index": 37,
+      "command": "rest",
+      "phase": "Map",
+      "hp": 49
+    },
+    {
+      "index": 38,
+      "command": "enter:n5_2",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 39,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 40,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 41,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 42,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 43,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 44,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 45,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 46,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 47,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 48,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 49,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 50,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 51,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 52,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 53,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 54,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 55,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 56,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 32
+    },
+    {
+      "index": 57,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 58,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 59,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 60,
+      "command": "play:gorefireSlash",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 61,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 62,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 63,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 64,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 44
+    },
+    {
+      "index": 65,
+      "command": "enter:n6_2",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 66,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 67,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 68,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 69,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 70,
+      "command": "play:flameToBlade",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 71,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 72,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 73,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 74,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 44
+    },
+    {
+      "index": 75,
+      "command": "enter:n7_2",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 76,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 44
+    },
+    {
+      "index": 77,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 44
+    },
+    {
+      "index": 78,
+      "command": "enter:n8_1",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 79,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 80,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 81,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 82,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 83,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 84,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 85,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 86,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 87,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 88,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 89,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 90,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 91,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 92,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 93,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 94,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 95,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 96,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 97,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 98,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 45
+    },
+    {
+      "index": 99,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 45
+    },
+    {
+      "index": 100,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 45
+    },
+    {
+      "index": 101,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 45
+    },
+    {
+      "index": 102,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 45
+    },
+    {
+      "index": 103,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 45
+    },
+    {
+      "index": 104,
+      "command": "enter:n9_0",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 105,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 106,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 107,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 108,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 43
+    },
+    {
+      "index": 109,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 110,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 111,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 112,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 113,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 114,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 115,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 116,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 117,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 118,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 119,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 36
+    },
+    {
+      "index": 120,
+      "command": "enter:n10_0",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 121,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 122,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 123,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 124,
+      "command": "play:serratedBlade",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 125,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 126,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 127,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 36
+    },
+    {
+      "index": 128,
+      "command": "enter:n11_0",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 129,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 130,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 131,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 132,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 133,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 134,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 135,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 36
+    },
+    {
+      "index": 136,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 36
+    },
+    {
+      "index": 137,
+      "command": "enter:n12_3",
+      "phase": "Shrine",
+      "hp": 36
+    },
+    {
+      "index": 138,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 36
+    },
+    {
+      "index": 139,
+      "command": "enter:n13_3",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 140,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 141,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 142,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 143,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 144,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 145,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 146,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 147,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 148,
+      "command": "play:crimsonCleave",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 149,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 150,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 38
+    },
+    {
+      "index": 151,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 27
+    },
+    {
+      "index": 152,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 153,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 154,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 155,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 156,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 157,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 39
+    },
+    {
+      "index": 158,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 39
+    },
+    {
+      "index": 159,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 39
+    },
+    {
+      "index": 160,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 39
+    },
+    {
+      "index": 161,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 39
+    },
+    {
+      "index": 162,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 49
+    },
+    {
+      "index": 163,
+      "command": "enter:n1_3",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 164,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 165,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 166,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 167,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 168,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 169,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 170,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 40
+    },
+    {
+      "index": 171,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 40
+    },
+    {
+      "index": 172,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 40
+    },
+    {
+      "index": 173,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 40
+    },
+    {
+      "index": 174,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 40
+    },
+    {
+      "index": 175,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 40
+    },
+    {
+      "index": 176,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 40
+    },
+    {
+      "index": 177,
+      "command": "enter:n2_2",
+      "phase": "Combat",
+      "hp": 35
+    },
+    {
+      "index": 178,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 35
+    },
+    {
+      "index": 179,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 180,
+      "command": "play:stomp",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 181,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 182,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 183,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 184,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 185,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 186,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 187,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 188,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 189,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 45
+    },
+    {
+      "index": 190,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 191,
+      "command": "play:crimsonCleave",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 192,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 193,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 194,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 195,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 196,
+      "command": "enter:n3_1",
+      "phase": "Event",
+      "hp": 42
+    },
+    {
+      "index": 197,
+      "command": "event:keepVigil",
+      "phase": "EventResult",
+      "hp": 46
+    },
+    {
+      "index": 198,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 46
+    },
+    {
+      "index": 199,
+      "command": "enter:n4_0",
+      "phase": "Shrine",
+      "hp": 46
+    },
+    {
+      "index": 200,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 46
+    },
+    {
+      "index": 201,
+      "command": "enter:n5_0",
+      "phase": "Combat",
+      "hp": 41
+    },
+    {
+      "index": 202,
+      "command": "flask:wondrousDraught",
+      "phase": "Combat",
+      "hp": 49
+    },
+    {
+      "index": 203,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 204,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 205,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 47
+    },
+    {
+      "index": 206,
+      "command": "play:kickOff",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 207,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 208,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 209,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 210,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 47
+    },
+    {
+      "index": 211,
+      "command": "enter:n6_0",
+      "phase": "Shop",
+      "hp": 47
+    },
+    {
+      "index": 212,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 47
+    },
+    {
+      "index": 213,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 47
+    },
+    {
+      "index": 214,
+      "command": "leaveShop",
+      "phase": "Map",
+      "hp": 47
+    },
+    {
+      "index": 215,
+      "command": "enter:n7_1",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 216,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 217,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 47
+    },
+    {
+      "index": 218,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 47
+    },
+    {
+      "index": 219,
+      "command": "enter:n8_1",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 220,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 221,
+      "command": "flask:bloodUnction",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 222,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 223,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 224,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 42
+    },
+    {
+      "index": 225,
+      "command": "play:strike",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 226,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 227,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 42
+    },
+    {
+      "index": 228,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 229,
+      "command": "enter:n9_1",
+      "phase": "Event",
+      "hp": 42
+    },
+    {
+      "index": 230,
+      "command": "event:leave",
+      "phase": "EventResult",
+      "hp": 42
+    },
+    {
+      "index": 231,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 232,
+      "command": "enter:n10_0",
+      "phase": "Shop",
+      "hp": 42
+    },
+    {
+      "index": 233,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 42
+    },
+    {
+      "index": 234,
+      "command": "buy:relic",
+      "phase": "Shop",
+      "hp": 42
+    },
+    {
+      "index": 235,
+      "command": "leaveShop",
+      "phase": "Map",
+      "hp": 42
+    },
+    {
+      "index": 236,
+      "command": "enter:n11_0",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 237,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 238,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 239,
+      "command": "play:kickOff",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 240,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 241,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 242,
+      "command": "play:riposte",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 243,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 37
+    },
+    {
+      "index": 244,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 34
+    },
+    {
+      "index": 245,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 246,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 46
+    },
+    {
+      "index": 247,
+      "command": "play:crimsonCleave",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 248,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 249,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 250,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 251,
+      "command": "reward:flask",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 252,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 46
+    },
+    {
+      "index": 253,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 46
+    },
+    {
+      "index": 254,
+      "command": "enter:n12_3",
+      "phase": "Shrine",
+      "hp": 46
+    },
+    {
+      "index": 255,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 46
+    },
+    {
+      "index": 256,
+      "command": "enter:n13_3",
+      "phase": "Combat",
+      "hp": 41
+    },
+    {
+      "index": 257,
+      "command": "charge:mana",
+      "phase": "Combat",
+      "hp": 41
+    },
+    {
+      "index": 258,
+      "command": "flask:blightCoating",
+      "phase": "Combat",
+      "hp": 41
+    },
+    {
+      "index": 259,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 260,
+      "command": "play:serratedBlade",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 261,
+      "command": "play:gorefireSlash",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 262,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 263,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 264,
+      "command": "play:riposte",
+      "phase": "Combat",
+      "hp": 39
+    },
+    {
+      "index": 265,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 24
+    },
+    {
+      "index": 266,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 36
+    },
+    {
+      "index": 267,
+      "command": "charge:hp",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 268,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 269,
+      "command": "play:technique",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 270,
+      "command": "play:stitchedArms",
+      "phase": "Combat",
+      "hp": 48
+    },
+    {
+      "index": 271,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 26
+    },
+    {
+      "index": 272,
+      "command": "play:goreslash",
+      "phase": "Combat",
+      "hp": 26
+    },
+    {
+      "index": 273,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 26
+    },
+    {
+      "index": 274,
+      "command": "play:defend",
+      "phase": "Combat",
+      "hp": 26
+    },
+    {
+      "index": 275,
+      "command": "endTurn",
+      "phase": "Rewards",
+      "hp": 26
+    },
+    {
+      "index": 276,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 26
+    },
+    {
+      "index": 277,
+      "command": "reward:relic",
+      "phase": "Rewards",
+      "hp": 26
+    },
+    {
+      "index": 278,
+      "command": "reward:armament",
+      "phase": "Rewards",
+      "hp": 26
+    },
+    {
+      "index": 279,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 26
+    },
+    {
+      "index": 280,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 49
+    },
+    {
+      "index": 281,
+      "command": "enter:n1_3",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 282,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 283,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 44
+    },
+    {
+      "index": 284,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 28
+    },
+    {
+      "index": 285,
+      "command": "play:crimsonCleave",
+      "phase": "Rewards",
+      "hp": 28
+    },
+    {
+      "index": 286,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 28
+    },
+    {
+      "index": 287,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 28
+    },
+    {
+      "index": 288,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 28
+    },
+    {
+      "index": 289,
+      "command": "enter:n2_4",
+      "phase": "Event",
+      "hp": 28
+    },
+    {
+      "index": 290,
+      "command": "event:stealRelic",
+      "phase": "EventResult",
+      "hp": 28
+    },
+    {
+      "index": 291,
+      "command": "leaveEvent",
+      "phase": "Map",
+      "hp": 28
+    },
+    {
+      "index": 292,
+      "command": "enter:n3_4",
+      "phase": "Combat",
+      "hp": 21
+    },
+    {
+      "index": 293,
+      "command": "play:ruinousBlow",
+      "phase": "Combat",
+      "hp": 21
+    },
+    {
+      "index": 294,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 21
+    },
+    {
+      "index": 295,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 11
+    },
+    {
+      "index": 296,
+      "command": "play:flameToBlade",
+      "phase": "Combat",
+      "hp": 9
+    },
+    {
+      "index": 297,
+      "command": "play:strike",
+      "phase": "Combat",
+      "hp": 9
+    },
+    {
+      "index": 298,
+      "command": "endTurn",
+      "phase": "Combat",
+      "hp": 4
+    },
+    {
+      "index": 299,
+      "command": "play:crimsonCleave",
+      "phase": "Rewards",
+      "hp": 4
+    },
+    {
+      "index": 300,
+      "command": "reward:cinders",
+      "phase": "Rewards",
+      "hp": 4
+    },
+    {
+      "index": 301,
+      "command": "reward:card",
+      "phase": "Rewards",
+      "hp": 4
+    },
+    {
+      "index": 302,
+      "command": "continueRewards",
+      "phase": "Map",
+      "hp": 4
+    },
+    {
+      "index": 303,
+      "command": "enter:n4_5",
+      "phase": "Shrine",
+      "hp": 4
+    },
+    {
+      "index": 304,
+      "command": "service:upgrade",
+      "phase": "Map",
+      "hp": 4
+    },
+    {
+      "index": 305,
+      "command": "enter:n5_4",
+      "phase": "Defeat",
+      "hp": 0
+    }
+  ],
+  "terminalChecks": [
+    "recorded terminal Defeat in act 3 through actual player controls",
+    "completed climb recorded in chronicle as Defeat",
+    "chronicle totals count the one climb",
+    "no browser or Unity error logs"
+  ],
+  "errors": [],
+  "physicalDevice": false
+}

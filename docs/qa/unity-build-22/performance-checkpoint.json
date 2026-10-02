@@ -1,0 +1,69 @@
+{
+  "version": "0.0.22.0",
+  "buildNumber": 22,
+  "sourceDigest": "c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+  "startupMs": 2770,
+  "scenes": [
+    {
+      "scene": "title",
+      "samples": 180,
+      "rafMedianMs": 46.79999999999927,
+      "rafP95Ms": 63.600000000000364,
+      "rafWorstMs": 108.59999999999945,
+      "jsHeapUsedBytes": 102730235,
+      "wasmReservedBytes": null
+    },
+    {
+      "scene": "map",
+      "samples": 180,
+      "rafMedianMs": 61.89999999999418,
+      "rafP95Ms": 79,
+      "rafWorstMs": 80.40000000000873,
+      "jsHeapUsedBytes": 104332928,
+      "wasmReservedBytes": null
+    },
+    {
+      "scene": "combat",
+      "samples": 180,
+      "rafMedianMs": 61.89999999999418,
+      "rafP95Ms": 78.5,
+      "rafWorstMs": 122.10000000000582,
+      "jsHeapUsedBytes": 113647602,
+      "wasmReservedBytes": null
+    }
+  ],
+  "resources": [
+    {
+      "url": "http://127.0.0.1:8787/Build/Web.loader.js?build=c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+      "transferBytes": 27975,
+      "decodedBytes": 27675,
+      "durationMs": 40.10000014305115
+    },
+    {
+      "url": "http://127.0.0.1:8787/Build/Web.framework.js?build=c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+      "transferBytes": 410159,
+      "decodedBytes": 409859,
+      "durationMs": 6.700000047683716
+    },
+    {
+      "url": "http://127.0.0.1:8787/Build/Web.data?build=c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+      "transferBytes": 92349625,
+      "decodedBytes": 92349325,
+      "durationMs": 521.0999999046326
+    },
+    {
+      "url": "http://127.0.0.1:8787/Build/Web.wasm?build=c16679867a29b7a304ee252ace53ef99753b0d300f2650920cce75a840c681cc",
+      "transferBytes": 37323456,
+      "decodedBytes": 37323156,
+      "durationMs": 542.5
+    }
+  ],
+  "physicalDevice": false,
+  "renderer": "Edge SwiftShader software WebGL",
+  "limitations": [
+    "Animation-frame timing is browser scheduling, not Unity GPU frame time.",
+    "WASM memory is reserved linear memory, not total process usage.",
+    "Localhost transfers do not establish mobile-network loading time.",
+    "No target-phone budgets or device acceptance claimed."
+  ]
+}

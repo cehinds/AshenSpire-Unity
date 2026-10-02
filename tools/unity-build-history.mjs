@@ -94,14 +94,15 @@ function writeImmutable(path, bytes) {
   }
   mkdirSync(dirname(path), {recursive:true}); writeFileSync(path, bytes);
 }
-export function materializeHistory(root, out, history, {remoteRuntime=false} = {}) {
+export function materializeHistory(root, out, history, {remoteRuntime=false,localCodeBuildIds=null} = {}) {
+  if(localCodeBuildIds!==null&&(!remoteRuntime||!Array.isArray(localCodeBuildIds)||localCodeBuildIds.some(id=>!history.builds.some(b=>b.id===id))))throw Error('Invalid local code retention selection');
   let bytes = 0;
   for (const build of history.builds) {
     let hosting;
     if (remoteRuntime) {
       if (!/^build-[a-f0-9]{20}$/.test(build.id)) throw new Error('Unsafe archive ID');
       const originalIndex = git(root,['show',`${build.commit}:Published/Web/index.html`],null);
-      hosting = planArchiveHosting(originalIndex.toString('utf8'),build);
+      hosting = planArchiveHosting(originalIndex.toString('utf8'),build,{remoteCode:localCodeBuildIds!==null&&!localCodeBuildIds.includes(build.id)});
     }
     const omitted = new Set(hosting?.omittedPaths ?? []);
     const tree = new Map(build.tree.map(file => [file.path,file.blob]));
