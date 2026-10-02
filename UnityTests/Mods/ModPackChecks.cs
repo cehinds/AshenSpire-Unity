@@ -94,6 +94,13 @@ static class ModPackChecks
         var badRef = Card("hex"); badRef["effects"]![0]!["status"] = "notAStatus";
         var refResult = OriginalModPacks.Load(baseJson, new OriginalModMemorySource().Add("Mods/bad/mod.json", Manifest("bad")).Add("Mods/bad/cards.json", Cards(badRef)));
         Check(Has(refResult, OriginalModErrorCodes.ValidationFailed, "bad") && refResult.Errors.Single().Message.Contains("Unknown status") && Unchanged(refResult), "bad reference: unknown status id refused by existing catalog validation");
+        var rare = Card("strike"); rare["rarity"] = "legendary"; var aimless = Card("defend"); aimless["effects"]![0]!["target"] = "everyone";
+        var multi = OriginalModPacks.Load(baseJson, new OriginalModMemorySource().Add("Mods/multi/mod.json", Manifest("multi")).Add("Mods/multi/cards.json", Cards(badRef, rare, aimless)));
+        var multiErrors = multi.Errors.Where(e => e.Code == OriginalModErrorCodes.ValidationFailed && e.ModId == "multi").ToArray();
+        Check(multiErrors.Length == 3 && Unchanged(multi), "multi-error pack: every schema/reference problem is reported, catalog untouched");
+        Check(multiErrors.Any(e => e.Path == "Mods/multi/cards.json#cards[0].effects[0].status" && e.Message.Contains("Unknown status 'notAStatus'"))
+            && multiErrors.Any(e => e.Path == "Mods/multi/cards.json#cards[1].rarity" && e.Message.StartsWith("cards[strike].rarity: Expected one of"))
+            && multiErrors.Any(e => e.Path == "Mods/multi/cards.json#cards[2].effects[0].target" && e.Message.Contains("Unknown target")), "multi-error pack: paths point at the pack file, record and field");
         var hero = (JObject)baseCatalog.Table("classes")[0].DeepClone(); ((JArray)hero["cardPool"]!).Add("ghostCard");
         var poolResult = OriginalModPacks.Load(baseJson, new OriginalModMemorySource().Add("Mods/pool/mod.json", Manifest("pool")).Add("Mods/pool/classes.json", new JObject { ["classes"] = new JArray(hero) }.ToString()));
         Check(Has(poolResult, OriginalModErrorCodes.ValidationFailed, "pool") && poolResult.Errors[0].Message.Contains("ghostCard"), "bad reference: class card pool naming an unknown card is refused");
