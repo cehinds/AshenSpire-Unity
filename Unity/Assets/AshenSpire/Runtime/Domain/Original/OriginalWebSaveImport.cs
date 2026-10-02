@@ -1,6 +1,7 @@
-// OriginalWebSaveImport.cs — explicit, read-only conversion of original-game map saves.
+// OriginalWebSaveImport.cs — explicit, read-only conversion of original-game run saves.
 // Never writes storage. The caller previews the result and commits to an empty slot.
-// Refuse unsupported active rooms instead of replaying a fight or granting its rewards.
+// Map checkpoints, reward/merchant rooms and fight-entry receipts convert (OriginalWebRoomImport);
+// an exact mid-fight snapshot and unknown state are refused instead of approximated.
 using System;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace AshenSpire.Domain.Original
     public static class OriginalWebSaveImport
     {
         public const int MaximumBytes = 1024 * 1024;
+        public const string MidFightMessage = "This save is mid-fight; finish the fight in the original game, then import. Your original save is unchanged.";
         internal static JToken Canonical(JToken value) => value is JObject obj
             ? new JObject(obj.Properties().OrderBy(p => p.Name, StringComparer.Ordinal).Select(p => new JProperty(p.Name, Canonical(p.Value))))
             : value is JArray array ? new JArray(array.Select(Canonical)) : value.DeepClone();
@@ -53,13 +55,17 @@ namespace AshenSpire.Domain.Original
             if (source["profile"] != null) throw new ArgumentException("This is a profile export. Run import needs an original run save.");
             if (source["schemaVersion"]?.Type != JTokenType.Integer || (int)source["schemaVersion"] != 5)
                 throw new ArgumentException("This initial importer supports original run schema 5. Earlier and newer original-game save formats are not supported yet. Your original save is unchanged.");
-            foreach (var name in new[] { "combatEntered", "pendingReward", "shopStock", "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" })
+            foreach (var name in new[] { "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" })
                 if (source[name] != null && source[name].Type != JTokenType.Null)
                     throw new ArgumentException("This save contains " + name + ". Finish the active room in the original game and save on the map before importing.");
+            // Reward, merchant and fight-entry rooms convert; an exact mid-fight snapshot does not.
+            var rooms = new[] { "combatEntered", "pendingReward", "shopStock" }.Where(n => source[n] != null && source[n].Type != JTokenType.Null).ToArray();
+            if (rooms.Length > 1) throw new ArgumentException("This save records more than one active room. Your original save is unchanged.");
+            if (source["combatEntered"] is JObject fight && fight["snapshot"] != null && fight["snapshot"].Type != JTokenType.Null) throw new ArgumentException(MidFightMessage);
             if (source["webImport"] != null || source["playerProjectionRules"] != null || source["phase"] != null)
                 throw new ArgumentException("Choose an original-game save, not an AshenedSpire snapshot.");
-            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView").Split(' ');
-            var inactiveFields = new[] { "pendingReward", "shopStock", "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
+            var knownFields = ("schemaVersion contentVersion seed streamCounters class startingKitId startingKitSnapshot attributeMode attributeModeSnapshot attributes levelUps levelPoints floor actNumber mapNodeId hp maxHp maxHpAdjustment equipmentPoolBonuses equipmentPoolDeficits cinders smithingStones itemUpgradeLevels smithingRewardClaims deck loadout equipmentAttackSlotCount relics damageBySchoolAdd flasks flaskCharges seedString mapGraph combatEntered history modifiers equipmentProfileRuleSnapshot derivedStatRuleSnapshot maxMana maxStamina energyMax drawPerTurn mana stamina path custom customization keepsakeId profileMeta lastEncounters bossesBeaten stats itemMounts lastMountReceipt mountTransactions lastSmithingReceipt mapView flaskChancePct removesPurchased pendingReward shopStock").Split(' ');
+            var inactiveFields = new[] { "draft", "skillDraft", "skills", "classAbilities", "handRuleSnapshot", "handRulesSnapshot", "handRules" };
             var unknown = source.Properties().FirstOrDefault(p => !knownFields.Contains(p.Name) && p.Name != "seenEvents" && !(inactiveFields.Contains(p.Name) && p.Value.Type == JTokenType.Null));
             if (unknown != null) throw new ArgumentException("This save contains unsupported original-game state: " + unknown.Name + ". Your original save is unchanged.");
             if (!(source["modifiers"] is JArray modifiers) || modifiers.Count != 0)
@@ -79,6 +85,10 @@ namespace AshenSpire.Domain.Original
                 _ = catalog.Record("cards", (string)card["cardId"]);
             }
             if (source["deck"].Select(c => (string)c["instanceId"]).Distinct().Count() != source["deck"].Count()) throw new ArgumentException("Duplicate card instance IDs.");
+            // The original load door archives a run whose born attack quota differs from its deck
+            // (save.js; current Sealed and Draft climbs). Refuse it the same way, by name.
+            if (source["equipmentAttackSlotCount"] != null && (source["equipmentAttackSlotCount"].Type != JTokenType.Integer || (int)source["equipmentAttackSlotCount"] != source["deck"].Count(c => (string)c["equipmentRole"] == "attack")))
+                throw new ArgumentException("This save's deck no longer matches its equipment attack slots, so the original game cannot reload it either (this happens to Sealed and Draft climbs). Your original save is unchanged.");
             foreach (var id in source["relics"].Values<string>()) _ = catalog.Record("relics", id);
             foreach (var flask in source["flasks"]) _ = catalog.Record("flasks", (string)flask["flaskId"]);
             if (source["seenEvents"] != null)
@@ -149,6 +159,10 @@ namespace AshenSpire.Domain.Original
             run["classId"] = classId; run["id"] = "player"; run["kind"] = "player";
             run["alive"] = true; run["statuses"] = new JObject(); run["block"] = 0;
             run["phase"] = "Map"; run["room"] = new JObject();
+            foreach (var key in new[] { "combatEntered", "pendingReward", "shopStock" }) run.Remove(key);
+            foreach (var key in new[] { "flaskChancePct", "removesPurchased" })
+                if (source[key] != null && (source[key].Type != JTokenType.Integer || (int)source[key] < 0 || key == "flaskChancePct" && (int)source[key] > 100)) throw new ArgumentException("Malformed original " + key + ".");
+            OriginalWebRoomImport.Apply(source, run, catalog);
             run["progression"] = progression.DeepClone();
             run["playerProjectionRules"] = new JObject { ["snapshotVersion"] = 1, ["baseRules"] = baseRules };
             run["profileMeta"] = source["profileMeta"]?.DeepClone() ?? new JObject();
@@ -169,7 +183,7 @@ namespace AshenSpire.Domain.Original
             var frozenSupplement = (JObject)supplement.DeepClone(); frozenSupplement["mechanics"] = mechanics.DeepClone();
             var snapshot = new JObject { ["schemaVersion"] = 1, ["content"] = data, ["supplement"] = frozenSupplement, ["run"] = run };
             var restored = OriginalGameSession.Restore(snapshot);
-            if (restored.LegalNodeIds.Length == 0) throw new ArgumentException("This checkpoint has no continuing route. Completed or damaged maps cannot be imported as active climbs.");
+            if (!OriginalWebRoomImport.Continues(restored)) throw new ArgumentException("This checkpoint has no continuing route. Completed or damaged maps cannot be imported as active climbs.");
             foreach (var card in restored.RunPlayer["deck"].OfType<JObject>()) _ = restored.Resolve(card);
             var projection = new WeaponCardProjection(frozenCatalog);
             foreach (var card in source["deck"].OfType<JObject>())

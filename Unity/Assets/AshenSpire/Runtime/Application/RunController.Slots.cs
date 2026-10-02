@@ -132,7 +132,7 @@ namespace AshenSpire.Application
                     var importCatalog = new OriginalContentCatalog(OriginalRules("content").ToString());
                     var snapshot = OriginalWebSaveImport.Convert(text, importCatalog, OriginalRules("event-choices"), OriginalRules("mechanics"), OriginalRules("progression"));
                     var run = snapshot["run"];
-                    var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\nDestination: Slot " + (target.Slot + 1);
+                    var summary = ClassName((string)run["classId"]) + " · Act " + run["actNumber"] + " · Floor " + run["floor"] + "\nHP " + run["hp"] + "/" + run["maxHp"] + " · " + run["deck"].Count() + " cards\n" + OriginalWebRoomImport.Resumes(snapshot) + "\nDestination: Slot " + (target.Slot + 1);
                     _previewWebImport = null;
                     _view.WebSaveImportPreview(summary, () =>
                     {

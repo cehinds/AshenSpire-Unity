@@ -1,0 +1,125 @@
+{
+  "sourceCommit": "80cbcd71f9aac5bc454b4602f48714d9717b27b2",
+  "sources": {
+    "src/engine/save.js": "93572fa3c20f87c60715ad5b657dd1bdd77c838762d126546fb25719cb89e6bd",
+    "src/model/state.js": "7ff2066cfa03438aa1af541988a5d7eea31f84f446f604cc76456c1a7d4a933f",
+    "src/engine/encounters.js": "27cedec10d476b2a7e1698b4b942e9c98caf8c130809c9a188a7c12f8242cf4b",
+    "src/engine/combat.js": "523a028bd9039084886f348ba13143f05ea627ad99a5336420b7dadd1146e9c5",
+    "src/engine/combatSnapshot.js": "b3b377320eba77093e0d2e83b85438843bb7e20a070590ca5f75b1eefbcfb5b6",
+    "src/engine/actmap.js": "7606f5161d8f54fb95c3e400971dc7374cf950b02050699d5cf16cfad91cb616",
+    "src/model/rewardplan.js": "965cbabc75a021d534a759284b154d384d6017a359aeca1778b1e6098f433322",
+    "src/main.js": "34a420dfeabe358af3417f1f123e839b91a67cf6bd8b4224df39449cadbb3b0c",
+    "src/ui/screens/reward.js": "2c0b77201e0511e9c2da21daf87f54298036ed14de86d6a95ee87569240442c8",
+    "src/ui/screens/shop.js": "12eb1a7ac493a1d66bee40a9d14c04abd6e235589d4bf60896f2f2b710b896a2",
+    "src/ui/screens/draft.js": "408cd1bfbcf379704e2ce0d9d44b93933288539fe6451b23f1891176663d4501",
+    "src/content/index.js": "a8518911705d63b9cfa865c4c9098ed36ac6a9518a6eb823bc28a19746121c46"
+  },
+  "outputSha256": "9737aca53e9399bac326a4daf1907a70007abfb0d631e92641aa46b67210ee19",
+  "fixtures": {
+    "reaver-combat-entry": {
+      "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
+      "bytes": 16560,
+      "originalReload": "ok"
+    },
+    "reaver-combat-snapshot": {
+      "note": "Exact committed-turn combat snapshot (Save Game during a fight).",
+      "bytes": 28769,
+      "originalReload": "ok"
+    },
+    "starseer-combat-entry": {
+      "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
+      "bytes": 16207,
+      "originalReload": "ok"
+    },
+    "starseer-combat-snapshot": {
+      "note": "Exact committed-turn combat snapshot (Save Game during a fight).",
+      "bytes": 28267,
+      "originalReload": "ok"
+    },
+    "rogue-combat-entry": {
+      "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
+      "bytes": 16394,
+      "originalReload": "ok"
+    },
+    "rogue-combat-snapshot": {
+      "note": "Exact committed-turn combat snapshot (Save Game during a fight).",
+      "bytes": 28782,
+      "originalReload": "ok"
+    },
+    "herald-combat-entry": {
+      "note": "Fight entry receipt persisted by enterCombat; the original rebuilds this fight on resume.",
+      "bytes": 16229,
+      "originalReload": "ok"
+    },
+    "herald-combat-snapshot": {
+      "note": "Exact committed-turn combat snapshot (Save Game during a fight).",
+      "bytes": 28176,
+      "originalReload": "ok"
+    },
+    "reward-normal-fresh": {
+      "note": "Reward checkpoint exactly as beginPendingReward persists it, before the screen grants cinders.",
+      "bytes": 16951,
+      "originalReload": "ok"
+    },
+    "reward-normal": {
+      "note": "Reward screen after cinders were granted on arrival.",
+      "bytes": 16969,
+      "originalReload": "ok"
+    },
+    "reward-normal-card": {
+      "note": "Second card offer taken; flask/armament rows still pending.",
+      "bytes": 17069,
+      "originalReload": "ok"
+    },
+    "reward-elite": {
+      "note": "elite reward checkpoint after cinders were granted.",
+      "bytes": 16496,
+      "originalReload": "ok"
+    },
+    "reward-boss": {
+      "note": "boss reward checkpoint after cinders were granted.",
+      "bytes": 16750,
+      "originalReload": "ok"
+    },
+    "merchant-fresh": {
+      "note": "Merchant stock as enterNode persists it (600 cinders granted for the fixture).",
+      "bytes": 17156,
+      "originalReload": "ok"
+    },
+    "merchant-partial": {
+      "note": "Merchant after buying a card and a relic and removing a card (sold rows leave the stock).",
+      "bytes": 16704,
+      "originalReload": "ok"
+    },
+    "merchant-custom": {
+      "note": "Ascension 6 (expensive shops) plus Hoarder: prices carry both multipliers (600 cinders added for the fixture).",
+      "bytes": 16918,
+      "originalReload": "ok"
+    },
+    "event-entered": {
+      "note": "Event room entered: the original reload shows the map from this node.",
+      "bytes": 16541,
+      "originalReload": "ok"
+    },
+    "mode-sealed": {
+      "note": "{\"ascension\":0,\"mods\":{},\"deckMode\":\"sealed\"} map checkpoint.",
+      "bytes": 11125,
+      "originalReload": "archived"
+    },
+    "mode-draft": {
+      "note": "{\"ascension\":0,\"mods\":{},\"deckMode\":\"draft\"} map checkpoint.",
+      "bytes": 10926,
+      "originalReload": "archived"
+    },
+    "mode-chaos": {
+      "note": "{\"ascension\":4,\"mods\":{\"allElite\":true,\"glassCannon\":true,\"chaosRewards\":true,\"hoarder\":true},\"deckMode\":\"standard\"} map checkpoint.",
+      "bytes": 16372,
+      "originalReload": "ok"
+    },
+    "mode-endless": {
+      "note": "{\"ascension\":0,\"mods\":{\"endless\":true},\"deckMode\":\"standard\"} map checkpoint at act 4.",
+      "bytes": 16148,
+      "originalReload": "ok"
+    }
+  }
+}
