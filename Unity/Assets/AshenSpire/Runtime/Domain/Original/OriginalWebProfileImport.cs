@@ -372,7 +372,9 @@ namespace AshenSpire.Domain.Original
                         break;
                     case "largeText": break; // handled after the loop: legacy L when textSize is not explicit
                     case "colorblindSafe": unmapped.Add(key + ": the original shifts one shared palette; AshenedSpire palettes are chosen per colour-vision type"); break;
-                    case "musicEnabled": case "muteMusic": unmapped.Add(key + ": AshenedSpire has no separate music switch"); break;
+                    case "musicEnabled": if (IsBool()) { target.MusicEnabled = (bool)value; mapped.Add("musicEnabled → MusicEnabled"); } else unmapped.Add(key + ": value not recognised"); break;
+                    case "highContrast": if (IsBool()) { target.HighContrast = (bool)value; mapped.Add("highContrast → HighContrast"); } else unmapped.Add(key + ": value not recognised"); break;
+                    case "reduceFlashes": if (IsBool()) { target.ReduceFlashes = (bool)value; mapped.Add("reduceFlashes → ReduceFlashes"); } else unmapped.Add(key + ": value not recognised"); break;
                     case "keyBindings": case "bindings": unmapped.Add(key + ": original keyboard actions differ from AshenedSpire actions"); break;
                     default: unmapped.Add(key + ": no AshenedSpire equivalent"); break;
                 }

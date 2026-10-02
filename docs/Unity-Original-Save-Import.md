@@ -131,13 +131,13 @@ writes the merged profile through the existing verified profile journal.
   reported, never granted, and kept in the receipt.
 - **Settings.** Settings are applied only when the player chooses *Import with
   settings*. Only explicitly stored values map: `reducedMotion`, `screenShake`,
-  `muteAudio`, `musicVolume`/`sfxVolume` (percent to 0–1), `animSpeed`
+  `muteAudio`, `musicEnabled`, `highContrast`, `reduceFlashes`,
+  `musicVolume`/`sfxVolume` (percent to 0–1), `animSpeed`
   (`slow`/`normal`/`fast`/`instant`), `uiScale` S–XL and `textSize` S–XL (or
   legacy `largeText`). Everything else is listed as not carried over and kept
   verbatim in the receipt, including `colorblindSafe` (the original shifts one
-  palette; AshenedSpire palettes are per colour-vision type), `musicEnabled`
-  (no separate music switch), keyboard bindings (different actions), `Auto`
-  sizes, contrast, map, card-motif, HUD, hold-to-confirm, reward-collection,
+  palette; AshenedSpire palettes are per colour-vision type), keyboard
+  bindings (different actions), `Auto` sizes, map, card-motif, HUD, hold-to-confirm, reward-collection,
   tuning and debug settings. Unity-only settings such as master and interface
   volume and content mods are kept.
 - **Not imported.** The original `seen` record and other original-only fields

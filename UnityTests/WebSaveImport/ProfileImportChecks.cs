@@ -152,10 +152,14 @@ static class ProfileImportChecks
         Check(Math.Abs(s.MusicVolume - .3) < 1e-9 && Math.Abs(s.SfxVolume - .6) < 1e-9, "volumes map from percent");
         Check(Math.Abs(s.UiScale - 1.2) < 1e-9 && Math.Abs(s.TextScale - 1.2) < 1e-9, "UI and text size map from original steps");
         Check(s.MasterVolume == .5 && s.LoadContentMods && s.UiVolume == .4, "Unity-only settings kept");
-        Check(mapped.MappedSettings.Count == 8, "eight settings mapped");
-        foreach (var name in new[] { "colorblindSafe", "musicEnabled", "highContrast", "mapMode", "holdConfirm", "seenTutorial" })
+        Check(!s.MusicEnabled && s.HighContrast && !s.ReduceFlashes, "music switch and high contrast map; absent reduceFlashes keeps the device value");
+        Check(mapped.MappedSettings.Count == 10, "ten settings mapped");
+        foreach (var name in new[] { "colorblindSafe", "mapMode", "holdConfirm", "seenTutorial" })
             Check(mapped.UnmappedSettings.Any(u => u.StartsWith(name + ":")), "unmapped setting listed: " + name);
         Check(JToken.DeepEquals(mapped.Profile.Snapshot()[OriginalWebProfileImport.ReceiptKey]!["preserved"]!["settings"], JObject.Parse(Meta("history"))["settings"]), "original settings preserved verbatim");
+        var flashes = JObject.Parse(Meta("history")); flashes["settings"]!["reduceFlashes"] = true; flashes["settings"]!["highContrast"] = "yes";
+        var fl = Merge(flashes.ToString(), null, device);
+        Check(fl.Settings.ReduceFlashes && fl.Settings.HighContrast == device.HighContrast && fl.UnmappedSettings.Any(u => u.StartsWith("highContrast:")), "reduceFlashes maps; a non-boolean contrast value is listed and ignored");
         var instant = JObject.Parse(Meta("history")); instant["settings"]!["animSpeed"] = "instant"; instant["settings"]!["uiScale"] = "Auto";
         var inst = Merge(instant.ToString(), null, device);
         Check(inst.Settings.InstantAnimations && inst.Settings.UiScale == device.UiScale && inst.UnmappedSettings.Any(u => u.StartsWith("uiScale:")), "instant pacing maps; Auto size keeps the Unity size");

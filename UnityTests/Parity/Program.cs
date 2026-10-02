@@ -150,6 +150,10 @@ if (!string.IsNullOrEmpty(shardSpec))
     if (parts.Length != 2 || !int.TryParse(parts[0], out shard) || !int.TryParse(parts[1], out shardCount) || shardCount < 1 || shard < 0 || shard >= shardCount)
         throw new ArgumentException("PARITY_SHARD must be i/n with 0 <= i < n, got " + shardSpec);
 }
+// PARITY_SECTION=name runs one section (local iteration); CI leaves it unset.
+var only = Environment.GetEnvironmentVariable("PARITY_SECTION");
+if (!string.IsNullOrEmpty(only) && !sections.Any(s => s.Name == only))
+    throw new ArgumentException("PARITY_SECTION names no section: " + only + " (known: " + string.Join(", ", sections.Select(s => s.Name)) + ")");
 var loads = new int[shardCount];
 var assigned = new List<string>();
 foreach (var section in sections.Select((s, index) => (s, index)).OrderByDescending(x => x.s.Weight).ThenBy(x => x.index))
@@ -157,8 +161,6 @@ foreach (var section in sections.Select((s, index) => (s, index)).OrderByDescend
     var target = Array.IndexOf(loads, loads.Min());
     loads[target] += Math.Max(1, section.s.Weight);
     if (target != shard) continue;
-    // PARITY_SECTION=name runs one section (local iteration); CI leaves it unset.
-    var only = Environment.GetEnvironmentVariable("PARITY_SECTION");
     if (!string.IsNullOrEmpty(only) && only != section.s.Name) continue;
     var timer = System.Diagnostics.Stopwatch.StartNew();
     section.s.Run();

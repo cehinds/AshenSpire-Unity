@@ -64,6 +64,9 @@ namespace AshenSpire.Presentation
             ApplyPalette();
             _root.EnableInClassList(HighContrastClass, settings.HighContrast);
             ApplyDisplayClasses(settings);
+            // A saved Fullscreen = true is restored on load; false leaves the platform default
+            // (phones run fullscreen, and the toggle itself applies either value immediately).
+            if (settings.Fullscreen && !Screen.fullScreen && !UnityEngine.Application.isMobilePlatform) Screen.fullScreen = true;
             ScheduleTextScale();
         }
 
