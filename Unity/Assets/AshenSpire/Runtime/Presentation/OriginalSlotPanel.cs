@@ -4,6 +4,10 @@
 // FLOW: each slot row shows class, act/floor, seed and last-saved time with Continue,
 // New (Overwrite when occupied), Copy (into the first empty slot) and Delete. Overwrite
 // and Delete ask first; the question replaces the list until confirmed or cancelled.
+// US-13.3: native-slot-confirm is a hold-to-confirm button (HoldConfirmButton) because
+// action.overwriteSave / action.deleteSave are DESTRUCTIVE in confirmation-policies.json:
+// hold until the bar fills, or activate it twice (the first tap only arms it).
+// loadSlot: Continue is hold-to-confirm only while unsavedProgress (the unsaved climb would be lost).
 // IDS (diagnostics/playtests): native-slot-<n>-continue|new|copy|delete, native-slot-confirm,
 // native-slot-cancel, native-slots-back. <n> is the 0-based domain slot; labels are 1-based.
 using System;
@@ -22,14 +26,17 @@ namespace AshenSpire.Presentation
         private readonly Action<int> _load, _start, _delete;
         private readonly Action<int, int> _copy;
         private readonly Action _back, _report;
+        private readonly bool _unsaved;
         private readonly ControlFactory _control;
         private readonly VisualElement _content = new VisualElement();
         public OriginalSlotPanel(VisualElement host, IReadOnlyList<OriginalSaveSlotInfo> slots, Func<string, string> className, string notice,
-            Action<int> load, Action<int> start, Action<int> delete, Action<int, int> copy, Action back, ControlFactory control, Action report)
+            Action<int> load, Action<int> start, Action<int> delete, Action<int, int> copy, Action back, ControlFactory control, Action report, bool unsavedProgress = false)
         {
+            _unsaved = unsavedProgress;
             _host = host; _slots = slots ?? Array.Empty<OriginalSaveSlotInfo>(); _className = className ?? (id => id);
             _load = load; _start = start; _delete = delete; _copy = copy; _back = back; _control = control; _report = report;
             if (!string.IsNullOrEmpty(notice)) _host.Add(Text(notice, "notice"));
+            if (_unsaved) _host.Add(Text("Your current climb has progress that could not be saved. Continuing a slot replaces it: hold Continue, or tap it twice.", "notice"));
             _content.AddToClassList("original-slot-list"); _host.Add(_content);
             List();
         }
@@ -44,9 +51,9 @@ namespace AshenSpire.Presentation
                 var n = slot.Slot; var row = new VisualElement(); row.AddToClassList("panel"); row.AddToClassList("original-slot");
                 row.Add(Text(Heading(slot), "node-title"));
                 row.Add(Text(Facts(slot), "caption"));
-                if (Loadable(slot)) row.Add(_control("native-slot-" + n + "-continue", "Continue", () => _load(n), "primary"));
+                if (Loadable(slot)) row.Add(Continue(n));
                 row.Add(Occupied(slot)
-                    ? _control("native-slot-" + n + "-new", "New (overwrite)", () => Confirm("Overwrite slot " + (n + 1) + "?", "Starting here deletes this saved climb and begins a new one. There is no way back.", "Overwrite", () => _start(n)), null)
+                    ? _control("native-slot-" + n + "-new", "New (overwrite)", () => Confirm("Overwrite slot " + (n + 1) + "?", "Starting here deletes this saved climb and begins a new one. There is no way back.", "Overwrite", ConfirmationPolicy.OverwriteSave, () => _start(n)), null)
                     : _control("native-slot-" + n + "-new", "New climb here", () => _start(n), Loadable(slot) ? null : "primary"));
                 if (Loadable(slot) && firstEmpty != null)
                 {
@@ -54,13 +61,21 @@ namespace AshenSpire.Presentation
                     row.Add(_control("native-slot-" + n + "-copy", "Copy to slot " + (target + 1), () => _copy(n, target), null));
                 }
                 if (Occupied(slot))
-                    row.Add(_control("native-slot-" + n + "-delete", "Delete", () => Confirm("Delete slot " + (n + 1) + "?", "This saved climb is removed. There is no way back.", "Delete", () => _delete(n)), null));
+                    row.Add(_control("native-slot-" + n + "-delete", "Delete", () => Confirm("Delete slot " + (n + 1) + "?", "This saved climb is removed. There is no way back.", "Delete", ConfirmationPolicy.DeleteSave, () => _delete(n)), null));
                 var actions = new VisualElement(); actions.AddToClassList("slot-actions");
                 foreach (var button in row.Children().OfType<Button>().Where(button => !button.name.EndsWith("-continue", StringComparison.Ordinal)).ToList()) actions.Add(button);
                 row.Add(actions); _content.Add(row);
             }
             _content.Add(_control("native-slots-back", "Back to title", _back, null));
             _report?.Invoke();
+        }
+        // US-13.3 loadSlot: loading only discards something when the climb in memory failed to save.
+        private Button Continue(int n)
+        {
+            if (!_unsaved) return _control("native-slot-" + n + "-continue", "Continue", () => _load(n), "primary");
+            var button = _control("native-slot-" + n + "-continue", "Continue", null, "primary");
+            HoldConfirmButton.Bind(button, ConfirmationPolicy.LoadSlot, () => _load(n), _report);
+            return button;
         }
         private string Heading(OriginalSaveSlotInfo slot)
         {
@@ -88,12 +103,15 @@ namespace AshenSpire.Presentation
             var span = TimeSpan.FromSeconds(Math.Max(0, seconds));
             return span.TotalHours >= 1 ? (int)span.TotalHours + "h " + span.Minutes.ToString("00") + "m" : span.Minutes + "m " + span.Seconds.ToString("00") + "s";
         }
-        private void Confirm(string question, string detail, string action, Action confirmed)
+        private void Confirm(string question, string detail, string action, string actionId, Action confirmed)
         {
             _content.Clear();
             var box = new VisualElement(); box.AddToClassList("panel"); box.AddToClassList("original-slot-confirm");
             box.Add(Text(question, "node-title")); box.Add(Text(detail, "lead"));
-            box.Add(_control("native-slot-confirm", action, confirmed, "primary"));
+            var hold = HoldConfirmButton.Policy.RequiresHold(actionId);
+            var commit = _control("native-slot-confirm", hold ? "Hold to " + action.ToLowerInvariant() : action, null, "primary");
+            HoldConfirmButton.Bind(commit, actionId, confirmed, _report);
+            box.Add(commit); if (hold) box.Add(Text("Hold until the bar fills, or tap twice.", "caption"));
             box.Add(_control("native-slot-cancel", "Back to slots", List, null));
             _content.Add(box); _report?.Invoke();
         }

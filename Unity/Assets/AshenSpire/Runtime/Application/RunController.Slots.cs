@@ -72,7 +72,7 @@ namespace AshenSpire.Application
                 if (!TryLoadOriginalProfile()) return;
                 var snapshot = _slotSaves.Load(slot, value => OriginalGameSession.Restore(value), out var meta, out var recovered);
                 var game = OriginalGameSession.Restore(snapshot);
-                _activeSlot = slot; _playtimeBase = meta?.PlaytimeSeconds ?? 0; _playtimeSince = Time.realtimeSinceStartup;
+                _activeSlot = slot; _playtimeBase = meta?.PlaytimeSeconds ?? 0; _playtimeSince = Time.realtimeSinceStartup; Unsaved(false);
                 BindOriginal(game);
                 if (recovered) Debug.LogWarning("Recovered the previous native run checkpoint in slot " + (slot + 1) + ".");
                 RefreshOriginal();
@@ -95,8 +95,11 @@ namespace AshenSpire.Application
         private void BeginSlot(int slot)
         {
             if (_slotSaves.List()[slot].State != OriginalSaveSlotState.Empty) _slotSaves.Delete(slot);
-            _activeSlot = slot; _playtimeBase = 0; _playtimeSince = Time.realtimeSinceStartup;
+            _activeSlot = slot; _playtimeBase = 0; _playtimeSince = Time.realtimeSinceStartup; Unsaved(false);
         }
+        // US-13.3: while true, loading a slot would discard the climb in memory, so the view
+        // makes Continue hold-to-confirm (action.loadSlot).
+        private void Unsaved(bool value) => _view.NativeUnsavedProgress = value;
         private void SaveOriginalSlot()
         {
             if (_originalGame == null || _slotSaves == null || _activeSlot < 0) return;
@@ -105,8 +108,9 @@ namespace AshenSpire.Application
             {
                 Debug.LogWarning("Native save to slot " + (_activeSlot + 1) + " did not verify; in-memory progress is retained for retry.");
                 _slotNotice = "The last save to slot " + (_activeSlot + 1) + " could not be verified. Keep this game open, free some storage and keep playing to retry.";
+                Unsaved(true);
             }
-            else _slotNotice = null;
+            else { _slotNotice = null; Unsaved(false); }
         }
         private string TakeSlotNotice() { var notice = _slotNotice; _slotNotice = null; return notice; }
         private JObject RecordOriginalResult(JObject run, bool victory)

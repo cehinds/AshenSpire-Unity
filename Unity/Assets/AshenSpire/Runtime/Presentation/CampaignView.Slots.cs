@@ -19,7 +19,7 @@ namespace AshenSpire.Presentation
             _body.AddToClassList("slots-screen");
             _body.Add(Control("native-web-import", "Import original-game save", () => WebImportRequested?.Invoke(), "secondary-button"));
             _ = new OriginalSlotPanel(_body, slots, className, notice, load, start, delete, copy,
-                () => MenuRequested?.Invoke(), (id, label, clicked, style) => Control(id, label, clicked, style), () => Report());
+                () => MenuRequested?.Invoke(), (id, label, clicked, style) => Control(id, label, clicked, style), () => Report(), NativeUnsavedProgress);
         }
         public void WebSaveImport(string notice, Action<string> preview, Action back, Action chooseFile = null, Action<int> browserSlot = null)
         {

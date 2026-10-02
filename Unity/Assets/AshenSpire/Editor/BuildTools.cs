@@ -58,7 +58,7 @@ namespace AshenSpire.Editor
             _ = new AshenSpire.Domain.Original.OriginalContentCatalog(originalJson);
             Directory.CreateDirectory(Root + "/Resources/Original");
             File.WriteAllText(Root + "/Resources/Original/content.json", originalJson);
-            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles", "enemy-art", "map-presentation" })
+            foreach (var file in new[] { "mechanics", "progression", "event-choices", "custom-run-options", "appearance-options", "sprite-styles", "enemy-art", "map-presentation", "confirmation-policies" })
             {
                 var authored = File.ReadAllText(Path.Combine(Repository, "GameContent/Unity/Original/" + file + ".json"));
                 var parsed = Newtonsoft.Json.Linq.JObject.Parse(authored);
@@ -68,6 +68,7 @@ namespace AshenSpire.Editor
                     _ = new AshenSpire.Domain.Original.ResourceWallet(0, 0, 0, parsed);
                 }
                 if (file == "progression") _ = new AshenSpire.Domain.Original.AttributeProgression(parsed);
+                if (file == "confirmation-policies") _ = new AshenSpire.Domain.Original.ConfirmationPolicy(authored);
                 if (file == "map-presentation")
                 {
                     if ((int?)parsed["schemaVersion"] != 1 || (double?)parsed["tapPixels"] < 51 || (double?)parsed["tapPixels"] > 80 || parsed["tapPixels"] == null)
