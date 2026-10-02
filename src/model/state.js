@@ -32,7 +32,7 @@ import { combatSnapshotProblems } from './combatSnapshot.js';
 // granted — and capacity must derive from the three (validateRunShape). v2
 // saves lack the ledger and are attributed once at the load door
 // (initializeRunFlaskCharges); v1 additionally predates starting kits.
-export const RUN_SCHEMA_VERSION = 5;
+export const RUN_SCHEMA_VERSION = 6;
 
 /** Deterministic instance-id generator ('p1', 'p2', ... for prefix 'p'). */
 export function createIdGen(prefix = 'i') {
@@ -527,8 +527,12 @@ export const RUN_SHAPE = [
   // falls back to counting a run's own deck for exactly those.
   { key: 'equipmentAttackSlotCount', type: 'number', optional: true },
   // A Sealed/Draft run held to the dealt-deck rule (model/cardRemoval.js
-  // POOL_DECK_RULE). Absent on every Standard run and on a pool save written
-  // before the rule, which the load door heals once and marks.
+  // POOL_DECK_RULE). Absent on every Standard run. Schema 6 is the bump that
+  // brought it (mirroring the original's 19 -> 20, cehinds/AshenSpire#1479):
+  // a pool save from schema 5 or older has none, and the load door heals it
+  // once and marks it; a schema-6 pool save without it is refused
+  // (engine/save.js). The bump makes a schema-5 build refuse and preserve a
+  // schema-6 pool save instead of dealing it the equipment's cards.
   { key: 'poolDeckRule', type: 'number', optional: true },
   { key: 'floor', type: 'number' },
   { key: 'actNumber', type: 'number' },
@@ -914,8 +918,12 @@ export function migrateRunSchema(run) {
   const preLedger = legacy || run.schemaVersion === 2; // v2: no flaskCharges capacity ledger yet
   const preHpLedger = [1, 2, 3].includes(run.schemaVersion);
   const preEquipmentPools = [1, 2, 3, 4].includes(run.schemaVersion);
-  if (![1, 2, 3, 4, RUN_SCHEMA_VERSION].includes(run.schemaVersion)) {
-    throw new Error(`Unknown run schemaVersion ${run.schemaVersion} (supported: 1, 2, 3, 4, ${RUN_SCHEMA_VERSION})`);
+  // v5 and older: no dealt-deck rule. Nothing is filled HERE: the heal
+  // needs the deck's own attack slots, so the load door does it once
+  // (engine/save.js, the POOL-BUILT DECK block), reading this version from
+  // migratedFromRunSchemaVersion. A Standard run has nothing to migrate.
+  if (![1, 2, 3, 4, 5, RUN_SCHEMA_VERSION].includes(run.schemaVersion)) {
+    throw new Error(`Unknown run schemaVersion ${run.schemaVersion} (supported: 1, 2, 3, 4, 5, ${RUN_SCHEMA_VERSION})`);
   }
   const problems = validateRunShape(run, { legacy, preLedger, preHpLedger, preEquipmentPools });
   if (problems.length) throw new Error(`Malformed run save: ${problems.join('; ')}`);
