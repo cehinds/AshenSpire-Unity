@@ -198,7 +198,19 @@ namespace AshenSpire.Presentation
             }
             if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
             { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
-            Button("native-rewards-continue", "Continue · leave unclaimed rewards", _game.ContinueRewards);
+            // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Auto: Continue takes every
+            // pending reward that was not skipped, so each pending kind gets a Skip (ids stay outside the
+            // native-reward-* prefix the playtests treat as "take"). Manual: Continue leaves the rest.
+            var mode = OriginalGameplayOptions.RewardCollectMode(_game.Catalog.Data(), _settings?.RewardCollect);
+            if (mode == "auto")
+                foreach (var kind in new[] { "cinders", "card", "flask", "armament", "relic" })
+                {
+                    if (room["states"][kind] != null) continue;
+                    var offered = kind == "cinders" ? (int?)offers["cinders"] > 0 : kind == "card" ? (offers["cardIds"] as JArray)?.Count > 0 : !string.IsNullOrEmpty((string)offers[kind + "Id"]);
+                    if (offered) { var skipped = kind; Button("native-skip-reward-" + kind, "Skip " + (kind == "cinders" ? "cinders" : kind == "card" ? "the card" : "the " + kind), () => _game.SkipReward(skipped)); }
+                }
+            Button("native-rewards-continue", mode == "auto" ? "Continue · take remaining rewards" : "Continue · leave unclaimed rewards", () => _game.ContinueRewards(mode));
+            if (mode == "auto") Text("Continue takes everything you didn't skip, picking a card for you.", "caption");
         }
         private void Shop()
         {
@@ -332,9 +344,11 @@ namespace AshenSpire.Presentation
                     if ((int)run["loadout"]["active"][slotId] != index)
                     {
                         var allowance = combat && (string)_game.Catalog.Data()["balance"]["equipment"]["swapCostKind"] == "allowance";
-                        var price = combat ? (int)_game.SwapPrice(slotId, set)["cost"] : 0;
+                        var receipt = combat ? _game.SwapPrice(slotId, set) : null; var price = combat ? (int)receipt["cost"] : 0;
                         var button = Button("native-set-" + slotId + "-" + index, "Use set " + (index + 1) + (combat ? allowance ? " · 1 swap (" + _game.SwapsLeft + " left)" : " · " + price + " actions" : ""), () => _game.SelectSet(slotId, set));
                         button.SetEnabled(!combat || (allowance ? _game.SwapsLeft > 0 : (int)_game.Player["energy"] >= price));
+                        // Weapon swap cost setting (US-15.2): name the live rule and how it reached the price.
+                        if (combat && !allowance) Text(OriginalGameplayOptions.DescribeSwapPrice(receipt, (JObject)_game.Catalog.Data()["balance"]["equipment"]), "caption");
                     }
                     if (combat) continue;
                     foreach (var item in owned.Where(x => WeaponLoadout.Fits(slot, x)))

@@ -39,7 +39,7 @@ static class SettingsChecks
         var wild = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"textScale\":5,\"uiScale\":0.1,\"animationSpeed\":10,\"screenShakeIntensity\":-2,\"audio\":{\"master\":3,\"music\":-1,\"sfx\":0.25,\"ui\":\"loud\"}}"), out var wildNotes);
         Check(wild.TextScale == 1.6 && wild.UiScale == .75 && wild.AnimationSpeed == 2 && wild.ScreenShakeIntensity == 0, "clamp: scales, speed and intensity pinned to their ranges");
         Check(wild.MasterVolume == 1 && wild.MusicVolume == 0 && wild.SfxVolume == .25 && wild.UiVolume == 1, "clamp: bus volumes pinned to 0–1, non-numbers use defaults");
-        Check(wildNotes.Count == 8 && wildNotes.Contains("migrated schema 1 to schema 2") && wildNotes.Any(n => n == "textScale 5 clamped to 1.6"), "clamp: every adjustment is reported");
+        Check(wildNotes.Count == 8 && wildNotes.Contains("migrated schema 1 to schema 3") && wildNotes.Any(n => n == "textScale 5 clamped to 1.6"), "clamp: every adjustment is reported");
         var low = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"textScale\":0.2,\"animationSpeed\":0.1}"), out _);
         Check(low.TextScale == .8 && low.AnimationSpeed == .5, "clamp: lower bounds 0.8 text and 0.5 speed");
         var odd = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":1,\"colorblindPalette\":\"sepia\",\"hitStop\":\"yes\",\"keyBindings\":[]}"), out var oddNotes);
@@ -55,28 +55,28 @@ static class SettingsChecks
         var text = custom.ToJson().ToString();
         var back = OriginalPlayerSettings.LoadOrMigrate(text, Prefs(0, 0, 0), out var backNotes);
         Check(JToken.DeepEquals(back.ToJson(), custom.ToJson()) && backNotes.Count == 0, "roundtrip: every field survives save and load without adjustments");
-        Check((string)custom.ToJson()["colorblindPalette"] == "tritanopia" && (int)custom.ToJson()["schemaVersion"] == 2, "roundtrip: palette stored by name with schemaVersion 2");
+        Check((string)custom.ToJson()["colorblindPalette"] == "tritanopia" && (int)custom.ToJson()["schemaVersion"] == 3, "roundtrip: palette stored by name with schemaVersion 3");
         foreach (ColorblindPalette palette in Enum.GetValues(typeof(ColorblindPalette)))
             Check(OriginalPlayerSettings.TryParsePalette(OriginalPlayerSettings.PaletteName(palette), out var parsed) && parsed == palette, "palette " + palette + " round-trips by name");
         Check(JToken.DeepEquals(custom.Clone().ToJson(), custom.ToJson()), "clone is a deep equal copy");
 
         // Schema 2 (US-13.2 / US-8.3): reduce flashes, high contrast, music on/off.
-        Check(OriginalPlayerSettings.SchemaVersion == 2 && OriginalPlayerSettings.StorageKey == "AshenSpire.Settings.v1", "schema 2 keeps the v1 storage key so existing saves are found");
+        Check(OriginalPlayerSettings.SchemaVersion == 3 && OriginalPlayerSettings.StorageKey == "AshenSpire.Settings.v1", "schema 3 keeps the v1 storage key so existing saves are found");
         Check(!d.ReduceFlashes && !d.HighContrast && d.MusicEnabled && (bool)d.ToJson()["reduceFlashes"] == false && (bool)d.ToJson()["highContrast"] == false && (bool)d.ToJson()["audio"]["musicEnabled"], "defaults: reduce flashes and high contrast off, music on, all saved explicitly");
         const string v1 = "{\"schemaVersion\":1,\"textScale\":1.2,\"animationSpeed\":0.75,\"reducedMotion\":true,\"screenShake\":true,\"hitStop\":true,\"colorblindPalette\":\"protanopia\",\"audio\":{\"master\":0.5,\"music\":0.4,\"sfx\":0.3,\"ui\":0.2,\"muted\":true},\"keyBindings\":{\"mapTop\":\"F1\"},\"loadContentMods\":true}";
         var fromV1 = OriginalPlayerSettings.LoadOrMigrate(v1, Prefs(0, 0, 0), out var v1Notes);
         Check(!fromV1.ReduceFlashes && !fromV1.HighContrast && fromV1.MusicEnabled, "migration v1 → v2: new fields default to off, off and music on");
         Check(fromV1.TextScale == 1.2 && fromV1.AnimationSpeed == .75 && fromV1.ReducedMotion && fromV1.ScreenShake && fromV1.HitStop && fromV1.ColorblindPalette == ColorblindPalette.Protanopia
             && fromV1.MasterVolume == .5 && fromV1.MusicVolume == .4 && fromV1.SfxVolume == .3 && fromV1.UiVolume == .2 && fromV1.Muted && fromV1.KeyBindings["mapTop"] == "F1" && fromV1.LoadContentMods, "migration v1 → v2: every schema-1 field is kept");
-        Check(v1Notes.SequenceEqual(new[] { "migrated schema 1 to schema 2" }), "migration v1 → v2: one note, nothing clamped");
+        Check(v1Notes.SequenceEqual(new[] { "migrated schema 1 to schema 3" }), "migration v1 → v3: one note, nothing clamped");
         var resaved = OriginalPlayerSettings.LoadOrMigrate(fromV1.ToJson().ToString(), Prefs(0, 0, 0), out var resavedNotes);
-        Check((int)fromV1.ToJson()["schemaVersion"] == 2 && JToken.DeepEquals(resaved.ToJson(), fromV1.ToJson()) && resavedNotes.Count == 0, "migration v1 → v2: saving writes schema 2, which then loads without notes");
+        Check((int)fromV1.ToJson()["schemaVersion"] == 3 && JToken.DeepEquals(resaved.ToJson(), fromV1.ToJson()) && resavedNotes.Count == 0, "migration v1 → v3: saving writes schema 3, which then loads without notes");
         var a11y = new OriginalPlayerSettings { ReduceFlashes = true, HighContrast = true, MusicEnabled = false };
         var a11yBack = OriginalPlayerSettings.LoadOrMigrate(a11y.ToJson().ToString(), Prefs(0, 0, 0), out _);
         Check(a11yBack.ReduceFlashes && a11yBack.HighContrast && !a11yBack.MusicEnabled, "roundtrip: reduce flashes, high contrast and music off survive save and load");
         var badA11y = OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":2,\"reduceFlashes\":1,\"highContrast\":\"on\",\"audio\":{\"musicEnabled\":null}}"), out var badA11yNotes);
-        Check(!badA11y.ReduceFlashes && !badA11y.HighContrast && badA11y.MusicEnabled && badA11yNotes.Count == 3 && badA11yNotes.Contains("reduceFlashes was not true/false; default used") && badA11yNotes.Contains("highContrast was not true/false; default used"), "validation: non-boolean new fields fall back to their defaults with notes");
-        Check(OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":3,\"reduceFlashes\":true}"), out var newerNotes).ReduceFlashes && newerNotes.Single().Contains("newer"), "newer schema: reduce flashes still read");
+        Check(!badA11y.ReduceFlashes && !badA11y.HighContrast && badA11y.MusicEnabled && badA11yNotes.Count == 4 && badA11yNotes.Contains("migrated schema 2 to schema 3") && badA11yNotes.Contains("reduceFlashes was not true/false; default used") && badA11yNotes.Contains("highContrast was not true/false; default used"), "validation: non-boolean new fields fall back to their defaults with notes");
+        Check(OriginalPlayerSettings.FromJson(JObject.Parse("{\"schemaVersion\":4,\"reduceFlashes\":true}"), out var newerNotes).ReduceFlashes && newerNotes.Single().Contains("newer"), "newer schema: reduce flashes still read");
         Check(OriginalPlayerSettings.FromJson(JObject.Parse("{\"reducedMotion\":true,\"muted\":true}"), out _).HighContrast == false, "schema 0 JSON: high contrast stays off");
         // MusicPlayer's old optional PlayerPrefs keys migrate once (only when nothing is stored).
         Func<string, int, int> MusicPrefs(int master, int music, int enabled) => (key, fallback) =>
