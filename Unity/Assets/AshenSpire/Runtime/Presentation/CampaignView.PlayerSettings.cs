@@ -154,7 +154,7 @@ namespace AshenSpire.Presentation
             pacing = SettingChoice("combat-pacing", "Combat pacing", OriginalPlayerSettings.CombatPacings, s.CombatPacing, v => { s.CombatPacing = v; SyncQuick(); });
             // Gameplay (US-15.2): HTML Advanced → Gameplay / Tuning rows.
             SettingChoice("reward-collect", "Reward collection", OriginalPlayerSettings.RewardCollectModes, s.RewardCollect, v => s.RewardCollect = v);
-            _body.Add(Text("Auto: Continue takes everything you didn't skip, picking a card for you. Manual: Continue means done; only what you chose comes along.", "caption"));
+            _body.Add(Text("Manual (default): cinders are collected for you; take or skip every other reward yourself. Auto: Continue also takes everything you didn't skip, picking a card for you.", "caption"));
             SettingToggle("shop-sell", "Merchant buys back", s.ShopSell, v => s.ShopSell = v);
             SettingChoice("swap-cost-rule", "Weapon swap cost", OriginalPlayerSettings.SwapCostRuleIds, s.SwapCostRule, v => s.SwapCostRule = v);
             _body.Add(Text("Merchant buys back offers a Sell row for relics and flasks. Weapon swap cost: Flat charges the same for every weapon; Gear lets talismans and relics change it; Category prices it by the weapon you draw. Both apply from the next climb or Continue.", "caption"));

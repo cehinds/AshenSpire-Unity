@@ -36,7 +36,7 @@ on screen or in sound.
 | Key bindings | `keyBindings` | action → key name | see below | |
 | Load content mods | `loadContentMods` | on/off | **off** | Mods are opt-in and solo only; co-op always uses the shipped content. See [MODDING.md](MODDING.md). |
 | Combat pacing | *(none: `animationSpeed` / `instantAnimations`)* | `slow`, `normal`, `fast`, `instant` | `normal` | HTML `animSpeed`. `CombatPacing` reads and sets the same speed fields (slow 0.5, normal 1, fast 2, instant), so it can never disagree with the slider. |
-| Reward collection | `rewardCollect` | `auto`, `manual` | `auto` | HTML `balance.ui.rewardCollect`. Added in schema 3. See *Gameplay options*. |
+| Reward collection | `rewardCollect` | `auto`, `manual` | **`manual`** | HTML `balance.ui.rewardCollect` modes. Added in schema 3. **Owner decision (2026-10-02):** the Unity default is `manual` (only cinders are collected automatically), not the content def `auto`. See *Gameplay options* and *Migration*. |
 | Merchant buys back | `shopSell` | on/off | on | HTML `shopSell`. Added in schema 3. |
 | Weapon swap cost | `swapCostRule` | `flat`, `gear`, `category` | `flat` | HTML `balance.equipment.swapCostRules` / `swapCostRule`. Added in schema 3. |
 | Fullscreen | `fullscreen` | on/off | off | HTML `fullscreen`. Added in schema 3. |
@@ -103,6 +103,14 @@ Loading checks these cases in order:
    wrote them, and nothing reads them after this. Missing keys keep the defaults.
 3. **The stored text is unreadable.** The same legacy migration runs, and a note says so.
 
+**Reward collection default change (owner decision, 2026-10-02).** The default moved from
+`auto` to `manual` without a schema bump. A record with no `rewardCollect` field (schema 1
+or 2, or a schema-3 record missing it) means the player never chose, so it loads as
+`manual`, silently. A stored value is kept: every schema-3 record a Unity build has written
+carries `rewardCollect` explicitly (`ToJson` always writes it), so a stored `auto` cannot be
+told apart from a deliberate choice and is never overridden. A player who had the old silent
+`auto` default keeps it until they change the setting. Covered by `UnityTests/Mods`.
+
 A schema-0 JSON object is also accepted. It can use either the PlayerPrefs key names
 (`{"AshenSpire.ReducedMotion":1, ...}`) or plain flags
 (`{"reducedMotion":true,"fastMotion":true,"muted":true}`).
@@ -140,16 +148,24 @@ Settings is reached from the title screen only, so a change applies from the nex
 climb or Continue.
 
 - **Reward collection — applied.** `OriginalRunPanel.Rewards` resolves the mode with
-  `OriginalGameplayOptions.RewardCollectMode` (the content dial, like `reward.js`
+  `OriginalGameplayOptions.RewardCollectMode` (the content dial's modes, like `reward.js`
   `collectMode`) and calls `OriginalGameSession.ContinueRewards(mode)`. *Auto* takes every
   pending, unskipped, unblocked reward in `REWARD_KIND_ORDER` and picks a card on the
   `cardRewards` stream, exactly like `rewardplan.resolveContinue` with `reward.js` `pickFn`.
-  *Manual* is the earlier Unity Continue unchanged. In auto mode each pending reward has a
+  *Manual* takes only the pending, unskipped cinders and leaves every other unchosen reward
+  behind. **Owner decision (2026-10-02): the default is manual** — after a fight only cinders
+  are collected automatically; the card, relic, flask and armament are the player's to take
+  or skip. The HTML game grants cinders on arrival (`reward.js` `grantCinders`); Unity grants
+  them at Continue (`OriginalRunSession.ContinueRewards(autoCollect, collectCinders)`), and
+  *Collect N cinders* still takes them early. An unset or unknown mode resolves to the Unity
+  default `manual` when the content lists it (`reward.js` falls back to the content def
+  `auto`; this is the one deliberate difference). In both modes each pending reward has a
   Skip control (`native-skip-reward-<kind>`; not `native-reward-*`, which the playtests
-  treat as "take"), and an explicit skip is respected. **The default is now auto (HTML),
-  so a fresh profile's Continue collects what is left.** The compiled playtests that replay
-  a manual domain script use `NativeUiDriver.continueRewards()`, which skips every pending
-  kind first and so keeps their exact replay. Co-op rewards are unchanged.
+  treat as "take"), and an explicit skip is respected, including a skip of the cinders. The
+  argument-free `OriginalGameSession.ContinueRewards()` still leaves everything, cinders
+  included, for the domain replays; the compiled playtests that replay one use
+  `NativeUiDriver.continueRewards()`, which skips every pending kind whose Skip control is
+  shown first, so they keep their exact replay under either mode. Co-op rewards are unchanged.
 - **Merchant buys back — applied.** `OriginalRunServices.Sellables` already returns no rows
   when `profileMeta.settings.shopSell` is false; the setting now reaches it.
 - **Weapon swap cost — applied.** `OriginalCombatEquipment.Rule` already resolved
@@ -237,8 +253,9 @@ number still pops. Turn on High contrast and check that captions get brighter. T
 off and on, and mute then unmute: music should stop and come back at the same level. Check that the values persist and that the three legacy toggles still match. Rebind
 a map key, then scroll the map with it. Pick each palette and look at a combat HUD.
 
-Schema-3 play test: set Reward collection to Manual, win a fight, press Continue and check
-that only what you took came along; set Auto, skip the card, press Continue and check that
+Schema-3 play test: on a fresh profile (Reward collection Manual, the default), win a fight,
+press Continue and check that the cinders and only what you took came along; skip the cinders
+once and check they are left; set Auto, skip the card, press Continue and check that
 the cinders and other rows were taken but no card. Turn Merchant buys back off and check the
 merchant has no Sell rows. Set Weapon swap cost to Category, Continue a climb, open the
 Armoury in a fight and read the swap price line for a heavy and a quick weapon. Toggle

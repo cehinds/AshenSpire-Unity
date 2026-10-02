@@ -222,10 +222,15 @@ namespace AshenSpire.Domain.Original
                 if (!JToken.DeepEquals(current[property.Name],property.Value)) { current[property.Name] = property.Value.DeepClone(); changed = true; }
             return changed;
         });
-        public void ContinueRewards(bool autoCollect) => Change((run,rng) =>
+        public void ContinueRewards(bool autoCollect) => ContinueRewards(autoCollect,false);
+        /// <summary>Leave the reward room. autoCollect takes every pending, un-skipped kind (a card is picked on the
+        /// cardRewards stream); otherwise collectCinders takes only pending, un-skipped cinders (the Unity "manual"
+        /// default, owner decision 2026-10-02: cinders always come along, like reward.js grantCinders).</summary>
+        public void ContinueRewards(bool autoCollect,bool collectCinders) => Change((run,rng) =>
         {
             Require(run,OriginalRunPhase.Rewards);
-            if (autoCollect) foreach (var kind in new[] { "cinders","card","flask","armament","relic" })
+            var kinds = autoCollect ? new[] { "cinders","card","flask","armament","relic" } : collectCinders ? new[] { "cinders" } : new string[0];
+            foreach (var kind in kinds)
             {
                 if (run["room"]["states"][kind] != null) continue;
                 var choices = run["room"]["rewards"]["cardIds"] as JArray; string card = null;

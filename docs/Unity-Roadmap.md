@@ -447,6 +447,7 @@ Tests: `UnityTests/CoopRun`, `tools/NativeLan/Tests/*`, `tools/native-coop-ci.cj
   - [x] Build 31 source: Display options stored in settings schema 3; styles for UI size/accent/motif need the editor.
 - [ ] **US-15.2** Gameplay options: combat pacing, reward collection, merchant buy-back, weapon swap cost display.
   - [x] Build 31 source: Gameplay options (pacing, reward collection default auto, buy-back, swap-cost display) in schema 3 with a Parity `gameplay-options` section (55 checks).
+  - [x] Owner decision 2026-10-02: Reward collection defaults to manual; only cinders are collected automatically at Continue, everything else is taken or skipped (Skip controls in both modes). A stored `auto` is kept (see [Unity-Settings.md](Unity-Settings.md) *Migration*).
 - [ ] **US-15.3** Keyboard and gamepad bindings with rebinding.
   - [x] Build 31 source: Keyboard bindings and gamepad mapping in schema 3 (`OriginalGamepad`); the gamepad input hook needs the Input System package.
 
