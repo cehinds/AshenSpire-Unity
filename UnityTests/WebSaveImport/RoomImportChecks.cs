@@ -209,6 +209,8 @@ static class RoomImportChecks
             // Only an absent marker is a pre-fix save; a present string or null is refused like the original refuses it.
             RejectPool(dealt, s => s["poolDeckRule"] = "1", name + ": string dealt-deck rule refused", "Malformed original dealt-deck rule");
             RejectPool(dealt, s => s["poolDeckRule"] = JValue.CreateNull(), name + ": null dealt-deck rule refused", "Malformed original dealt-deck rule");
+            // `poolDeck` is a fight's flag; on a saved run the original refuses it, and so does the import.
+            RejectPool(dealt, s => s["poolDeck"] = true, name + ": run-level poolDeck flag refused", "poolDeck");
         }
         void RejectPool(JObject source, Action<JObject> edit, string label, string contains) { var copy = (JObject)source.DeepClone(); edit(copy); Refuse(() => Import(copy.ToString()), label, contains); }
         // A Standard deck keeps the composed rule: a quota its deck does not hold is refused,
