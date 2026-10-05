@@ -36,9 +36,15 @@ const combatFeedback = new Map();
    const end=report.Controls.find(c=>c.Id==='coop-end-turn'),cards=report.Controls.filter(c=>/^coop-card-/.test(c.Id));
    ui.check(cards.every(c=>!intersects(c,end)),'end turn remains clear of the hand');
    await ui.click('coop-combat-menu');await ui.until(()=>ui.has('coop-flasks'),'party menu exposes flasks');await ui.shot('02a-open-tools');
+   await ui.click('coop-flasks');await ui.until(()=>ui.has('coop-flasks-back'),'flasks are reachable through the tools popup');
+   ui.check(!ui.has('coop-combat-menu'),'combat chrome leaves the flask subpage');
+   await ui.shot('02aa-flasks');await ui.click('coop-flasks-back');
+   await ui.until(()=>ui.has('coop-combat-menu')&&ui.has('coop-flasks'),'flask Back returns to the open tools menu');
    await ui.click('coop-combat-menu');await ui.until(()=>!ui.has('coop-flasks'),'party menu closes');
    await ui.click('coop-deck');await ui.until(()=>ui.has('coop-deck-back'),'party deck opens');
    ui.check(!ui.has('coop-combat-menu')&&!ui.has('coop-end-turn'),'combat controls leave the deck subpage unobscured');
+   const filters=ui.controls.Controls.filter(c=>/^coop-deck-(search|type|sort)$/.test(c.Id));
+   ui.check(filters.length===3&&filters.every(c=>c.Height<ui.controls.PanelHeight*.15),'deck filters stay compact on a phone');
    await ui.shot('02b-deck');await ui.click('coop-deck-back');
    await ui.until(()=>ui.has('coop-combat-menu')&&ui.has('coop-end-turn'),'deck returns to combat controls');
   }
