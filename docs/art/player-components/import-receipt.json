@@ -75,6 +75,114 @@
       "nineSliceInsets": null
     },
     {
+      "id": "base:canonical/assets/equipment/weapon_straightSword.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_straightSword.webp",
+      "sourceSha256": "3b4bfc137c22da423e99e743870303c04bdabcaeeb13925e41fe59bcfe29f603",
+      "resource": "Art/PlayerComponents/weapon_straightSword",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "595be459f98a8748d4472bff001dcd41996223874ab016de5a3fc32ddd7b66f8",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_roundShield.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_roundShield.webp",
+      "sourceSha256": "7c92bb9923dfa579a4eaf338f0538fdcf3887fbb96bb63b628492624278260e5",
+      "resource": "Art/PlayerComponents/weapon_roundShield",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "c9e5515c49e359cbfc678b64b71ec76558732f145edabf300456004af77c24f2",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_warhammer.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_warhammer.webp",
+      "sourceSha256": "c922fb478ab5eec484461c7e37de790c4d67eebada2c353f44ad9339ec36a358",
+      "resource": "Art/PlayerComponents/weapon_warhammer",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "5851b936e36aedc68720ce1418821dcb70995eac9bfe4d887b8da79e86904883",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_battleaxe.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_battleaxe.webp",
+      "sourceSha256": "f3114ff4955c9cbf1a48086733f5bb08abc2bba07bd572eb27cc3fd85a0844ba",
+      "resource": "Art/PlayerComponents/weapon_battleaxe",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "d08409b28e73cc1061271cee070f3d4b18e64cb0a1a0b25e3e1e698c37093370",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_greatsword.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_greatsword.webp",
+      "sourceSha256": "9b0e2adf76eba4c8f580659f58f2a85e6e7ec96229fba019c9332f00e88dd950",
+      "resource": "Art/PlayerComponents/weapon_greatsword",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "0d4bd912ed0e44e0240cefff999d884ca4df72ddb7fdf594b2629efc75c2f05a",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_dagger.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_dagger.webp",
+      "sourceSha256": "9c4020db97d5787802877f6d70611ecf009b97cf8d5e486fb85c92f6c982d52a",
+      "resource": "Art/PlayerComponents/weapon_dagger",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "25f1cdf3b2d75f06ab0a6b07c3dd4a776d50f2e3983865829c85fce271d4a3d0",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/crackedLantern.webp",
+      "source": "assets/reused/canonical/assets/relics/crackedLantern.webp",
+      "sourceSha256": "6228e82667c983d9c7c33de21be90a8718bb7052a8752a5bbf3082e5acfaf335",
+      "resource": "Art/PlayerComponents/crackedLantern",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "a013f8563269ef54f40930c35bb928a8fb719760248d03866ff5f893796742fc",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/forsakenMedallion.webp",
+      "source": "assets/reused/canonical/assets/relics/forsakenMedallion.webp",
+      "sourceSha256": "951d0f04bc9e1b452d8f8669a420126ac7d447562b2f6666a88a2c1365214980",
+      "resource": "Art/PlayerComponents/forsakenMedallion",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "80cbde06f0d9242d8291b59e015d56982296a2a60a7ea830de09ed78953a66a2",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/cutpursesCoin.webp",
+      "source": "assets/reused/canonical/assets/relics/cutpursesCoin.webp",
+      "sourceSha256": "d887fb81174a11a93df995110743e61ffc0180826a00195c9df69ddf5c9ae8c0",
+      "resource": "Art/PlayerComponents/cutpursesCoin",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "48e5391489d481f154df607753cf214390dc7323e190de2df06b07c1eb59fdb0",
+      "nineSliceInsets": null
+    },
+    {
       "id": "engraved-folio-backed",
       "source": "assets/components/engraved-folio-backed.svg",
       "sourceSha256": "2aef6cd30c4eff1ae6792698b2835a032745e0842cffb252ea6f7a02f77d8102",

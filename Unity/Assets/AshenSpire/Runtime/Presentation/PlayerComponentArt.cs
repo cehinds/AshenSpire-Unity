@@ -7,6 +7,16 @@ namespace AshenSpire.Presentation
     // with the screen; no game state, global subscriptions or per-frame loading.
     internal static class PlayerComponentArt
     {
+        internal static VisualElement Item(string resource, string title)
+        {
+            var texture = Resources.Load<Texture2D>("Art/PlayerComponents/" + resource);
+            if (texture == null) return null;
+            var item = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = title };
+            item.AddToClassList("guided-item");
+            item.Add(new Image { image = texture, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore });
+            item.Add(new Label(title) { pickingMode = PickingMode.Ignore });
+            return item;
+        }
         internal static void Scene(VisualElement surface, string key)
         {
             var host = surface.ClassListContains("app") ? surface : surface.GetFirstAncestorOfType<ScrollView>()?.parent;

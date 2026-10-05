@@ -3,16 +3,17 @@
 Source: the owner's `player-components-2026-10-03.7z`, extracted under
 `D:/repos/.codex/asset-review/player-components-2026-10-04`. The full source kit
 was previously verified against all 466 checksum entries. The import selects
-35 reusable assets; it does not execute the archive's scripts or import example
+44 reusable assets; it does not execute the archive's scripts or import example
 game values.
 
-- [x] Import 21 component frames and seven desktop/portrait scene pairs.
+- [x] Import 21 component frames, seven desktop/portrait scene pairs and nine item illustrations.
   - [x] Verify every selected source checksum before conversion.
   - [x] Record output hashes and dimensions in `art/player-components/import-receipt.json`.
   - [x] Preserve painting proportions and source credits.
 - [x] Bind artwork to native Unity UI Toolkit screens.
   - [x] Title and guided creation use the Spire vista.
   - [x] Merchant, shrine, rewards and terminal screens select their scene artwork.
+  - [x] Equipment and relic previews show the supplied canonical item illustrations.
   - [x] Engraved controls retain ready, disabled, focus and selection states.
   - [x] Map node shells use the supplied art while existing graph geometry and legal-route controls retain authority.
   - [x] Desktop creation separates the character stage from its current decision; portrait keeps one step and a bottom action tray.
@@ -25,7 +26,7 @@ game values.
   - [x] Runtime reference checker: 167 sources; only three known Unity 6 reference gaps accepted.
   - [x] Card QoL: 192 checks.
   - [x] Map viewport: 74,628 checks across 3,024 camera fixtures and 27 maps.
-  - [x] 35 output hashes/dimensions and 15 stylesheet resource links verified.
+  - [x] 44 output hashes/dimensions and 15 stylesheet resource links verified.
 - [ ] Fresh Unity Web export and desktop/portrait playtest.
 - [ ] Full current-game visual/mechanical parity and owner acceptance.
 - [ ] All-platform packaging and green full CI.

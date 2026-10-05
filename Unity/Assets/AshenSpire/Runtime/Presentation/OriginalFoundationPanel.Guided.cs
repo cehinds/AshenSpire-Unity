@@ -64,6 +64,12 @@ namespace AshenSpire.Presentation
             }
             else if (_step == 2)
             {
+                var objects = new VisualElement(); objects.AddToClassList("guided-item-row"); body.Add(objects);
+                foreach (var hand in new[] { "rightHand", "leftHand" })
+                {
+                    var item = PlayerComponentArt.Item("weapon_" + (string)preview["loadout"]["sets"][hand][0], Item(hand));
+                    if (item != null) objects.Add(item);
+                }
                 StartingChoice("native-start-kit", "Loadout", new JArray(kits.Where(x => (bool?)x["available"] == true)), _kit, value => { _kit = value; _starting.Remove("startingHands"); Creation(); });
                 foreach (var hand in new[] { "rightHand", "leftHand" })
                 {
@@ -81,6 +87,8 @@ namespace AshenSpire.Presentation
             else if (_step == 3)
             {
                 StartingChoice("native-start-relic", "Starting relic", options.AvailableRelics(_creation.ClassId), (string)preview["relicId"], value => { _starting["startingRelicId"] = value; Creation(); });
+                var relicArt = PlayerComponentArt.Item((string)preview["relicId"], (string)relic["name"]);
+                if (relicArt != null) { relicArt.AddToClassList("guided-relic-art"); body.Add(relicArt); }
                 Label((string)relic["name"], "node-title"); Label(RelicDescription(relic), "lead");
                 Label("Your class's main relic is selected by default.", "caption");
             }

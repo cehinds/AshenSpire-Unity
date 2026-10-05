@@ -32,8 +32,10 @@ for asset in manifest['assets']:
     source = args.kit / asset['file']
     name = source.stem
     is_scene = any(name == f'{scene}-{orientation}' for scene in scene_names for orientation in ('desktop', 'mobile'))
-    if not (name in components or is_scene):
+    is_item = '/canonical/assets/equipment/' in asset['file'] or '/canonical/assets/relics/' in asset['file']
+    if not (name in components or is_scene or is_item):
         continue
+    source.resolve().relative_to(args.kit.resolve())
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
     if source_hash != asset['sha256']:
         raise ValueError(f'Source checksum mismatch: {source}')

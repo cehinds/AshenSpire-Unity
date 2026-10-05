@@ -32,6 +32,12 @@
 .creation-wide.creation-card-preview .guided-stage-figure, .creation-wide.creation-custom-step .guided-stage-figure { display: none; }
 .app .guided-footer { background-image: resource("Art/PlayerComponents/mobile-action-tray"); -unity-slice-left: 64; -unity-slice-right: 64; -unity-slice-top: 64; -unity-slice-bottom: 64; -unity-slice-scale: 0.5px; padding: 12px; border-width: 0; margin-top: 12px; }
 .app .guided-attribute { background-image: resource("Art/PlayerComponents/stat-chip"); -unity-slice-left: 24; -unity-slice-right: 24; -unity-slice-top: 24; -unity-slice-bottom: 24; -unity-slice-scale: 0.5px; background-color: rgba(0,0,0,0); }
+.guided-item-row { flex-direction: row; height: 76px; min-height: 44px; flex-shrink: 1; margin-bottom: 6px; }
+.guided-item { flex-grow: 1; flex-shrink: 1; min-width: 0; align-items: center; }
+.guided-item > Image { width: 100%; height: 54px; min-height: 28px; flex-shrink: 1; }
+.guided-item > Label { color: #d6bd8c; font-size: 11px; margin: 2px 0; -unity-text-align: middle-center; }
+.guided-item.guided-relic-art { flex-grow: 0; height: 130px; min-height: 70px; margin: 12px 0; }
+.guided-item.guided-relic-art > Image { height: 108px; }
 .app .map-viewport { background-color: rgba(15,14,11,0.72); border-radius: 2px; border-color: #88744f; }
 .app .map-node { background-image: resource("Art/PlayerComponents/chamber-known"); -unity-background-scale-mode: scale-to-fit; background-color: rgba(0,0,0,0); border-width: 0; }
 .app .map-node.current, .app .map-node.available { background-image: resource("Art/PlayerComponents/chamber-current"); }
