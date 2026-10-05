@@ -9,8 +9,11 @@ const combatFeedback = new Map();
  const output=path.resolve(process.argv[3]||'TestResults/NativeCoopBrowser'),credentials=JSON.parse(fs.readFileSync(process.argv[4],'utf8'));
  browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  for(let seat=0;seat<2;seat++){
-  const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
+  const deviceScaleFactor=Number(process.env.AS_COOP_DPR||2);
+  if(![1,2].includes(deviceScaleFactor))throw Error('AS_COOP_DPR must be 1 or 2.');
+  const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor});
   const ui=new NativeUiDriver(await context.newPage(),path.join(output,seat?'Guest':'Host'));players.push(ui);
+  fs.writeFileSync(path.join(ui.output,'viewport.json'),JSON.stringify({width:390,height:844,deviceScaleFactor,physicalDevice:false},null,2));
   combatFeedback.set(ui,[]);
   ui.page.on('console',message=>{const text=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=text.indexOf(prefix);if(at<0)return;try{combatFeedback.get(ui).push(JSON.parse(text.slice(at+prefix.length)));}catch(error){ui.errors.push(error.message);}});
   const wire=[];ui.page.on('websocket',socket=>{socket.on('framesent',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'sent',type:message.type,hello:message.type==='hello'?{inviteMatches:message.payload.joinToken===credentials.joinToken,hostMatches:message.payload.hostToken===credentials.hostToken,setup:message.payload.setup}:undefined});}catch{}});socket.on('framereceived',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'received',type:message.type,error:message.type==='error'?message.payload:undefined});}catch{}});socket.on('close',()=>fs.writeFileSync(path.join(ui.output,'wire-summary.json'),JSON.stringify(wire,null,2)));});
