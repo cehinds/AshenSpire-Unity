@@ -12,18 +12,19 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
-- [x] Latest downloadable Web preview: [build 50](https://github.com/cehinds/AshenSpire-Unity/releases/tag/preview-build50), version `0.0.33.3`.
+- [x] Latest downloadable Web preview: [build 53](https://github.com/cehinds/AshenSpire-Unity/releases/tag/preview-build53), version `0.0.33.6`.
   - [x] Unity export, source/eight payload hashes and archive verification.
-  - [x] 42 targeted desktop/portrait browser assertions and screenshot inspection.
+  - [x] 18 final solo assertions; 32 two-browser co-op assertions on the preceding
+    candidate, with unchanged WebAssembly/framework and co-op heading behavior.
   - [x] Public ZIP downloaded back; SHA-256 matches the local package.
-  - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
-- [ ] Build 53 (`0.0.33.6`): clear inherited popup height and bound deck filter fields.
+  - Evidence: [build 53](Unity-Build53-Preview.md). Earlier previews: [50](Unity-Build50-Preview.md), [49](Unity-Build49-Preview.md).
+- [x] Build 53 preview (`0.0.33.6`): clear inherited popup height and bound deck filter fields.
   - [x] Runtime reference compilation (169 files); driver/report regression checks pass.
   - [x] Final Unity export and ZIP verified; 18 final solo browser assertions.
   - [x] 32 two-browser co-op assertions on the preceding candidate; final change
     hides the phone heading already hidden in co-op. WebAssembly/framework hashes match.
   - [x] Screenshots inspected: party combat, tools, deck, rewards and final solo phone layout.
-  - [ ] Public download delivery and download-back verification.
+  - [x] Public download delivery and download-back verification.
   - Source: `c393630`; tools explicitly observe which card is selected and handle
     a peer redraw closing the inspector during a Back gesture.
   - Evidence: [build 53](Unity-Build53-Preview.md). Full migration remains open.

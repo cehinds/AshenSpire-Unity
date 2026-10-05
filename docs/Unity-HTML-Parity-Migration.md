@@ -28,7 +28,7 @@ models and preserve old saved-rule behavior.
   - [ ] Compare native map/animation and mobile intent spacing against the newer fixes.
   - Evidence: latest section of [the upstream assessment](Unity-Upstream-Review.md).
 
-- [ ] Recorded upstream follow-through (build-52 source increment; verified build 50 is downloadable).
+- [ ] Recorded upstream follow-through (verified build 53 Web preview is downloadable).
   - [ ] US: refresh unplayed hands under saved rules.
     - [x] Optional `shuffleHand` rule; solo/co-op Retain, Ethereal and ordinary-card handling.
     - [x] Deterministic shuffle receipts, exact mid-turn restore and absent/false legacy behavior.

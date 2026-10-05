@@ -31,7 +31,9 @@
   - [x] Final phone screenshot confirms the decorative heading no longer overlaps intents.
   - Evidence: `TestResults/PaintedCombat/build53`; exported source `646ee9ea…`.
   - Combined receipt: `TestResults/HtmlParity/build53/preview-verification.json`.
-- [ ] Download delivery and download-back hash verification.
+- [x] [Public preview and downloads](https://github.com/cehinds/AshenSpire-Unity/releases/tag/preview-build53).
+  - [x] Downloaded the public ZIP back; its SHA-256 and GitHub asset digest match
+    `f429b22d65246c92df52b33d1c64efccaf69c93238554edc515833d3eed5b9ea`.
 - [ ] Current content activation, upstream migration, physical-device and owner acceptance.
 
 Build-51 mounted property carriers and owned reactions are included in this
