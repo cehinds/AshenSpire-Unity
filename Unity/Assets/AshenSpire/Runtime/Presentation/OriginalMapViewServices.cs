@@ -11,6 +11,7 @@ namespace AshenSpire.Presentation
         public Func<string, JObject> Read { get; set; }
         public Action<string, JObject> Write { get; set; }
         public Func<double> DisplayScale { get; set; }
+        public Func<double> MinimumTapSize { get; set; }
         public Action<bool> SetMapSurface { get; set; }
         public Action Report { get; set; }
         /// <summary>Map keyboard action for a key (OriginalKeyBindings); null uses the default keys.</summary>

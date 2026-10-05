@@ -25,8 +25,11 @@ namespace AshenSpire.Presentation
         private readonly OriginalSpritePlayback _playback;
         private JObject _plan, _customization;
         private string _pose = "idle", _figureId;
+        private Texture2D _paintedPresentation;
+        private readonly CombatActorImage _paintedArt = new CombatActorImage { scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
         public string RenderStyle => (string)_plan?["style"];
         public string Pose => _pose;
+        internal float OwnerAspect => _paintedPresentation == null ? .7f : (float)_paintedPresentation.width / _paintedPresentation.height;
         public OriginalPlayerFigure(object owner,string figureId = null)
         {
             _playback = Playback.GetOrCreateValue(owner ?? throw new ArgumentNullException(nameof(owner))); _figureId = figureId;
@@ -34,6 +37,7 @@ namespace AshenSpire.Presentation
             _viewport.style.position = Position.Absolute; _viewport.style.overflow = Overflow.Visible; _viewport.pickingMode = PickingMode.Ignore; Add(_viewport);
             _art.style.position = Position.Absolute; _art.pickingMode = PickingMode.Ignore; _viewport.Add(_art);
             _sigil.style.position = Position.Absolute; _viewport.Add(_sigil);
+            _paintedArt.style.position = Position.Absolute; _paintedArt.style.left = 0; _paintedArt.style.right = 0; _paintedArt.style.top = 0; _paintedArt.style.bottom = 0; _paintedArt.style.display = DisplayStyle.None; Add(_paintedArt);
             RegisterCallback<GeometryChangedEvent>(_ => Place());
         }
         public void Configure(string classId,JObject customization,string armourId = "default")
@@ -59,6 +63,14 @@ namespace AshenSpire.Presentation
             var values = loadout?["sets"]?["armor"] as JArray; var index = (int?)loadout?["active"]?["armor"] ?? 0;
             return values != null && index >= 0 && index < values.Count ? (string)values[index] ?? "default" : "default";
         }
+        public void UseOwnerBattleArt(string classId)
+        {
+            _paintedPresentation = Resources.Load<Texture2D>("Art/OwnerAppearance/" + classId);
+            if (_paintedPresentation == null) return;
+            _paintedArt.image = _paintedPresentation; _paintedArt.style.display = DisplayStyle.Flex;
+            _paintedArt.Configure(classId);
+            _viewport.style.display = DisplayStyle.None;
+        }
         public bool SetPose(string pose)
         {
             if (RenderStyle != "animated") return false;
@@ -72,8 +84,8 @@ namespace AshenSpire.Presentation
             var pose = cueId == "attack" ? "attack" : cueId == "hit" ? "hit" : "guard";
             SetPose(_playback.Resolve(Catalog,_plan,_figureId ?? (string)_customization["figureId"] ?? (string)_plan["poseClass"] + "_" + (string)_plan["tint"],pose));
         }
-        public void FeedbackTint(Color color) { _art.tintColor = color; }
-        public void Settle() { SetPose("idle"); _art.tintColor = Color.white; }
+        public void FeedbackTint(Color color) { _art.tintColor = color; _paintedArt.SetTint(color); }
+        public void Settle() { SetPose("idle"); _art.tintColor = Color.white; _paintedArt.SetTint(Color.white); }
         private void Place()
         {
             if (_plan == null || contentRect.width <= 0 || contentRect.height <= 0) return;

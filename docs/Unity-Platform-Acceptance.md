@@ -1,6 +1,32 @@
 # Platform acceptance
 
-## Current build-25 candidate
+## Current platform work
+
+Phase 3 is running alongside Phase 2 polish as requested on 2026-10-03. The
+[Phase 3 checklist](Unity-Phase-3.md) records current local exports and the
+remaining device gates. Unity 6000.6.0f1 has Android, iOS, WebGL and Windows
+support installed. The current `adb devices` inventory has no attached device;
+an installed iOS module does not establish a Mac/Xcode/signing environment.
+
+Fresh delivery candidates are staged beneath `Builds/PlatformCandidates` with
+`tools/unity-stage-candidate.mjs`. All player receipts must match current source,
+version and build, and each payload/download hash is checked. Published releases
+remain separate. Local package success is not physical-device or graphical
+Windows acceptance.
+
+Build 35 (`0.0.30.4`) now has a matching local Web/Windows/Android/portable
+companion delivery at `Builds/PlatformCandidates/build35-retry-20261003/Delivery`.
+All payload/hash/size checks passed; see [build-35 evidence](qa/unity-build-35/README.md).
+This candidate has not been published. The device and graphical-player gates
+below remain open.
+
+Build 36 is now archived at `Builds/PlatformCandidates/build36-20261003/Delivery`.
+Its four packages match the exporter and packaged-companion playtest receipts;
+see [build-36 evidence](qa/unity-build-36/README.md). Build 37 is an intermediate
+Web migration preview in a separate directory. Its changes do not inherit the
+build-36 platform checks; see the [migration tracker](Unity-HTML-Parity-Migration.md).
+
+## Historical build-25 candidate
 
 Build 25 has matching Web, Windows, Android and companion packages. Its Web
 player passes the three-slot save/reload and two-player fight/rejoin checks;

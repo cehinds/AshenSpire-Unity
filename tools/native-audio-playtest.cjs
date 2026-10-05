@@ -7,7 +7,7 @@ let browser, ui;
 (async () => {
  const url = process.argv[2], output = path.resolve(process.argv[3] || 'TestResults/NativeAudio');
  if (!url) throw Error('Pass a compiled Web URL.');
- browser = await chromium.launch({headless:true, ...(process.platform==='win32'?{channel:'msedge'}:{}), args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser = await chromium.launch({headless:true, ...(process.platform==='win32'?{channel:'msedge'}:{}), args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const page = await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
  await page.addInitScript(() => {
   const edges = new WeakMap(), starts = [];
@@ -96,7 +96,7 @@ let browser, ui;
  await expectClick('preview-sound-effect','sfx',0,'master zero suppresses combat preview');
  await endpoint('volume-master','Master volume','End',100);
  await ui.shot('01-audio-settings');
- await ui.click('back',false);await ui.until(()=>ui.has('settings'),'title');
+ await ui.click('settings-section-6',false);await ui.click('back',false);await ui.until(()=>ui.has('settings'),'title');
  await expectClick('settings','ui',1,'reopening Settings produces one cue');
  await expectClick('preview-interface-sound','ui',1,'newly created preview binds once');
  const saved=value('Interface sounds');

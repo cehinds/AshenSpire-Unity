@@ -1,6 +1,6 @@
 """Validate the shipped cooperative host against its exact source and ZIP receipt.
 
-Run from any directory: python tools/validate-companion.py [repository root].
+Run from any directory: python tools/validate-companion.py [repository root] [package directory].
 The host save, credentials and live session folders are never distributable files.
 """
 import hashlib
@@ -19,9 +19,9 @@ def source_digest(path):
     return digest(path.read_bytes().decode('utf-8').replace('\r\n', '\n').encode('utf-8'))
 
 
-def validate(root):
+def validate(root, package_directory=None):
     root = Path(root).resolve()
-    published = root / 'Published'
+    published = Path(package_directory).resolve() if package_directory is not None else root / 'Published'
     receipt_bytes = (published / 'Companion.build.json').read_bytes()
     receipt = json.loads(receipt_bytes.decode('utf-8-sig'))
     version = json.loads((root / 'GameContent/Unity/version.json').read_text(encoding='utf-8-sig'))
@@ -84,4 +84,5 @@ def validate(root):
 
 
 if __name__ == '__main__':
-    validate(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1])
+    validate(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1],
+             Path(sys.argv[2]) if len(sys.argv) > 2 else None)

@@ -24,6 +24,8 @@ namespace AshenSpire.Domain.Original
             var problems = new List<string>();
             foreach (var key in new[] { "retain", "promptDiscard", "replaceDiscards", "reshuffle" })
                 if (rules[key]?.Type != JTokenType.Boolean) problems.Add("Hand rules: " + key + " must be boolean");
+            if (rules["shuffleHand"] != null && rules["shuffleHand"].Type != JTokenType.Boolean)
+                problems.Add("Hand rules: shuffleHand must be boolean");
             var drawMode = rules["drawMode"]?.Type == JTokenType.String ? (string)rules["drawMode"] : null;
             var overflow = rules["overflow"]?.Type == JTokenType.String ? (string)rules["overflow"] : null;
             if ((drawMode != "fill" && drawMode != "fixed") || (overflow != "keep" && overflow != "discard")) problems.Add("Hand rules: invalid draw or overflow mode");

@@ -80,6 +80,27 @@ namespace AshenSpire.Domain.Original
         public bool ReduceFlashes;
         /// <summary>Brighter text and stronger borders: the root gets the high-contrast USS class (HTML highContrast).</summary>
         public bool HighContrast;
+        public bool HoldToConfirm;
+        public bool AutoCollectRewards { get => RewardCollect == "auto"; set => RewardCollect = value ? "auto" : "manual"; }
+        public bool CompactMapHeader { get => MapHeaderDensity == "compact"; set => MapHeaderDensity = value ? "compact" : "comfortable"; }
+        public bool MerchantBuyBack { get => ShopSell; set => ShopSell = value; }
+        public int MinimumTapSize = 44;
+        public static readonly IReadOnlyDictionary<string, int> DefaultControllerBindings = new Dictionary<string, int>(StringComparer.Ordinal)
+        {
+            ["submit"] = 0, ["cancel"] = 1, ["deck"] = 2, ["endTurn"] = 3,
+            ["previous"] = 4, ["next"] = 5
+        };
+        private readonly Dictionary<string, int> _controller = new Dictionary<string, int>(DefaultControllerBindings, StringComparer.Ordinal);
+        public IReadOnlyDictionary<string, int> ControllerBindings => _controller;
+        public bool TryBindController(string action, int button, out string conflict)
+        {
+            conflict = null;
+            if (!DefaultControllerBindings.ContainsKey(action) || button < 0 || button > 15) return false;
+            conflict = _controller.FirstOrDefault(p => p.Key != action && p.Value == button).Key;
+            if (conflict != null) return false;
+            _controller[action] = button; return true;
+        }
+        public void ResetControllerBindings() { _controller.Clear(); foreach (var pair in DefaultControllerBindings) _controller[pair.Key] = pair.Value; }
         public ColorblindPalette ColorblindPalette = ColorblindPalette.None;
         public double MasterVolume = 1, MusicVolume = 1, SfxVolume = 1, UiVolume = 1;
         public bool Muted;
@@ -191,6 +212,7 @@ namespace AshenSpire.Domain.Original
         {
             var keys = new JObject(); foreach (var pair in _keys.OrderBy(p => p.Key, StringComparer.Ordinal)) keys[pair.Key] = pair.Value;
             var pad = new JObject(); foreach (var pair in _pad.OrderBy(p => p.Key, StringComparer.Ordinal)) pad[pair.Key] = pair.Value;
+            var controller = new JObject(); foreach (var pair in _controller) controller[pair.Key] = pair.Value;
             return new JObject
             {
                 ["schemaVersion"] = SchemaVersion, ["textScale"] = TextScale, ["uiScale"] = UiScale,
@@ -204,6 +226,7 @@ namespace AshenSpire.Domain.Original
                 ["fullscreen"] = Fullscreen, ["uiSize"] = UiSize, ["accent"] = Accent, ["cardMotif"] = CardMotif, ["cardMotifStrength"] = CardMotifStrength,
                 ["mapHeaderDensity"] = MapHeaderDensity, ["mapHeaderRelics"] = MapHeaderRelics, ["mapHeaderSeed"] = MapHeaderSeed, ["controlHints"] = ControlHints,
                 ["gamepadBindings"] = pad,
+                ["holdToConfirm"] = HoldToConfirm, ["minimumTapSize"] = MinimumTapSize, ["controllerBindings"] = controller,
             };
         }
         public OriginalPlayerSettings Clone() => FromJson(ToJson(), out _);
@@ -282,6 +305,20 @@ namespace AshenSpire.Domain.Original
             s.HitStop = Bool(json["hitStop"], "hitStop", s.HitStop);
             s.ReduceFlashes = Bool(json["reduceFlashes"], "reduceFlashes", s.ReduceFlashes);
             s.HighContrast = Bool(json["highContrast"], "highContrast", s.HighContrast);
+            s.HoldToConfirm = Bool(json["holdToConfirm"], "holdToConfirm", false);
+            s.MinimumTapSize = (int)Number(json["minimumTapSize"], "minimumTapSize", 44, 44, 64);
+            if (json["controllerBindings"] is JObject controller)
+            {
+                var proposed = new Dictionary<string, int>(DefaultControllerBindings, StringComparer.Ordinal);
+                foreach (var pair in controller.Properties())
+                {
+                    if (!proposed.ContainsKey(pair.Name)) continue;
+                    if (pair.Value.Type == JTokenType.Integer && (long)pair.Value >= 0 && (long)pair.Value <= 15) proposed[pair.Name] = (int)pair.Value;
+                    else notes.Add("controllerBindings." + pair.Name + " was invalid; default kept");
+                }
+                if (proposed.Values.Distinct().Count() == proposed.Count) { s._controller.Clear(); foreach (var pair in proposed) s._controller[pair.Key] = pair.Value; }
+                else notes.Add("controllerBindings had conflicts; defaults used");
+            }
             s.LoadContentMods = Bool(json["loadContentMods"], "loadContentMods", s.LoadContentMods);
             var palette = json["colorblindPalette"];
             if (palette != null) { if (palette.Type == JTokenType.String && TryParsePalette((string)palette, out var parsed)) s.ColorblindPalette = parsed; else notes.Add("colorblindPalette '" + palette + "' is unknown; none used"); }
@@ -317,12 +354,17 @@ namespace AshenSpire.Domain.Original
             // An absent field (schema 1/2, or a hand-written record) means the player never chose, so it gets the new
             // default. Every schema-3 record this build or an earlier one wrote carries the field, so a stored "auto"
             // cannot be told apart from a deliberate choice and is kept as one.
+            // Preview builds used aliases before the schema-3 settings landed on dev.
+            // A canonical saved setting always wins; preserve the older preference otherwise.
+            if (json["rewardCollect"] == null) s.AutoCollectRewards = Bool(json["autoCollectRewards"], "autoCollectRewards", s.AutoCollectRewards);
+            if (json["shopSell"] == null) s.MerchantBuyBack = Bool(json["merchantBuyBack"], "merchantBuyBack", s.MerchantBuyBack);
+            if (json["mapHeaderDensity"] == null) s.CompactMapHeader = Bool(json["compactMapHeader"], "compactMapHeader", s.CompactMapHeader);
             s.RewardCollect = Choice("rewardCollect", s.RewardCollect, RewardCollectModes);
             s.ShopSell = Bool(json["shopSell"], "shopSell", s.ShopSell);
             s.SwapCostRule = Choice("swapCostRule", s.SwapCostRule, SwapCostRuleIds);
             s.Fullscreen = Bool(json["fullscreen"], "fullscreen", s.Fullscreen);
             s.UiSize = Choice("uiSize", s.UiSize, UiSizes);
-            s.Accent = Choice("accent", s.Accent, Accents);
+            s.Accent = (string)json["accent"] == "jade" ? "verdant" : (string)json["accent"] == "ember" ? "crimson" : Choice("accent", s.Accent, Accents);
             s.CardMotif = Choice("cardMotif", s.CardMotif, CardMotifs);
             s.CardMotifStrength = Choice("cardMotifStrength", s.CardMotifStrength, CardMotifStrengths);
             s.MapHeaderDensity = Choice("mapHeaderDensity", s.MapHeaderDensity, MapHeaderDensities);

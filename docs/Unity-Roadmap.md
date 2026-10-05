@@ -1,8 +1,10 @@
 # AshenedSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.28.1 · build 29 ·
-Foundation in progress** (`GameContent/Unity/version.json`). Published channels
+content while improving phone play. Current source: **0.0.33.1 · build 35 ·
+Intermediate migration checkpoint; visual parity unaccepted**
+(`GameContent/Unity/version.json`). Owner acceptance and physical-device/controller
+checks remain open; see [Phase 2](Unity-Phase-2.md). Published channels
 may still carry earlier checkpoints.
 
 The HTML game (`index.html`, `src/`, `content/`, `assets/`, `styles/`,
@@ -15,6 +17,12 @@ Handoff for a fresh agent: [CONTINUE-HERE.md](CONTINUE-HERE.md). How to play:
 [PLAYER-GUIDE.md](PLAYER-GUIDE.md).
 The [core-phase checkbox summary](Unity-Milestones.md) groups this tracker by
 milestone, with user-story subitems and separate verification/acceptance status.
+Builds 31–36 implementation and verification are tracked in [Phase 2](Unity-Phase-2.md).
+Build 36 is the archived matching multi-platform rollback checkpoint. Build 37
+is an intermediate Web migration preview, not a matching platform release.
+The expanded scope and open parity gates are in the
+[published-build migration tracker](Unity-HTML-Parity-Migration.md).
+Remaining device gates are tracked in [Phase 3](Unity-Phase-3.md).
 
 ## Feature tracker
 
@@ -38,10 +46,10 @@ improvement in playable feel first, respecting dependencies (F00 gates all).
 | F10 | Run, seed & save slots | in-progress | — | `OriginalSaveJournal.cs` · `RandomStreams.cs` · `RunController.cs` · merged: [#52](https://github.com/cehinds/AshenSpire-Unity/pull/52) save slots |
 | F11 | Death, victory & stats | in-progress | — | `OriginalRunPanel.cs` (Victory/Defeat) · `OriginalProfile.cs` · merged: [#50](https://github.com/cehinds/AshenSpire-Unity/pull/50) run summary |
 | F12 | Acts 1–3 & bosses (plus Custom Climb/Endless) | in-progress | — | `OriginalRunRules.cs` · `OriginalCustomRunRules.cs` · full-climb 657 checks |
-| F13 | Accessibility & phone layout | in-progress | — | `ViewportLayout.cs` · `DisplayViewport.cs` · reduced-motion toggle |
+| F13 | Accessibility & phone layout | in-progress | — | `ViewportLayout.cs` · high contrast, reduce flashes, tap size and hold confirmation; [build 31](Unity-Phase-2.md) |
 | F14 | Co-op (LAN companion) | in-progress | — | `OriginalCoopRun*.cs` · `OriginalCoopPanel.cs` · `tools/NativeLan/` |
-| F15 | Customization settings & controls | in-progress | — | `CampaignView.PlayerSettings.cs`, `OriginalPlayerSettings.cs`; build 22 consumes shake/intensity and optional hit-stop; full controls parity remains |
-| F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` · merged: [#48](https://github.com/cehinds/AshenSpire-Unity/pull/48) mod packs |
+| F15 | Customization settings & controls | in-progress | — | `CampaignView.PlayerSettings.cs`, `CampaignView.Controller.cs`, `OriginalPlayerSettings.cs`; controller rebinding, display/gameplay preferences; [build 31](Unity-Phase-2.md) |
+| F16 | Content modding & data packs | in-progress | — | `tools/original-table.py` · `UnityTests/Authoring` · `UnityTests/OriginalAuthoring` · bundled Web/Android packs in [build 31](Unity-Phase-2.md) |
 | F17 | Performance & platform polish | in-progress | — | `native-performance-playtest.cjs`; [platform acceptance and iOS plan](Unity-Platform-Acceptance.md); no target-phone budget or physical-device acceptance |
 
 ### Parity diff summary (HTML reference → Unity build 14)
@@ -347,6 +355,10 @@ Tests: `UnityTests/AudioPreview`, `tools/campaign-playtest.cjs --feedback-only`;
 - [ ] **US-9.1** Merchant: buy cards, relics and flasks; sell eligible relics/utility flasks; remove a card.
 - [ ] **US-9.2** Shrine: refill flasks on arrival, rest, reallocate Crimson/Azure, buy level points, or leave without resting.
 - [x] **US-9.3** Events: all 22 events and 62 choices reachable with results shown. Owner accepted 2026-10-02.
+- [ ] **US-9.3** Events: all 22 events and 62 choices reachable with results shown.
+  - [x] Implement authored choices, costs, outcomes and history gates.
+  - [x] Build 31: every choice exercised through normal gameplay and real copied slots.
+  - [ ] Owner acceptance.
 
 Acceptance: prices/refusals match the domain; every event choice reachable in a
 compiled run; purchases survive reload.
@@ -354,7 +366,7 @@ Reference: `src/ui/screens/shop.js`, `rest.js`, `event.js`, `src/content/events.
 `src/model/gracerefill.js`, `styles/ui.css`.
 Unity: `Presentation/OriginalRunPanel.cs` (Shop, Shrine, Event),
 `Domain/Original/OriginalRunServices.cs`, `OriginalRunContent.cs`.
-Tests: `UnityTests/Parity` (run fixtures), `tools/native-features-playtest.cjs`; all-event compiled sweep: to write.
+Tests: `UnityTests/Parity` (run fixtures), `tools/native-features-playtest.cjs`; all 22 events/62 choices pass in the [build-31 receipt](qa/unity-build-31/event-summary.json).
 
 ### F10 — Run, seed & save slots
 
@@ -401,7 +413,13 @@ Custom Climb, Sealed/Draft and Endless.
 
 - [ ] **US-12.1** Act backgrounds and encounters for all three acts; bosses The Fell Warden (Act 1), The Stitched King (Act 2) and The Blighted Valkyrie (Act 3), and elites Wyrm Aspirant, Duelist of the Court and Wyrm Lord, on screen.
 - [ ] **US-12.2** Custom Climb with Ascension 0–6 and modifiers; Sealed and Draft starts.
+  - [x] Implemented public configuration and mode starts.
+  - [x] Build 31: all Ascensions/modifiers plus Custom, Sealed and Draft opening combat and exact reload.
+  - [ ] Owner acceptance.
 - [ ] **US-12.3** Endless cycles past Act 3.
+  - [x] Implemented cycle progression.
+  - [x] Build 31: Act 4 exact reload/next room and history-gated events reached in the next cycle.
+  - [ ] Owner acceptance.
 
 Acceptance: compiled three-act victory on the current build; each boss rendered
 and fought in a compiled check; custom modes save/resume.
@@ -410,7 +428,8 @@ Reference: `src/content/enemies/act{1,2,3}.js`, `src/content/encounters/act{1,2,
 Unity: `Domain/Original/OriginalRunRules.cs`, `OriginalCustomRunRules.cs`,
 `OriginalMapShape.cs`, `Presentation/OriginalCustomSetupPanel.cs`, `OriginalMapShapePanel.cs`.
 Tests: `UnityTests/Playthrough`, `MapShape`, `tools/native-playtest.cjs`,
-`native-map-shape-playtest.cjs`; all-boss compiled check: to write.
+`native-map-shape-playtest.cjs`, `native-mode-resume-playtest.cjs`,
+`native-custom-matrix-playtest.cjs`; all three bosses, three-act victory and Endless Act 4 pass in [build-31 QA](qa/unity-build-31/README.md).
 
 ### F13 — Accessibility & phone layout
 
@@ -429,7 +448,7 @@ options persist and apply globally.
 Reference: `src/ui/screens/settings.js` (accessibility section), `tools/tapsize.mjs`,
 `textfit.mjs`, `mobilefit.mjs`, `contrast-audit.mjs`, `src/ui/components/holdconfirm.js`.
 Unity: `Presentation/ViewportLayout.cs`, `Application/DisplayViewport.cs`, `CampaignView.cs` (reduced motion).
-Tests: `UnityTests/Viewport`, `tools/campaign-playtest.cjs --mobile-layout`; accessibility options: to write.
+Tests: `UnityTests/Viewport`, `tools/campaign-playtest.cjs --mobile-layout`; build 31 covers accessibility and representative flows at four viewports; [receipt](qa/unity-build-31/mode-layout-summary.json). Physical devices and owner acceptance remain open.
 
 ### F14 — Co-op
 

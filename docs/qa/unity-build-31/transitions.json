@@ -1,0 +1,122 @@
+[
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "enemy.death",
+    "status": "started"
+  },
+  {
+    "action": "enemy.death",
+    "status": "completed"
+  },
+  {
+    "action": "enemy.death",
+    "status": "started"
+  },
+  {
+    "action": "enemy.death",
+    "status": "completed"
+  },
+  {
+    "action": "enemy.death",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "enemy.death",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  },
+  {
+    "action": "screen.enter",
+    "status": "started"
+  },
+  {
+    "action": "screen.enter",
+    "status": "completed"
+  }
+]

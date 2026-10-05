@@ -12,7 +12,8 @@ namespace AshenSpire.Presentation
     public sealed class OriginalEnemyFigure : Image
     {
         private static JObject _paths;
-        private readonly Image _art = new Image { scaleMode = ScaleMode.StretchToFill, pickingMode = PickingMode.Ignore };
+        private readonly CombatActorImage _art = new CombatActorImage { scaleMode = ScaleMode.StretchToFill, pickingMode = PickingMode.Ignore };
+        private readonly Texture2D _sourceTexture;
         private readonly JArray _bounds;
         public static OriginalEnemyFigure Create(string enemyId) => new OriginalEnemyFigure(enemyId);
         private OriginalEnemyFigure(string enemyId)
@@ -23,25 +24,31 @@ namespace AshenSpire.Presentation
             if (string.IsNullOrEmpty(resource)) throw new InvalidOperationException("Missing painted enemy mapping: " + enemyId);
             var texture = Resources.Load<Texture2D>(resource);
             if (texture == null) throw new InvalidOperationException("Missing painted enemy texture: " + resource);
-            _bounds = (JArray)row["bounds"];
+            var ownerArt = Resources.Load<Texture2D>("Art/OwnerAppearance/" + enemyId);
+            if (enemyId == "wanderingSoldier") ownerArt = Resources.Load<Texture2D>("Art/CombatRefresh/wanderingSoldier-hilt-v2") ?? ownerArt;
+            if (ownerArt != null) { texture = ownerArt; _bounds = new JArray(0,0,1,1); }
+            else _bounds = (JArray)row["bounds"];
             name = "enemy-art-" + enemyId; pickingMode = PickingMode.Ignore;
             AddToClassList("fighter"); style.overflow = Overflow.Hidden;
             _art.image = texture; _art.style.position = Position.Absolute; Add(_art);
+            _sourceTexture = texture;
+            if (ownerArt != null) _art.Configure(enemyId);
             RegisterCallback<GeometryChangedEvent>(_ => Place());
             var diagnostics = Debug.isDebugBuild || (Uri.TryCreate(UnityEngine.Application.absoluteURL, UriKind.Absolute, out var uri) && (uri.IsLoopback || uri.AbsolutePath.Contains("/dev/")));
             if (diagnostics) Debug.Log("ASHENSPIRE_ENEMY_ART " + new JObject { ["enemyId"] = enemyId, ["resource"] = resource, ["width"] = texture.width, ["height"] = texture.height }.ToString(Newtonsoft.Json.Formatting.None));
         }
-        public void FeedbackTint(Color color) { _art.tintColor = color; }
+        public void FeedbackTint(Color color) { _art.SetTint(color); }
+        internal float ArtAspect => (float)_bounds[2] * _sourceTexture.width / ((float)_bounds[3] * _sourceTexture.height);
         private void Place()
         {
             if (contentRect.width <= 0 || contentRect.height <= 0) return;
-            var texture = (Texture2D)_art.image;
+            var texture = _sourceTexture;
             var left = (float)_bounds[0] * texture.width; var top = (float)_bounds[1] * texture.height;
             var width = (float)_bounds[2] * texture.width; var height = (float)_bounds[3] * texture.height;
-            var scale = Math.Min(contentRect.width * .90f / width, contentRect.height * .84f / height);
+            var scale = Math.Min(contentRect.width / width, contentRect.height / height);
             _art.style.width = texture.width * scale; _art.style.height = texture.height * scale;
             _art.style.left = contentRect.x + contentRect.width / 2 - (left + width / 2) * scale;
-            _art.style.top = contentRect.y + contentRect.height * .94f - (top + height) * scale;
+            _art.style.top = contentRect.y + contentRect.height - (top + height) * scale;
         }
     }
 }

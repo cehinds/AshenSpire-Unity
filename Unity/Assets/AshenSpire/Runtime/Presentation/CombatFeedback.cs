@@ -110,7 +110,7 @@ namespace AshenSpire.Presentation
             }, Finish);
         }
         // brightness 1 → no flash; the recoil's 2.1–2.3 peak → full cue-colour flash.
-        private static float Flash(float brightness) => Mathf.Clamp01(brightness - 1);
+        private static float Flash(float brightness) => FeelDriver.ReduceFlashes ? 0 : Mathf.Clamp01(brightness - 1);
         private static void Tint(Image image, Color tint)
         {
             if (image is OriginalPlayerFigure figure) figure.FeedbackTint(tint);

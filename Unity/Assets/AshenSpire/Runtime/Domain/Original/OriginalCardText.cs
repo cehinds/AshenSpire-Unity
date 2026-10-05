@@ -61,7 +61,7 @@ namespace AshenSpire.Domain.Original
             return result;
         }
 
-        public static string Describe(JObject card, OriginalContentCatalog catalog, JObject formulaContext = null)
+        public static string Describe(JObject card, OriginalContentCatalog catalog, JObject formulaContext = null, bool includeRatingBreakdown = true)
         {
             if (card == null) throw new ArgumentNullException(nameof(card));
             var effects = card["effects"] as JArray ?? new JArray();
@@ -95,6 +95,9 @@ namespace AshenSpire.Domain.Original
             foreach (var bonus in (card["attributeProgression"] as JArray ?? new JArray()).Where(x => (int)x["bonus"] > 0))
             {
                 var op = (string)bonus["operation"];
+                // The compact card keeps the resolved amount. Its inspector still
+                // explains the rating; unmerged bonuses must remain visible.
+                if (!includeRatingBreakdown && included.Contains(op)) continue;
                 text += included.Contains(op) ? " Includes +" : " +";
                 text += bonus["bonus"] + (op == "heal" ? " healing" : op == "block" ? " block" : " total damage") + " from " + ((string)bonus["label"] ?? Humanize((string)bonus["attribute"])) + ".";
             }

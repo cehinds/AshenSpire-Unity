@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "sourceDigest": "a269b8d1b67b99a951a84cec4f35646c4382688eaea9841a4eea5772b2c27f8d",
+  "scope": "full climb to recorded terminal result",
+  "checks": 542,
+  "commands": 220,
+  "bosses": [],
+  "finalPhase": "Victory",
+  "finalAct": 3,
+  "errors": [],
+  "physicalDevice": false
+}

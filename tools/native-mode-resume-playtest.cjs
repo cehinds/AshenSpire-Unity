@@ -6,7 +6,7 @@ const {NativeUiDriver}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
  const url=process.argv[2],output=path.resolve(process.argv[3]),results=[];
- browser=await chromium.launch({channel:'msedge',headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({channel:'msedge',headless:true,args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  for(const [name,deckMode,index] of [['Custom','standard',0],['Sealed','sealed',1],['Draft','draft',2],['Endless','standard',0]]){
   const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();ui=new NativeUiDriver(page,path.join(output,name));
   await ui.open(url);const source=fs.readFileSync(path.join(ui.output,'build-source.json'));

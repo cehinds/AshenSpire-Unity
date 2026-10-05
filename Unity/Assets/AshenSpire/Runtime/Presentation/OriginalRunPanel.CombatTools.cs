@@ -17,12 +17,29 @@ namespace AshenSpire.Presentation
         private Action _backAction;
         private readonly HashSet<KeyCode> _pressedKeys = new HashSet<KeyCode>();
         private static string PileName(string kind) => kind == "exhaust" ? "Exhausted" : kind == "draw" ? "Draw pile" : "Discard pile";
+        private void InspectEnemy()
+        {
+            var enemy = _game.Enemies.OfType<JObject>().FirstOrDefault(e => (string)e["id"] == _target);
+            if (enemy == null) return;
+            Inspection((string)_game.Catalog.Record("enemies", (string)enemy["enemyId"])["name"], Render);
+            Text("HP " + enemy["hp"] + "/" + enemy["maxHp"] + " · Guard " + enemy["block"], "stat");
+            var telegraph = EnemyTelegraphView.FromSnapshot(enemy, _game.Player, (JObject)_game.Catalog.Data()["balance"]);
+            EnemyTelegraphView.Attach(_root, telegraph);
+            foreach (var status in (enemy["statuses"] as JObject ?? new JObject()).Properties())
+            {
+                var definition = _game.Catalog.Record("statuses", status.Name);
+                Text(OriginalStatusText.Describe(status.Name, status.Value as JObject, (string)definition["name"]), "stat");
+                Text(OriginalStatusText.Description(definition, status.Value as JObject), "lead");
+            }
+            Button("native-inspection-back", "Back to combat", Render); _root.Focus(); _report();
+        }
 
         private void Inspection(string title, Action back)
         {
             _backAction = back;
             _mapView?.SetMapSurface?.Invoke(false);
             OriginalCombatLayout.SetSurface(_root, false);
+            _root.RemoveFromClassList("combat-reframed");
             _root.Clear(); _actions?.RemoveFromHierarchy();
             _root.AddToClassList("combat-inspection");
             Text(title, "heading");
@@ -42,23 +59,15 @@ namespace AshenSpire.Presentation
                 : "These cards are out for the rest of this fight.", "caption");
             Button("native-pile-back", "Back to combat", Render);
             if (cards.Length == 0) Text("This pile is empty.", "node-title");
-            foreach (var row in cards)
-            {
-                var group = new VisualElement { name = "native-pile-card-" + (string)row.Instance["instanceId"] };
-                group.Add(Label((string)row.Card["name"], "stat"));
-                group.Add(Label(OriginalCardCostText.Describe(_game.Cost(row.Instance)), "caption"));
-                group.Add(Label(OriginalCardText.Describe(row.Card, _game.Catalog), "caption"));
-                // US-13.4: tag blurbs are readable here without hover.
-                foreach (var tag in StatusExplainer.CardTags(_game.Catalog, row.Card)) group.Add(Label(tag.Line, "caption"));
-                _root.Add(group);
-            }
+            OriginalCardInspection.Browse(_root, cards.Select(row => row.Instance), _game.Resolve, _game.Cost, _game.Catalog, "native-pile",
+                instance => ReadCard(_game.Resolve(instance), _game.Cost(instance), () => ShowPile(kind)), _report, _pileBrowse);
             _root.Focus(); _report();
         }
 
         private void ShowCombatKeys()
         {
             Inspection("COMBAT CONTROLS", Render);
-            Text("Tap a card to select it, choose an enemy, then Play. Keyboard shortcuts perform the same actions. Release the key to act; holding it never repeats a turn.", "caption");
+            Text("Tap a card to select it, then tap a highlighted target or use Play. Selection spends nothing. Hold or right-click a card to read its details, or use Inspect selected card. Closing hand inspection cancels selection. Release shortcut keys to act; holding them never repeats a turn.", "caption");
             Text("Esc · cancel selection or close an inspection\nTab · move between controls\nEnter · activate the focused button", "caption");
             Text("Change shortcuts in Settings → Controls. Pile, inventory and help screens block combat shortcuts while you read.", "caption");
             Button("native-combat-keys-back", "Back to combat", Render);
@@ -144,7 +153,11 @@ namespace AshenSpire.Presentation
 
         private bool OwnsKey(KeyCode key, IEventHandler target, bool modified)
         {
-            if (_game.Phase != OriginalRunPhase.Combat || modified || key == KeyCode.None) return false;
+            if (modified || key == KeyCode.None) return false;
+            // Reading pages own input. Let fields, dropdowns and buttons receive
+            // their native keys; no combat shortcut exists on this surface.
+            if (_backAction != null) return key == KeyCode.Escape;
+            if (_game.Phase != OriginalRunPhase.Combat) return false;
             // Enter/Space retain normal UI activation for a focused button, including
             // confirmation inside inspection screens. Tab navigation stays native.
             if (target is Button && (key == KeyCode.Return || key == KeyCode.Space || key == KeyCode.KeypadEnter)) return false;
@@ -170,7 +183,7 @@ namespace AshenSpire.Presentation
             }
             switch (action)
             {
-                case "combatPlay": IfEnabled("native-play", () => _game.Play(_selected, _target)); break;
+                case "combatPlay": IfEnabled("native-play", () => PlayCard(_selected, _target)); break;
                 case "endTurn": EndTurnChoice(); break;
                 case "drawPile": ShowPile("draw"); break;
                 case "discardPile": ShowPile("discard"); break;

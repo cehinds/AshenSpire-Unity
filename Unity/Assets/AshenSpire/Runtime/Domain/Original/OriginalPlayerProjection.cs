@@ -26,8 +26,10 @@ namespace AshenSpire.Domain.Original
             return (int)number;
         }
         private static string ClassId(JObject run) => (string)run["classId"] ?? (string)run["class"];
-        // Character level for weighted derived rows: playerStartingLevel + purchased levels.
-        private int Level(JObject run) => checked(Integer(_data["balance"]?["levels"]?["playerStartingLevel"] ?? new JValue(1), "starting level") + Integer(run["levelUps"] ?? new JValue(0), "level purchases"));
+        // Current runs carry an earned ledger. Older frozen saves retain purchases.
+        private int Level(JObject run) => run["level"] is JObject earned
+            ? Math.Max(1, Integer(earned["level"], "earned character level"))
+            : checked(Integer(_data["balance"]?["levels"]?["playerStartingLevel"] ?? new JValue(1), "starting level") + Integer(run["levelUps"] ?? new JValue(0), "level purchases"));
         private static JArray Relics(JObject run) => run["relics"] as JArray ?? run["relicIds"] as JArray ?? new JArray();
         private JObject BaseRules(JObject run, JObject hero)
         {
@@ -153,4 +155,3 @@ namespace AshenSpire.Domain.Original
         }
     }
 }
-

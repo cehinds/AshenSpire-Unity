@@ -12,11 +12,11 @@ namespace AshenSpire.Domain.Original
     public sealed class OriginalRunContent : IOriginalRunContent
     {
         private readonly OriginalContentCatalog _catalog;
-        private readonly JObject _data;
+        private readonly JObject _data, _mechanics;
         private readonly Func<JObject,string,JObject,RandomStreams,bool> _equipmentService;
         private readonly Action<JObject> _reconcile;
-        public OriginalRunContent(OriginalContentCatalog catalog, Func<JObject,string,JObject,RandomStreams,bool> equipmentService = null, Action<JObject> reconcile = null)
-        { _catalog = catalog; _data = catalog.Data(); _equipmentService = equipmentService; _reconcile = reconcile; }
+        public OriginalRunContent(OriginalContentCatalog catalog, Func<JObject,string,JObject,RandomStreams,bool> equipmentService = null, Action<JObject> reconcile = null, JObject mechanics = null)
+        { _catalog = catalog; _data = catalog.Data(); _equipmentService = equipmentService; _reconcile = reconcile; _mechanics = (JObject)(mechanics?.DeepClone() ?? new JObject()); }
         private static JArray Array(JObject run,string key) => run[key] as JArray ?? throw new ArgumentException("Missing inventory " + key);
         private static bool Composed(JToken card) => !string.IsNullOrEmpty((string)card["grantedBy"]) || !string.IsNullOrEmpty((string)card["equipmentAttackSlotId"]);
         private static string NewCardId(JObject run)
@@ -129,6 +129,28 @@ namespace AshenSpire.Domain.Original
         }
         public bool ApplyService(JObject run,string service,JObject request,RandomStreams rng)
         {
+            if (service == "claimLevel" || service == "claimSkill")
+            {
+                if ((string)run["phase"] != "Rewards" || !(run["level"] is JObject)) return false;
+                int ReconcileEarned(JObject draft)
+                {
+                    if (_reconcile == null) throw new InvalidOperationException("Earned levels require frozen player projection.");
+                    var fields = new[] { "maxHp", "maxMana", "maxStamina", "energyMax", "drawPerTurn" };
+                    var before = fields.Select(field => draft[field]?.DeepClone()).ToArray(); _reconcile(draft);
+                    return fields.Where((field,index) => !JToken.DeepEquals(before[index],draft[field])).Count();
+                }
+                var progression = new OriginalEarnedProgression(_data,_mechanics,ReconcileEarned);
+                var skill = (string)request["skillId"];
+                var claim = service == "claimLevel" ? progression.ClaimCharacter(run) : progression.ClaimSkill(run,skill);
+                if (claim == null) return false;
+                if (service == "claimLevel") run["room"]["levelClaims"] = checked(((int?)run["room"]["levelClaims"] ?? 0) + 1);
+                else if (skill == "class:" + ((string)run["classId"] ?? (string)run["class"]))
+                {
+                    if (!(run["classRewardLevels"] is JObject)) run["classRewardLevels"] = new JObject();
+                    run["classRewardLevels"][(string)run["classId"] ?? (string)run["class"]] = claim["after"].DeepClone();
+                }
+                run["lastProgressionReceipt"] = claim; return true;
+            }
             if (service == "levelUp" || service == "sell") return new OriginalRunServices(_catalog, _reconcile, SyncFlaskGrowth).Apply(run, service, request);
             if (service == "equip" || service == "selectSet") return ChangeEquipment(run,service,request);
             if (new[] { "upgrade", "extract", "install" }.Contains(service))

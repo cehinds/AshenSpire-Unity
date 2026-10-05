@@ -1,0 +1,12 @@
+{
+  "buildNumber": 36,
+  "version": "0.0.30.5",
+  "sourceDigest": "0baacd88861ab9e1a5a842b0cf6f1bd816e2c52fb39bb6e5fa29c78ac8cd4fcb",
+  "actualPlaytestedCompanionZipReused": true,
+  "companionZipAndFullStampMatch": true,
+  "webPayloadFiles": 8,
+  "allWebPayloadsMatch": true,
+  "candidateMetadataChecks": 6,
+  "interruptedCompanionFolderPreserved": true,
+  "additionalFinalCompanionLaunchClaimed": false
+}

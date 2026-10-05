@@ -1,7 +1,7 @@
 # AshenedSpire: player guide
 
 A friendly guide to playing AshenedSpire, the Unity adaptation of AshenSpire. It describes
-what the game does today (source **0.0.27.0 · build 27**, local candidate). Where the original
+what the game does today (source **0.0.30.2 · build 33**, local candidate). Where the original
 HTML game has something the Unity version does not have yet, this guide says so.
 The embedded screenshots below are historical examples; the build page identifies
 the version actually available to play.
@@ -44,7 +44,8 @@ you can share a good one with a friend.
 2. Pick a class (try the **Reaver**). Leave the points as they are, or put a few
    into the stats you like. Tap **Begin the climb**.
 3. On the map, tap a **lit** room next to you. Start with a fight.
-4. In a fight: **tap a card**, **tap an enemy** to target it, then tap **Play**.
+4. In a fight: **tap a card**, then **tap a highlighted target** to play it.
+   You can also use the **Play** button. Selection alone spends nothing.
    Each card costs actions (and sometimes MP or stamina). The Play button tells
    you if you can't afford a card.
 5. Look at each enemy's **intent** above it: it tells you what the enemy will
@@ -64,8 +65,10 @@ The Unity version is built for **tap first**. A mouse click works the same as a 
 | What | Touch / mouse | Keyboard |
 |---|---|---|
 | Choose a card | Tap the card | 1–9 select the corresponding hand card (solo) |
-| Choose a target | Tap the enemy (or an ally, in co-op) | Left / Right choose an enemy (solo) |
+| Choose a target | Tap a highlighted enemy/self/ally to play an armed card; an unarmed tap selects the target | Left / Right aim at an enemy without playing (solo) |
 | Play the chosen card | Tap **Play** | Enter (solo; activates a focused button when navigating with Tab) |
+| Read a card | Hold or right-click its face, or **Inspect selected card** | Tab to Inspect, then Enter; Esc closes reading and clears hand selection in solo and co-op |
+| Drag / flick a card | Drag upward onto a legal target; a fast upward flick chooses the nearest legal target. An invalid or interrupted drop cancels. | — |
 | End your turn | Tap **End turn** | E (solo) |
 | Read combat piles | **Draw pile / Discard pile / Exhausted** in the utility row | U / J / K (solo) |
 | Drink a flask | Tap its utility button | F Crimson / G Azure / H first utility flask (solo) |
@@ -77,11 +80,40 @@ The Unity version is built for **tap first**. A mouse click works the same as a 
 | Zoom the map | **−**, **Fit**, **+**, **Recenter** buttons | Ctrl + mouse wheel |
 | Pick a room | Tap a lit room | — |
 
+Card inspection shows a larger face, costs, effects and readable tag explanations.
+Its action matches the screen: Play in your hand, Take in solo rewards, Select in
+co-op rewards, Choose in Draft, or Buy with a price at the merchant. A deck or
+pile inspection has no play action. Closing hand inspection cancels its selection.
+
+Decks and solo combat piles have search, type filters and sorting. Returning from
+inspection keeps those filters. Draw piles display cards by name and never expose
+future draw order. Up and Down change focused type/sort fields. Combat selection
+and inspection show live HP, guard, resource and status changes for the current
+target. Previews use a copy of combat state and spend nothing. Random effects
+resolve when played. Co-op previews update with the host's next snapshot, so a
+peer's action can change the predicted result before your card is committed.
+
 Change map and solo combat bindings under **Settings → Controls**. Combat
 shortcuts act on key release, so holding a key does not repeat an action.
 Inspecting a pile, inventory or keyboard help blocks combat shortcuts. Tab and
-Enter still navigate the visible controls. Co-op shortcut parity and gamepad
-support remain unfinished (roadmap F15).
+Enter still navigate the visible controls. Co-op keyboard shortcuts remain limited
+to normal focused-control navigation.
+
+For a controller, use the stick/D-pad to navigate, A to confirm, B to return,
+X for equipment and Y to end a turn. Bumpers visit controls in order and scroll
+them into view. **Settings → Controller** lets you rebind each action: select it,
+then press and release the controller button. Conflicting bindings are refused.
+Button numbers depend on the platform and controller. Changes save on this device.
+
+**Settings → Accessibility** adds high contrast, reduced flashes, larger tap
+targets and optional hold-to-confirm for save deletion or overwrite. With that
+option enabled, hold until the button says **Release to confirm**, then release.
+Releasing early or moving away cancels the action.
+
+**Settings → Game** includes accent colour, card motifs, map header options,
+merchant buy-back visibility and automatic solo rewards. Automatic rewards makes
+Continue collect remaining rewards, including a seeded random card choice.
+Manual rewards remains the default; Continue leaves unclaimed rewards behind.
 
 ## Classes
 

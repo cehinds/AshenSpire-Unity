@@ -6,9 +6,9 @@ let browser,ui;
 (async()=>{
  const url=process.argv[2],output=path.resolve(process.argv[3]||'TestResults/NativeInterface');
  if(!url)throw Error('Pass the compiled Web URL.');
- browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const summary=[];
- for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+ for(const viewport of [{width:320,height:640},{width:390,height:844},{width:768,height:1024},{width:1440,height:900}]){
   const context=await browser.newContext({viewport,deviceScaleFactor:1}),page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,String(viewport.width)));
   await ui.open(url);await ui.shot('01-title');
@@ -34,7 +34,7 @@ let browser,ui;
   await ui.until(()=>ui.controls.Labels.includes('Text size · 160%'),'maximum text size');
   // At 160%, all settings plus the guide exceed the driver's bounded wheel
   // budget. Exercise the real guide shortcut before returning to the title.
-  await ui.click('settings-section-5',false);
+  await ui.click('settings-section-6',false);
   await ui.click('back');await ui.shot('07-large-text-title');
   const begin=await ui.stablePoint('native-new',.5);
   ui.check(begin.x>begin.canvas.x&&begin.x<begin.canvas.x+begin.canvas.width&&begin.y>begin.canvas.y&&begin.y<begin.canvas.y+begin.canvas.height,'new climb remains reachable at maximum text size');

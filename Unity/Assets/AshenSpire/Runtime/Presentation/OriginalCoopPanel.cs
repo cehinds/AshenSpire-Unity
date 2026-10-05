@@ -16,7 +16,7 @@ using UnityEngine.UIElements;
 
 namespace AshenSpire.Presentation
 {
-    public sealed class OriginalCoopPanel
+    public sealed partial class OriginalCoopPanel
     {
         private readonly VisualElement _root;
         private readonly JObject _view, _supplement, _balance;
@@ -25,6 +25,7 @@ namespace AshenSpire.Presentation
         private readonly Action _report, _menu;
         private readonly OriginalMapViewServices _mapView;
         private readonly bool _diagnostics;
+        private readonly OriginalPlayerSettings _settings;
         private VisualElement _body, _combatTools;
         private Label _notice;
         private readonly CoopPanelState _ui;
@@ -35,6 +36,10 @@ namespace AshenSpire.Presentation
         private bool _takeFlask { get => _ui.TakeFlask; set => _ui.TakeFlask = value; }
         private int _page { get => _ui.HandPage; set => _ui.HandPage = value; }
         private bool _pending;
+        private Action _readBack;
+        public VisualElement Stage { get; private set; }
+        public Image PlayerImage { get; private set; }
+        public Image EnemyImage(string id) => Stage?.Q<Image>("coop-enemy-art-" + id) ?? Stage?.Query<OriginalEnemyFigure>().First();
         private ItemUpgradeService _upgrades;
         private ItemUpgradeService Upgrades => _upgrades ?? (_upgrades = new ItemUpgradeService(_catalog));
         private JObject Local => (JObject)_view["local"];
@@ -46,12 +51,23 @@ namespace AshenSpire.Presentation
         private bool Done => (bool?)Scene["done"]?[Id] == true;
         private JObject Body => Local["combat"]?["entity"] as JObject ?? Run;
 
-        public OriginalCoopPanel(VisualElement root, JObject view, OriginalContentCatalog catalog, JObject supplemental, Action<JObject> send, Action report, Action menu, CoopPanelState uiState = null, OriginalMapViewServices mapView = null, bool diagnostics = false)
+        public OriginalCoopPanel(VisualElement root, JObject view, OriginalContentCatalog catalog, JObject supplemental, Action<JObject> send, Action report, Action menu, CoopPanelState uiState = null, OriginalMapViewServices mapView = null, bool diagnostics = false, OriginalPlayerSettings settings = null)
         {
             _root = root; _view = (JObject)view.DeepClone(); _catalog = catalog;
             _ui = uiState ?? new CoopPanelState(); _ui.Reconcile(_view);
-            _mapView = mapView; _diagnostics = diagnostics;
+            _mapView = mapView; _diagnostics = diagnostics; _settings = settings;
             _supplement = supplemental; _balance = (JObject)catalog.Data()["balance"].DeepClone(); _send = send; _report = report; _menu = menu;
+            // Each authoritative snapshot owns a fresh shell body. Keep Escape
+            // inside this body's lifetime and never treat it as a leave command.
+            _root.RegisterCallback<KeyDownEvent>(e =>
+            {
+                if (e.keyCode != UnityEngine.KeyCode.Escape) return;
+                if (_readBack != null) _readBack();
+                else if (_ui.Surface != "main") Main();
+                else if (_selected != null) { _selected = null; Render(); }
+                else return;
+                e.StopImmediatePropagation();
+            }, TrickleDown.TrickleDown);
             Render();
         }
         public void ShowError(string message)
@@ -60,9 +76,11 @@ namespace AshenSpire.Presentation
         }
         private void Render()
         {
+            _readBack = null;
             _mapView?.SetMapSurface?.Invoke(false);
             var combatSurface = (string)Scene["kind"] == "combat" && _ui.Surface == "main" && ((Local?["catchup"] as JArray)?.Count ?? 0) == 0;
             OriginalCombatLayout.SetSurface(_root, combatSurface); _combatTools = null;
+            Stage = null; PlayerImage = null;
             _root.Clear(); _root.AddToClassList("native-run");
             _notice = new Label { name = "coop-notice" }; _notice.AddToClassList("notice"); _notice.style.display = DisplayStyle.None; _root.Add(_notice);
             _body = new VisualElement(); _body.AddToClassList("original-combat-body"); _root.Add(_body);
@@ -111,6 +129,9 @@ namespace AshenSpire.Presentation
                 case "mounts": Mounts(); break;
                 case "flasks": Flasks(); break;
             }
+            // Selecting a card rebuilds and detaches the focused hand button.
+            // Restore focus to this body so Escape and Tab retain a live target.
+            _root.focusable = true; _root.Focus();
         }
         private void Main() { _ui.Surface = "main"; Render(); }
         private void Footer()
@@ -149,20 +170,25 @@ namespace AshenSpire.Presentation
             var mayPlay = active && (bool?)seat["ended"] != true;
             var acts = (int?)_balance["endless"]?["actsPerCycle"] ?? 3;
             var stage = OriginalCombatLayout.Field(((int)_view["actNumber"] - 1) % acts + 1);
-            var figure = new OriginalPlayerFigure(Run);
+            Stage = stage;
+            var figure = new OriginalPlayerFigure(_ui); PlayerImage = figure;
             figure.Configure((string)Run["classId"], Run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(Run["loadout"] as JObject));
-            stage.Add(OriginalCombatLayout.Player(figure, Body));
+            figure.UseOwnerBattleArt((string)Run["classId"]);
+            stage.Add(OriginalCombatLayout.Player(figure, Body, ArmedAt(Id, true) ? () => PickCombatTarget(Id, true) : (Action)null, "coop-self-target"));
             var enemies = (Scene["enemies"] as JArray ?? new JArray()).OfType<JObject>().Where(e => (bool?)e["alive"] == true).ToArray();
             var handRows = (Local["hand"] as JArray ?? new JArray()).OfType<JObject>().ToArray();
             var selected = handRows.FirstOrDefault(c => (string)c["instance"]?["instanceId"] == _selected);
             var friendly = (bool?)selected?["targets"]?["active"] == true;
             var legal = friendly ? selected["targets"]["legalIds"].Values<string>().ToArray() : enemies.Select(e => (string)e["id"]).ToArray();
-            if (!legal.Contains(_target)) _target = legal.FirstOrDefault();
+            if (!legal.Contains(_target)) _target = !friendly && legal.Contains(_ui.HostileTarget) ? _ui.HostileTarget : legal.FirstOrDefault();
+            if (!friendly) _ui.HostileTarget = _target;
             foreach (var enemy in enemies)
             {
                 var id = (string)enemy["id"];
                 var target = OriginalCombatLayout.Enemy(enemy, Name("enemies", (string)enemy["enemyId"]), "coop-target-" + id,
-                    () => { if (friendly) return; _target = id; Render(); }, id == _target, out _);
+                    () => { if (!friendly) PickCombatTarget(id, false); }, id == _target, out var image);
+                target.EnableInClassList("card-target-armed", ArmedAt(id, false));
+                image.name = "coop-enemy-art-" + id;
                 EnemyTelegraphView.Attach(target, EnemyTelegraphView.FromSnapshot(enemy, Body, _balance));
                 EnemyTelegraphView.ExplainStatuses(target, Name("enemies", (string)enemy["enemyId"]), id, enemy, StatusExplainer.Describe(_catalog, enemy["statuses"] as JObject));
                 // Not SetEnabled(false): disabling propagates and would block the status explanation.
@@ -170,9 +196,9 @@ namespace AshenSpire.Presentation
             }
             _body.Add(stage);
             _combatTools = OriginalCombatLayout.Utilities("coop-combat-tools", _report);
-            if (friendly) foreach (var id in legal)
+            foreach (var id in handRows.SelectMany(r => (r["targets"]?["legalIds"] as JArray ?? new JArray()).Values<string>()).Where(id => id != Id).Distinct())
             {
-                var targetId = id; var target = Button("ally-" + id, "Target " + MemberName(id), () => { _target = targetId; Render(); });
+                var targetId = id; var target = Button("ally-" + id, (ArmedAt(id, true) ? "Play on " : "Target ") + MemberName(id), () => PickCombatTarget(targetId, true));
                 _combatTools.Add(target); if (_target == id) target.AddToClassList("primary");
             }
             var hand = OriginalCombatLayout.Hand(_ui, (string)Run["runId"] + "/" + _view["cursorId"], "coop-hand-rail", _report);
@@ -180,9 +206,12 @@ namespace AshenSpire.Presentation
             {
                 var id = (string)row["instance"]["instanceId"];
                 hand.Add(new OriginalCardView(_catalog, (JObject)row["card"], (JObject)row["cost"], Body, _selected == id,
-                    () => { _selected = id == _selected ? null : id; _target = null; Render(); }, "coop-card-" + id));
+                    () => { _selected = id == _selected ? null : id; Render(); }, "coop-card-" + id,
+                    inspect: () => { _selected = id; Render(); InspectHandCard(); }, drop: (p, f) => DropCard(id, p, f), aim: (p, f) => AimDrag(id, p, f)));
             }
             _body.Add(hand);
+            _dragPreviewKey = null;
+            _cardPreview = Text(_selected == null ? "Drag a card upward onto its target · hold or right-click to inspect" : Preview(_selected, _target), "original-card-preview");
             var actions = OriginalCombatLayout.Actions(); _body.Add(actions);
             var unplayable = selected != null && CardMechanics.HasProperty(CardMechanics.FromDefinition((JObject)selected["card"]), "internal.unplayable");
             var shortage = selected == null ? null : OriginalCardCostText.Shortage((JObject)selected["cost"], Body);
@@ -191,6 +220,8 @@ namespace AshenSpire.Presentation
                 mayPlay && selected != null && !unplayable && shortage == null && (!friendly || legal.Contains(_target))));
             actions.Add(Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for party" : "End turn · " + Body["energy"] + ((int)Body["energy"] == 1 ? " action" : " actions"),
                 new JObject { ["type"] = "endTurn" }, mayPlay));
+            _combatTools.Add(Button("inspect-card", "Inspect selected card", InspectHandCard));
+            _combatTools.Q<Button>("coop-inspect-card").SetEnabled(selected != null);
             _combatTools.Add(Button("cards-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report?.Invoke(); }));
             _combatTools.Add(Button("cards-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report?.Invoke(); }));
             var flasks = Button("flasks", "Flasks", Flasks); flasks.SetEnabled(active); _combatTools.Add(flasks);
@@ -226,8 +257,9 @@ namespace AshenSpire.Presentation
             Text(catchupId == null ? "Spoils of the climb" : "Your saved spoils", "node-title");
             if (offer == null || catchupId == null && Done) { Text("Waiting for the party to finish choosing.", "lead"); return; }
             Text(offer["cinders"] + " cinders have already been added to your purse.", "caption");
+            var grid = OriginalCardInspection.Grid(); _body.Add(grid);
             foreach (var token in offer["cards"] ?? new JArray())
-            { var id = (string)token; var card = _catalog.Record("cards", id); var b = Button("reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _catalog), () => { _rewardCard = id; Render(); }); if (_rewardCard == id) b.AddToClassList("primary"); }
+            { var id = (string)token; var card = _catalog.Record("cards", id); CardOffer(grid, card, "reward-card-" + id, "Select " + card["name"], () => { _rewardCard = id; Render(); }, true, null, _rewardCard == id); }
             Button("reward-skip-card", _rewardCard == null ? "No card selected" : "Skip card", () => { _rewardCard = null; Render(); });
             if ((string)offer["relicId"] != null) { var toggle = new Toggle("Take " + Name("relics", (string)offer["relicId"])) { value = _takeRelic }; toggle.RegisterValueChangedCallback(e => _takeRelic = e.newValue); _body.Add(toggle); }
             if ((string)offer["flaskId"] != null)
@@ -240,8 +272,15 @@ namespace AshenSpire.Presentation
         {
             if (Done) { Text("Waiting for your companions at the merchant.", "lead"); return; }
             Text("The wandering merchant", "node-title");
+            var grid = OriginalCardInspection.Grid(); _body.Add(grid);
             foreach (var kind in new[] { "cards", "relics", "flasks" }) foreach (var row in (Room[kind] as JArray ?? new JArray()).Select((value, index) => (value, index)))
-                Command("buy-" + kind + "-" + row.index, Name(kind, (string)row.value["id"]) + " · " + row.value["cost"] + " cinders" + ((bool?)row.value["sold"] == true ? " · Sold" : ""), new JObject { ["type"] = "buy", ["kind"] = kind.TrimEnd('s'), ["index"] = row.index }, (bool?)row.value["sold"] != true && (int?)row.value["cost"] <= (int?)Run["cinders"] && OriginalRewardAvailability.Refusal(_catalog.Data(), Run, kind.TrimEnd('s'), (string)row.value["id"]) == null);
+            {
+                var index = row.index; var intent = new JObject { ["type"] = "buy", ["kind"] = kind.TrimEnd('s'), ["index"] = index };
+                var enabled = (bool?)row.value["sold"] != true && (int?)row.value["cost"] <= (int?)Run["cinders"] && OriginalRewardAvailability.Refusal(_catalog.Data(), Run, kind.TrimEnd('s'), (string)row.value["id"]) == null;
+                if (kind == "cards") CardOffer(grid, _catalog.Record("cards", (string)row.value["id"]), "buy-cards-" + index, "Buy · " + row.value["cost"] + " cinders", () => Send(intent), enabled,
+                    (bool?)row.value["sold"] == true ? "Sold" : !enabled ? "Not enough cinders" : null);
+                else Command("buy-" + kind + "-" + index, Name(kind, (string)row.value["id"]) + " · " + row.value["cost"] + " cinders" + ((bool?)row.value["sold"] == true ? " · Sold" : ""), intent, enabled);
+            }
             Services(); Command("shop-leave", "Finished shopping", new JObject { ["type"] = "leaveShop" });
         }
         private void Shrine()
@@ -272,7 +311,7 @@ namespace AshenSpire.Presentation
             {
                 foreach (var card in (Run["deck"] as JArray ?? new JArray()).Where(c => string.IsNullOrEmpty((string)c["grantedBy"]) && string.IsNullOrEmpty((string)c["equipmentAttackSlotId"])))
                     Destructive("remove-" + card["instanceId"], "Remove " + Name("cards", (string)card["cardId"]) + " · " + Room["removeCost"] + " cinders", ConfirmationPolicy.RemoveCard, Service("removeCard", new JObject { ["instanceId"] = card["instanceId"].DeepClone() }), (int?)Room["removeCost"] <= (int?)Run["cinders"]);
-                foreach (var sale in new OriginalRunServices(_catalog).Sellables(Run)) Command("sell-" + sale["kind"] + "-" + sale["index"], "Sell " + sale["name"] + " · receive " + sale["price"] + " cinders", Service("sell", (JObject)sale.DeepClone()));
+                if (_settings?.MerchantBuyBack != false) foreach (var sale in new OriginalRunServices(_catalog).Sellables(Run)) Command("sell-" + sale["kind"] + "-" + sale["index"], "Sell " + sale["name"] + " · receive " + sale["price"] + " cinders", Service("sell", (JObject)sale.DeepClone()));
             }
             if ((string)Scene["kind"] == "shrine")
             {
@@ -296,13 +335,15 @@ namespace AshenSpire.Presentation
             var rows = Local["deck"] as JArray;
             Text("Run deck · " + (Run["deck"] as JArray ?? new JArray()).Count + " cards", "node-title");
             if (rows == null) Text("Waiting for the host's projected deck details.", "notice");
+            OriginalCardInspection.Browse(_body, (rows ?? new JArray()).OfType<JObject>().Where(row => row["card"] is JObject), row => (JObject)row["card"],
+                row => row["cost"] as JObject ?? CardMechanics.CostProfile((JObject)row["card"]), _catalog, "coop-deck",
+                row => ReadCard((JObject)row["card"], row["cost"] as JObject ?? CardMechanics.CostProfile((JObject)row["card"]), Deck), _report, _ui.DeckBrowse);
             foreach (var row in rows ?? new JArray())
             {
                 var instance = row["instance"]; var card = row["card"] as JObject;
                 if (card == null) continue;
-                Text((string)card["name"], "stat"); Text(OriginalCardText.Describe(card, _catalog), "caption");
                 var source = CardMountService.Owner(instance) ?? ((string)instance["sourceArmamentId"] == null ? null : "armament/" + (string)instance["sourceArmamentId"]);
-                Text((source == null ? "Run-owned card" : "From " + ItemName(source)) + ((int?)instance["smithingLevel"] > 0 ? " · item +" + instance["smithingLevel"] : "") + ((bool?)instance["upgraded"] == true ? " · upgraded" : ""), "caption");
+                Text(card["name"] + " · " + (source == null ? "Run-owned card" : "From " + ItemName(source)) + ((int?)instance["smithingLevel"] > 0 ? " · item +" + instance["smithingLevel"] : "") + ((bool?)instance["upgraded"] == true ? " · upgraded" : ""), "caption");
             }
             if (Local["combat"]?["piles"] is JObject piles)
                 Text("This fight: " + string.Join(" · ", piles.Properties().Where(p => p.Value is JArray).Select(p => Human(p.Name) + " " + ((JArray)p.Value).Count)), "caption");
@@ -421,7 +462,7 @@ namespace AshenSpire.Presentation
         private static string Human(string value) => OriginalCardText.Humanize(value ?? "Waiting");
         private static Label Label(string text, string style) { var label = new Label(text); label.AddToClassList(style); return label; }
         private Label Text(string text, string style) { var label = Label(text, style); _body.Add(label); return label; }
-        private void Statuses(JObject statuses) { if (statuses != null && statuses.Count > 0) Text(string.Join(" · ", statuses.Properties().Select(s => Human(s.Name) + " " + (s.Value["stacks"] ?? s.Value["meter"]?["value"]))), "caption"); }
+        private void Statuses(JObject statuses) { if (statuses != null && statuses.Count > 0) Text(string.Join(" · ", statuses.Properties().Select(s => OriginalStatusText.Describe(s.Name, s.Value as JObject))), "caption"); }
         private static Image Picture(string art) { var image = new Image { image = Resources.Load<Texture2D>("Art/" + art), scaleMode = ScaleMode.ScaleToFit }; image.AddToClassList("fighter"); return image; }
         private Button Button(string id, string text, Action action) { var button = new Button(() => { try { action(); } catch (Exception e) { ShowError(e.Message); } }) { name = "coop-" + id, text = text }; button.AddToClassList("button"); _body.Add(button); return button; }
         // US-13.3: DESTRUCTIVE actions (confirmation-policies.json) send only after a hold or a second tap.

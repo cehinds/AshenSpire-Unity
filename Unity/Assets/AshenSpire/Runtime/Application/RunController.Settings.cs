@@ -9,8 +9,7 @@
 // re-fitted on screen changes, restored on disable); SFX/UI/music buses from
 // AudioBusLevels.From (Domain: master multiplied, mute -> 0, music off -> 0).
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
-// WebGL (and Android, whose StreamingAssets sit inside the APK) need web requests, which are
-// not wired; the player sees why in Settings and the shipped content is used.
+// WebGL/Android use a build-generated resource containing those same validated pack files.
 // CO-OP: always the shipped content (CoopContent), whatever the toggle says, so seats match.
 using System;
 using System.Collections.Generic;
@@ -136,20 +135,19 @@ namespace AshenSpire.Application
         private void ReadContentMods()
         {
             _modsAttempted = true; _modResult = null; _modNotice = null;
-#if UNITY_WEBGL && !UNITY_EDITOR
-            _modNotice = "Content mods are not available in the browser build: StreamingAssets can only be read there with web requests. The shipped content is used.";
-#else
-            var root = UnityEngine.Application.streamingAssetsPath;
-            if (string.IsNullOrEmpty(root) || root.Contains("://"))
-            {
-                _modNotice = "Content mods are not available on this platform yet: StreamingAssets is inside the app package and needs web requests to read. The shipped content is used.";
-                return;
-            }
             try
             {
                 var content = Resources.Load<TextAsset>("Original/content");
                 if (content == null) throw new InvalidOperationException("Import native game content using the AshenSpire menu.");
-                _modResult = OriginalModPacks.Load(content.text, new OriginalModDirectorySource(root));
+#if (UNITY_WEBGL || UNITY_ANDROID) && !UNITY_EDITOR
+                var bundled = Resources.Load<TextAsset>("Original/mod-packs");
+                var files = new OriginalModMemorySource();
+                if (bundled != null) foreach (var row in Newtonsoft.Json.Linq.JObject.Parse(bundled.text).Properties()) files.Add(row.Name, (string)row.Value);
+                _modResult = OriginalModPacks.Load(content.text, files);
+                _modNotice = "This player uses packs included when it was built. Changes to the Mods folder require a new build.";
+#else
+                _modResult = OriginalModPacks.Load(content.text, new OriginalModDirectorySource(UnityEngine.Application.streamingAssetsPath));
+#endif
                 if (_modResult.Catalog == null) _modNotice = "The shipped content failed its own check, so no packs were applied.";
                 if (_diagnosticsEnabled)
                     Debug.Log("ASHENSPIRE_MODS " + new Newtonsoft.Json.Linq.JObject
@@ -166,7 +164,6 @@ namespace AshenSpire.Application
                 _modNotice = "Content mods could not be read: " + error.Message + " The shipped content is used.";
                 Debug.LogWarning(_modNotice);
             }
-#endif
         }
         private IReadOnlyList<string> ModStatus()
         {

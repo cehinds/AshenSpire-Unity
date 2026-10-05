@@ -55,6 +55,22 @@ with tempfile.TemporaryDirectory(prefix='ashenspire-companion-check-') as folder
         checks += 1
 
     check(valid=True)
+    # Validate a delivery candidate separately from the existing published build.
+    staged = root / 'Candidate'
+    staged.mkdir()
+    for artifact in published.iterdir():
+        (staged / artifact.name).write_bytes(artifact.read_bytes())
+    (published / 'Companion.build.json').write_bytes(b'{}')
+    with contextlib.redirect_stdout(io.StringIO()):
+        validator.validate(root, staged)
+    checks += 1
+    (staged / 'Companion.build.json').write_bytes(b'{}')
+    try:
+        validator.validate(root, staged)
+    except (ValueError, KeyError):
+        checks += 1
+    else:
+        raise AssertionError('Malformed staged receipt was accepted')
     # A Linux checkout must validate the same Windows-built sources.
     for paths in groups.values():
         for name in paths:

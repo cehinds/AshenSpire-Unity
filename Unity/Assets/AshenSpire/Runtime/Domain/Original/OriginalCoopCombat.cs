@@ -13,6 +13,11 @@ namespace AshenSpire.Domain.Original
     {
         private sealed class Seat { public string Id,Name,ClassId;public JObject Input;public CombatSession Core;public bool Connected=true,Ended; }
         private readonly OriginalContentCatalog _catalog;private readonly JObject _mechanics;private readonly Func<string,JObject,JObject> _resolve;
+        // Published test 898 fans enemy pile operations out to every living seat.
+        // Older saves freeze mechanics without this flag and retain their original rules.
+        private readonly bool _seatPileEffectsFanOut;
+        private static readonly HashSet<string> SeatPileOperations = new HashSet<string>(StringComparer.Ordinal)
+        { "addCard", "draw", "discard", "exhaust", "shuffleDiscardIntoDraw" };
         private RandomStreams _random;private readonly List<JObject> _enemies=new List<JObject>(),_events=new List<JObject>();
         private readonly Dictionary<string,JObject> _gates=new Dictionary<string,JObject>();private readonly List<Seat> _seats=new List<Seat>();
         private readonly HashSet<string> _hostRejoin=new HashSet<string>(); private bool _annotateMembers; private Seat _active;private int _turn,_counter;private string _phase="setup",_result;private double _factor,_baseMultiplier,_extraMultiplier;
@@ -34,8 +39,34 @@ namespace AshenSpire.Domain.Original
         public JArray Players=>new JArray(_seats.Select(s=>new JObject{["id"]=s.Id,["name"]=s.Name,["classId"]=s.ClassId,["connected"]=s.Connected,["ended"]=s.Ended,["entity"]=s.Core.Player,["piles"]=s.Core.Snapshot()["piles"].DeepClone()}));
         public JObject Card(string memberId,JObject instance)=>SeatFor(memberId).Core.ResolvedCard(instance);
         public JObject Cost(string memberId,JObject instance)=>SeatFor(memberId).Core.CardCost(instance);
+        public JObject CardChoice(string memberId,JObject instance)=>SeatFor(memberId).Core.CardChoice(instance);
+        public JObject PreviewCard(string memberId, string instanceId, string targetId, string choice = null)
+        {
+            var key = new JArray(memberId, instanceId, targetId, choice).ToString(Newtonsoft.Json.Formatting.None);
+            if (_previewCache.TryGetValue(key, out var cached)) return (JObject)cached.DeepClone();
+            var preview = SimulatePreview(memberId, instanceId, targetId, choice);
+            _previewCache[key] = (JObject)preview.DeepClone(); return preview;
+        }
+        private readonly Dictionary<string, JObject> _previewCache = new Dictionary<string, JObject>();
+        private JObject SimulatePreview(string memberId, string instanceId, string targetId, string choice)
+        {
+            var instance = SeatFor(memberId).Core.Hand.OfType<JObject>().FirstOrDefault(c => (string)c["instanceId"] == instanceId);
+            if (instance == null) return OriginalCardPreview.Refused("Choose a card in your hand.");
+            if (OriginalCardPreview.Random(Card(memberId, instance))) return OriginalCardPreview.Variable();
+            var copy = Restore(_catalog, _mechanics, Snapshot(), _resolve);
+            var before = copy.PreviewEntities();
+            try { copy.Play(memberId, instanceId, targetId, choice); }
+            catch (ArgumentException e) { return OriginalCardPreview.Refused(e.Message); }
+            catch (InvalidOperationException e) { return OriginalCardPreview.Refused(e.Message); }
+            return OriginalCardPreview.Compare(before, copy.PreviewEntities());
+        }
+        private JObject[] PreviewEntities() => _seats.Select(s => { var body = s.Core.Player; body["id"] = s.Id; return body; }).Concat(Enemies.OfType<JObject>()).ToArray();
         private OriginalCoopCombat(OriginalContentCatalog catalog,JObject mechanics,Func<string,JObject,JObject> resolve)
-        { _catalog=catalog;_mechanics=(JObject)mechanics.DeepClone();_resolve=resolve??throw new ArgumentNullException(nameof(resolve)); }
+        {
+            _catalog=catalog;_mechanics=(JObject)mechanics.DeepClone();_resolve=resolve??throw new ArgumentNullException(nameof(resolve));
+            var routing = _mechanics["coop"]?["seatPileEffectsFanOut"];
+            _seatPileEffectsFanOut = routing?.Type == JTokenType.Boolean && (bool)routing;
+        }
         public OriginalCoopCombat(OriginalContentCatalog catalog,JObject mechanics,RandomStreams random,IEnumerable<JObject> players,IEnumerable<string> enemyIds,Func<string,JObject,JObject> resolve,double extraHpMultiplier=1,JArray enemyStatuses=null,bool annotateMembers=false):this(catalog,mechanics,resolve)
         {
             _annotateMembers=annotateMembers;_random=random;var inputs=players.Select(p=>(JObject)p.DeepClone()).ToArray();if(inputs.Length==0||inputs.Any(p=>string.IsNullOrEmpty((string)p["id"]))||inputs.Select(p=>(string)p["id"]).Distinct().Count()!=inputs.Length)throw new ArgumentException("Party requires unique member IDs.");
@@ -70,7 +101,7 @@ namespace AshenSpire.Domain.Original
             var id=(string)input["id"];if(string.IsNullOrEmpty(id))throw new ArgumentException("Missing member identity.");
             var seat=new Seat{Id=id,Name=(string)input["name"]??id,ClassId=(string)input["classId"],Input=(JObject)input.DeepClone()};
             seat.Core=new CombatSession(_catalog,_mechanics,_random,input,((JArray)input["deck"]).OfType<JObject>(),_enemies,_events,_gates,c=>_resolve(id,c),id,EndCheck,Find,MemberFor,true);_seats.Add(seat);
-            if(!initial){if(_phase=="player")Use(seat,c=>{c.CoopBody["energy"]=c.CoopBody["energyMax"].DeepClone();c.CoopDraw();});Rescale();}return seat;
+            if(!initial){if(_phase=="player")Use(seat,c=>{c.CoopBeginResources();c.CoopDraw();});Rescale();}return seat;
         }
         private void EndCheck()
         {
@@ -87,6 +118,7 @@ namespace AshenSpire.Domain.Original
         }
         private JArray Change(Action command)
         {
+            _previewCache.Clear();
             var before=Snapshot();var count=_events.Count;try{command();return new JArray(_events.Skip(count).Select(e=>e.DeepClone()));}catch{RestoreState(before);throw;}
         }
         private Seat Actor(string id,bool requireUnended=true)
@@ -97,11 +129,11 @@ namespace AshenSpire.Domain.Original
             var targets=new JArray();if(mode!="none")foreach(var seat in Living()){var relation=seat.Id==memberId?"self":"ally";if(mode=="self"&&relation!="self"||mode=="ally"&&relation!="ally")continue;targets.Add(new JObject{["id"]=seat.Id,["relationship"]=relation});}
             return new JObject{["mode"]=mode,["active"]=mode!="none",["targets"]=targets,["legalIds"]=new JArray(targets.Select(t=>t["id"].DeepClone()))};
         }
-        public JArray Play(string memberId,string instanceId,string targetId=null)=>Change(()=>
+        public JArray Play(string memberId,string instanceId,string targetId=null,string choice=null)=>Change(()=>
         {
             var seat=Actor(memberId);var instance=seat.Core.Hand.OfType<JObject>().FirstOrDefault(c=>(string)c["instanceId"]==instanceId)??throw new ArgumentException("Card is not in this member's hand.");var plan=FriendlyTargets(memberId,seat.Core.ResolvedCard(instance));
             if((bool)plan["active"]){if(targetId==null&&(string)plan["mode"]=="self")targetId=memberId;if(!plan["legalIds"].Values<string>().Contains(targetId))throw new ArgumentException("Invalid friendly target.");}
-            Use(seat,c=>c.PlayCard(instanceId,targetId));
+            Use(seat,c=>c.PlayCard(instanceId,targetId,choice));
         });
         public JArray EndTurn(string memberId)=>Change(()=>
         { MaterializeHostPresence();if(_result!=null||_phase!="player")throw new InvalidOperationException("No player phase.");var seat=_seats.FirstOrDefault(s=>s.Id==memberId);if(seat==null||seat.Ended)return;Use(seat,c=>c.CoopEndTurn());seat.Ended=true;MaybeEndPhase(); });
@@ -149,8 +181,20 @@ namespace AshenSpire.Domain.Original
             foreach(var effect in move["effects"]??new JArray())EnemyEffect(enemy,(JObject)effect,moveId);
         }
         private void EnemyEffect(JObject enemy,JObject effect,string moveId)
-        { foreach(var seat in (string)effect["target"]=="player"?Living():new[]{First()}){if(_result!=null)return;Use(seat,c=>{c.CoopQueue(effect,enemy,(string)effect["target"]=="player"?c.CoopBody:enemy,new JObject{["moveId"]=moveId});c.CoopDrain();});} }
-        public void DisconnectForHostRestore(){foreach(var seat in _seats){if(seat.Connected)_hostRejoin.Add(seat.Id);seat.Connected=false;}}
+        {
+            var eachSeat = (string)effect["target"] == "player"
+                || _seatPileEffectsFanOut && SeatPileOperations.Contains((string)effect["op"] ?? "");
+            foreach (var seat in eachSeat ? Living() : new[] { First() })
+            {
+                if (_result != null) return;
+                Use(seat, c =>
+                {
+                    c.CoopQueue(effect, enemy, eachSeat ? c.CoopBody : enemy, new JObject { ["moveId"] = moveId });
+                    c.CoopDrain();
+                });
+            }
+        }
+        public void DisconnectForHostRestore(){_previewCache.Clear();foreach(var seat in _seats){if(seat.Connected)_hostRejoin.Add(seat.Id);seat.Connected=false;}}
         private void MaterializeHostPresence(){if(_hostRejoin.Count==0)return;_hostRejoin.Clear();Rescale();}
         public JObject Outcome()=>new JObject{["survivors"]=new JObject(_seats.Select(s=>new JProperty(s.Id,new JObject{["hp"]=Math.Max(0,(int)s.Core.CoopBody["hp"]),["downed"]=!Alive(s.Core.CoopBody)}))),["result"]=_result??(_phase=="suspended"?"suspended":null)};
         public JObject Snapshot()=>new JObject{["schemaVersion"]=1,["annotateMembers"]=_annotateMembers,["hostRejoin"]=new JArray(_hostRejoin.OrderBy(id=>id,StringComparer.Ordinal)),["seed"]=_random.Seed,["rng"]=JObject.FromObject(_random.Snapshot()),["turn"]=_turn,["phase"]=_phase,["result"]=_result,["idCounter"]=_counter,["activeMember"]=_active?.Id,["hpFactor"]=_factor,["baseHpMultiplier"]=_baseMultiplier,["extraHpMultiplier"]=_extraMultiplier,["enemies"]=Enemies,["events"]=new JArray(_events.Select(e=>e.DeepClone())),["gates"]=JObject.FromObject(_gates),["seats"]=new JArray(_seats.Select(s=>new JObject{["id"]=s.Id,["name"]=s.Name,["classId"]=s.ClassId,["connected"]=s.Connected,["ended"]=s.Ended,["input"]=s.Input.DeepClone(),["combat"]=s.Core.CoopSnapshot()}))};
@@ -158,6 +202,7 @@ namespace AshenSpire.Domain.Original
         {var restored=new OriginalCoopCombat(catalog,mechanics,resolve);restored.RestoreState(snapshot);return restored;}
         private void RestoreState(JObject snapshot)
         {
+            _previewCache.Clear();
             if((int?)snapshot["schemaVersion"]!=1||!new[]{"setup","player","enemy","ended","suspended"}.Contains((string)snapshot["phase"]))throw new ArgumentException("Invalid co-op save.");
             _hostRejoin.Clear();foreach(var id in (snapshot["hostRejoin"] as JArray??new JArray()).Values<string>())_hostRejoin.Add(id);_annotateMembers=(bool?)snapshot["annotateMembers"]??false;_turn=(int)snapshot["turn"];_phase=(string)snapshot["phase"];_result=(string)snapshot["result"];_counter=(int)snapshot["idCounter"];
             _factor=(double)snapshot["hpFactor"];_baseMultiplier=(double)snapshot["baseHpMultiplier"];_extraMultiplier=(double)snapshot["extraHpMultiplier"];
@@ -168,5 +213,3 @@ namespace AshenSpire.Domain.Original
         }
     }
 }
-
-

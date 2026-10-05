@@ -23,6 +23,7 @@ namespace AshenSpire.Application
         private bool _coopActive, _coopHost;
         private readonly CoopCommandGate _coopCommands = new CoopCommandGate();
         private int _coopRequest, _coopDiagnostic;
+        private long _coopFeedbackRevision = -1;
         private string _coopSeat, _coopEndpoint;
         private const string CoopReceiptsKey = "AshenSpire.Unity.Coop.Receipts.v1";
         private void OpenCoop()
@@ -123,7 +124,17 @@ namespace AshenSpire.Application
                     _coopSnapshot = payload;
                     _coopCommands.Observe((long?)((payload["game"] as JObject)?["local"] as JObject)?["sequence"] ?? 0);
                     SaveCoopProgress();
-                    if (!_interruption.IsInterrupted) RenderCoop();
+                    if (!_interruption.IsInterrupted)
+                    {
+                        RenderCoop();
+                        var revision = (long?)payload["revision"] ?? -1;
+                        if (revision > _coopFeedbackRevision)
+                        {
+                            _coopFeedbackRevision = revision;
+                            var cue = _view.CoopFeedback(payload["events"] as JArray, _coopSeat, _content.Feedback);
+                            if (cue != null) _audio?.Play(cue);
+                        }
+                    }
                     ReportCoop();
                 }
                 else if (type == "receipt" && (bool?)payload["ok"] == true)
@@ -187,7 +198,7 @@ namespace AshenSpire.Application
         private void LeaveCoop() { CloseCoop(); Menu(); }
         private void CloseCoop()
         {
-            _coopActive = false; _coopCommands.Reset(); _coopSnapshot = null;
+            _coopActive = false; _coopCommands.Reset(); _coopSnapshot = null; _coopFeedbackRevision = -1;
             if (_lan == null) return;
             _lan.Opened -= CoopOpened; _lan.MessageReceived -= CoopMessage; _lan.Closed -= CoopDisconnected; _lan.Failed -= CoopDisconnected;
             _lan.Close(); Destroy(_lan.gameObject); _lan = null;

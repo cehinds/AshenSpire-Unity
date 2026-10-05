@@ -14,13 +14,20 @@ namespace AshenSpire.Domain.Original
         private static readonly Dictionary<string, string> Keywords = new Dictionary<string, string> { ["exhaust"] = "lifecycle.exhaust", ["ethereal"] = "lifecycle.ethereal", ["innate"] = "lifecycle.innate", ["retain"] = "lifecycle.retain", ["unplayable"] = "internal.unplayable" };
         private static readonly HashSet<string> Schools = new HashSet<string>(new[] { "physical", "magic", "arcane" }, StringComparer.Ordinal);
         private static readonly HashSet<string> Targets = new HashSet<string>(new[] { "self", "enemy", "allEnemies", "randomEnemy", "ally" }, StringComparer.Ordinal);
-        public static JObject FromDefinition(JObject definition)
+        public static JObject FromDefinition(JObject definition, bool currentKinds = false)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
             var id = (string)definition["id"];
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Card requires an ID.");
             var properties = new JArray();
-            Add(properties, Map(Types, (string)definition["type"], "card type"));
+            if (currentKinds)
+            {
+                var kinds = definition["kindIds"] as JArray;
+                if (kinds == null || kinds.Count != 1 || string.IsNullOrEmpty((string)kinds[0]))
+                    throw new ArgumentException("Card requires exactly one authored classification: " + id);
+                Add(properties, (string)kinds[0]);
+            }
+            else Add(properties, Map(Types, (string)definition["type"], "card type"));
             if (definition["cost"] != null)
             {
                 var variable = definition["cost"].Type == JTokenType.String && (string)definition["cost"] == "X";

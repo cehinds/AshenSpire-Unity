@@ -1,0 +1,1999 @@
+{
+  "buildNumber": 36,
+  "version": "0.0.30.5",
+  "sourceDigest": "0baacd88861ab9e1a5a842b0cf6f1bd816e2c52fb39bb6e5fa29c78ac8cd4fcb",
+  "package": "PreviewCompanion/AshenSpire-Companion-0.0.30.5-build36-Windows",
+  "web": "WebPreview",
+  "origins": [
+    "http://127.0.0.1:8815/",
+    "http://localhost:8815/"
+  ],
+  "checks": [
+    {
+      "check": "One choosing seat cannot start and explains second wanderer",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 368.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 513.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 578.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 643.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 708.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 246.250015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 441.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · choosing",
+          "Invite at least one other wanderer before beginning the shared climb.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "One ready seat still cannot start",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 368.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 513.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 578.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 643.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 708.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 246.250015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 441.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Invite at least one other wanderer before beginning the shared climb.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Host saved seat rejoins after browser closure with readiness reset",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 368.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 513.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 578.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 643.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 708.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 246.250015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 441.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · choosing",
+          "Invite at least one other wanderer before beginning the shared climb.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Choosing guest disables host Start and explains readiness",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 396.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 541.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 606.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 671.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 736.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 273.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 468.750031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · choosing",
+          "Every wanderer needs to choose I'm ready before the climb can begin.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "390x844 guest lobby readiness explanation wraps with reachable ready controls",
+      "passed": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 20.2606621,
+            "Y": 292.180084,
+            "Width": 375.355438,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 20.2606621,
+            "Y": 352.962067,
+            "Width": 375.355438,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 20.2606621,
+            "Y": 413.744049,
+            "Width": 375.355438,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · choosing",
+          "Every wanderer needs to choose I'm ready before the climb can begin."
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Two connected ready seats enable host Start",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 356.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 501.250031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 566.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 631.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 696.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 233.750015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 428.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · ready",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Wait for me disables Start again",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 396.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 541.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 606.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 671.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 736.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 273.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 468.750031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · choosing",
+          "Every wanderer needs to choose I'm ready before the climb can begin.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Disconnected guest disables Start and explains reconnect/removal",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-remove-seat-p2",
+            "Text": "Remove disconnected seat: Guest36",
+            "X": 320.000031,
+            "Y": 226.250015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 461.250031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 606.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 671.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 736.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 801.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 338.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 533.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · disconnected",
+          "Waiting for everyone to reconnect. The host can remove a disconnected guest before the climb.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Guest rejoin restores choosing state and keeps Start disabled",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 396.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 541.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 606.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 671.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 736.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 273.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 468.750031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · choosing",
+          "Every wanderer needs to choose I'm ready before the climb can begin.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Readiness after rejoin enables Start again",
+      "passed": true,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 356.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 501.250031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 566.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 631.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 696.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 233.750015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 428.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · ready",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Both ready clients start the same shared map",
+      "passed": true,
+      "host": {
+        "Controls": [
+          {
+            "Id": "coop-map-zoom-out",
+            "Text": "-",
+            "X": 312.500031,
+            "Y": 227.500015,
+            "Width": 240.000031,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-fit",
+            "Text": "Fit",
+            "X": 557.500061,
+            "Y": 227.500015,
+            "Width": 240,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-zoom-in",
+            "Text": "+",
+            "X": 802.500061,
+            "Y": 227.500015,
+            "Width": 240.000061,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-recenter",
+            "Text": "Recenter",
+            "X": 1047.50012,
+            "Y": 227.500015,
+            "Width": 240,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-glow",
+            "Text": "Shrines on",
+            "X": 312.500031,
+            "Y": 287.500031,
+            "Width": 321.250031,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-routes",
+            "Text": "Routes",
+            "X": 638.750061,
+            "Y": 287.500031,
+            "Width": 322.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-legend",
+            "Text": "Key",
+            "X": 966.25,
+            "Y": 287.500031,
+            "Width": 321.25,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n1_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": 456.250122,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": 298.75,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": 298.75,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_6",
+            "Text": "",
+            "X": 895,
+            "Y": 298.75,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_3",
+            "Text": "",
+            "X": 445.000031,
+            "Y": 140,
+            "Width": 110.000031,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_6",
+            "Text": "",
+            "X": 895,
+            "Y": 140,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": 140,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": 140,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_3",
+            "Text": "",
+            "X": 445.000031,
+            "Y": -17.5,
+            "Width": 110.000031,
+            "Height": 111.250008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_6",
+            "Text": "",
+            "X": 895,
+            "Y": -17.5,
+            "Width": 110,
+            "Height": 111.250008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -17.5,
+            "Width": 110,
+            "Height": 111.250008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_2",
+            "Text": "",
+            "X": 295.000031,
+            "Y": -175,
+            "Width": 110,
+            "Height": 110.000008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -175,
+            "Width": 110,
+            "Height": 110.000008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_6",
+            "Text": "",
+            "X": 895,
+            "Y": -175,
+            "Width": 110,
+            "Height": 110.000008,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_2",
+            "Text": "",
+            "X": 295.000031,
+            "Y": -333.75,
+            "Width": 110,
+            "Height": 111.250015,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": -333.75,
+            "Width": 110,
+            "Height": 111.250015,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_6",
+            "Text": "",
+            "X": 895,
+            "Y": -333.75,
+            "Width": 110,
+            "Height": 111.250015,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_2",
+            "Text": "",
+            "X": 295.000031,
+            "Y": -491.25,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": -491.25,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_6",
+            "Text": "",
+            "X": 895,
+            "Y": -491.25,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -491.25,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_1",
+            "Text": "",
+            "X": 145.000015,
+            "Y": -650.000061,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -650.000061,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_6",
+            "Text": "",
+            "X": 895,
+            "Y": -650.000061,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_0",
+            "Text": "",
+            "X": -5,
+            "Y": -807.500061,
+            "Width": 110.000008,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -807.500061,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_6",
+            "Text": "",
+            "X": 895,
+            "Y": -807.500061,
+            "Width": 110,
+            "Height": 111.25,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_0",
+            "Text": "",
+            "X": -5,
+            "Y": -965.000061,
+            "Width": 110.000008,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": -965.000061,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_6",
+            "Text": "",
+            "X": 895,
+            "Y": -965.000061,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -965.000061,
+            "Width": 110,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_0",
+            "Text": "",
+            "X": -5,
+            "Y": -1123.75012,
+            "Width": 110.000008,
+            "Height": 111.250061,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_3",
+            "Text": "",
+            "X": 445.000031,
+            "Y": -1123.75012,
+            "Width": 110.000031,
+            "Height": 111.250061,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_5",
+            "Text": "",
+            "X": 745.000061,
+            "Y": -1123.75012,
+            "Width": 110,
+            "Height": 111.250061,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_6",
+            "Text": "",
+            "X": 895,
+            "Y": -1123.75012,
+            "Width": 110,
+            "Height": 111.250061,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_4",
+            "Text": "",
+            "X": 595.000061,
+            "Y": -1123.75012,
+            "Width": 110,
+            "Height": 111.250061,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n12_3",
+            "Text": "",
+            "X": 445.000031,
+            "Y": -1281.25012,
+            "Width": 110.000031,
+            "Height": 110,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n13_3",
+            "Text": "",
+            "X": 426.250031,
+            "Y": -1457.50012,
+            "Width": 147.500031,
+            "Height": 147.5,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 310.000031,
+            "Y": 772.500061,
+            "Width": 980.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 310.000031,
+            "Y": 835.000061,
+            "Width": 980.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "ACT 1 · Map · Seed 1",
+          "HP 49/49 · MP 1/1 · Stamina 2/2",
+          "0 cinders ·  Smithing Stones",
+          "Forsaken · You · HP 49/49",
+          "Guest36 · HP 49/49",
+          "Vote for the party's next route",
+          "",
+          "ACT 1 · ALL PATHS · 1 routes",
+          "Tap a lit route to climb. Drag to explore the map.",
+          "The route advances once connected party members have voted."
+        ],
+        "LayoutAttempts": 1
+      },
+      "peer": {
+        "Controls": [
+          {
+            "Id": "coop-map-zoom-out",
+            "Text": "-",
+            "X": 11.7298574,
+            "Y": 239.9289,
+            "Width": 94.9052048,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-fit",
+            "Text": "Fit",
+            "X": 110.900467,
+            "Y": 239.9289,
+            "Width": 94.90521,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-zoom-in",
+            "Text": "+",
+            "X": 210.071075,
+            "Y": 239.9289,
+            "Width": 94.90521,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-recenter",
+            "Text": "Recenter",
+            "X": 309.2417,
+            "Y": 239.9289,
+            "Width": 94.90521,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-glow",
+            "Text": "Shrines on",
+            "X": 11.7298574,
+            "Y": 294.312775,
+            "Width": 127.962082,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-routes",
+            "Text": "Routes",
+            "X": 143.957336,
+            "Y": 294.312775,
+            "Width": 127.9621,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-map-legend",
+            "Text": "Key",
+            "X": 276.1848,
+            "Y": 294.312775,
+            "Width": 127.9621,
+            "Height": 50.1185,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n1_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": 468.12793,
+            "Width": 93.83885,
+            "Height": 93.83887,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": 309.2417,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": 309.2417,
+            "Width": 93.83885,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n2_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": 309.2417,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_3",
+            "Text": "",
+            "X": -139.69194,
+            "Y": 151.421753,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": 151.421753,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": 151.421753,
+            "Width": 93.83885,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n3_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": 151.421753,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_3",
+            "Text": "",
+            "X": -139.69194,
+            "Y": -6.39807129,
+            "Width": 94.90521,
+            "Height": 94.9052048,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -6.39807129,
+            "Width": 94.90521,
+            "Height": 94.9052048,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n4_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -6.39807129,
+            "Width": 93.83885,
+            "Height": 94.9052048,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_2",
+            "Text": "",
+            "X": -288.981018,
+            "Y": -164.218018,
+            "Width": 93.83885,
+            "Height": 93.83886,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -164.218018,
+            "Width": 93.83885,
+            "Height": 93.83886,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n5_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -164.218018,
+            "Width": 94.90521,
+            "Height": 93.83886,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_2",
+            "Text": "",
+            "X": -288.981018,
+            "Y": -322.037842,
+            "Width": 93.83885,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": -322.037842,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n6_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -322.037842,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_2",
+            "Text": "",
+            "X": -288.981018,
+            "Y": -479.8578,
+            "Width": 93.83885,
+            "Height": 93.83884,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": -479.8578,
+            "Width": 94.90521,
+            "Height": 93.83884,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -479.8578,
+            "Width": 94.90521,
+            "Height": 93.83884,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n7_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -479.8578,
+            "Width": 93.83885,
+            "Height": 93.83884,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_1",
+            "Text": "",
+            "X": -439.3365,
+            "Y": -638.744,
+            "Width": 94.90521,
+            "Height": 94.90515,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -638.744,
+            "Width": 93.83885,
+            "Height": 94.90515,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n8_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -638.744,
+            "Width": 94.90521,
+            "Height": 94.90515,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_0",
+            "Text": "",
+            "X": -589.6919,
+            "Y": -796.563965,
+            "Width": 94.90518,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -796.563965,
+            "Width": 93.83885,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n9_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -796.563965,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_0",
+            "Text": "",
+            "X": -589.6919,
+            "Y": -954.38385,
+            "Width": 94.90518,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": -954.38385,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -954.38385,
+            "Width": 94.90521,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n10_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -954.38385,
+            "Width": 93.83885,
+            "Height": 94.90521,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_0",
+            "Text": "",
+            "X": -589.6919,
+            "Y": -1112.20374,
+            "Width": 94.90518,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_3",
+            "Text": "",
+            "X": -139.69194,
+            "Y": -1112.20374,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_5",
+            "Text": "",
+            "X": 161.018951,
+            "Y": -1112.20374,
+            "Width": 93.83885,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_6",
+            "Text": "",
+            "X": 310.308044,
+            "Y": -1112.20374,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n11_4",
+            "Text": "",
+            "X": 10.6635065,
+            "Y": -1112.20374,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n12_3",
+            "Text": "",
+            "X": -139.69194,
+            "Y": -1270.02368,
+            "Width": 94.90521,
+            "Height": 93.83887,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-route-n13_3",
+            "Text": "",
+            "X": -154.62085,
+            "Y": -1443.83875,
+            "Width": 125.829384,
+            "Height": 125.829346,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 9.597156,
+            "Y": 781.635,
+            "Width": 396.682434,
+            "Height": 50.11853,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 9.597156,
+            "Y": 839.217957,
+            "Width": 396.682434,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "",
+          "ACT 1 · Map · Seed 1",
+          "HP 49/49 · MP 1/1 · Stamina 2/2",
+          "0 cinders ·  Smithing Stones",
+          "Forsaken · HP 49/49",
+          "Guest36 · You · HP 49/49",
+          "Vote for the party's next route",
+          "",
+          "ACT 1 · ALL PATHS · 1 routes",
+          "Tap a lit route to climb. Drag to explore the map.",
+          "The route advances once connected party members have voted."
+        ],
+        "LayoutAttempts": 1
+      }
+    }
+  ],
+  "earlySamples": [
+    {
+      "check": "Guest rejoin restores choosing state and keeps Start disabled",
+      "passed": false,
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-remove-seat-p2",
+            "Text": "Remove disconnected seat: Guest36",
+            "X": 320.000031,
+            "Y": 226.250015,
+            "Width": 960.0001,
+            "Height": 55.0000153,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed-apply",
+            "Text": "Set shared seed",
+            "X": 320.000031,
+            "Y": 461.250031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-ready",
+            "Text": "I'm ready",
+            "X": 320.000031,
+            "Y": 606.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-not-ready",
+            "Text": "Wait for me",
+            "X": 320.000031,
+            "Y": 671.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-start",
+            "Text": "Begin shared climb",
+            "X": 320.000031,
+            "Y": 736.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-leave",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 801.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-seed",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 338.750031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-endless",
+            "Text": null,
+            "X": 320.000031,
+            "Y": 533.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "CLIMB TOGETHER",
+          "WAITING AT THE FOOT OF THE SPIRE",
+          "Seed 1 · Three acts",
+          "Forsaken · ready",
+          "Guest36 · disconnected",
+          "Waiting for everyone to reconnect. The host can remove a disconnected guest before the climb.",
+          "Shared seed (number)",
+          "",
+          "Endless shared climb"
+        ],
+        "LayoutAttempts": 1
+      },
+      "note": "Sampled before the asynchronous guest reconnect response arrived; completed roster state passed the subsequent check."
+    }
+  ],
+  "health": {
+    "hostErrors": 0,
+    "peerErrors": 0,
+    "hostWarnings": 1,
+    "peerWarnings": 2
+  },
+  "limitations": [
+    "Initial host credential input timed out and produced a connection refusal; a completed normal input entry joined successfully.",
+    "Final Delivery companion equivalence/launch verification remains separate.",
+    "Phone viewport is browser emulation, not physical-device testing."
+  ]
+}

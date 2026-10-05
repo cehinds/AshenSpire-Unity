@@ -17,6 +17,25 @@ namespace AshenSpire.Presentation
         public string CueId { get; private set; }
         public bool EnemyTurn { get; private set; }
         public FeedbackOutcome Outcome { get; private set; }
+        public bool AnimatePlayer { get; private set; } = true;
+        public string EnemyTargetId { get; private set; }
+
+        public static NativeFeedbackProjection FromCoopEvents(IEnumerable<JToken> events, string memberId)
+        {
+            if (events == null || string.IsNullOrEmpty(memberId)) return null;
+            var rows = events.OfType<JObject>().Where(row =>
+                (string)row["targetId"] == "player" ? ((string)row["playerId"] ?? (string)row["actorMemberId"]) == memberId
+                : row["targetId"] != null || row["actorMemberId"] == null || (string)row["actorMemberId"] == memberId
+                    || (string)row["type"] == "enemyTurnStart" || (string)row["type"] == "enemyMoveStarted")
+                .Select(row => (JObject)row.DeepClone()).ToArray();
+            var local = rows.Any(row => (string)row["actorMemberId"] == memberId || (string)row["playerId"] == memberId);
+            // Server receipts use the solo ID "player" plus member annotations.
+            // Never animate this seat as the attacker for another member's command.
+            foreach (var row in rows) if ((string)row["sourceId"] == "player" && (string)row["actorMemberId"] != memberId) row["sourceId"] = "ally";
+            var result = FromEvents(rows);
+            if (result != null) result.AnimatePlayer = local;
+            return result;
+        }
 
         /// <summary>Returns null for housekeeping-only or empty receipts. Solo engine IDs apply.</summary>
         public static NativeFeedbackProjection FromEvents(IEnumerable<JToken> events)
@@ -74,7 +93,8 @@ namespace AshenSpire.Presentation
             foreach (var row in rows.Where(row => (string)row["type"] == "stanceEntered")) labels.Add("Stance: " + Label((string)row["stance"]));
             if (labels.Count == 0 && Has("cardPlayed")) labels.Add("Card played");
             outcome.Action = string.Join(" · ", labels.Distinct());
-            return new NativeFeedbackProjection { CueId = cue, EnemyTurn = enemyTurn || enemyAttack, Outcome = outcome };
+            return new NativeFeedbackProjection { CueId = cue, EnemyTurn = enemyTurn || enemyAttack, Outcome = outcome,
+                EnemyTargetId = rows.FirstOrDefault(row => (string)row["type"] == "hpLost" && !Player(row))?["targetId"]?.ToString() };
         }
 
         private static string Label(string id) => Regex.Replace(id ?? "status", "([a-z])([A-Z])", "$1 $2").Replace('_', ' ');

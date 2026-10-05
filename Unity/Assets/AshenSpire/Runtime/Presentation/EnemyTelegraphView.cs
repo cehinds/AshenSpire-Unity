@@ -63,6 +63,7 @@ namespace AshenSpire.Presentation
             badge.EnableInClassList("telegraph-pending", intent.Pending);
             if (intent.Kind != "unknown") badge.Add(GlyphLabel(intent.Icon.Glyph, "telegraph-intent-glyph"));
             var value = intent.ValueText.EndsWith(" ⌛", StringComparison.Ordinal) ? intent.ValueText.Substring(0, intent.ValueText.Length - 2) : intent.ValueText;
+            if (value.Length == 0) value = OriginalCardText.Humanize(intent.Kind);
             if (value.Length > 0) badge.Add(Text(value, "telegraph-intent-value"));
             if (value.Length != intent.ValueText.Length) badge.Add(GlyphLabel("⌛", "telegraph-intent-delay"));
             Tooltip(badge, intent.TooltipText);
