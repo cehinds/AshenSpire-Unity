@@ -51,7 +51,30 @@ class NativeUiDriver {
  point(id,fraction){return pointOf(this,id,fraction);}
  samePoint(a,b){return samePoint(a,b);}
  stablePoint(id,fraction){return stablePointOf(this,id,fraction);}
+ async creationControl(id){
+  // Creation is now a sequence of screens. Navigate through the same visible
+  // Back/Next controls a player uses before operating a field on another step.
+  const target=/^foundation-class-/.test(id)?0:/^(foundation-mode-|attribute-)/.test(id)?1
+   :/^native-start-(kit|rightHand|leftHand|armour)$/.test(id)||id==='native-preview-cards'?2
+   :id==='native-start-relic'?3:id==='native-seed'?4
+   :/^native-(name|custom|ascension|mod-|appearance|outfit|sprite|tint|sigil|keepsake|deck-mode|map-)/.test(id)?6:null;
+  if(target===null||!this.controls?.Controls.some(c=>c.Id==='native-creation-back'))return;
+  for(let attempt=0;attempt<12;attempt++){
+   const controls=this.controls?.Controls||[];
+   if(controls.some(c=>c.Id===id))return;
+   const next=controls.find(c=>c.Id==='native-creation-next');
+   const step=next?['Attributes','Equipment','Relic','Ready'].findIndex(label=>next.Text?.includes(label))
+    :controls.some(c=>c.Id==='native-customize')?4:controls.some(c=>c.Id==='native-preview-next')?5:6;
+   if(step===target)return; // A disabled or collapsed field remains the test's responsibility.
+   if(step>4||step>target)await this.click('native-creation-back');
+   else if(step===4&&target===6)await this.click('native-customize');
+   else if(next?.Enabled)await this.click('native-creation-next');
+   else throw Error('Creation cannot advance to '+id+'; complete the current step.');
+  }
+  throw Error('Creation navigation did not reach '+id);
+ }
  async click(id,change=true,fraction=.5){
+  if(!this.controls?.Controls.some(c=>c.Id===id))await this.creationControl(id);
   const route=/^(native|coop)-route-(.+)$/.exec(id);
   if(route&&this.controls?.Controls.some(c=>c.Id===route[1]+'-map-routes')){
    await this.click(route[1]+'-map-routes');
