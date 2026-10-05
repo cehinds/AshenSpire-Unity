@@ -13,7 +13,16 @@
   - [x] 169-file runtime reference compilation, 1,068 valid GUIDs and six version checks.
   - [x] 17 driver/report tests, including 42 control-report assembly assertions.
   - [x] The unchanged party state model passed 23 checks in build 52.
-- [ ] Final exported-player solo/co-op checks and screenshot review.
+- [x] Two-browser co-op: 32 assertions passed at 390x844, pixel density 1.
+  - [x] Three-enemy target bounds/non-overlap, End turn clear of the hand,
+    usable tools/Flasks, compact deck filters and subpage return.
+  - [x] Exact-hand rejoin, next-turn card play, selection retained across a peer
+    action, a real shared victory and both players completing rewards.
+  - [x] Compiled feedback reached impact; no observed browser/Unity errors.
+  - [x] Inspected phone menu, deck, selected-card combat and rewards screenshots.
+  - Evidence: `TestResults/NativeCoopBrowser/build53/{Host,Guest}`. This run
+    tests client rejoin, not a companion process restart or a physical phone.
+- [ ] Desktop/portrait solo checks and screenshot review.
 - [ ] Download delivery and download-back hash verification.
 - [ ] Current content activation, upstream migration, physical-device and owner acceptance.
 
