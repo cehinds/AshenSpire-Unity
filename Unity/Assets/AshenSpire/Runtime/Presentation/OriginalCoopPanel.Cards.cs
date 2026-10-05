@@ -76,7 +76,7 @@ namespace AshenSpire.Presentation
             var legal = (bool?)row["targets"]?["active"] != true || (row["targets"]?["legalIds"] as JArray ?? new JArray()).Values<string>().Contains(_target);
             var target = (Scene["enemies"] as JArray ?? new JArray()).FirstOrDefault(e => (string)e["id"] == _target);
             var destination = (bool?)row["targets"]?["active"] == true ? MemberName(_target) : target == null ? null : Name("enemies", (string)target["enemyId"]);
-            ReadCard(card, cost, () => { _selected = null; Main(); }, "Play " + card["name"] + (destination == null ? "" : " on " + destination), () => Send(new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target }),
+            ReadCard(card, cost, Main, "Play " + card["name"] + (destination == null ? "" : " on " + destination), () => Send(new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target }),
                 mayPlay && refusal == null && legal, refusal ?? (!mayPlay ? "Waiting for your turn." : !legal ? "Choose a legal recipient." : null), Body);
         }
         private void CardOffer(VisualElement grid, JObject card, string id, string verb, Action command, bool enabled = true, string reason = null, bool selected = false)

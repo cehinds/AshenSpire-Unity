@@ -63,6 +63,7 @@ namespace AshenSpire.Presentation
             {
                 if (e.keyCode != UnityEngine.KeyCode.Escape) return;
                 if (_readBack != null) _readBack();
+                else if (_ui.CombatMenuOpen) { _ui.CombatMenuOpen=false;Render(); }
                 else if (_ui.Surface != "main") Main();
                 else if (_selected != null) { _selected = null; Render(); }
                 else return;
@@ -87,12 +88,14 @@ namespace AshenSpire.Presentation
             if (Local == null) { Text("Waiting for your player snapshot…", "lead"); Footer(); return; }
             if (combatSurface)
             {
-                _body.Add(OriginalCombatLayout.Hud(Body, Run, (int)_view["actNumber"], (int?)Scene["turn"] ?? 0, Name("classes", (string)Run["classId"])));
-                Text(string.Join(" · ", Party.Select(m =>
+                _root.AddToClassList("coop-combat");
+                var hud=OriginalCombatLayout.Hud(Body, Run, (int)_view["actNumber"], (int?)Scene["turn"] ?? 0, Name("classes", (string)Run["classId"]));
+                _body.Add(hud);
+                hud.Add(OriginalCombatLayout.Label(string.Join(" · ", Party.Select(m =>
                 {
                     var member = (Scene["players"] as JArray)?.FirstOrDefault(p => (string)p["id"] == (string)m["id"]);
                     return (string)m["name"] + " " + (member?["entity"]?["hp"] ?? m["hp"]) + "/" + (member?["entity"]?["maxHp"] ?? m["maxHp"]) + ((bool?)m["connected"] == true ? "" : " (offline)") + ((bool?)member?["ended"] == true ? " (ended)" : "");
-                })), "original-combat-party");
+                })), "original-combat-party"));
             }
             else
             {
@@ -122,6 +125,9 @@ namespace AshenSpire.Presentation
                 default: Text("Waiting for the next room…", "lead"); break;
             }
             Footer();
+            if(combatSurface && _combatTools!=null)
+                CombatChrome.Mount(_root,_combatTools,Body,(int?)Scene["turn"]??0,_report,(bool?)Scene["turnStamina"]==true,
+                    "coop",_ui.CombatMenuOpen,open=>_ui.CombatMenuOpen=open,(bool?)Local["combat"]?["ended"]==true?"Waiting for party":"Your turn");
             switch (_ui.Surface)
             {
                 case "deck": Deck(); break;
@@ -138,7 +144,7 @@ namespace AshenSpire.Presentation
         {
             if (Local != null) { var deck = Button("deck", "Deck and equipment", Deck); if (_combatTools != null) _combatTools.Add(deck); }
             _body.SetEnabled(!_pending);
-            var leave = new Button(() => _menu?.Invoke()) { text = "Disconnect and return to title", name = "coop-menu" }; leave.AddToClassList("button"); // Keep the escape outside pending-disabled gameplay and subpage content.
+            var leave = new Button(() => _menu?.Invoke()) { text = _combatTools!=null ? "Leave" : "Disconnect and return to title", tooltip="Disconnect and return to title", name = "coop-menu" }; leave.AddToClassList("button"); // Keep the escape outside pending-disabled gameplay and subpage content.
             _root.Add(leave); _report?.Invoke();
         }
         private void Routes()

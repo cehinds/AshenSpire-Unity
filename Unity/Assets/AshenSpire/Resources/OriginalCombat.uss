@@ -163,3 +163,20 @@
 .combat-reframed.owner-mobile .original-combat-actions { right: 8px; bottom: 5px; width: 110px; }
 .combat-reframed.owner-mobile .original-combat-actions > .button { font-size: 12px; }
 .combat-reframed.owner-mobile .original-card-preview { bottom: 71px; left: 8px; right: 8px; font-size: 12px; }
+
+/* Party controls share the solo chrome, with room for explicit friendly-card play. */
+.coop-combat > #coop-menu { position: absolute; top: 76px; right: 24px; width: 84px; min-width: 0; min-height: 36px; margin: 0; padding: 4px; }
+.coop-combat #coop-end-turn { background-color: #293b1e; border-color: #b8b77c; color: #f1e6c9; -unity-font: resource("Fonts/Cinzel-Regular"); }
+.coop-combat.owner-mobile > #coop-menu { top: 61px; right: 8px; width: 72px; font-size: 11px; }
+.coop-combat.owner-mobile .combat-encounter { top: 106px; }
+.coop-combat.owner-mobile .original-combat-party { font-size: 11px; }
+.coop-combat.owner-mobile .original-combat-actions { left: 80px; right: 8px; bottom: 8px; width: auto; flex-direction: row; }
+.coop-combat.owner-mobile .original-combat-actions > .button { min-height: 48px; margin: 0 3px; font-size: 12px; white-space: normal; }
+.coop-combat.owner-mobile .original-hand-rail { bottom: 105px; }
+.coop-combat.owner-mobile .original-card-preview { bottom: 69px; }
+.combat-screen .crowded-field .original-fighter-name { bottom: -29px; height: 29px; min-height: 29px; font-size: 14px; white-space: normal; }
+.combat-screen .crowded-field .original-enemy-target > .original-pool { bottom: -49px; width: 90%; height: 20px; min-height: 20px; }
+.combat-screen .crowded-field .original-pool-label { font-size: 14px; }
+.combat-screen .crowded-field .original-enemy-target > .original-fighter-caption { bottom: -71px; font-size: 11px; }
+.combat-screen .crowded-field .telegraph-poise { bottom: -55px; width: 90%; }
+.combat-screen .crowded-field .telegraph-intent { top: -36px; padding: 3px 6px; }

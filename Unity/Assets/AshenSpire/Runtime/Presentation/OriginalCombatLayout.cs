@@ -21,6 +21,7 @@ namespace AshenSpire.Presentation
         {
             var wasCombat = body.ClassListContains("combat-screen");
             body.EnableInClassList("combat-screen", active);
+            if (!active) { body.RemoveFromClassList("combat-reframed");body.RemoveFromClassList("coop-combat");body.RemoveFromClassList("owner-mobile"); }
             body.style.backgroundImage = active ? new StyleBackground(Resources.Load<Texture2D>("Art/OwnerAppearance/courtyard")) : new StyleBackground(StyleKeyword.None);
             // The map policy may already have established a bounded viewport.
             // Removing our class must not reset its height/scroll contract.
@@ -67,24 +68,36 @@ namespace AshenSpire.Presentation
             var width = field.contentRect.width; var height = field.contentRect.height;
             if (width <= 0 || height <= 0) return;
             var mobile = width < 650;
-            field.parent?.EnableInClassList("owner-mobile",mobile);
+            var surface=field.parent;
+            while(surface!=null && !surface.ClassListContains("combat-screen"))surface=surface.parent;
+            surface?.EnableInClassList("owner-mobile",mobile);
             var floor = height * (mobile ? .60f : .69f);
             var actors = field.Children().Where(e => e.ClassListContains("original-fighter-slot")).ToArray();
             var enemies = actors.Where(e => e.ClassListContains("original-enemy-target")).ToArray();
             var players = actors.Where(e => e.ClassListContains("original-player-slot")).ToArray();
+            var crowded=mobile && enemies.Length>1;
+            field.EnableInClassList("crowded-field",crowded);
             foreach (var actor in actors)
             {
                 var player = actor.ClassListContains("original-player-slot");
                 var index = Array.IndexOf(enemies, actor);
                 var center = player ? width * (players.Length == 1 ? mobile ? .19f : .23f : .11f + Array.IndexOf(players,actor) * .26f / Math.Max(1,players.Length - 1))
                     : width * (enemies.Length == 1 ? .72f : .59f + index * .31f / Math.Max(1,enemies.Length - 1));
+                if (!player && crowded)
+                {
+                    var columns=Math.Min(2,enemies.Length-index/2*2);
+                    center=width*(columns==1 ? .72f : .48f+(index%2)*.34f);
+                }
                 var hound = actor.ClassListContains("owner-hound"); var boss = actor.ClassListContains("owner-colossus");
                 var actorHeight = height * (player ? mobile ? .34f : .46f : hound ? .16f : boss ? .48f : mobile ? .23f : .32f);
                 var aspect = player ? actor.Q<OriginalPlayerFigure>()?.OwnerAspect ?? .7f : actor.Q<OriginalEnemyFigure>()?.ArtAspect ?? 1f;
                 var actorWidth = actorHeight * aspect;
                 var maximumWidth = width * (player ? players.Length > 1 ? .42f / players.Length : mobile ? .5f : .32f : mobile ? .48f : enemies.Length > 3 ? .15f : .28f);
+                if(crowded)maximumWidth=width*(player ? .36f : .27f);
+                else if(!player && enemies.Length>1)maximumWidth=Math.Min(maximumWidth,width*.31f/(enemies.Length-1)*.94f);
                 if (actorWidth > maximumWidth) { actorHeight *= maximumWidth / actorWidth; actorWidth = maximumWidth; }
                 var actorFloor = player ? floor : height * (mobile ? .57f : .60f);
+                if(crowded)actorFloor=height*(player ? .58f : Math.Max(.22f,.50f-index/2*.15f));
                 actor.style.left = center - actorWidth / 2; actor.style.top = actorFloor - actorHeight;
                 actor.style.width = actorWidth; actor.style.height = actorHeight;
             }
