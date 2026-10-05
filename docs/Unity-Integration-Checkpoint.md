@@ -42,7 +42,7 @@ this integration follows dev's version sequence.
 - [x] C# language build: no warnings or errors.
 - [x] Runtime reference compilation: 166 sources; three known Unity-6 API gaps.
 - [x] Published-reference mechanics: 40,497 checks; card QoL: 192 checks.
-- [x] Settings/mods: 196; gamepad: 195; confirmation policies: 144 checks.
+- [x] Settings/mods: 197; gamepad: 195; confirmation policies: 144 checks.
 - [x] Feedback: 10,296 checks through 1,263 native commands.
 - [x] Browser driver: 14 unit checks, including guided screen navigation.
 - [x] Source digest: 17 binary/text hashing checks; companion mutations: 24.
@@ -62,3 +62,8 @@ single gamepad input path; it adds preview setting aliases and removes duplicate
 map-header information. The later in-progress edits appearing in the original
 checkout after checkpoint b44715f are preserved there and are not swept into this
 integration.
+
+CI exposed a missing content binding in the policy harness and an unmatched brace
+in the browser replay harness after reconciliation. Both were repaired; the
+policy harness compiles and the changed JavaScript tools pass syntax checks.
+Full browser CI still targets the retained older Published player.

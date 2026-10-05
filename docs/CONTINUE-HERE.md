@@ -22,7 +22,7 @@ HTML test **898** (`0.7.1.898`, digest `1b60c22e01`). Read
 Build 36 below is the archived pre-migration rollback baseline; migration source
 edits do not share its source digest.
 
-Current source is build 43 (`0.0.30.12`), an intermediate migration preview.
+Historical local preview build 43 (`0.0.30.12`) was an intermediate migration preview.
 Read [guided creation and card proportions](Unity-Guided-Creation.md) for the
 latest owner-requested fixes: one-screen creation steps, ready Reaver defaults,
 fixed 2:3 card faces and visible map paths with compact tools. Export/receipt,

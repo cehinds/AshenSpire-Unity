@@ -91,8 +91,8 @@ async function eventBranches(action){
  await until(()=>pointerDriver.has('native-welcome-continue')||pointerDriver.has('native-new'),'welcome or title');
  if(pointerDriver.has('native-welcome-continue'))await click('native-welcome-continue');
  await until(()=>pointerDriver.has('native-new'),'title');await shot('00-phone-title');
- await click('native-new');await shot('01-phone-assign-points');
- check(controls.Labels.some(t=>t.trim()==='Unspent points: 0'),'Unspent points: 0 (Standard preset, the default)');
+ await click('native-new');if(pointerDriver.has('native-creation-next'))await click('native-creation-next');await shot('01-phone-assign-points');
+ check(controls.Labels.some(t=>t.trim()==='Unspent points: 0'||t.startsWith('Standard is ready.')),'Unspent points: 0 (Standard preset, the default)');
  await NativeUiDriver.prototype.assignPoints.call(pointerDriver);await click('native-seed',false,.8);await key('Control+a');await key('Backspace');await page.keyboard.type(String(recorded.seed),{delay:80});await key('Tab');
  if(recorded.custom){
   await click('native-custom-toggle');
@@ -149,6 +149,7 @@ async function eventBranches(action){
  check(hasRecordedClimb(controls.Labels,recorded),'completed climb recorded in chronicle as '+recorded.result);
  if(!eventChoices.length)check(controls.Labels.some(t=>t.trim().startsWith('1 climbs · '+(recorded.result==='Victory'?1:0)+' victories')),'chronicle totals count the one climb');
  await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(1200);await shot('100-desktop-chronicle');
+ }
  const finalReceipt=await page.request.get(new URL('build-source.json',playerUrl).href);
  check(finalReceipt.ok()&&(await finalReceipt.body()).equals(sourceReceipt),'compiled player source stayed unchanged throughout the climb');
  check(errors.length===0,'no browser or Unity error logs');fs.writeFileSync(path.join(output,'checks.json'),JSON.stringify(report(true),null,2));console.log((endlessCheckpoint?'Native browser Endless checkpoint':eventCheckpoint?'Native browser event checkpoint':'Native browser full climb')+' passed: '+checks.length+' checks, '+commands.length+' commands, '+eventChoices.length+' event choices.');await browser.close();

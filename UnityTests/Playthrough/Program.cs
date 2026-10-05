@@ -8,6 +8,7 @@ var root=Directory.GetCurrentDirectory();
 var output=args.Length>1?Path.GetFullPath(args[1]):Path.Combine(root,"TestResults/NativePolicy");Directory.CreateDirectory(output);
 var directory=Path.Combine(root,"GameContent/Unity/Original");
 var catalog=new OriginalContentCatalog(File.ReadAllText(Path.Combine(directory,"content.json")));
+var authoredContent=catalog.Data();
 var progression=new AttributeProgression(JObject.Parse(File.ReadAllText(Path.Combine(directory,"progression.json"))));
 var mechanics=JObject.Parse(File.ReadAllText(Path.Combine(directory,"mechanics.json")));
 var supplement=JObject.Parse(File.ReadAllText(Path.Combine(directory,"event-choices.json")));

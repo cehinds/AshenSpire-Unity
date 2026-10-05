@@ -74,7 +74,7 @@ class NativeUiDriver {
   throw Error('Creation navigation did not reach '+id);
  }
  async click(id,change=true,fraction=.5){
-  if(!this.controls?.Controls.some(c=>c.Id===id))await this.creationControl(id);
+  if(!this.controls?.Controls.some(c=>c.Id===id))await NativeUiDriver.prototype.creationControl.call(this,id);
   const route=/^(native|coop)-route-(.+)$/.exec(id);
   if(route&&this.controls?.Controls.some(c=>c.Id===route[1]+'-map-routes')){
    await this.click(route[1]+'-map-routes');
