@@ -58,13 +58,24 @@ test('a delayed command response never causes a second released command',async()
  assert.deepEqual(result,{accepted:1,cancelled:0,wrong:0,presses:1});
 });
 
+test('hidden enabled controls do not satisfy visible menu assertions',()=>{
+ const {ui}=fixture('visible');
+ assert.equal(ui.has('coop-end-turn'),true);
+ ui.controls.Controls[0].Width=0;
+ assert.equal(ui.has('coop-end-turn'),false);
+ ui.controls.Controls[0].Width=100;ui.controls.Controls[0].Height=0;
+ assert.equal(ui.has('coop-end-turn'),false);
+ ui.controls.Controls[0].Height=40;ui.controls.Controls[0].Enabled=false;
+ assert.equal(ui.has('coop-end-turn'),false);
+});
+
 test('a hold that opens card inspection is released without replaying the vanished card',async()=>{
  const {ui,result}=fixture('hold');
  ui.controls.Controls[0].Id='native-card-starting:1';
  const wait=ui.page.waitForTimeout;
  ui.page.waitForTimeout=async ms=>{
   await wait(ms);
-  if(ms===140){ui.controls.Controls=[{Id:'native-card-inspection-back',Enabled:true}];ui.layout++;}
+  if(ms===140){ui.controls.Controls=[{Id:'native-card-inspection-back',Enabled:true,X:20,Y:20,Width:100,Height:40}];ui.layout++;}
  };
  await ui.click('native-card-starting:1');
  assert.deepEqual(result,{accepted:0,cancelled:1,wrong:0,presses:1});
