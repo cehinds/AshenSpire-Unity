@@ -80,7 +80,7 @@ an older monitor entry describes superseded defaults):
   - [ ] Mount current property rules and their passive readers before activating this content.
     - [x] Build-51 solo/party carrier ownership, heal dispatch, shared FIFO and persisted trigger gates.
     - [x] Equipment, relic, class/core-tree, companion and sigil hold windows; hit-buildup multiplier.
-    - [x] Class/skill/tag predicates, real equipment swap and two/four-seat reload/rejoin checks: 102.
+    - [x] Class/skill/tag predicates, real equipment swap and two/four-seat reload/rejoin checks: 109.
     - [ ] Scoped skill-XP readers, location hooks and full foundation scheduling/status behavior.
     - [ ] Enable and validate the compatible rules/content in an exported player.
     - Evidence: [property integration](Unity-Property-Integration.md).

@@ -19,9 +19,13 @@ It does not complete current combat foundations or activate the new content.
     integer skill/class-level gates and authored/derived card-tag predicates.
   - [x] Absent `mechanics.properties.mounted` retains legacy queues and receipts.
 - [x] Local source validation.
-  - [x] 102 focused checks, including actual property definitions, controlled queue
+  - [x] 109 focused checks, including actual property definitions, controlled queue
     scenarios, equipment transactions, corrupt content and invalid-command rollback.
-  - [x] 41,149 migration checks.
+  - [x] 41,156 migration checks.
+  - [x] All 109 property checks repeated against Unity's compiled domain assembly.
+    Receipt: `TestResults/HtmlParity/build51/compiled-property-checks.json`.
+  - [x] Zero healing leaves positive-heal gates available; new-seat draw reactions
+    drain before native command/save completion.
   - [x] 6,587 frozen legacy co-op checks after the shared-queue change.
   - [x] Runtime reference compilation: 169 files; three documented Unity-6 API gaps
     in the older NuGet reference remain accepted, not new compile failures.

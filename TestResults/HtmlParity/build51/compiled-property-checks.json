@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "b7cf094",
+  "propertyChecks": 109,
+  "migrationChecks": 41156,
+  "legacyCoopChecksAfterSharedQueueChange": 6587,
+  "compiledAssemblySha256": "844a7e19a86597cafcad8273f4b4ac068a55bd3967befb65d7fbff5ac254a26c",
+  "testSourceSha256": "7224776630ebec2502b67e838ce2d08312e41192dd57268b397be95e065283c0",
+  "scope": "Unity-compiled domain assembly executed by a .NET harness, not exported-player property activation",
+  "utc": "2026-10-05T06:44:56.144826+00:00"
+}

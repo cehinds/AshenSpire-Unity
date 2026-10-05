@@ -20,7 +20,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 - [ ] Build 51 (`0.0.33.4`): [mounted property integration](Unity-Property-Integration.md).
   - [x] Solo and party carrier derivation, shared FIFO with owning-seat execution,
     heal recipient routing, saved gates, class/tag predicates and equipment remounting.
-  - [x] 102 focused property checks and 41,149 full migration checks; 169-file runtime reference check.
+  - [x] 109 focused property checks and 41,156 full migration checks; 169-file runtime reference check.
   - [ ] Unity export and exported-player validation of this source.
   - Active source: `D:/repos/.codex/worktrees/unity-current-rules`.
     Warm export workspace: `D:/repos/.codex/worktrees/unity-upstream-reconciled`.
