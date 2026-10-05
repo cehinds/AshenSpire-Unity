@@ -1,74 +1,55 @@
 # Player component art integration
 
-Source: the owner's `player-components-2026-10-03.7z`, extracted under
-`D:/repos/.codex/asset-review/player-components-2026-10-04`. The full source kit
-was previously verified against all 466 checksum entries. The import selects
-44 reusable assets; it does not execute the archive's scripts or import example
-game values.
+Preview: http://127.0.0.1:8936/ — Unity 0.0.33.2, build 36.
+Source digest: `9be946ff1411ad19b8cc8e7b09738a4d169454cd3924265e7ef76f628bc67488`.
+PR: https://github.com/cehinds/AshenSpire-Unity/pull/71
 
-- [x] Import 21 component frames, seven desktop/portrait scene pairs and nine item illustrations.
-  - [x] Verify every selected source checksum before conversion.
-  - [x] Record output hashes and dimensions in `art/player-components/import-receipt.json`.
-  - [x] Preserve painting proportions and source credits.
-  - [x] Verify all 23 raster outputs against every decoded RGBA source pixel, including alpha.
-- [x] Bind artwork to native Unity UI Toolkit screens.
-  - [x] Title and guided creation use the Spire vista.
-  - [x] Merchant, shrine, rewards and terminal screens select their scene artwork.
-  - [x] Equipment and relic previews show the supplied canonical item illustrations.
-  - [x] Engraved controls retain ready, disabled, focus and selection states.
-  - [x] Map node shells use the supplied art while existing graph geometry and legal-route controls retain authority.
-  - [x] Desktop creation separates the character stage from its current decision; portrait keeps one step and a bottom action tray.
-- [x] Keep card faces at 2:3 with their own available illustrated artwork.
-  - [x] Use published equipment/card artwork when illustrated; keep painted fallbacks for outline-only records.
-  - [x] Derive the containing card height from the face, including border/padding.
-  - [x] Keep reward/browser rows from stretching cards.
-- [x] Local checks.
-  - [x] C# syntax compilation: zero warnings/errors.
-  - [x] Runtime reference checker: 167 sources; only three known Unity 6 reference gaps accepted.
-  - [x] Card QoL: 192 checks.
-  - [x] Map viewport: 74,628 checks across 3,024 camera fixtures and 27 maps.
-  - [x] 44 output hashes/dimensions and 15 stylesheet resource links verified.
-- [ ] Fresh Unity Web export and desktop/portrait playtest.
-- [ ] Full current-game visual/mechanical parity and owner acceptance.
-- [ ] All-platform packaging and green full CI.
+## Visual and card-layout pass
 
-The first isolated export uncovered an inherited package-cache location on a
-missing H: drive. The preview launcher now supplies a process-local D: cache;
-it does not change machine-wide Unity settings. Preview output directories now
-follow the authoritative build number instead of overwriting historical build43.
+- [x] Implementation.
+  - [x] Import 44 owner-supplied assets: 21 frames, seven desktop/portrait scene pairs, nine item illustrations.
+  - [x] Verify selected source checksums, output hashes/dimensions and all 23 raster conversions pixel-for-pixel including alpha.
+  - [x] Bind painted scenes and engraved controls to native Unity UI Toolkit screens; retain existing SpriteRenderer character prefabs and repaired soldier hilt.
+  - [x] Keep guided setup on one screen per step with Reaver, Standard, Straight Sword, Round Shield and Forsaken Medallion ready by default.
+  - [x] Frame inventory images using nine importer-generated alpha bounds, without changing the original PNG pixels.
+  - [x] Preserve 2:3 card faces, center/enlarge inspection, and fit the combat hand against available height and fan rotation.
+- [x] Compiled and local verification.
+  - [x] Runtime reference checker: 167 sources; only three known Unity 6 gaps in the 2021 reference package accepted.
+  - [x] Card QoL: 192 checks; map viewport: 74,628 checks across 3,024 camera fixtures and 27 maps.
+  - [x] Native Unity Web export succeeded; exporter confirmed unchanged source during the build.
+  - [x] Source/version verification and hashes for all eight exported payload files passed.
+  - [x] Desktop 1280x720 and portrait 390x844: full card faces, reachable setup controls, readable equipment/relic illustrations.
+  - [x] Final player resumed the saved combat. End Turn advanced to turn two and refilled actions.
+  - [x] Desktop drag: Slashing Strike reduced enemy HP from 16 to 7 and actions from 3 to 2.
+  - [x] Portrait drag: Shield Defend increased block from 0 to 11, spent one action and moved to discard.
+  - [x] Initial exported player also verified tap-card/tap-target attacks and connected-map entry.
+  - [x] No browser runtime errors observed in the final pass; viewport override restored.
+- [ ] Owner acceptance and physical-device/controller testing.
 
-## Reimport
+## Remaining migration and release work
 
-`tools/import-player-components.py` requires Pillow and the `@resvg/resvg-js`
-module directory passed with `--resvg`. These are authoring tools, not new game
-packages. Raster conversion preserves aspect ratio; only scalable frame shells
-use nine-slicing in `PlayerComponents.uss`. Character SpriteRenderer prefabs and
-the repaired soldier hilt remain the existing game assets.
+- [ ] Full current HTML-game visual and mechanical parity. The runtime still uses the older rules/content baseline; this art pass does not complete that migration.
+- [ ] Fresh all-platform published bundles and green full CI. Published bundles were not replaced by this isolated preview.
+- [ ] Resolve inspected release checks: companion/player version mismatch and published-player `merchant-buy-back` timeout.
 
-This work is isolated from the main checkout's concurrent gameplay/art changes.
-Those changes and player saves are preserved. An asset import or local domain
-test pass does not establish visual parity or exported-player verification.
+PR #71 remains a draft with these release limits recorded. Unrelated main-checkout
+work and existing player saves were preserved. The original game was not changed.
 
-## Export and playtest evidence, October 4
+## Evidence and reproduction
 
-- [x] Initial Unity Web export compiled and loaded locally as 0.0.33.2/build36.
-  - [x] Desktop 1280x720: title and guided class/attributes/equipment screens rendered; Reaver was selected.
-  - [x] Portrait 390x844: equipment, relic, ready summary and footer remained visible without page scrolling.
-  - [x] Ready summary showed Standard, Straight Sword, Round Shield and Forsaken Medallion.
-  - [x] Began a run, selected a connected map node and entered combat.
-  - [x] Selected Slashing Strike and tapped Wandering Soldier: HP changed 25 to 16; actions changed 3 to 2.
-  - [ ] Drag input: browser automation timed out during the gesture; no success claim.
-- [x] The first visual pass exposed off-center card inspection; final styles center the face and enlarge it on desktop.
-- [ ] Final unchanged-source export and repeated visual checks (the initial export predates item-alpha, item-preview and inspection corrections).
-- [ ] Browser connection recovery: repeated tool timeouts prevented screenshot-file capture and further input after the drag attempt.
+Final receipt: `qa/unity-player-components/build36-source.json`.
+Final screenshots: `final-desktop-combat.png`, `final-portrait-combat.png`,
+`final-portrait-equipment.png`, `final-portrait-relic.png`, and
+`final-portrait-ready.png` under `qa/unity-player-components`.
+The `initial-*` and `verified-art-*` captures document earlier visual passes.
 
-The second launch collided with the first editor's delayed shutdown and exited
-before compilation. A third export was started only after the old editor had
-exited. Its result must be verified before the initial preview is considered
-current-source evidence.
+Source archive: the owner's `player-components-2026-10-03.7z`, extracted under
+`D:/repos/.codex/asset-review/player-components-2026-10-04`. All 466 kit checksums
+were verified before import. Source/output provenance is recorded in
+`art/player-components/import-receipt.json`; credits are preserved beside it.
 
-PR #71 remains a draft. Full CI failures inspected on this branch include
-`Companion version differs from the Unity player` in packaging and a timeout
-waiting for `merchant-buy-back` in the published-player browser suite. Neither
-has been waived or represented as passing. Published platform bundles have not
-been replaced by this isolated visual preview.
+Reimport with `tools/import-player-components.py KIT --resvg MODULE_DIRECTORY`.
+Pillow and @resvg/resvg-js are authoring dependencies outside the game project.
+Export with `tools/build-owner-appearance-preview.ps1`; verify with
+`node tools/unity-verify-parity-preview.mjs Builds/OwnerAppearance/build36/Web`.
+The launcher uses a process-local D: package cache and versioned output directory.
