@@ -7,6 +7,7 @@ ID and archive filenames remain stable to preserve installed saves and links.
 
 ## Latest inspected reference
 
+- Latest follow-up: 2026-10-05 07:24 UTC (October 4 America/Anchorage), original `dev` `c540cbf7865815046abb5fcd3066486620bd04a8`, checked-in build 963. Live `main` remains `9e61c9c38e204b78cfc13f3b2c2857e4f2a963ee`; `test` is `1445b8749fa59abf602db1f01275ad15823ac2da`. Compared 118 commits after build 913. The metadata below is the retained prior checkpoint. Future checks start at `c540cbf`.
 - Checked: 2026-10-04 (America/Anchorage).
 - Heartbeat recheck: 2026-10-04 21:28 UTC (2026-10-04 America/Anchorage). Original `dev` advanced by 36 commits from `bb5822a2573b014d03b206a5931ae0891a955472`. Original `main` remains `9e61c9c38e204b78cfc13f3b2c2857e4f2a963ee`; the source assessment follows `dev`.
 - Original dev HEAD: `40c8a45fe951de4f757b2add0811aeeeb7f41fe1` (2026-10-04 21:01 UTC), recorded build ordinal 913.
@@ -16,6 +17,17 @@ ID and archive filenames remain stable to preserve installed saves and links.
   development chat. Notify only for meaningful relevant changes or problems.
 
 ## Findings
+
+### October 4 late evening: original builds 914–963
+
+- [x] Compared [build 913 to build 963](https://github.com/cehinds/AshenSpire/compare/40c8a45fe951de4f757b2add0811aeeeb7f41fe1...c540cbf7865815046abb5fcd3066486620bd04a8), including engine, progression, saves and rendered UI source. Evidence: `D:/repos/.codex/automations/check-ashenspire-changes-for-ashenedspire/evidence/20261005-0724-{file-inventory.txt,runtime.patch,presentation.patch}`. Original commit objects were fetched without checking out or merging them. Build 963 is repository metadata, not a player executed by this check.
+- [ ] New progression rules supersede earlier monitored defaults: character cap 20/base 200/growth 1.303; skill cap 10/base 100/growth 1.995; class cap 20/base 400/growth 1.224. Excess XP stays banked. Read `balance.js`, `skills.js`, `progression.js`, `advancedConfig.js` and the current claim UI together. Unity's staged arithmetic and saved snapshots are partial foundations; the active through-913 migration does not implement these newer caps/reward semantics.
+- [ ] Card ranks replace the automatic `upgradeAt` threshold. Ranked cards add rank minus one to their primary effect, including split-hit handling; drafts roll weighted ranks and per-level rank-up choices raise eligible owned deck/sideboard cards, subject to track/rank caps. Existing saved upgrades remain. Native save/import, card instances, quoting, rewards, respec and visible badges all need coordinated support; copying the new numbers alone is insufficient.
+- [ ] New skill rewards: every fifth skill level supplies a flat card bonus from the best applicable track, every fourth offers a linked attribute, and every second can offer a skill feat. Pending choices and stale offers are validated. `Critical Edge` adds a Blade critical-hit rule, using the `combatProcs` RNG stream per hit/target and multiplying the finished blow before Block. No matching native skill-feat/critical receipt implementation was found in the current migration. Preserve zero-eligible-rule RNG behavior and saved-rule boundaries when porting.
+- [ ] Reward interaction changed again: XP remains banked and a Level up control covers its eligible bar and opens that level's popup. Current claims, refill feedback, queued drafts/ranks/attributes/feats and reload behavior need a new compiled comparison after domain support. This supersedes treating the prior guided-flow description as final parity.
+- [x] Related work already underway in Unity: build-52 source spaces multi-enemy phone targets, moves party rows inside their HUD, retains selection after inspecting a card, and separates combat tools from subpages. This follows the same readability goals as original mobile intent/formation changes; it is not evidence of identical geometry or completed browser acceptance. Unity's exact-source export/browser checks remain separately tracked in its active worktree.
+- [ ] Original map/animation fixes address selection slowdown, mobile sprite playback/flicker and rocking. Compare equivalent native behavior in runtime; browser image-loading/CSS fixes are not direct C# patches. Added board/component art under design paths remains reference material until actual asset/runtime use is established.
+- [x] Intentional differences: native frozen content/saves, Unity resources, transport and platform packaging remain. This monitor made no upstream merge, game-rule edit, publication or acceptance decision. Earlier open migration items remain open; current implementation is still pinned through 913, with this newer delta recorded for follow-through.
 
 ### October 4 afternoon: original builds 901–913
 

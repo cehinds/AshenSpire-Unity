@@ -17,11 +17,18 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   - [x] 42 targeted desktop/portrait browser assertions and screenshot inspection.
   - [x] Public ZIP downloaded back; SHA-256 matches the local package.
   - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
-- [ ] Build 51 (`0.0.33.4`): [mounted property integration](Unity-Property-Integration.md).
+- [ ] Build 52 (`0.0.33.5`): party phone layout, combat menu and retained inspection selection.
+  - [x] Unity export from `e4af81d`; source digest `a5039010b21a3f7c47669add467dada2f2efe06b7fd404da63b41210732cc7c6` and eight payload hashes verified.
+  - [x] Runtime reference compilation (169 files), 23 party presentation-state checks.
+  - [ ] Exported-player solo/co-op checks and screenshot review; currently running.
+  - Build 51 already exported and passed 18 solo browser assertions. Its co-op checks
+    failed during selection; screenshots exposed party/target/control overlaps addressed in 52.
+- [ ] [Mounted property integration](Unity-Property-Integration.md), included in builds 51–52.
   - [x] Solo and party carrier derivation, shared FIFO with owning-seat execution,
     heal recipient routing, saved gates, class/tag predicates and equipment remounting.
   - [x] 109 focused property checks and 41,156 full migration checks; 169-file runtime reference check.
-  - [ ] Unity export and exported-player validation of this source.
+  - [x] Unity compilation/export and 18 bounded legacy-content solo player checks in 51.
+  - [ ] Enable compatible current content and verify its property gameplay in the player.
   - Active source: `D:/repos/.codex/worktrees/unity-current-rules`.
     Warm export workspace: `D:/repos/.codex/worktrees/unity-upstream-reconciled`.
 - [ ] Full migration: content activation, foundation scheduling/status integration,
@@ -35,6 +42,10 @@ controller, settings, import and content-validation fixes. See
 
 The active owner request is the full native migration, including **all recorded
 upstream changes through original build 913** (explicit owner answer on October 4).
+The October 5 07:24 UTC monitoring check additionally recorded original builds
+914–963 at `c540cbf`. It adds card ranks, capped XP curves and skill rewards;
+see the latest upstream review before implementing progression. This newer
+delta is assessed, not merged or claimed as implemented.
 Published HTML test **898** (`0.7.1.898`, digest `1b60c22e01`) remains the frozen oracle baseline. Read
 [the migration tracker](Unity-HTML-Parity-Migration.md) before continuing.
 Build 36 below is the archived pre-migration rollback baseline; migration source
