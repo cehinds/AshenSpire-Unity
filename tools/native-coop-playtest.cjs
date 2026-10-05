@@ -37,6 +37,10 @@ const combatFeedback = new Map();
    ui.check(cards.every(c=>!intersects(c,end)),'end turn remains clear of the hand');
    await ui.click('coop-combat-menu');await ui.until(()=>ui.has('coop-flasks'),'party menu exposes flasks');await ui.shot('02a-open-tools');
    await ui.click('coop-combat-menu');await ui.until(()=>!ui.has('coop-flasks'),'party menu closes');
+   await ui.click('coop-deck');await ui.until(()=>ui.has('coop-deck-back'),'party deck opens');
+   ui.check(!ui.has('coop-combat-menu')&&!ui.has('coop-end-turn'),'combat controls leave the deck subpage unobscured');
+   await ui.shot('02b-deck');await ui.click('coop-deck-back');
+   await ui.until(()=>ui.has('coop-combat-menu')&&ui.has('coop-end-turn'),'deck returns to combat controls');
   }
  }
  await host.shot('02-combat');await guest.shot('02-own-hand');
