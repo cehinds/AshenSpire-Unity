@@ -155,9 +155,16 @@ namespace AshenSpire.Presentation
             if (count == 0 || width <= 0) return;
             var mobile = width < 650;
             var cardWidth = mobile ? 148f : Mathf.Clamp((width - 28) / count - 4, 148, 205);
+            // Reserve space for the fan offset, rotation and cost badge. A wide
+            // viewport can still be short; width alone must not clip card rules.
+            var halfFan = (count - 1) / 2f;
+            var tilt = Mathf.Min(90, halfFan * (mobile ? 4 : 2)) * Mathf.Deg2Rad;
+            var availableHeight = rail.contentRect.height - 24 - halfFan * 3 - 16;
+            if (availableHeight > 0)
+                cardWidth = Mathf.Min(cardWidth, Mathf.Max(32, availableHeight / (OwnerCardFace.HeightPerWidth + Mathf.Sin(tilt) * .5f)));
             var step = count < 2 ? 0 : Mathf.Min(cardWidth + 4, (width - cardWidth - 28) / (count - 1));
             var start = (width - (cardWidth + step * (count - 1))) / 2;
-            rail.contentContainer.style.height = 310;
+            rail.contentContainer.style.height = rail.contentRect.height;
             for (var index = 0; index < count; index++)
             {
                 var card = cards[index]; var offset = index - (count - 1) / 2f;

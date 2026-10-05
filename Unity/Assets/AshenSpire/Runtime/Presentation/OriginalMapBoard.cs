@@ -149,7 +149,7 @@ namespace AshenSpire.Presentation
                 button.AddToClassList("map-node"); button.EnableInClassList("available", legal); button.EnableInClassList("visited", node.Visited); button.EnableInClassList("current", node.Current); button.EnableInClassList("revealed", node.Revealed); button.EnableInClassList("shrine-lane", node.ShrineLane);
                 button.style.left = (float)bounds.X0; button.style.top = (float)bounds.Y0; button.style.width = (float)bounds.Width; button.style.height = (float)bounds.Height;
                 ColorUtility.TryParseHtmlString((string)row["color"], out var color);
-                var icon = new MapIcon((string)row["icon"], node.Current ? new Color(.18f,.16f,.12f) : color); button.Add(icon);
+                var icon = new MapIcon((string)row["icon"], node.Current ? new Color(.92f,.83f,.64f) : color); button.Add(icon);
                 button.SetEnabled(legal); _content.Add(button);
                 if (legal || node.Current || node.Revealed || _votes.ContainsKey(id))
                 {

@@ -1,0 +1,56 @@
+{
+  "weapon_straightSword": [
+    354,
+    151,
+    71,
+    283
+  ],
+  "weapon_roundShield": [
+    17,
+    204,
+    140,
+    140
+  ],
+  "weapon_warhammer": [
+    360,
+    128,
+    58,
+    331
+  ],
+  "weapon_battleaxe": [
+    380,
+    131,
+    50,
+    328
+  ],
+  "weapon_greatsword": [
+    338,
+    87,
+    103,
+    379
+  ],
+  "weapon_dagger": [
+    368,
+    241,
+    42,
+    171
+  ],
+  "crackedLantern": [
+    60,
+    23,
+    151,
+    206
+  ],
+  "forsakenMedallion": [
+    56,
+    23,
+    148,
+    210
+  ],
+  "cutpursesCoin": [
+    31,
+    23,
+    196,
+    201
+  ]
+}

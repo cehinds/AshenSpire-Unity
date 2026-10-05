@@ -1,0 +1,609 @@
+{
+  "schema": 1,
+  "sourceKit": "player-components-2026-10-03",
+  "assets": [
+    {
+      "id": "base:spire-vista-desktop",
+      "source": "assets/reused/scenes/spire-vista-desktop.png",
+      "sourceSha256": "4551bfd4909ecf711d52de9459b9b1380d023277fdf2676eca6a2ee73db69248",
+      "resource": "Art/PlayerComponents/spire-vista-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "e2bd41d57e2beb27e0e9a13e8f97ec2bc709e795d9e0e9e44c64c15ecf502daa",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:merchant-desktop",
+      "source": "assets/reused/scenes/merchant-desktop.png",
+      "sourceSha256": "e74ac3cab85af07c0a037e245571bfc73e6eb420f753fd5306ce526aa4455b37",
+      "resource": "Art/PlayerComponents/merchant-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "9cdf86afa77e91382c8ca9c0df3eae86e40bc0facb817d6d655a41e57a3ff329",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:forge-desktop",
+      "source": "assets/reused/scenes/forge-desktop.png",
+      "sourceSha256": "a9aae8c28f2de511389c5fb675ef9e4c74301e0e20cab79e3244ec1b28c49e5c",
+      "resource": "Art/PlayerComponents/forge-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "31607357ac4e8e18a0d8b598df41793360b01ae6ef998d731d1701b81e06a1bc",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:spire-vista-mobile",
+      "source": "assets/reused/scenes/spire-vista-mobile.png",
+      "sourceSha256": "664bd0a6ca05f158a354e85eee45e5adc28dbd2d42e63c0fa408cc00ae5707b0",
+      "resource": "Art/PlayerComponents/spire-vista-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "ffc0e6663e1f13a4aff54df67c558d08978410363432eaad938b06d1e479a562",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:merchant-mobile",
+      "source": "assets/reused/scenes/merchant-mobile.png",
+      "sourceSha256": "1651b3a303a8e3c0f9b4d26d90384e18c794b8f390490a4b9dc931e4e54f0272",
+      "resource": "Art/PlayerComponents/merchant-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "370a6a699ce844947c7c7da4cf2d8854ed770218ce4f8e9b61bb343eaa7661c3",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:forge-mobile",
+      "source": "assets/reused/scenes/forge-mobile.png",
+      "sourceSha256": "419d7ee10f3040e5fe5be14ae6829ad276f8a80b296c3377a1f3671c8dd3506f",
+      "resource": "Art/PlayerComponents/forge-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "6bb3ecd4db52c94b5c3699b56c00a31e57832ba8c58c0011610a82934539cb53",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_straightSword.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_straightSword.webp",
+      "sourceSha256": "3b4bfc137c22da423e99e743870303c04bdabcaeeb13925e41fe59bcfe29f603",
+      "resource": "Art/PlayerComponents/weapon_straightSword",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "eb593cd5436e1df842e886ba970f06a44fc2a57d0eee3ec8a12859a842f807ad",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_roundShield.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_roundShield.webp",
+      "sourceSha256": "7c92bb9923dfa579a4eaf338f0538fdcf3887fbb96bb63b628492624278260e5",
+      "resource": "Art/PlayerComponents/weapon_roundShield",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "345703881e59a7152c18a28e6c70586a4167bf6f4fe098ba4516efc6f0eedfd2",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_warhammer.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_warhammer.webp",
+      "sourceSha256": "c922fb478ab5eec484461c7e37de790c4d67eebada2c353f44ad9339ec36a358",
+      "resource": "Art/PlayerComponents/weapon_warhammer",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "da6b44347cd4d80a81039897899bed6c239882a015e8ca7bc4a4d31efe6e55c2",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_battleaxe.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_battleaxe.webp",
+      "sourceSha256": "f3114ff4955c9cbf1a48086733f5bb08abc2bba07bd572eb27cc3fd85a0844ba",
+      "resource": "Art/PlayerComponents/weapon_battleaxe",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "56278912e2fd0ba00671fd633952865b60dd0ff1f383fb2b9d4032280c8c8434",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_greatsword.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_greatsword.webp",
+      "sourceSha256": "9b0e2adf76eba4c8f580659f58f2a85e6e7ec96229fba019c9332f00e88dd950",
+      "resource": "Art/PlayerComponents/weapon_greatsword",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "43ebd080f2dc076dfd4ee9557bab5425729dfcaafcac8d91a1552b839e8d304f",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/equipment/weapon_dagger.webp",
+      "source": "assets/reused/canonical/assets/equipment/weapon_dagger.webp",
+      "sourceSha256": "9c4020db97d5787802877f6d70611ecf009b97cf8d5e486fb85c92f6c982d52a",
+      "resource": "Art/PlayerComponents/weapon_dagger",
+      "dimensions": [
+        450,
+        570
+      ],
+      "sha256": "d0451f2c061166ed36da482845924b1bb43affd51dbf65dfca50f97c1d02c1bd",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/crackedLantern.webp",
+      "source": "assets/reused/canonical/assets/relics/crackedLantern.webp",
+      "sourceSha256": "6228e82667c983d9c7c33de21be90a8718bb7052a8752a5bbf3082e5acfaf335",
+      "resource": "Art/PlayerComponents/crackedLantern",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "366f7b82fd088a22b063c72c873d76ed69f4efb757f7b30e0cd7300812e8ee39",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/forsakenMedallion.webp",
+      "source": "assets/reused/canonical/assets/relics/forsakenMedallion.webp",
+      "sourceSha256": "951d0f04bc9e1b452d8f8669a420126ac7d447562b2f6666a88a2c1365214980",
+      "resource": "Art/PlayerComponents/forsakenMedallion",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "4633e6d498060512228bb19d194399433485bac741a8c7a151c805f87b89cde1",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "base:canonical/assets/relics/cutpursesCoin.webp",
+      "source": "assets/reused/canonical/assets/relics/cutpursesCoin.webp",
+      "sourceSha256": "d887fb81174a11a93df995110743e61ffc0180826a00195c9df69ddf5c9ae8c0",
+      "resource": "Art/PlayerComponents/cutpursesCoin",
+      "dimensions": [
+        256,
+        256
+      ],
+      "sha256": "b4597b9b654914d25b5c739da565d1525458de5d93103c2be1c915306c8502a7",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "engraved-folio-backed",
+      "source": "assets/components/engraved-folio-backed.svg",
+      "sourceSha256": "2aef6cd30c4eff1ae6792698b2835a032745e0842cffb252ea6f7a02f77d8102",
+      "resource": "Art/PlayerComponents/engraved-folio-backed",
+      "dimensions": [
+        720,
+        480
+      ],
+      "sha256": "82f55abab9b04074eeb9e8080a7e8f2e8e73c0d65b7d5064b3ae885fb836c954",
+      "nineSliceInsets": [
+        40,
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "id": "action-neutral",
+      "source": "assets/components/action-neutral.svg",
+      "sourceSha256": "671ac7dd1a32328a2d39da69e6d27b0133a9a5e3388e2d5a493346802fc64025",
+      "resource": "Art/PlayerComponents/action-neutral",
+      "dimensions": [
+        640,
+        112
+      ],
+      "sha256": "32392d5b1c5df0b2b10f0519ef896251ed1e4e55cf213a5042461e659194801b",
+      "nineSliceInsets": [
+        18,
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "action-selected",
+      "source": "assets/components/action-selected.svg",
+      "sourceSha256": "a234caf4df601af503f7078d74d5c29cc6fa7ff21d320c46c14e7402bb7c73b8",
+      "resource": "Art/PlayerComponents/action-selected",
+      "dimensions": [
+        640,
+        112
+      ],
+      "sha256": "500e3b4dcc5bde52615ab871fb0af6b19e4b23a22cac57202599e2033f9b672d",
+      "nineSliceInsets": [
+        18,
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "action-ready",
+      "source": "assets/components/action-ready.svg",
+      "sourceSha256": "c333a67d79d978dbc28ed8e447a3a5cb84c3fca54d94fbd66451a70e3fd78478",
+      "resource": "Art/PlayerComponents/action-ready",
+      "dimensions": [
+        640,
+        112
+      ],
+      "sha256": "2d488cb8ae59508313df2169668f80b64b1a3c649317536826fd504295e6cd0b",
+      "nineSliceInsets": [
+        18,
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "action-disabled",
+      "source": "assets/components/action-disabled.svg",
+      "sourceSha256": "1cc5559896b9ba89ff5f8db24c176bccb472d9e4856340901952c4cd1e3a2912",
+      "resource": "Art/PlayerComponents/action-disabled",
+      "dimensions": [
+        640,
+        112
+      ],
+      "sha256": "5c799ed1d94b05dfdd97fe534cc5e22aa62d659041948d4a42a6f9765d751cff",
+      "nineSliceInsets": [
+        18,
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "focus-ring",
+      "source": "assets/components/focus-ring.svg",
+      "sourceSha256": "b1cada21a597e6625a19b430ee8703b54a3faabc5728dddb4628df43f80241cd",
+      "resource": "Art/PlayerComponents/focus-ring",
+      "dimensions": [
+        640,
+        112
+      ],
+      "sha256": "2fd0d6d8f948b9642e1bc0f666cbdbb7262b74d51c9b597a7c74d8c437fd41de",
+      "nineSliceInsets": [
+        12,
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "id": "selection-ring",
+      "source": "assets/components/selection-ring.svg",
+      "sourceSha256": "6de5d28c293fc1aede2fae7b4f68e4a7f31dede4766cdd5d35d3ba11144c9f7f",
+      "resource": "Art/PlayerComponents/selection-ring",
+      "dimensions": [
+        192,
+        192
+      ],
+      "sha256": "2504adf5813320a52f33dc5a67a1f74a77849c0da6e1f6e876e0b1371c7203de",
+      "nineSliceInsets": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "portrait-mat",
+      "source": "assets/components/portrait-mat.svg",
+      "sourceSha256": "c7f32dbff6a0837de69b27ec06717181d49af9c460391a18c55971d9790ee4a1",
+      "resource": "Art/PlayerComponents/portrait-mat",
+      "dimensions": [
+        320,
+        400
+      ],
+      "sha256": "bdabe5c655abbec35fa8191d737085a6f429b9b2d4594fdc429d9ee22c497846",
+      "nineSliceInsets": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "item-mat",
+      "source": "assets/components/item-mat.svg",
+      "sourceSha256": "9c36f0da57d1c65c19f20b0a2999b5f1a6dbf321edf7a92e4e5bc11b1b26373c",
+      "resource": "Art/PlayerComponents/item-mat",
+      "dimensions": [
+        192,
+        192
+      ],
+      "sha256": "a807bae8bd5a3a609383721c85fcc3ddef301a97a79680e5274842464247cfd6",
+      "nineSliceInsets": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "cost-hexagon",
+      "source": "assets/components/cost-hexagon.svg",
+      "sourceSha256": "76a4166f4a0ac7ab07c51d0f3d6c31eab3f861ddc678a388bdf6e3ed78c581ae",
+      "resource": "Art/PlayerComponents/cost-hexagon",
+      "dimensions": [
+        96,
+        96
+      ],
+      "sha256": "bb7adeaf8a8feabc14c16fe70c51271fc9302eefc5aa848563a9b02318090381",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chamber-known",
+      "source": "assets/components/chamber-known.svg",
+      "sourceSha256": "37aa1c3e29a80b6ffd502460e9fec282d56be5d765faad678550b803fe10b73e",
+      "resource": "Art/PlayerComponents/chamber-known",
+      "dimensions": [
+        160,
+        160
+      ],
+      "sha256": "2c9fc4ebbb8dfed58c6603b2a3013350497e24da7700590e872fffd02fff7b34",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chamber-current",
+      "source": "assets/components/chamber-current.svg",
+      "sourceSha256": "4f8fb5fb1b1350b336224f9f6727d814781323796b354ffa3dd9dd6ddaeb9c6c",
+      "resource": "Art/PlayerComponents/chamber-current",
+      "dimensions": [
+        160,
+        160
+      ],
+      "sha256": "eb8e31e982ac2d2cfc7f432aab5b6bd24c1828e418d2fc96c549efd7766a693b",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chamber-unknown",
+      "source": "assets/components/chamber-unknown.svg",
+      "sourceSha256": "62a49d9df58bf6a9a25d36882e92b5041309951a5a4b99fd835e8e6d3cf98359",
+      "resource": "Art/PlayerComponents/chamber-unknown",
+      "dimensions": [
+        160,
+        160
+      ],
+      "sha256": "a4001dc6404c7e4cc8496f7777ac3a293a23f58ebe5f5c21c94357ed2d76bd07",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chamber-visited",
+      "source": "assets/components/chamber-visited.svg",
+      "sourceSha256": "e6b5a584c24b7d7e13702dcd602b39205c2c4321efab208c161a7e12d58aee8e",
+      "resource": "Art/PlayerComponents/chamber-visited",
+      "dimensions": [
+        160,
+        160
+      ],
+      "sha256": "c095717ebe34e85183b942f9b7eb22b3d54d449b548aa0ba24477a558c94c53f",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "combat-intent",
+      "source": "assets/components/combat-intent.svg",
+      "sourceSha256": "ec3763b9d7744d369929c99f4bdb14bc21b74dbda8fb7179782778a8a90611c7",
+      "resource": "Art/PlayerComponents/combat-intent",
+      "dimensions": [
+        192,
+        96
+      ],
+      "sha256": "a9a1ee7682d7c3b27d9a5a451bfa8d944f5d90e245797d9fb9387230fecaf19e",
+      "nineSliceInsets": [
+        18,
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "turn-orb",
+      "source": "assets/components/turn-orb.svg",
+      "sourceSha256": "a3cc384f12a8db1d310f876e48c6a09e7b47d19b6069a4fb627919731ce8d1ce",
+      "resource": "Art/PlayerComponents/turn-orb",
+      "dimensions": [
+        160,
+        160
+      ],
+      "sha256": "cb6a82768fa5656470e0d5ed96e3ffb9c203deedeeb89beff3b4e6ad9380fa19",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "hud-rail",
+      "source": "assets/components/hud-rail.svg",
+      "sourceSha256": "d40c90d48204006d72b759876a7a026bc61493d082c4a9571fced24758e8a7b4",
+      "resource": "Art/PlayerComponents/hud-rail",
+      "dimensions": [
+        960,
+        128
+      ],
+      "sha256": "37d9b678c1ce184ccd17cbb07bf92e214cf73eaf24ce8450a86abe8a7197dc7f",
+      "nineSliceInsets": [
+        24,
+        24,
+        24,
+        24
+      ]
+    },
+    {
+      "id": "mobile-action-tray",
+      "source": "assets/components/mobile-action-tray.svg",
+      "sourceSha256": "bb664f3647bc4e5da29506bf4f288f42f7abfa1174ace1cd0c251d01f4582bb2",
+      "resource": "Art/PlayerComponents/mobile-action-tray",
+      "dimensions": [
+        720,
+        320
+      ],
+      "sha256": "adc9b87c582575c3c45191f908c2f28cfb75ae38e5750b5d2b70b9f06acf73ac",
+      "nineSliceInsets": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "menu-window",
+      "source": "assets/components/menu-window.svg",
+      "sourceSha256": "dbaad7b051848b49aa7a327b085acd320adae12f3066d5da3eeb3ca08de85e74",
+      "resource": "Art/PlayerComponents/menu-window",
+      "dimensions": [
+        960,
+        1120
+      ],
+      "sha256": "60b69dceaa679819c09de9c3b54b4e51fa2709d95f69824c9a7cc518749a351e",
+      "nineSliceInsets": [
+        40,
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "id": "settings-section",
+      "source": "assets/components/settings-section.svg",
+      "sourceSha256": "9b78588ab837f76062d5d66a577c4c43bba0df3fb1dcf448897b1e2178449126",
+      "resource": "Art/PlayerComponents/settings-section",
+      "dimensions": [
+        960,
+        800
+      ],
+      "sha256": "e880ebf3171d4c89fe9db74b62fdc42c47514dd1540a46b6f73020a7835ef4da",
+      "nineSliceInsets": [
+        40,
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "id": "stat-chip",
+      "source": "assets/components/stat-chip.svg",
+      "sourceSha256": "74b67875dcf7f43f9c2177b0ad7b25200f5f79b57055b533c267e968c910b7fa",
+      "resource": "Art/PlayerComponents/stat-chip",
+      "dimensions": [
+        240,
+        64
+      ],
+      "sha256": "087c2823f1afda41f8013523b41dc9d5898ddd353d02e6d3767c899a6338b98b",
+      "nineSliceInsets": [
+        12,
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "id": "aftermath-desktop",
+      "source": "assets/scenes/aftermath-desktop.webp",
+      "sourceSha256": "bca69ee004e94c98f6e051a95a32121644eb35a34ab1fa476f2bb90ee54c9b4c",
+      "resource": "Art/PlayerComponents/aftermath-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "bb33ce25ed04a5810fa7e2e939d3dfd512d0b1d184d52ce8e5771080f8d62e05",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "aftermath-mobile",
+      "source": "assets/scenes/aftermath-mobile.webp",
+      "sourceSha256": "e171130d4fc17ae4f8c8208ec76a61537c7a37cea54cb94d4da9e4273fe46b57",
+      "resource": "Art/PlayerComponents/aftermath-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "7410442a3f5ffe5224a19524b1e5c345df4dc64d40b895f50f92af2004f5899c",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chapel-rest-desktop",
+      "source": "assets/scenes/chapel-rest-desktop.webp",
+      "sourceSha256": "c9ca548404a596d4b0e36b9c0fbc147b7ba9554b6baf640b910d66909c77a14a",
+      "resource": "Art/PlayerComponents/chapel-rest-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "171821646e1f665b0f6ce7f20616e944b9feb890529cf34c3ce713bc500d3a4a",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "chapel-rest-mobile",
+      "source": "assets/scenes/chapel-rest-mobile.webp",
+      "sourceSha256": "76718de5b7a64119f52e8674e9c6e3c445b5bfef99c311fcc791ba218fb8b98b",
+      "resource": "Art/PlayerComponents/chapel-rest-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "96f915514a56def34074cac1a872b4f5f24c3e60f42081db6b00694b8619dc64",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "ruined-courtyard-desktop",
+      "source": "assets/scenes/ruined-courtyard-desktop.webp",
+      "sourceSha256": "d03d005e8ec2cf45008247dd2a92b6248c58af9bb3232fbd6e95b3ba9e70ae97",
+      "resource": "Art/PlayerComponents/ruined-courtyard-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "faf8f03e80a94821603431c66f5342e61ac5285c0021e214148d2da0164dadc1",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "ruined-courtyard-mobile",
+      "source": "assets/scenes/ruined-courtyard-mobile.webp",
+      "sourceSha256": "7163c65a7eab5c5c79aa8e99148db828c96a3b1e2978d30bff8a0ae8e964ee31",
+      "resource": "Art/PlayerComponents/ruined-courtyard-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "63f26074acbce19deab21ff92fd3b5ee4af55a6e8c18deea44b3b87a3d3d304c",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "spoils-desktop",
+      "source": "assets/scenes/spoils-desktop.webp",
+      "sourceSha256": "6974aba3e5f2c4461562e137e517312a7f88b3a6cda34fdedeee45b27da8c79d",
+      "resource": "Art/PlayerComponents/spoils-desktop",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "b9155e715401f2ad47b880f5b34a8821f7b9ab8bba83967029ea94c9566fe890",
+      "nineSliceInsets": null
+    },
+    {
+      "id": "spoils-mobile",
+      "source": "assets/scenes/spoils-mobile.webp",
+      "sourceSha256": "192e4fe26ac4aea5eb149c10853a62314bb89f762549d2b9b9e87438796915d0",
+      "resource": "Art/PlayerComponents/spoils-mobile",
+      "dimensions": [
+        941,
+        1672
+      ],
+      "sha256": "a311c283c6c9a21132ea414453a51e26c7d5787a15a6d9b39966d241050f1eb1",
+      "nineSliceInsets": null
+    }
+  ]
+}

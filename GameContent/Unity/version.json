@@ -1,5 +1,5 @@
 {
-  "Version": "0.0.33.1",
-  "BuildNumber": 35,
-  "Stage": "Intermediate Unity migration; visual parity unaccepted"
+  "Version": "0.0.33.2",
+  "BuildNumber": 36,
+  "Stage": "Player component artwork integration"
 }

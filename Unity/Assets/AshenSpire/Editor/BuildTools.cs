@@ -214,7 +214,7 @@ namespace AshenSpire.Editor
             try
             {
                 UnityEditor.WebGL.UserBuildSettings.codeOptimization = UnityEditor.WebGL.WasmCodeOptimization.BuildTimes;
-                Build(BuildTarget.WebGL, "OwnerAppearance/build43/Web");
+                Build(BuildTarget.WebGL, "OwnerAppearance/build" + ReadVersion().BuildNumber + "/Web");
             }
             finally { UnityEditor.WebGL.UserBuildSettings.codeOptimization = optimization; }
         }
@@ -247,6 +247,8 @@ namespace AshenSpire.Editor
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.template = "PROJECT:Mobile";
+            AssetDatabase.SaveAssets();
+            var sourceBeforeBuild = SourceDigest();
             // Android stores preferences by the unchanged package ID, so its
             // launcher label can use the new name. Windows/Web retain their
             // product storage identity; their visible captions are branded separately.
@@ -272,6 +274,8 @@ namespace AshenSpire.Editor
             // The exporter, rather than a later copy command, records the source it built.
             AssetDatabase.SaveAssets();
             var digest = SourceDigest();
+            if (!string.Equals(sourceBeforeBuild, digest, StringComparison.Ordinal))
+                throw new InvalidOperationException("Game source changed during export. Rebuild the player before creating a source receipt.");
             if (target == BuildTarget.WebGL)
             {
                 WebStagingBuildProcessor.WriteReceipt(report.summary.outputPath);
