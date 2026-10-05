@@ -19,9 +19,14 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
 - [ ] Build 53 (`0.0.33.6`): clear inherited popup height and bound deck filter fields.
   - [x] Runtime reference compilation (169 files); driver/report regression checks pass.
-  - [ ] Unity export, full solo/co-op player checks and delivery.
-  - Source: `d4f77dd`; tools explicitly observe which card is selected and handle
+  - [x] Final Unity export and ZIP verified; 18 final solo browser assertions.
+  - [x] 32 two-browser co-op assertions on the preceding candidate; final change
+    hides the phone heading already hidden in co-op. WebAssembly/framework hashes match.
+  - [x] Screenshots inspected: party combat, tools, deck, rewards and final solo phone layout.
+  - [ ] Public download delivery and download-back verification.
+  - Source: `c393630`; tools explicitly observe which card is selected and handle
     a peer redraw closing the inspector during a Back gesture.
+  - Evidence: [build 53](Unity-Build53-Preview.md). Full migration remains open.
 - [ ] Build 52 (`0.0.33.5`): party phone layout, combat menu and retained inspection selection.
   - [x] Final Unity export from `2b04486`; source digest `6b29f12a4624d7ae60463ef888ff792402b4f7c6f4b5a1b83cb93ff832e010bb` and eight payload hashes verified.
   - [x] Runtime reference compilation (169 files), 23 party presentation-state checks.

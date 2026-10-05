@@ -26,7 +26,11 @@
   - The final change only hides the decorative encounter heading on phones;
     co-op already hid that heading. WebAssembly/framework hashes match the
     tested candidate. The affected solo screens are rechecked separately below.
-- [ ] Desktop/portrait solo checks and screenshot review.
+- [x] Final desktop/portrait solo checks: 18 assertions at 1280x720 and 390x844.
+  - [x] Inspection, payment once, card removal and exact reload/Continue.
+  - [x] Final phone screenshot confirms the decorative heading no longer overlaps intents.
+  - Evidence: `TestResults/PaintedCombat/build53`; exported source `646ee9ea…`.
+  - Combined receipt: `TestResults/HtmlParity/build53/preview-verification.json`.
 - [ ] Download delivery and download-back hash verification.
 - [ ] Current content activation, upstream migration, physical-device and owner acceptance.
 
