@@ -16,6 +16,7 @@ namespace AshenSpire.Domain.Original
         // Published test 898 fans enemy pile operations out to every living seat.
         // Older saves freeze mechanics without this flag and retain their original rules.
         private readonly bool _seatPileEffectsFanOut;
+        private readonly bool _mountedProperties;
         private static readonly HashSet<string> SeatPileOperations = new HashSet<string>(StringComparer.Ordinal)
         { "addCard", "draw", "discard", "exhaust", "shuffleDiscardIntoDraw" };
         private RandomStreams _random;private readonly List<JObject> _enemies=new List<JObject>(),_events=new List<JObject>();
@@ -63,6 +64,7 @@ namespace AshenSpire.Domain.Original
         private JObject[] PreviewEntities() => _seats.Select(s => { var body = s.Core.Player; body["id"] = s.Id; return body; }).Concat(Enemies.OfType<JObject>()).ToArray();
         private OriginalCoopCombat(OriginalContentCatalog catalog,JObject mechanics,Func<string,JObject,JObject> resolve)
         {
+            _mountedProperties=OriginalPropertyCarriers.Enabled(mechanics);
             _catalog=catalog;_mechanics=(JObject)mechanics.DeepClone();_resolve=resolve??throw new ArgumentNullException(nameof(resolve));
             var routing = _mechanics["coop"]?["seatPileEffectsFanOut"];
             _seatPileEffectsFanOut = routing?.Type == JTokenType.Boolean && (bool)routing;
@@ -96,11 +98,38 @@ namespace AshenSpire.Domain.Original
         private string MemberFor(JObject body)=>_seats.FirstOrDefault(s=>ReferenceEquals(s.Core.CoopBody,body))?.Id;
         private void Use(Seat seat,Action<CombatSession> action)
         { _active?.Core.CoopTransferPendingTo(seat.Core);_active=seat;seat.Core.CoopSync(_turn,_phase,_result,_counter);var eventStart=_events.Count;action(seat.Core);_counter=seat.Core.CoopCounter;if(_annotateMembers)foreach(var ev in _events.Skip(eventStart)){if(ev["actorMemberId"]==null)ev["actorMemberId"]=seat.Id;if(new[]{"damageDealt","hpLost","healed"}.Contains((string)ev["type"])&&(string)ev["targetId"]=="player"&&ev["playerId"]==null)ev["playerId"]=seat.Id;} }
+        private void AttachProperties(Seat seat)
+        {
+            if (!_mountedProperties) return;
+            seat.Core.CoopShareProperties(_seats.FirstOrDefault(s=>!ReferenceEquals(s,seat))?.Core,
+                action=>ExecuteOwned(seat,action),DispatchProperties);
+        }
+        private void ExecuteOwned(Seat seat,Action action)
+        {
+            var caller=_active;
+            if (caller!=null) _counter=caller.Core.CoopCounter;
+            _active=seat;seat.Core.CoopSync(_turn,_phase,_result,_counter);
+            try { action(); }
+            finally
+            {
+                _counter=seat.Core.CoopCounter;_active=caller;
+                caller?.Core.CoopSync(_turn,_phase,_result,_counter);
+            }
+        }
+        private void DispatchProperties(CombatSession emitter,JObject ev)
+        {
+            // The pre-foundation upstream rule broadcasts heals. Other events
+            // retain the emitting seat; foundation-wide scheduling is separate.
+            if ((string)ev["type"]=="healed")
+                foreach(var seat in Living()) seat.Core.CoopPropertyHooks(ev,_turn);
+            else emitter.CoopPropertyHooks(ev,_turn);
+        }
         private Seat Add(JObject input,bool initial)
         {
             var id=(string)input["id"];if(string.IsNullOrEmpty(id))throw new ArgumentException("Missing member identity.");
             var seat=new Seat{Id=id,Name=(string)input["name"]??id,ClassId=(string)input["classId"],Input=(JObject)input.DeepClone()};
             seat.Core=new CombatSession(_catalog,_mechanics,_random,input,((JArray)input["deck"]).OfType<JObject>(),_enemies,_events,_gates,c=>_resolve(id,c),id,EndCheck,Find,MemberFor,true);_seats.Add(seat);
+            AttachProperties(seat);
             if(!initial){if(_phase=="player")Use(seat,c=>{c.CoopBeginResources();c.CoopDraw();});Rescale();}return seat;
         }
         private void EndCheck()
@@ -214,6 +243,13 @@ namespace AshenSpire.Domain.Original
             foreach(var enemy in (JArray)snapshot["enemies"])_enemies.Add((JObject)enemy.DeepClone());foreach(var ev in (JArray)snapshot["events"])_events.Add((JObject)ev.DeepClone());foreach(var gate in ((JObject)snapshot["gates"]).Properties())_gates.Add(gate.Name,(JObject)gate.Value.DeepClone());
             foreach(var row in (JArray)snapshot["seats"]){var id=(string)row["id"];if(_seats.Any(s=>s.Id==id))throw new ArgumentException("Duplicate saved member.");var input=(JObject)row["input"].DeepClone();var seat=new Seat{Id=id,Name=(string)row["name"],ClassId=(string)row["classId"],Connected=(bool)row["connected"],Ended=(bool)row["ended"],Input=input};seat.Core=new CombatSession(_catalog,_mechanics,_random,input,Array.Empty<JObject>(),_enemies,_events,_gates,c=>_resolve(id,c),id,EndCheck,Find,MemberFor,false);seat.Core.CoopRestore((JObject)row["combat"]);seat.Core.CoopSync(_turn,_phase,_result,_counter);_seats.Add(seat);}
             _active=_seats.FirstOrDefault(s=>s.Id==(string)snapshot["activeMember"]);
+            if (_mountedProperties)
+            {
+                // Attach in saved seat order to the first restored queue.
+                var first=_seats.FirstOrDefault();
+                foreach(var seat in _seats) seat.Core.CoopShareProperties(ReferenceEquals(seat,first)?null:first.Core,
+                    action=>ExecuteOwned(seat,action),DispatchProperties);
+            }
         }
     }
 }

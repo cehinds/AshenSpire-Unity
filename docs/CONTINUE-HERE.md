@@ -12,37 +12,24 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
-Build 50 is exported and verified: [build 50 preview evidence](Unity-Build50-Preview.md).
-Its source and eight payload hashes match; 42 targeted desktop/portrait player
-assertions pass and representative screenshots were inspected. The next source
-increment is build 51 in `D:/repos/.codex/worktrees/unity-current-rules`, where
-solo property carriers are being integrated. Current-content activation and
-complete migration acceptance remain open.
-
-Build 49 is now a verified Web preview: source/eight payload hashes, archive CRC,
-and 80 desktop/portrait browser assertions pass. Its startup settings choices,
-paintings, settings recovery and combat reload have screenshot review. See
-[build 49 evidence](Unity-Build49-Preview.md). This does not accept the migration.
-
-Build-50 source adds Arcane Buildup fanout, authored flask refills and cross-zone
-card identity protection. Combined new-opcode/ownership checks: 127; full current
-migration suite: 41,047; frozen legacy co-op: 6,587. The 167-file runtime reference
-check and six version checks pass. Current-content activation, property carriers,
-full progression/services/import and a build-50 Unity export remain open.
-
-Build-50 source (`0.0.33.3`) is isolated in
-`D:/repos/.codex/worktrees/unity-current-rules` while build 49 exports from
-`unity-upstream-reconciled`. This increment adds Ward provenance under an
-optional saved rule, one shared-Stamina cost/shortage label, current-rule
-Catch Breath removal and settings-choice controller cancellation. Ward has
-376 focused checks; the final source passes 40,920 migration checks, 10,299
-feedback checks across 1,263 commands, 2,139 cost/presentation checks and the
-167-file reference compile (three documented Unity-6 reference gaps). The Ward
-increment also passed 6,587 frozen legacy co-op checks. It is not an
-exported player and the new content bundle remains inactive.
+- [x] Latest downloadable Web preview: [build 50](https://github.com/cehinds/AshenSpire-Unity/releases/tag/preview-build50), version `0.0.33.3`.
+  - [x] Unity export, source/eight payload hashes and archive verification.
+  - [x] 42 targeted desktop/portrait browser assertions and screenshot inspection.
+  - [x] Public ZIP downloaded back; SHA-256 matches the local package.
+  - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
+- [ ] Build 51 (`0.0.33.4`): [mounted property integration](Unity-Property-Integration.md).
+  - [x] Solo and party carrier derivation, shared FIFO with owning-seat execution,
+    heal recipient routing, saved gates, class/tag predicates and equipment remounting.
+  - [x] 102 focused property checks and 41,149 full migration checks; 169-file runtime reference check.
+  - [ ] Unity export and exported-player validation of this source.
+  - Active source: `D:/repos/.codex/worktrees/unity-current-rules`.
+    Warm export workspace: `D:/repos/.codex/worktrees/unity-upstream-reconciled`.
+- [ ] Full migration: content activation, foundation scheduling/status integration,
+  progression/rewards, classes/books/sideboard, world/services and schema-20 import.
+- [ ] Final platform/device and owner acceptance. No phase is accepted by these checks.
 
 The owner authorized the earlier intermediate merge and rejected visual parity.
-The current increment is being reconciled onto dev `3c7ebff`, including its
+The current increment is reconciled onto dev `3c7ebff`, including its
 controller, settings, import and content-validation fixes. See
 [the prior integration checkpoint](Unity-Integration-Checkpoint.md).
 
@@ -53,10 +40,7 @@ Published HTML test **898** (`0.7.1.898`, digest `1b60c22e01`) remains the froze
 Build 36 below is the archived pre-migration rollback baseline; migration source
 edits do not share its source digest.
 
-The latest compiled preview is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff`
-in `D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its export and 80 player
-checks pass. Active source is build 50 (`0.0.33.3`) in
-`D:/repos/.codex/worktrees/unity-current-rules`; its export remains open. Build 48 exported successfully from the prior checkpoint;
+Historical build 48 exported successfully from the prior checkpoint;
 its source digest `612a0f6d9de3710a0cf1acc21ed783d6765db6ea4666a9c31da49df602666fc0`
 and all eight payload hashes were verified. Its 14 starter-art and 22 settings
 checks passed; actual paintings were visually inspected. Its corrected combat

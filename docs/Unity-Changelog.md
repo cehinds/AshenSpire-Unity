@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.4 · build 51 · 2026-10-05
+
+- Mount current property carriers under saved rules; preserve legacy fights and trigger gates.
+
 ## 0.0.33.3 · build 50 · 2026-10-05
 
 - Track Arcane Ward within existing Block under saved current rules; validate solo/co-op provenance and preserve legacy receipts.

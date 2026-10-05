@@ -13,6 +13,7 @@ namespace AshenSpire.Domain.Original
         private Func<string,JObject> _coopFind;
         private Func<JObject,string> _coopMemberFor;
         private string _coopSeatKey;
+        private Action<CombatSession,JObject> _coopPropertyDispatch;
         internal CombatSession(OriginalContentCatalog content,JObject mechanics,RandomStreams rng,JObject input,IEnumerable<JObject> deck,List<JObject> enemies,List<JObject> events,Dictionary<string,JObject> gates,Func<JObject,JObject> resolver,string seatKey,Action endCheck,Func<string,JObject> find,Func<JObject,string> memberFor,bool initialize)
             :this(content,mechanics,rng,MakePlayer(input),(JObject)(input["attributes"]?.DeepClone()??new JObject()),(JObject)(input["weights"]?.DeepClone()??new JObject()),resolver)
         {
@@ -20,6 +21,7 @@ namespace AshenSpire.Domain.Original
             foreach(var school in new[]{"physical","magic","arcane","holy","fire"})if(_player["damageBySchoolAdd"][school]==null)_player["damageBySchoolAdd"][school]=0;
             if((int?)input["poiseMax"]>0)_player["poiseMeter"]=new JObject{["value"]=0,["max"]=input["poiseMax"].DeepClone()};
             if(!initialize)return;
+            SetupProperties(input);
             if (input["handRules"] != null) _handRules = HandRules.ForClass(HandRules.Validate(input["handRules"]), (string)input["classId"]);
             var cards=deck.Select(c=>(JObject)c.DeepClone()).ToArray();if(cards.Select(c=>(string)c["instanceId"]).Distinct().Count()!=cards.Length||cards.Any(c=>string.IsNullOrEmpty((string)c["instanceId"])))throw new ArgumentException("Duplicate or empty seat card identity.");
             foreach(var card in cards)ValidateEffects(ResolvedCard(card)["effects"]);
@@ -35,10 +37,15 @@ namespace AshenSpire.Domain.Original
         internal void CoopDrain()=>Drain();
         internal void CoopTransferPendingTo(CombatSession destination)
         {
+            if (_coopPropertyDispatch != null) return;
             if(ReferenceEquals(this,destination))return;_context.TransferPendingTo(destination._context);
             foreach(var entry in _metadata)destination._metadata.Add(entry.Key,entry.Value);_metadata.Clear();
             foreach(var entry in _carriers)destination._carriers.Add(entry.Key,entry.Value);_carriers.Clear();
         }
+        internal void CoopShareProperties(CombatSession first,Action<Action> execute,Action<CombatSession,JObject> dispatch)
+        { _context.ShareQueue(first?._context,execute); _coopPropertyDispatch=dispatch; }
+        internal void CoopPropertyHooks(JObject ev,int turn)
+        { _turn=turn; PropertyHooks(ev); }
         internal void CoopQueue(JObject effect,JObject source,JObject target,JObject meta=null)=>Queue(effect,source,source,target,meta);
         internal void CoopHooks(JObject entity,string name)=>OwnerHooks(entity,name);
         internal bool CoopFlag(JObject entity,string name)=>_statuses.Flag(entity,name);
@@ -52,6 +59,7 @@ namespace AshenSpire.Domain.Original
             var saved=Snapshot(); var result=new JObject{["player"]=saved["player"].DeepClone(),["piles"]=saved["piles"].DeepClone(),["catchBreathUses"]=saved["catchBreathUses"].DeepClone()};
             if (_handRules != null) result["handRules"] = _handRules.DeepClone();
             if (_orderedDrawOrder != null) result["orderedDraw"] = saved["orderedDraw"].DeepClone();
+            if (_propertyInput != null) result["propertyInput"] = _propertyInput.DeepClone();
             return result;
         }
         internal void CoopStartTurn()
@@ -79,6 +87,7 @@ namespace AshenSpire.Domain.Original
             var ids=new HashSet<string>();foreach(var pile in _piles.Keys){_piles[pile].Clear();foreach(var card in (JArray)snapshot["piles"][pile]){var copy=(JObject)card.DeepClone();if(!ids.Add((string)copy["instanceId"]))throw new ArgumentException("Duplicate saved seat card.");ResolvedCard(copy);_piles[pile].Add(copy);}}
             _handRules = snapshot["handRules"] == null ? null : HandRules.Validate(snapshot["handRules"]);
             RestoreDrawOrder(snapshot["orderedDraw"]);
+            RestoreProperties(snapshot["propertyInput"]);
             _catchBreathUses=(int?)snapshot["catchBreathUses"]??0;ValidateResources();
         }
     }

@@ -1,5 +1,7 @@
 # AshenedSpire build 50 preview
 
+- [x] [Public preview and downloads](https://github.com/cehinds/AshenSpire-Unity/releases/tag/preview-build50).
+  - [x] Downloaded the public ZIP back and verified its SHA-256.
 - [x] Unity Web export: `0.0.33.3`, build 50, source commit `a0d1628`.
   - [x] Source digest: `68123de7ec5b44a271e2f3a7b2e24ef64a8202c3a0e6b9fd6e140afb6af55df2`.
   - [x] All eight payload hashes, archive CRC and embedded payload hashes verified.

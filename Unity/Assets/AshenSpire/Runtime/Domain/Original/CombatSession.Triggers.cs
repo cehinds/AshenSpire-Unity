@@ -10,7 +10,7 @@ namespace AshenSpire.Domain.Original
 {
     public sealed partial class CombatSession
     {
-        private static readonly string[] PredicateNames = { "inStance", "hasStatus", "hasBlock", "hpBelowPct", "firstCardThisTurn", "firstAttackThisCombat", "cardTypeIs", "eventIsAttack", "eventSourceIsOwner", "eventTargetIsOwner", "eventStatusIs", "everyNthCardThisCombat", "random", "all", "any", "not" };
+        private static readonly string[] PredicateNames = { "inStance", "hasStatus", "hasBlock", "hpBelowPct", "firstCardThisTurn", "firstAttackThisCombat", "cardTypeIs", "cardTagIs", "eventIsAttack", "eventSourceIsOwner", "eventTargetIsOwner", "eventStatusIs", "everyNthCardThisCombat", "random", "all", "any", "not", "healPositive", "manaPositive", "hpDamagePositive", "skillLevelAtLeast", "classLevelAtLeast" };
         private static void ValidatePredicate(JObject predicate)
         {
             if (!PredicateNames.Contains((string)predicate["p"])) throw new NotSupportedException("Unknown native predicate: " + predicate["p"]);
@@ -28,9 +28,20 @@ namespace AshenSpire.Domain.Original
                 case "firstCardThisTurn": return meta?["ordinalThisTurn"] != null ? (int)meta["ordinalThisTurn"] == 1 : Counter("cardsPlayedThisTurn") == 0;
                 case "firstAttackThisCombat": return meta?["attackOrdinal"] != null && meta["attackOrdinal"].Type != JTokenType.Null ? (int)meta["attackOrdinal"] == 1 : Counter("attacksPlayedThisCombat") == 0;
                 case "cardTypeIs": return (string)(card?["type"] ?? ev?["cardType"]) == (string)predicate["type"];
+                case "cardTagIs":
+                    return new[]{card!=null ? card["authoredTags"]??card["tags"] : ev?["cardTags"],card!=null ? card["derivedTags"] : ev?["derivedTags"]}
+                        .OfType<JArray>().Any(tags=>tags.Any(tag=>tag.Type==JTokenType.String && (string)tag==(string)predicate["tag"]));
+                case "healPositive": return (string)ev?["type"] == "healed" && (double?)ev?["amount"] > 0;
+                case "manaPositive": return (string)ev?["type"] == "manaRestored" && (double?)ev?["amount"] > 0;
+                case "hpDamagePositive": return (string)ev?["type"] == "damageDealt" && (double?)ev?["amount"] > (double?)ev?["blocked"];
+                case "skillLevelAtLeast":
+                    return PropertySkillLevel((string)predicate["skill"]) >= (double?)predicate["level"];
+                case "classLevelAtLeast":
+                    if ((bool?)_propertyInput?["classUnequipped"]==true) return false;
+                    return PropertySkillLevel("class:"+((string)owner?["classId"] ?? (string)_player["classId"])) >= (double?)predicate["level"];
                 case "eventIsAttack": return (bool?)ev?["isAttack"] == true;
-                case "eventSourceIsOwner": return ev != null && owner != null && (string)ev["sourceId"] == (string)owner["id"];
-                case "eventTargetIsOwner": return ev != null && owner != null && (string)ev["targetId"] == (string)owner["id"];
+                case "eventSourceIsOwner": return EventOwner(ev,owner,"source");
+                case "eventTargetIsOwner": return EventOwner(ev,owner,"target");
                 case "eventStatusIs": return ev != null && (string)ev["status"] == (string)predicate["status"];
                 case "everyNthCardThisCombat": var ordinal = (int?)meta?["ordinalThisCombat"] ?? Counter("cardsPlayedThisCombat"); var n = CardMechanics.Nonnegative(predicate["n"],"card interval"); if (n == 0) throw new ArgumentException("Card interval must be positive."); return ordinal > 0 && ordinal % n == 0;
                 case "random": return _random.Float("misc") * 100 < (double)predicate["pct"];
@@ -39,6 +50,19 @@ namespace AshenSpire.Domain.Original
                 case "not": return !Predicate((JObject)predicate["pred"],owner,source,target,card,meta,ev);
                 default: throw new NotSupportedException("Unknown native predicate: " + predicate["p"]);
             }
+        }
+        private double PropertySkillLevel(string key)
+        {
+            var value=_propertyInput?["skills"]?[key]?["level"];
+            return value!=null && (value.Type==JTokenType.Integer || value.Type==JTokenType.Float) &&
+                !double.IsInfinity((double)value) && (double)value==Math.Truncate((double)value) ? (double)value : 0;
+        }
+        private bool EventOwner(JObject ev,JObject owner,string side)
+        {
+            if (ev==null || owner==null) return false;
+            if (_coopPropertyDispatch!=null && ev[side+"PlayerId"]?.Type==JTokenType.String)
+                return (string)ev[side+"PlayerId"]==_coopMemberFor(owner);
+            return (string)ev[side+"Id"]==(string)owner["id"];
         }
         private JObject PredicateEntity(string name,JObject owner,JObject source,JObject target)
         { switch(name) { case "player": return _player; case "self": return source ?? owner ?? _player; case "owner": return owner ?? source; case "enemy": case "target": return target; default: throw new ArgumentException("Unknown predicate entity: " + name); } }
@@ -56,6 +80,7 @@ namespace AshenSpire.Domain.Original
                 }
                 var stanceId = (string)_player["stanceId"];
                 if (stanceId != null) { var hooks = _content.Record("stances",stanceId)["hooks"] as JArray ?? new JArray(); for (var i = 0; i < hooks.Count; i++) if ((string)hooks[i]["on"] == eventName) Fire("stance:player:"+stanceId+":"+i,(JObject)hooks[i],_player,ev); }
+                if (_coopPropertyDispatch==null) PropertyHooks(ev); else _coopPropertyDispatch(this,ev);
                 foreach (var entity in AllCombatants()) if (Alive(entity)) foreach (var status in ((JObject)entity["statuses"]).Properties().ToArray())
                 { var hooks = _statuses.Definition(status.Name)["hooks"] as JArray ?? new JArray(); for (var i = 0; i < hooks.Count; i++) if ((string)hooks[i]["on"] == eventName) Fire("status:"+entity["id"]+":"+status.Name+":"+i,(JObject)hooks[i],entity,ev); }
                 foreach (var enemy in _enemies) if (Alive(enemy))
@@ -68,7 +93,8 @@ namespace AshenSpire.Domain.Original
             var state = Gate(key); if ((bool?)trigger["once"] == true && (int)state["fires"] > 0) return false;
             if ((int)state["turn"] != _turn) { state["turn"] = _turn; state["turnFires"] = 0; }
             if (trigger["limitPerTurn"] != null && (int)state["turnFires"] >= (int)trigger["limitPerTurn"]) return false;
-            var target = Find((string)(ev["targetId"] ?? ev["enemyId"]));
+            var target = _coopPropertyDispatch!=null && ev["targetPlayerId"]?.Type==JTokenType.String
+                ? _coopFind((string)ev["targetPlayerId"]) : Find((string)(ev["targetId"] ?? ev["enemyId"]));
             if (trigger["if"] is JObject predicate && !Predicate(predicate,owner,null,target,null,null,ev)) return false;
             state["fires"] = (int)state["fires"] + 1; state["turnFires"] = (int)state["turnFires"] + 1;
             QueueEffects(trigger["do"],owner,owner,target,new JObject { ["event"] = ev.DeepClone() }); return true;
@@ -93,6 +119,6 @@ namespace AshenSpire.Domain.Original
             var unlocked = (JArray)enemy["unlockedMoves"]; foreach (var move in phase["unlockMoves"] as JArray ?? new JArray()) if (!unlocked.Values<string>().Contains((string)move)) unlocked.Add(move.DeepClone());
         }
         private JObject RelicDefinition(string id) => new ItemUpgradeService(_content).ResolveItem("relic/" + id,(int?)_player["itemUpgradeLevels"]?["relic/" + id] ?? 0);
-        private int PassiveSum(string key) => ((JArray)_player["relicIds"]).Sum(id => (int?)RelicDefinition((string)id)["passives"]?[key] ?? 0);
+        private int PassiveSum(string key) => checked(((JArray)_player["relicIds"]).Sum(id => (int?)RelicDefinition((string)id)["passives"]?[key] ?? 0) + (int)OriginalPropertyCarriers.Sum(_propertyMounts,key));
     }
 }

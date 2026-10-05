@@ -96,6 +96,7 @@ namespace AshenSpire.Domain.Original
             foreach (var key in new[] { "hp", "maxHp", "mana", "maxMana", "stamina", "maxStamina" }) nextRun[key] = player[key].DeepClone();
             if (turnBudget) new OriginalTurnStamina(nextRun);
             nextRun["equipmentPoolBonuses"] = new JObject { ["maxHp"] = afterMods["maxHp"].DeepClone(), ["maxMana"] = afterMods["maxMana"].DeepClone(), ["maxStamina"] = afterMods["maxStamina"].DeepClone() };
+            if (OriginalPropertyCarriers.Enabled(_mechanics)) nextBattle["propertyInput"] = OriginalPropertyCarriers.Input(nextRun);
             var events = new JArray(Changed(before, after), new JObject { ["type"] = "armamentSwapped", ["slotId"] = slotId, ["setIndex"] = setIndex, ["cost"] = price["cost"].DeepClone(), ["rule"] = price["ruleId"]?.DeepClone() });
             return new JObject { ["run"] = nextRun, ["combat"] = nextBattle, ["receipt"] = price, ["events"] = events, ["endsTurn"] = (bool?)_cfg["swapEndsTurn"] == true };
         }

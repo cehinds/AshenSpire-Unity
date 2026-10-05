@@ -13,7 +13,7 @@ commit `40c8a45fe951de4f757b2add0811aeeeb7f41fe1`. Test 898 remains the frozen
 oracle baseline; later changes need their own source comparisons and checks.
 Original assets and gameplay are references, not its Markdown governance.
 
-- [ ] Recorded upstream follow-through (build-50 source increment; build 49 export remains isolated).
+- [ ] Recorded upstream follow-through (build-51 source increment; verified build 50 is downloadable).
   - [ ] US: refresh unplayed hands under saved rules.
     - [x] Optional `shuffleHand` rule; solo/co-op Retain, Ethereal and ordinary-card handling.
     - [x] Deterministic shuffle receipts, exact mid-turn restore and absent/false legacy behavior.
@@ -78,6 +78,12 @@ an older monitor entry describes superseded defaults):
     existing entities without provenance remain ordinary Block.
   - [x] Direct `arcaneBuildup` and `otherEnemies`: firing-threshold percentages, immunity/lockout, shared break receipts and exact solo/co-op replay.
   - [ ] Mount current property rules and their passive readers before activating this content.
+    - [x] Build-51 solo/party carrier ownership, heal dispatch, shared FIFO and persisted trigger gates.
+    - [x] Equipment, relic, class/core-tree, companion and sigil hold windows; hit-buildup multiplier.
+    - [x] Class/skill/tag predicates, real equipment swap and two/four-seat reload/rejoin checks: 102.
+    - [ ] Scoped skill-XP readers, location hooks and full foundation scheduling/status behavior.
+    - [ ] Enable and validate the compatible rules/content in an exported player.
+    - Evidence: [property integration](Unity-Property-Integration.md).
   - [ ] Validate stance selection/cancellation and enemy pile-effect fanout in the exported player.
 - [ ] UP-03: XP, claims and reward flow.
   - [x] Pure XP/stat/cost/claim models compared with frozen published-JS oracles.

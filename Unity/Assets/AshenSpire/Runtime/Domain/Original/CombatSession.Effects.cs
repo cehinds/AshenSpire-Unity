@@ -141,7 +141,7 @@ namespace AshenSpire.Domain.Original
             OriginalBlockPresentation.Reconcile(target);
             var damageReceipt = new JObject { ["sourceId"] = source?["id"], ["targetId"] = target["id"], ["amount"] = damage, ["blocked"] = blocked, ["isAttack"] = true };
             if (OriginalBlockPresentation.Enabled(_mechanics) || target.Property("wardBlock") != null) damageReceipt["blockRemaining"] = target["block"];
-            if (OriginalBlockPresentation.Enabled(_mechanics) && _coopMemberFor != null)
+            if ((OriginalBlockPresentation.Enabled(_mechanics) || _coopPropertyDispatch!=null) && _coopMemberFor != null)
             {
                 damageReceipt["sourcePlayerId"] = source == null ? null : _coopMemberFor(source);
                 damageReceipt["targetPlayerId"] = _coopMemberFor(target);
@@ -157,7 +157,7 @@ namespace AshenSpire.Domain.Original
             var mode = (string)config["mode"]; var locked = mode == "configured" && StatusSystem.Stacks(target,(string)config["onBreak"]["status"]) > 0;
             if (mode == "immune" || locked) { Emit("arcaneExposureRefused",new JObject { ["targetId"] = target["id"], ["sourceId"] = source?["id"], ["reason"] = locked ? "locked" : "immune", ["school"] = school, ["attempted"] = perHit }); return; }
             if (mode != "configured") throw new ArgumentException("Unknown Arcane Exposure mode.");
-            var amount = (int)Math.Floor(perHit * mapped * (double)config["buildupMultiplier"]);
+            var amount = (int)Math.Floor(perHit * mapped * (double)config["buildupMultiplier"] * PropertyMultiplier("exposureBuildupMult"));
             AccumulateArcaneExposure(source,target,config,school,amount);
         }
         private void AccumulateArcaneExposure(JObject source,JObject target,JObject config,string school,int amount)
@@ -193,7 +193,7 @@ namespace AshenSpire.Domain.Original
         private void LoseHp(JObject target,int amount,string cause)
         { if (!Alive(target) || amount <= 0) return; target["hp"] = (int)target["hp"] - amount; Emit("hpLost",new JObject { ["targetId"] = target["id"], ["amount"] = amount, ["cause"] = cause }); AfterHpChange(target); }
         private void Heal(JObject target,int amount)
-        { if (!Alive(target)) return; var requested = Math.Max(0,amount); var gained = Math.Min(requested,(int)target["maxHp"] - (int)target["hp"]); target["hp"] = (int)target["hp"] + gained; var receipt = new JObject { ["targetId"] = target["id"], ["amount"] = gained, ["requested"] = requested }; var recipient = _coopMemberFor?.Invoke(target); if (recipient != null) receipt["playerId"] = recipient; Emit("healed",receipt); AfterHpChange(target); }
+        { if (!Alive(target)) return; var requested = Math.Max(0,amount); var gained = Math.Min(requested,(int)target["maxHp"] - (int)target["hp"]); target["hp"] = (int)target["hp"] + gained; var receipt = new JObject { ["targetId"] = target["id"], ["amount"] = gained, ["requested"] = requested }; var recipient = _coopMemberFor?.Invoke(target); if (recipient != null) receipt["playerId"] = recipient; if (_coopPropertyDispatch!=null && recipient!=null) receipt["targetPlayerId"]=recipient; Emit("healed",receipt); AfterHpChange(target); }
         private void AfterHpChange(JObject target)
         { if ((int)target["hp"] <= 0 && Alive(target)) { target["hp"] = 0; target["alive"] = false; if ((string)target["kind"] == "enemy") Emit("enemyDied",new JObject { ["targetId"] = target["id"], ["enemyId"] = target["enemyId"] }); } CheckPhases(); }
         private int? BlockCap(JObject entity)

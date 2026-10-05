@@ -51,6 +51,7 @@ namespace AshenSpire.Domain.Original
         public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null, JObject handRules = null, bool orderedDraw = false)
             : this(content, mechanics, random, MakePlayer(player), (JObject)(player["attributes"]?.DeepClone() ?? new JObject()), (JObject)(player["weights"]?.DeepClone() ?? new JObject()), resolveCard)
         {
+            SetupProperties(player);
             var sourceDeck = deck.Select(c => (JObject)c.DeepClone()).ToList();
             // A solo fight snapshots its hand rules here (web createCombat), with the class's own opening-hand
             // rule (handRules.classStarting) resolved in; null keeps the legacy draw.
@@ -106,11 +107,19 @@ namespace AshenSpire.Domain.Original
             var meta = new JObject { ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = staminaSpent, ["ordinalThisTurn"] = Counter("cardsPlayedThisTurn"), ["ordinalThisCombat"] = Counter("cardsPlayedThisCombat"), ["attackOrdinal"] = null };
             if ((string)definition["type"] == "attack") { Increment("attacksPlayedThisCombat"); meta["attackOrdinal"] = Counter("attacksPlayedThisCombat"); }
             var carrier = new JObject { ["instanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["upgraded"] = instance["upgraded"] ?? false, ["type"] = definition["type"], ["tags"] = definition["cardTags"]?.DeepClone() ?? definition["tags"]?.DeepClone() ?? new JArray(_content.Tags("card",definition)), ["damageSchool"] = instance["damageSchool"] ?? definition["damageSchool"], ["exposureBuildupPerHit"] = instance["exposureBuildupPerHit"] ?? definition["exposureBuildupPerHit"] };
+            if (_propertyInput!=null)
+            {
+                carrier["authoredTags"]=definition["authoredTags"]?.DeepClone() ?? carrier["tags"].DeepClone();
+                carrier["derivedTags"]=definition["derivedTags"]?.DeepClone() ?? new JArray();
+            }
             var selectedEffects = (JArray)definition["effects"].DeepClone();
             foreach (var effect in selectedEffects.OfType<JObject>())
                 if ((string)effect["op"] == "enterStance" && effect["choose"] != null) { effect["stance"] = choice; effect.Remove("choose"); }
             QueueEffects(selectedEffects, _player, _player, target, meta, carrier);
-            Emit("cardPlayed", new JObject { ["cardInstanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["cardType"] = definition["type"], ["targetId"] = target?["id"], ["ordinalThisTurn"] = meta["ordinalThisTurn"], ["ordinalThisCombat"] = meta["ordinalThisCombat"], ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = staminaSpent });
+            var playedReceipt = new JObject { ["cardInstanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["cardType"] = definition["type"], ["targetId"] = target?["id"], ["ordinalThisTurn"] = meta["ordinalThisTurn"], ["ordinalThisCombat"] = meta["ordinalThisCombat"], ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = staminaSpent };
+            if (_propertyInput!=null)
+            { playedReceipt["cardTags"]=carrier["authoredTags"].DeepClone();playedReceipt["derivedTags"]=carrier["derivedTags"].DeepClone(); }
+            Emit("cardPlayed",playedReceipt);
             Drain();
             if (_result == null)
             {
@@ -161,6 +170,7 @@ namespace AshenSpire.Domain.Original
             var saved = new JObject { ["schemaVersion"] = 1, ["seed"] = _random.Seed, ["rng"] = JObject.FromObject(_random.Snapshot()), ["turn"] = _turn, ["phase"] = _phase, ["result"] = _result, ["idCounter"] = _idCounter, ["catchBreathUses"] = _catchBreathUses, ["player"] = _player.DeepClone(), ["attributes"] = _attributes.DeepClone(), ["weights"] = _weights.DeepClone(), ["enemies"] = Enemies, ["piles"] = new JObject(_piles.Select(p => new JProperty(p.Key,new JArray(p.Value.Select(c => c.DeepClone()))))), ["triggerState"] = JObject.FromObject(_triggerState), ["events"] = new JArray(_events.Select(e => e.DeepClone())) };
             // Legacy snapshots omit both keys, and a restored legacy fight keeps the legacy draw.
             if (_handRules != null) { saved["handRules"] = _handRules.DeepClone(); saved["pendingDiscardDraw"] = _pendingDiscardDraw; }
+            if (_propertyInput != null) saved["propertyInput"] = _propertyInput.DeepClone();
             if (_orderedDrawOrder != null) saved["orderedDraw"] = new JObject { ["order"] = new JArray(_orderedDrawOrder) };
             return saved;
         }
@@ -183,6 +193,7 @@ namespace AshenSpire.Domain.Original
                 if (pending != null && (pending.Type != JTokenType.Integer || (long)pending < 0 || (long)pending > 99)) throw new ArgumentException("pendingDiscardDraw must be an integer from 0 to 99");
                 session._pendingDiscardDraw = pending == null ? 0 : (int)pending;
             }
+            session.RestoreProperties(snapshot["propertyInput"]);
             session.RestoreDrawOrder(snapshot["orderedDraw"]);
             session.ValidateResources(); return session;
         }
@@ -199,7 +210,16 @@ namespace AshenSpire.Domain.Original
         private int Counter(string key) => (int?)_player["counters"][key] ?? 0;
         private void Increment(string key) => _player["counters"][key] = checked(Counter(key) + 1);
         private JArray Since(int start) => new JArray(_events.Skip(start).Select(e => e.DeepClone()));
-        private void Emit(string type,JObject payload) => _context.Emit(type,payload);
+        private void Emit(string type,JObject payload)
+        {
+            if (_coopPropertyDispatch!=null)
+            {
+                payload=(JObject)payload.DeepClone();
+                payload["actorMemberId"]=_coopSeatKey;
+                if ((string)payload["sourceId"]=="player" && payload["sourcePlayerId"]==null) payload["sourcePlayerId"]=_coopSeatKey;
+            }
+            _context.Emit(type,payload);
+        }
         private void CardEvent(string type,JObject card,string reason) => Emit(type,new JObject { ["cardInstanceId"] = card["instanceId"], ["cardId"] = card["cardId"], ["reason"] = reason });
         private void Drain() { _context.Drain(); EndCheck(); }
         private void EndCheck()
