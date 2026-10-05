@@ -164,7 +164,7 @@ namespace AshenSpire.Presentation
         private void SetMapSurface(bool visible)
         {
             _mapView?.SetMapSurface?.Invoke(visible);
-            if (!visible) OriginalCombatLayout.SetSurface(_root, false);
+            if (!visible) { CombatChrome.Unmount(_root); OriginalCombatLayout.SetSurface(_root, false); }
             _body.style.flexGrow = visible ? 1 : 0; _body.style.minHeight = 0;
         }
         private void Combat()
