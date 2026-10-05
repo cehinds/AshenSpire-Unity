@@ -27,6 +27,7 @@ components = {'action-neutral', 'action-ready', 'action-selected', 'action-disab
               'mobile-action-tray', 'turn-orb', 'chamber-known', 'chamber-current',
               'chamber-visited', 'chamber-unknown', 'selection-ring'}
 receipt = []
+item_bounds = {}
 template = (root / 'Unity/Assets/AshenSpire/Resources/Art/OwnerAppearance/card-attack.png.meta').read_text()
 for asset in manifest['assets']:
     source = args.kit / asset['file']
@@ -57,11 +58,19 @@ for asset in manifest['assets']:
         meta.write_text(text, encoding='utf-8')
     with Image.open(output) as image:
         dimensions = list(image.size)
+        if is_item:
+            bounds = image.convert('RGBA').getchannel('A').getbbox()
+            if bounds:
+                left, top, right, bottom = bounds
+                item_bounds[name] = [left, top, right - left, bottom - top]
     receipt.append({'id': asset['id'], 'source': asset['file'], 'sourceSha256': source_hash,
                     'resource': 'Art/PlayerComponents/' + name, 'dimensions': dimensions,
                     'sha256': hashlib.sha256(output.read_bytes()).hexdigest(),
                     'nineSliceInsets': asset.get('nineSliceInsets')})
 docs = root / 'docs/art/player-components'
+item_bounds_path = destination / 'item-bounds.json'
+item_bounds_path.write_text(json.dumps(item_bounds, indent=2) + '\n', encoding='utf-8')
+item_bounds_path.with_suffix('.json.meta').write_text('fileFormatVersion: 2\nguid: ' + uuid.uuid5(uuid.NAMESPACE_URL, 'ashen-player-components/item-bounds').hex + '\nTextScriptImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n', encoding='utf-8')
 docs.mkdir(parents=True, exist_ok=True)
 (docs / 'import-receipt.json').write_text(json.dumps({'schema': 1, 'sourceKit': args.kit.name, 'assets': receipt}, indent=2) + '\n', encoding='utf-8')
 for name in ('CREDITS.md', 'SOURCE-CREDITS.md'):

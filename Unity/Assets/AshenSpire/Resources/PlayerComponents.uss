@@ -57,3 +57,4 @@
 .app .original-card.card.owner-card.guided-card { align-self: center; }
 .app .creation-wide .original-card.card.owner-card.guided-card { width: 260px; min-width: 260px; max-width: 260px; }
 .creation-card-preview .creation-step > .caption { -unity-text-align: middle-center; }
+.combat-reframed .original-hand-rail { height: 350px; max-height: 44%; }
