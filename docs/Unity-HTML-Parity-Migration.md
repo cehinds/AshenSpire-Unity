@@ -13,7 +13,22 @@ commit `40c8a45fe951de4f757b2add0811aeeeb7f41fe1`. Test 898 remains the frozen
 oracle baseline; later changes need their own source comparisons and checks.
 Original assets and gameplay are references, not its Markdown governance.
 
-- [ ] Recorded upstream follow-through (build-51 source increment; verified build 50 is downloadable).
+Follow-up monitoring at 2026-10-05 07:24 UTC inspected original build 963,
+`c540cbf7865815046abb5fcd3066486620bd04a8`. These newer changes are recorded
+separately; the monitor did not merge or activate them. Before connecting
+progression, reconcile its superseding rules with the existing frozen-898/913
+models and preserve old saved-rule behavior.
+
+- [ ] New recorded delta, original builds 914–963.
+  - [ ] Character/skill/class caps and revised XP curves; surplus remains banked.
+  - [ ] Card ranks, weighted rank drafts, owned-card rank-up choices and main-effect bonuses.
+  - [ ] Best-track flat bonuses, linked attribute choices and skill-feat claims.
+  - [ ] Blade critical hits: saved rules, per-hit RNG, receipts and co-op ownership.
+  - [ ] Revised Level up doors, current save validation and compiled UI acceptance.
+  - [ ] Compare native map/animation and mobile intent spacing against the newer fixes.
+  - Evidence: latest section of [the upstream assessment](Unity-Upstream-Review.md).
+
+- [ ] Recorded upstream follow-through (build-52 source increment; verified build 50 is downloadable).
   - [ ] US: refresh unplayed hands under saved rules.
     - [x] Optional `shuffleHand` rule; solo/co-op Retain, Ethereal and ordinary-card handling.
     - [x] Deterministic shuffle receipts, exact mid-turn restore and absent/false legacy behavior.
