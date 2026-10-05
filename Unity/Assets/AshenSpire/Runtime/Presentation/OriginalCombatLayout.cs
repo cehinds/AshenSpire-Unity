@@ -86,7 +86,7 @@ namespace AshenSpire.Presentation
                 if (!player && crowded)
                 {
                     var columns=Math.Min(2,enemies.Length-index/2*2);
-                    center=width*(columns==1 ? .72f : .48f+(index%2)*.34f);
+                    center=width*(columns==1 ? .62f : .48f+(index%2)*.34f);
                 }
                 var hound = actor.ClassListContains("owner-hound"); var boss = actor.ClassListContains("owner-colossus");
                 var actorHeight = height * (player ? mobile ? .34f : .46f : hound ? .16f : boss ? .48f : mobile ? .23f : .32f);
@@ -97,7 +97,7 @@ namespace AshenSpire.Presentation
                 else if(!player && enemies.Length>1)maximumWidth=Math.Min(maximumWidth,width*.31f/(enemies.Length-1)*.94f);
                 if (actorWidth > maximumWidth) { actorHeight *= maximumWidth / actorWidth; actorWidth = maximumWidth; }
                 var actorFloor = player ? floor : height * (mobile ? .57f : .60f);
-                if(crowded)actorFloor=height*(player ? .58f : Math.Max(.22f,.50f-index/2*.15f));
+                if(crowded)actorFloor=height*(player ? .57f : Math.Max(.22f,.51f-index/2*.19f));
                 actor.style.left = center - actorWidth / 2; actor.style.top = actorFloor - actorHeight;
                 actor.style.width = actorWidth; actor.style.height = actorHeight;
             }

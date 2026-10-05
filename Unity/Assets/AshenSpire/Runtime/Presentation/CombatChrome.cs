@@ -25,7 +25,9 @@ namespace AshenSpire.Presentation
             Move(prefix+"-pile-draw", "combat-draw", "Draw");
             Move(prefix+"-pile-discard", "combat-discard", "Discard");
             Move(prefix+"-deck", "combat-deck", "Deck");
-            tools.AddToClassList("combat-tools-popup");
+            var toolsEnabled=tools.enabledInHierarchy;
+            tools.AddToClassList("combat-tools-popup"); tools.AddToClassList("combat-chrome");
+            root.Add(tools); tools.SetEnabled(toolsEnabled);
             if (tools is ScrollView scroll)
             {
                 scroll.mode = ScrollViewMode.Vertical;

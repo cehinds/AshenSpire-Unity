@@ -168,7 +168,7 @@
 .coop-combat > #coop-menu { position: absolute; top: 76px; right: 24px; width: 84px; min-width: 0; min-height: 36px; margin: 0; padding: 4px; }
 .coop-combat #coop-end-turn { background-color: #293b1e; border-color: #b8b77c; color: #f1e6c9; -unity-font: resource("Fonts/Cinzel-Regular"); }
 .coop-combat.owner-mobile > #coop-menu { top: 61px; right: 8px; width: 72px; font-size: 11px; }
-.coop-combat.owner-mobile .combat-encounter { top: 106px; }
+.coop-combat.owner-mobile .combat-encounter { display: none; }
 .coop-combat.owner-mobile .original-combat-party { font-size: 11px; }
 .coop-combat.owner-mobile .original-combat-actions { left: 80px; right: 8px; bottom: 8px; width: auto; flex-direction: row; }
 .coop-combat.owner-mobile .original-combat-actions > .button { min-height: 48px; margin: 0 3px; font-size: 12px; white-space: normal; }

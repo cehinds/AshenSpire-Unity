@@ -35,7 +35,7 @@ const combatFeedback = new Map();
    ui.check(targets.every((a,i)=>targets.slice(i+1).every(b=>!intersects(a,b))),'enemy target rectangles do not overlap');
    const end=report.Controls.find(c=>c.Id==='coop-end-turn'),cards=report.Controls.filter(c=>/^coop-card-/.test(c.Id));
    ui.check(cards.every(c=>!intersects(c,end)),'end turn remains clear of the hand');
-   await ui.click('coop-combat-menu');await ui.until(()=>ui.has('coop-flasks'),'party menu exposes flasks');
+   await ui.click('coop-combat-menu');await ui.until(()=>ui.has('coop-flasks'),'party menu exposes flasks');await ui.shot('02a-open-tools');
    await ui.click('coop-combat-menu');await ui.until(()=>!ui.has('coop-flasks'),'party menu closes');
   }
  }

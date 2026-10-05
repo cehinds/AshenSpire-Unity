@@ -482,7 +482,7 @@ namespace AshenSpire.Presentation
         private void Send(JObject intent)
         {
             if (_pending) return;
-            _pending = true; _body.SetEnabled(false); _notice.text = "Waiting for the party host…"; _notice.style.display = DisplayStyle.Flex;
+            _pending = true; _body.SetEnabled(false); _combatTools?.SetEnabled(false); _notice.text = "Waiting for the party host…"; _notice.style.display = DisplayStyle.Flex;
             try { _send((JObject)intent.DeepClone()); } catch (Exception e) { ShowError(e.Message); }
         }
     }
