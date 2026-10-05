@@ -58,6 +58,18 @@ test('a delayed command response never causes a second released command',async()
  assert.deepEqual(result,{accepted:1,cancelled:0,wrong:0,presses:1});
 });
 
+test('a hold that opens card inspection is released without replaying the vanished card',async()=>{
+ const {ui,result}=fixture('hold');
+ ui.controls.Controls[0].Id='native-card-starting:1';
+ const wait=ui.page.waitForTimeout;
+ ui.page.waitForTimeout=async ms=>{
+  await wait(ms);
+  if(ms===140){ui.controls.Controls=[{Id:'native-card-inspection-back',Enabled:true}];ui.layout++;}
+ };
+ await ui.click('native-card-starting:1');
+ assert.deepEqual(result,{accepted:0,cancelled:1,wrong:0,presses:1});
+});
+
 // The creation panel as the driver sees it: Standard (the default) opens on the
 // class preset with nothing unspent; the Assign points mode resets to all 1s with 3.
 function leanFixture(classId='reaver'){

@@ -118,7 +118,12 @@ class NativeUiDriver {
     const old=this.layout;await this.page.mouse.down();await this.page.waitForTimeout(140);await this.frames();
     // Release outside the canvas to cancel a gesture displaced by a peer redraw.
     // Never replay a released game command merely because its response is late.
-    if(!samePoint(point,await pointOf(this,id,fraction))){await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();continue;}
+    if(!samePoint(point,await pointOf(this,id,fraction))){
+     const inspected=card&&this.has(prefix+'-card-inspection-back');
+     await this.page.mouse.move(canvas.x+canvas.width+10,canvas.y);await this.page.mouse.up();
+     if(inspected)return; // The hold already opened inspection; never replay it.
+     continue;
+    }
     await this.page.mouse.up();await this.frames();
     if(change)await this.until(()=>this.layout>old,'response '+id);
     await this.page.waitForTimeout(250);return;
