@@ -130,7 +130,15 @@ namespace AshenSpire.Domain.Original
             var seat=new Seat{Id=id,Name=(string)input["name"]??id,ClassId=(string)input["classId"],Input=(JObject)input.DeepClone()};
             seat.Core=new CombatSession(_catalog,_mechanics,_random,input,((JArray)input["deck"]).OfType<JObject>(),_enemies,_events,_gates,c=>_resolve(id,c),id,EndCheck,Find,MemberFor,true);_seats.Add(seat);
             AttachProperties(seat);
-            if(!initial){if(_phase=="player")Use(seat,c=>{c.CoopBeginResources();c.CoopDraw();});Rescale();}return seat;
+            if(!initial)
+            {
+                if(_phase=="player")Use(seat,c=>{c.CoopBeginResources();c.CoopDraw();});
+                Rescale();
+                // Joining is a complete native command. Draw-triggered property
+                // actions must settle before its next save, like a card play.
+                if(_mountedProperties)Use(seat,c=>c.CoopDrain());
+            }
+            return seat;
         }
         private void EndCheck()
         {

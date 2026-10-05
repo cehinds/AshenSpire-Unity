@@ -147,6 +147,8 @@ internal static class PropertyCarrierChecks
         void Check(bool value,string message){if(!value)throw new Exception(message);checks++;}
         var data=(JObject)content.DeepClone();
         ((JArray)data["companions"]!).Add(JObject.Parse("{id:'healer',propertyTags:['warmth','sealOfPlenty','unsealedScroll','partyGenerated']}"));
+        ((JArray)data["companions"]!).Add(JObject.Parse("{id:'recruit',propertyTags:['joinGuard']}"));
+        ((JArray)data["propertyRules"]!).Add(JObject.Parse("{tag:'joinGuard',triggers:[{on:'cardDrawn',limitPerTurn:1,do:[{op:'block',target:'self',amount:1}]}]}"));
         ((JArray)data["propertyRules"]!).Add(JObject.Parse("{tag:'partyGenerated',triggers:[{on:'healed',once:true,if:{p:'all',preds:[{p:'eventTargetIsOwner'},{p:'healPositive'}]},do:[{op:'addCard',card:'strike',pile:'discard',position:'bottom'}]}]}"));
         var catalog=new OriginalContentCatalog(data.ToString());
         JObject Resolve(string seat,JObject card)
@@ -154,6 +156,7 @@ internal static class PropertyCarrierChecks
             var face=catalog.Record("cards",(string)card["cardId"]!);face["cost"]=0;face["manaCost"]=0;face["staminaCost"]=0;face["keywords"]=new JArray();
             face["effects"]=(string?)card["cardId"]=="defend"
                 ? JArray.Parse("[{op:'heal',target:'ally',amount:3},{op:'block',target:'self',amount:4}]") : new JArray();
+            if((bool?)card["zeroHeal"]==true)face["effects"]![0]!["amount"]=0;
             return face;
         }
         foreach(var size in new[]{2,4})
@@ -189,6 +192,20 @@ internal static class PropertyCarrierChecks
             foreach(var p in players)disconnected.Join(p);
             Check(JToken.DeepEquals(afterReverse,disconnected.Snapshot()),"Host rejoin preserves mounted carriers, generated IDs and gates");
             for(var i=2;i<size;i++)Check((int)Seat(afterReverse,"p"+i)["player"]!["mana"]! == 0,"Uninvolved party seat does not receive another seat's reaction");
+            var zeroPlayers=players.Select(p=>(JObject)p.DeepClone()).ToArray();zeroPlayers[0]["deck"]![0]!["zeroHeal"]=true;
+            var zeroParty=new OriginalCoopCombat(catalog,rules,new RandomStreams(39),zeroPlayers,new[]{"wanderingSoldier"},Resolve);
+            var zeroEvents=zeroParty.Play("p0","p0c0","p1");var zeroState=zeroParty.Snapshot();
+            Check((int)Seat(zeroState,"p1")["player"]!["mana"]! == 0 && (int)Seat(zeroState,"p1")["player"]!["block"]! == 0,"Zero healing pays no positive-heal property");
+            Check(Seat(zeroState,"p1")["piles"]!["hand"]!.Count()==Seat(original,"p1")["piles"]!["hand"]!.Count(),"Zero healing neither draws nor consumes a once gate");
+            zeroParty.Play("p0","p0c1","p1");
+            Check((int)Seat(zeroParty.Snapshot(),"p1")["player"]!["mana"]! == 1,"A later positive heal can still spend the once gate");
+            if(size==2)
+            {
+                var recruit=(JObject)players[0].DeepClone();recruit["id"]="recruit";recruit["companionIds"]=new JArray("recruit");
+                foreach(var card in recruit["deck"]!)card["instanceId"]="recruit"+(string)card["instanceId"]!;
+                party.Join(recruit);
+                Check((int)Seat(party.Snapshot(),"recruit")["player"]!["block"]! == 1,"Joining during a turn drains the new seat's draw-triggered reactions before saving");
+            }
         }
         return checks;
     }
