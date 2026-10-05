@@ -1,0 +1,105 @@
+{
+  "success": true,
+  "sourceDigest": "a269b8d1b67b99a951a84cec4f35646c4382688eaea9841a4eea5772b2c27f8d",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 640
+    },
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "custom": {
+    "success": true,
+    "results": [
+      {
+        "ascension": 0,
+        "mods": [],
+        "checks": 9
+      },
+      {
+        "ascension": 1,
+        "mods": [
+          "toughElites",
+          "lessHealing"
+        ],
+        "checks": 9
+      },
+      {
+        "ascension": 2,
+        "mods": [
+          "deadlyEnemies",
+          "cursedStart"
+        ],
+        "checks": 10
+      },
+      {
+        "ascension": 3,
+        "mods": [
+          "expensiveShops",
+          "bigBosses"
+        ],
+        "checks": 9
+      },
+      {
+        "ascension": 4,
+        "mods": [
+          "allElite",
+          "hoarder"
+        ],
+        "checks": 10
+      },
+      {
+        "ascension": 5,
+        "mods": [
+          "chaosRewards",
+          "glassCannon"
+        ],
+        "checks": 9
+      },
+      {
+        "ascension": 6,
+        "mods": [
+          "endless"
+        ],
+        "checks": 9
+      }
+    ],
+    "ascensions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "modifiers": [
+      "toughElites",
+      "lessHealing",
+      "deadlyEnemies",
+      "cursedStart",
+      "expensiveShops",
+      "bigBosses",
+      "allElite",
+      "hoarder",
+      "chaosRewards",
+      "glassCannon",
+      "endless"
+    ],
+    "fullCampaign": false,
+    "physicalDevice": false
+  },
+  "fullSealedAndDraftCampaign": false,
+  "physicalDevice": false
+}

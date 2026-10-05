@@ -91,6 +91,30 @@ namespace AshenSpire.Application
             if (empty != null) CreateOriginal(empty.Slot);
             else ShowSaveSlots("Every slot holds a climb. Overwrite one, or delete one first.");
         }
+        private void QuickStartOriginal()
+        {
+            var empty = _slotSaves.List().FirstOrDefault(s => s.State == OriginalSaveSlotState.Empty);
+            if (empty == null) { ShowSaveSlots("Every slot holds a climb. Choose a slot before beginning."); return; }
+            if (!TryLoadOriginalProfile()) return;
+            try
+            {
+                var data = _originalContent.Data(); var quick = data["characterCreation"]?["quickStart"] as JObject;
+                var classId = (string)quick?["classId"] ?? "reaver";
+                var mode = (string)quick?["attributeMode"] ?? (string)data["attributeRules"]?["defaultMode"];
+                var progression = new AttributeProgression(OriginalRules("progression")); var mechanics = OriginalRules("mechanics");
+                var creation = new CreationModel(_originalContent,classId,mode,progression);
+                if (!creation.CanBegin) { CreateOriginal(empty.Slot); return; }
+                var player = new OriginalCharacterBuilder(_originalContent,progression,mechanics).Build(creation,meta:_profile.Snapshot());
+                player["runId"] = Guid.NewGuid().ToString("N"); player["profileMeta"] = _profile.Snapshot(); player["keepsakeId"] = (string)quick?["keepsakeId"] ?? "none";
+                var supplemental = OriginalRules("event-choices"); supplemental["mapShapeLimits"] = OriginalRules("custom-run-options")["mapShape"]["limits"].DeepClone();
+                var game = OriginalGameSession.Start(_originalContent,supplemental,mechanics,player,unchecked((uint)DateTime.UtcNow.Ticks));
+                BeginSlot(empty.Slot); BindOriginal(game); RefreshOriginal();
+            }
+            catch (Exception error)
+            { Debug.LogWarning(error.Message); _view.Title(_content,_saves.HasSave,"Quick start could not begin. Your existing climbs are preserved."); }
+        }
+        private void ShowOriginalHistory()
+        { if (TryLoadOriginalProfile()) { _view.Profile(_profile,true); _view.PersistenceNotice(_profileNotice); } }
         // Called when creation commits: an overwritten slot is cleared so its old run is not kept as the new run's backup.
         private void BeginSlot(int slot)
         {

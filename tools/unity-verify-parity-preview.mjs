@@ -1,0 +1,20 @@
+// Verify an isolated Web export without promoting it to a platform candidate.
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
+import {unitySourceDigest} from './unity-source-digest.mjs';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const folder=path.resolve(process.argv[2] || 'Builds/HtmlParity/test898/Web');
+const files=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(path.join(dir,e.name)):[path.join(dir,e.name)]);
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const receipt=read(path.join(folder,'build-source.json'));
+const version=read(path.join(root,'GameContent/Unity/version.json'));
+const digest=unitySourceDigest(['Unity/Assets','Unity/Packages','Unity/ProjectSettings','GameContent/Unity'].flatMap(d=>files(path.join(root,d))).map(p=>path.relative(root,p)),p=>fs.readFileSync(path.join(root,p)));
+assert.equal(receipt.sourceDigest,digest,'Current Unity source differs from this export');
+assert.equal(receipt.version,version.Version); assert.equal(receipt.buildNumber,version.BuildNumber); assert.equal(receipt.target,'Web');
+const actual=files(folder).map(p=>path.relative(folder,p).replaceAll('\\','/')).filter(p=>p!=='build-source.json').sort();
+assert.deepEqual(actual,Object.keys(receipt.files).sort(),'Unreceipted payload');
+for(const [name,hash] of Object.entries(receipt.files)) assert.equal(createHash('sha256').update(fs.readFileSync(path.join(folder,name))).digest('hex'),hash,name);
+console.log(JSON.stringify({version:receipt.version,buildNumber:receipt.buildNumber,sourceDigest:digest,verifiedPayloadFiles:actual.length,exportOnly:true,visualParityVerified:false},null,2));

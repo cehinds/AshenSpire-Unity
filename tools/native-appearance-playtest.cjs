@@ -6,7 +6,7 @@ const{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const{NativeUiDriver,selectedCases}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
- browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const output=path.resolve(process.argv[3]||'TestResults/NativeAppearance');fs.mkdirSync(output,{recursive:true});
  const styles=['animated','rendered','classic','glyph'],tints=['gold','ember','frost','rot','grace'],sigils=['⚔','🛡','🔥','🌙','☀','🐺'];
  const summaries=[],selection=selectedCases(styles.length);
@@ -19,8 +19,10 @@ let browser,ui;
   await ui.open(process.argv[2]);await ui.click('native-new');await ui.useStandard();
   await ui.fill('native-name','Style '+styles[index]);
   // Exercise all original choices through actual dropdown interactions before saving.
-  for(let n=0;n<tints.length;n++)await ui.choose('native-tint',n);
-  for(let n=0;n<sigils.length;n++)await ui.choose('native-sigil',n);
+  if(process.env.AS_APPEARANCE_FOCUSED!=='1'){
+   for(let n=0;n<tints.length;n++)await ui.choose('native-tint',n);
+   for(let n=0;n<sigils.length;n++)await ui.choose('native-sigil',n);
+  }
   await ui.choose('native-tint',index+1);await ui.choose('native-sigil',index+1);await ui.choose('native-sprite-style',(index+1)%styles.length);await ui.choose('native-sprite-style',index);
   const canvas=await page.locator('#unity-canvas').boundingBox();await page.mouse.move(canvas.x+canvas.width*.9,canvas.y+canvas.height*.5);await page.mouse.wheel(0,-5000);await page.waitForTimeout(400);await ui.shot('01-creator-'+styles[index]);
   await ui.fill('native-seed','1');await ui.command('native-begin');
@@ -41,5 +43,5 @@ let browser,ui;
   ui.check(JSON.stringify(ui.state)===saved,'reload preserves exact game state and appearance');ui.check(identity(),'reloaded customization is unchanged');await ui.shot('04-reloaded-'+styles[index]);
   ui.check(ui.errors.length===0,'no browser or Unity errors');fs.writeFileSync(path.join(ui.output,'feedback.json'),JSON.stringify(feedback,null,2));ui.save(true);summaries.push({style:styles[index],checks:ui.checks.length});await context.close();
  }
- fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===styles.length?'all-styles':'case '+selection[0]+'/'+styles.length,styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
+ fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify({passed:true,selection:selection.length===styles.length?'all-styles':'case '+selection[0]+'/'+styles.length,allTintAndSigilChoices:process.env.AS_APPEARANCE_FOCUSED!=='1',styles:summaries,physicalDevice:false},null,2));console.log('Native appearance checks passed: '+summaries.reduce((sum,row)=>sum+row.checks,0));await browser.close();
 })().catch(async error=>{console.error(error);if(ui){ui.errors.push(error.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});

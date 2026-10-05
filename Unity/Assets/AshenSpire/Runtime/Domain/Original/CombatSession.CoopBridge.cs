@@ -20,6 +20,7 @@ namespace AshenSpire.Domain.Original
             foreach(var school in new[]{"physical","magic","arcane","holy","fire"})if(_player["damageBySchoolAdd"][school]==null)_player["damageBySchoolAdd"][school]=0;
             if((int?)input["poiseMax"]>0)_player["poiseMeter"]=new JObject{["value"]=0,["max"]=input["poiseMax"].DeepClone()};
             if(!initialize)return;
+            if (input["handRules"] != null) _handRules = HandRules.ForClass(HandRules.Validate(input["handRules"]), (string)input["classId"]);
             var cards=deck.Select(c=>(JObject)c.DeepClone()).ToArray();if(cards.Select(c=>(string)c["instanceId"]).Distinct().Count()!=cards.Length||cards.Any(c=>string.IsNullOrEmpty((string)c["instanceId"])))throw new ArgumentException("Duplicate or empty seat card identity.");
             foreach(var card in cards)ValidateEffects(ResolvedCard(card)["effects"]);
             var shuffled=_random.Shuffle("shuffle",cards);
@@ -43,31 +44,38 @@ namespace AshenSpire.Domain.Original
         internal bool CoopFlag(JObject entity,string name)=>_statuses.Flag(entity,name);
         internal void CoopDecay(JObject entity)=>_statuses.DecayAtTurnEnd(entity);
         internal void CoopIntents(bool first=false)=>RollIntents(first);
-        internal void CoopDraw()=>Draw((int)_player["drawPerTurn"]);
+        internal void CoopDraw()=>Draw(TurnDrawCount());
         internal double CoopFlaskPower()=>((JArray)_player["relicIds"]).Aggregate(1d,(value,id)=>value*((double?)new ItemUpgradeService(_content).ResolveItem("relic/" + (string)id,(int?)_player["itemUpgradeLevels"]?["relic/" + (string)id] ?? 0)["passives"]?["flaskPowerMult"]??1));
         internal string CoopChargeId(string kind)=>(string)_content.Table("flasks").OfType<JObject>().First(f=>FlaskKind(f)==kind)["id"];
-        internal JObject CoopSnapshot(){var saved=Snapshot();return new JObject{["player"]=saved["player"].DeepClone(),["piles"]=saved["piles"].DeepClone(),["catchBreathUses"]=saved["catchBreathUses"].DeepClone()};}
+        internal JObject CoopSnapshot()
+        {
+            var saved=Snapshot(); var result=new JObject{["player"]=saved["player"].DeepClone(),["piles"]=saved["piles"].DeepClone(),["catchBreathUses"]=saved["catchBreathUses"].DeepClone()};
+            if (_handRules != null) result["handRules"] = _handRules.DeepClone();
+            return result;
+        }
         internal void CoopStartTurn()
         {
             _catchBreathUses=0;_player["counters"]["cardsPlayedThisTurn"]=0;_player["counters"]["staminaSpentThisTurn"]=0;
             if(!_statuses.Flag(_player,"retainBlock"))_player["block"]=0;else{var cap=BlockCap(_player);if(cap.HasValue)_player["block"]=Math.Min((int)_player["block"],cap.Value);}
-            _player["energy"]=_player["energyMax"].DeepClone();Draw((int)_player["drawPerTurn"]);Emit("playerTurnStart",new JObject{["turn"]=_turn,["playerId"]=_coopSeatKey});OwnerHooks(_player,"ownerTurnStart");Drain();
+            BeginResources(true);CoopDraw();Emit("playerTurnStart",new JObject{["turn"]=_turn,["playerId"]=_coopSeatKey});OwnerHooks(_player,"ownerTurnStart");Drain();
         }
         internal void CoopEndTurn()
         {
             Emit("playerTurnEnd",new JObject{["turn"]=_turn,["playerId"]=_coopSeatKey});OwnerHooks(_player,"ownerTurnEnd");Drain();if(_result!=null)return;
-            _statuses.DecayAtTurnEnd(_player);var wallet=Wallet();var before=(int)_player["stamina"];wallet.EndTurn();CopyWallet(wallet);
-            if((int)_player["stamina"]!=before)Emit("staminaRecovered",new JObject{["amount"]=(int)_player["stamina"]-before,["reason"]="idle",["playerId"]=_coopSeatKey});
+            _statuses.DecayAtTurnEnd(_player);EndResources(true);
             _player["counters"]["staminaSpentThisTurn"]=0;var exhaust=new List<JObject>();var discard=new List<JObject>();
-            foreach(var card in _piles["hand"].ToArray()){var fate=CardMechanics.EndTurnFate(CardMechanics.FromDefinition(ResolvedCard(card)));if(fate=="keep")continue;_piles["hand"].Remove(card);(fate=="exhaust"?exhaust:discard).Add(card);}
-            foreach(var card in exhaust){_piles["exhaust"].Add(card);CardEvent("cardExhausted",card,"ethereal");}foreach(var card in discard){_piles["discard"].Add(card);CardEvent("cardDiscarded",card,"turnEnd");}_player["energy"]=0;Drain();
+            foreach(var card in _piles["hand"].ToArray()){var fate=EndTurnCardFate(card);if(fate=="keep")continue;_piles["hand"].Remove(card);(fate=="exhaust"?exhaust:discard).Add(card);}
+            if ((string)_handRules?["overflow"] == "discard")
+                foreach (var card in _piles["hand"].Skip(HandMaximum).ToArray())
+                { _piles["hand"].Remove(card); _piles["discard"].Add(card); CardEvent("cardDiscarded", card, "turnEnd"); }
+            foreach(var card in exhaust){_piles["exhaust"].Add(card);CardEvent("cardExhausted",card,"ethereal");}ReturnUnplayedCards(discard);WriteEnergy(0);Drain();
         }
         internal void CoopRestore(JObject snapshot)
         {
             _player.RemoveAll();foreach(var p in ((JObject)snapshot["player"]).Properties())_player[p.Name]=p.Value.DeepClone();
             var ids=new HashSet<string>();foreach(var pile in _piles.Keys){_piles[pile].Clear();foreach(var card in (JArray)snapshot["piles"][pile]){var copy=(JObject)card.DeepClone();if(!ids.Add((string)copy["instanceId"]))throw new ArgumentException("Duplicate saved seat card.");ResolvedCard(copy);_piles[pile].Add(copy);}}
-            _catchBreathUses=(int?)snapshot["catchBreathUses"]??0;Wallet();
+            _handRules = snapshot["handRules"] == null ? null : HandRules.Validate(snapshot["handRules"]);
+            _catchBreathUses=(int?)snapshot["catchBreathUses"]??0;ValidateResources();
         }
     }
 }
-

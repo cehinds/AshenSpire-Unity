@@ -10,7 +10,7 @@ namespace AshenSpire.Domain.Original
 {
     public sealed partial class CombatSession
     {
-        private static readonly string[] CombatOperations = { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger" };
+        private static readonly string[] CombatOperations = { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "restoreStamina", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger" };
         private void ValidateEffects(JToken effects)
         {
             foreach (var token in effects as JArray ?? new JArray())
@@ -73,7 +73,18 @@ namespace AshenSpire.Domain.Original
                         var pile = _piles[pileName]; var position = (string)effect["position"] ?? "random"; pile.Insert(position == "top" ? 0 : position == "bottom" ? pile.Count : _random.Int("shuffle",0,pile.Count),card);
                     }
                     break;
-                case "gainEnergy": var energy = Math.Max(0,Number(effect["amount"],1,action,null,meta)); _player["energy"] = checked((int)_player["energy"] + energy); Emit("energyGained",new JObject { ["amount"] = energy }); break;
+                case "gainEnergy": var energy = Math.Max(0,Number(effect["amount"],1,action,null,meta)); WriteEnergy(checked((int)_player["energy"] + energy)); Emit("energyGained",new JObject { ["amount"] = energy }); break;
+                case "restoreStamina":
+                    foreach (var target in Targets(action,(string)effect["target"]))
+                    {
+                        var before = CardMechanics.Nonnegative(target["stamina"], "target Stamina");
+                        var maximum = CardMechanics.Nonnegative(target["maxStamina"], "target Stamina capacity");
+                        var recovered = Math.Max(0, Math.Min(maximum - before, Math.Max(0, Number(effect["amount"],1,action,target,meta))));
+                        if (UsesTurnStamina && (string)target["kind"] == "player") new OriginalTurnStamina(target).Write("stamina", checked(before + recovered));
+                        else target["stamina"] = checked(before + recovered);
+                        Emit("staminaRecovered",new JObject { ["targetId"] = target["id"], ["amount"] = recovered, ["reason"] = "effect" });
+                    }
+                    break;
                 case "restoreMana":
                     var mana = Math.Max(0,Number(effect["amount"],1,action,null,meta)); foreach (var target in Targets(action,(string)effect["target"])) { var before = (int?)target["mana"] ?? throw new ArgumentException("Target has no mana pool."); target["mana"] = Math.Min((int)target["maxMana"],checked(before + mana)); Emit("manaRestored",new JObject { ["targetId"] = target["id"], ["amount"] = (int)target["mana"] - before }); } break;
                 case "loseHp": foreach (var target in Targets(action,(string)effect["target"])) LoseHp(target,Number(effect["amount"],0,action,target,meta),(string)effect["cause"] ?? "effect"); break;

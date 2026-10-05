@@ -17,7 +17,7 @@ using UnityEngine.UIElements;
 
 namespace AshenSpire.Presentation
 {
-    public sealed class OriginalFoundationPanel
+    public sealed partial class OriginalFoundationPanel
     {
         private readonly VisualElement _root;
         private VisualElement _target;
@@ -46,7 +46,7 @@ namespace AshenSpire.Presentation
             });
             _progression = progression; _builder = new OriginalCharacterBuilder(catalog, progression, mechanics); _start = start;
             _profileMeta = (JObject)(profile?.DeepClone() ?? new JObject());
-            _creation = new CreationModel(catalog, "reaver", (string)catalog.Data()["attributeRules"]["defaultMode"], progression);
+            _creation = new CreationModel(catalog, "reaver", "leanStandard", progression);
             Creation();
         }
         private void Header(string title)
@@ -64,6 +64,7 @@ namespace AshenSpire.Presentation
         }
         private void Creation()
         {
+            if (_start != null) { GuidedCreation(); return; }
             Header("Prepare your Forsaken");
             _root.AddToClassList("original-creation"); _root.EnableInClassList("creation-wide", _root.contentRect.width >= 850);
             var hero = _catalog.Record("classes", _creation.ClassId);

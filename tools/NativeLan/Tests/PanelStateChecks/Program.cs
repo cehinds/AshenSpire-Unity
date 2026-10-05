@@ -5,13 +5,17 @@ JObject Card(string id,bool friendly=false)=>new(){["instance"]=new JObject{["in
 var view=new JObject{["actNumber"]=1,["cursorId"]="a1",["local"]=new JObject{["id"]="p1",["run"]=new JObject{["runId"]="run1"},["hand"]=new JArray(Enumerable.Range(0,9).Select(i=>Card("c"+i))),["catchup"]=new JArray()},["scene"]=new JObject{["kind"]="combat",["enemies"]=new JArray(new JObject{["id"]="e1",["alive"]=true},new JObject{["id"]="e2",["alive"]=true})}};
 var frozen=view.DeepClone();var ui=new CoopPanelState();ui.Reconcile(view);ui.SelectedCard="c8";ui.Target="e2";ui.HandPage=2;ui.Surface="deck";ui.Reconcile(view);
 Check(ui.SelectedCard=="c8"&&ui.Target=="e2"&&ui.HandPage==2&&ui.Surface=="deck","peer update retains card target page deck");Check(JToken.DeepEquals(view,frozen),"UI never mutates game view");
+ui.HostileTarget="e2"; ui.Reconcile(view); Check(ui.HostileTarget=="e2","living hostile memory survives a peer revision");
 view["scene"]!["turn"]=2;ui.Reconcile(view);Check(ui.SelectedCard=="c8","turn change preserves retained card");
 view["scene"]!["enemies"]![1]!["alive"]=false;ui.Reconcile(view);Check(ui.Target==null,"dead target forgotten");
+Check(ui.HostileTarget==null,"dead hostile memory forgotten");
 ((JArray)view["local"]!["hand"]!).RemoveAt(8);ui.Reconcile(view);Check(ui.SelectedCard==null&&ui.HandPage==1,"removed card cleared and page clamped");
 ui.Surface="equipment";ui.Reconcile(view);Check(ui.Surface=="equipment","equipment stays open");
 ui.SelectedCard="c0";ui.Target="p2";view["local"]!["hand"]![0]=Card("c0",true);ui.Reconcile(view);Check(ui.Target=="p2","legal ally retained");
+ui.HostileTarget="e1"; ui.Reconcile(view); Check(ui.HostileTarget=="e1"&&ui.Target=="p2","friendly selection retains separate hostile memory");
 view["local"]!["hand"]![0]!["targets"]!["legalIds"]=new JArray();ui.Reconcile(view);Check(ui.Target==null,"no longer legal ally cleared");
 view["scene"]!["kind"]="rewards";view["scene"]!["offers"]=new JObject{["p1"]=new JObject{["cards"]=new JArray("reward1")}};ui.Reconcile(view);Check(ui.Surface=="main"&&ui.SelectedCard==null&&ui.HandPage==0,"new scene resets presentation");
+Check(ui.HostileTarget==null,"new room resets hostile memory");
 ui.RewardCard="reward1";ui.TakeRelic=false;ui.TakeFlask=true;ui.Reconcile(view);Check(ui.RewardCard=="reward1"&&!ui.TakeRelic&&ui.TakeFlask,"peer reward update retains selection and toggles");
 view["scene"]!["offers"]!["p1"]!["cards"]=new JArray();ui.Reconcile(view);Check(ui.RewardCard==null,"removed reward cleared");
 ui.Surface="deck";view["cursorId"]="a2";ui.Reconcile(view);Check(ui.Surface=="main"&&ui.TakeRelic&&!ui.TakeFlask,"same-kind next room resets");

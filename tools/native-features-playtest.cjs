@@ -4,8 +4,8 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const {NativeUiDriver}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
- browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
- const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2});
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ const page=await browser.newPage({viewport:{width:Number(process.env.ASHENSPIRE_PLAYTEST_WIDTH||390),height:Number(process.env.ASHENSPIRE_PLAYTEST_HEIGHT||844)},deviceScaleFactor:2});
  ui=new NativeUiDriver(page,path.resolve(process.argv[3]||'TestResults/NativeFeatures'));
  await ui.open(process.argv[2]);await ui.click('native-new');ui.check(ui.has('native-begin'),'the Standard preset can begin at once (owner, 2026-09-24)');
  await ui.click('foundation-mode-lean');ui.check(!ui.has('native-begin'),'Assign points: unspent points cannot start a run');
@@ -50,6 +50,13 @@ let browser,ui;
    await ui.command('native-rest');
   }else if(s.phase==='Shop'){
    if(!shop){const buy=ui.controls.Controls.find(c=>c.Enabled&&c.Id.startsWith('native-buy-relics-'))||ui.controls.Controls.find(c=>c.Enabled&&c.Id.startsWith('native-buy-flasks-'));ui.check(!!buy,'merchant offers an affordable item');const before=s.run.cinders;await ui.command(buy.Id);ui.check(ui.state.run.cinders<before,'merchant purchase spends cinders');
+    const purchased=JSON.stringify(ui.state);
+    for(const visible of [false,true]){
+     await ui.click('native-menu');await ui.click('settings');await ui.click('merchant-buy-back',false);
+     await ui.click('settings-section-6',false);await ui.click('back');await ui.command('native-continue');
+     ui.check(JSON.stringify(ui.state)===purchased,'merchant display preference preserves purchased inventory and prices: '+visible);
+     ui.check(ui.controls.Controls.some(c=>c.Enabled&&c.Id.startsWith('native-sell-'))===visible,'merchant buy-back visibility follows preference: '+visible);
+    }
     const sale=ui.controls.Controls.find(c=>c.Enabled&&c.Id.startsWith('native-sell-'));ui.check(!!sale,'purchased item can be offered for resale');const purse=ui.state.run.cinders;await ui.command(sale.Id);ui.check(ui.state.run.cinders>purse,'resale returns actual cinders');await ui.shot('04-merchant-resale');shop=true;}
    await ui.command('native-shop-leave');
   }else if(s.phase==='Event'){const choice=ui.controls.Controls.filter(c=>c.Enabled&&c.Id.startsWith('native-choice-'));const safe=choice.find(c=>/leave|decline|ignore|walk|refuse/.test(c.Id))||choice[choice.length-1];await ui.command(safe.Id);}

@@ -1,0 +1,23 @@
+{
+  "buildNumber": 36,
+  "version": "0.0.30.5",
+  "ownerLocalDate": "2026-10-03",
+  "interruptedAndroidExport": {
+    "lastStage": "Gradle assembleRelease",
+    "priorEditorAndGradleProcessesPresentAtRecovery": false,
+    "priorAndroidReceiptBuildNumber": 35,
+    "originalLogPreserved": "Builds/PlatformCandidates/build36-20261003/Android-build.log",
+    "recoveryLog": "Builds/PlatformCandidates/build36-20261003/Android-recovery-build.log",
+    "webAndWindowsRebuilt": false
+  },
+  "androidDeviceInventory": {
+    "command": "pinned Unity Android SDK adb devices -l",
+    "connectedDevices": 0,
+    "readyDevices": 0,
+    "unauthorizedDevices": 0,
+    "offlineDevices": 0
+  },
+  "physicalDeviceTested": false,
+  "physicalControllerTested": false,
+  "ownerAccepted": false
+}

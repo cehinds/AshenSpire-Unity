@@ -43,7 +43,10 @@ namespace AshenSpire.Domain.Original
         public JObject HandRulesSnapshot => (JObject)_handRules?.DeepClone();
         public int HandCapacity => HandMaximum;
         public JObject ResolvedCard(JObject instance) => (JObject)_resolveCard((JObject)instance.DeepClone()).DeepClone();
-        public JObject CardCost(JObject instance) => CardMechanics.CostProfile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass());
+        public JObject CardCost(JObject instance) => UsesTurnStamina
+            ? OriginalCardPayment.Profile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass())
+            : CardMechanics.CostProfile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass());
+        public JObject CardChoice(JObject instance) => new OriginalCardChoices(_content.Table("stances")).Plan(ResolvedCard(instance), (string)_player["classId"], (string)_player["stanceId"]);
         public JObject WeightClass() => (JObject)_weightSystem.Compute((int?)_attributes["constitution"] ?? 10, (int?)_attributes["strength"] ?? 10, _weights)["weightClass"];
         public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null, JObject handRules = null)
             : this(content, mechanics, random, MakePlayer(player), (JObject)(player["attributes"]?.DeepClone() ?? new JObject()), (JObject)(player["weights"]?.DeepClone() ?? new JObject()), resolveCard)
@@ -77,34 +80,38 @@ namespace AshenSpire.Domain.Original
             _content = content ?? throw new ArgumentNullException(nameof(content)); _mechanics = (JObject)mechanics.DeepClone(); _balance = (JObject)content.Data()["balance"];
             _random = random ?? throw new ArgumentNullException(nameof(random)); _resolveCard = resolveCard ?? throw new ArgumentNullException(nameof(resolveCard));
             _player = player; _attributes = attributes; _weights = weights; _weightSystem = new WeightSystem(mechanics);
+            if (UsesTurnStamina) { new OriginalTurnStamina(_player); OriginalTurnStamina.Validate(_player); }
             foreach (var pile in new[] { "draw", "hand", "discard", "exhaust", "sealed", "removed" }) _piles[pile] = new List<JObject>();
             _context = new CombatContext(content, _player, _enemies); _statuses = new StatusSystem(_context);
             foreach (var op in CombatOperations) _context.Register(op, Execute);
             _context.Register("__script", Execute);
             _context.Emitted += OnEvent;
         }
-        public JArray PlayCard(string instanceId, string targetId = null)
+        public JArray PlayCard(string instanceId, string targetId = null, string choice = null)
         {
             RequirePlayerTurn(); var start = _events.Count;
             var instance = _piles["hand"].FirstOrDefault(c => (string)c["instanceId"] == instanceId) ?? throw new ArgumentException("Card is not in hand: " + instanceId);
             var definition = ResolvedCard(instance); var view = CardMechanics.FromDefinition(definition);
+            OriginalCardChoices.Assert(CardChoice(instance), choice);
             if (CardMechanics.HasProperty(view,"internal.unplayable")) throw new ArgumentException("Card is unplayable: " + instance["cardId"]);
             ValidateEffects(definition["effects"]);
             var target = targetId == null ? null : Find(targetId);
             if (targetId != null && !Alive(target)) throw new ArgumentException("Target is not alive: " + targetId);
             if (target == null && ((JArray)definition["effects"]).Any(e => (string)e["target"] == "enemy")) target = _enemies.FirstOrDefault(Alive) ?? throw new ArgumentException("No living enemy.");
             var profile = CardCost(instance); var cost = (bool)profile["variable"] ? (int)_player["energy"] : (int)profile["action"];
-            var wallet = Wallet(); if (!wallet.TryPayProfile(profile, true, (bool)profile["variable"] ? (int?)cost : null)) throw new ArgumentException("Insufficient actions, mana or stamina.");
-            CopyWallet(wallet);
+            var staminaSpent = PayCard(profile, cost);
             if (cost > 0 || (bool)profile["variable"]) Emit("energySpent", new JObject { ["amount"] = cost });
             if ((int)profile["mana"] > 0) Emit("manaSpent", new JObject { ["amount"] = profile["mana"] });
-            if ((int)profile["stamina"] > 0) Emit("staminaSpent", new JObject { ["amount"] = profile["stamina"] });
+            if (staminaSpent > 0) Emit("staminaSpent", new JObject { ["amount"] = staminaSpent });
             _piles["hand"].Remove(instance); Increment("cardsPlayedThisTurn"); Increment("cardsPlayedThisCombat");
-            var meta = new JObject { ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = profile["stamina"], ["ordinalThisTurn"] = Counter("cardsPlayedThisTurn"), ["ordinalThisCombat"] = Counter("cardsPlayedThisCombat"), ["attackOrdinal"] = null };
+            var meta = new JObject { ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = staminaSpent, ["ordinalThisTurn"] = Counter("cardsPlayedThisTurn"), ["ordinalThisCombat"] = Counter("cardsPlayedThisCombat"), ["attackOrdinal"] = null };
             if ((string)definition["type"] == "attack") { Increment("attacksPlayedThisCombat"); meta["attackOrdinal"] = Counter("attacksPlayedThisCombat"); }
             var carrier = new JObject { ["instanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["upgraded"] = instance["upgraded"] ?? false, ["type"] = definition["type"], ["tags"] = definition["cardTags"]?.DeepClone() ?? definition["tags"]?.DeepClone() ?? new JArray(_content.Tags("card",definition)), ["damageSchool"] = instance["damageSchool"] ?? definition["damageSchool"], ["exposureBuildupPerHit"] = instance["exposureBuildupPerHit"] ?? definition["exposureBuildupPerHit"] };
-            QueueEffects(definition["effects"], _player, _player, target, meta, carrier);
-            Emit("cardPlayed", new JObject { ["cardInstanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["cardType"] = definition["type"], ["targetId"] = target?["id"], ["ordinalThisTurn"] = meta["ordinalThisTurn"], ["ordinalThisCombat"] = meta["ordinalThisCombat"], ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = profile["stamina"] });
+            var selectedEffects = (JArray)definition["effects"].DeepClone();
+            foreach (var effect in selectedEffects.OfType<JObject>())
+                if ((string)effect["op"] == "enterStance" && effect["choose"] != null) { effect["stance"] = choice; effect.Remove("choose"); }
+            QueueEffects(selectedEffects, _player, _player, target, meta, carrier);
+            Emit("cardPlayed", new JObject { ["cardInstanceId"] = instance["instanceId"], ["cardId"] = instance["cardId"], ["cardType"] = definition["type"], ["targetId"] = target?["id"], ["ordinalThisTurn"] = meta["ordinalThisTurn"], ["ordinalThisCombat"] = meta["ordinalThisCombat"], ["energySpent"] = cost, ["manaSpent"] = profile["mana"], ["staminaSpent"] = staminaSpent });
             Drain();
             if (_result == null)
             {
@@ -122,18 +129,18 @@ namespace AshenSpire.Domain.Original
             RequirePlayerTurn(); var chosen = ValidateDiscardChoice(discardIds); var start = _events.Count;
             Emit("playerTurnEnd", new JObject { ["turn"] = _turn }); OwnerHooks(_player,"ownerTurnEnd"); Drain(); if (_result != null) return Since(start);
             _statuses.DecayAtTurnEnd(_player);
-            var wallet = Wallet(); var before = (int)_player["stamina"]; wallet.EndTurn(); CopyWallet(wallet);
-            if ((int)_player["stamina"] != before) Emit("staminaRecovered", new JObject { ["amount"] = (int)_player["stamina"] - before, ["reason"] = "idle" });
+            EndResources(false);
             ApplyDiscardChoice(chosen);
             var exhaust = new List<JObject>(); var discard = new List<JObject>();
             foreach (var card in _piles["hand"].ToArray()) { var fate = EndTurnCardFate(card); if (fate == "keep") continue; _piles["hand"].Remove(card); (fate == "exhaust" ? exhaust : discard).Add(card); }
             foreach (var card in exhaust) { _piles["exhaust"].Add(card); CardEvent("cardExhausted",card,"ethereal"); }
-            foreach (var card in discard) { _piles["discard"].Add(card); CardEvent("cardDiscarded",card,"turnEnd"); }
-            _player["energy"] = 0; Drain(); if (_result != null) return Since(start);
+            ReturnUnplayedCards(discard);
+            WriteEnergy(0); Drain(); if (_result != null) return Since(start);
             EnemyTurn(); if (_result == null) { RollIntents(); StartPlayerTurn(); } return Since(start);
         }
         public JArray CatchBreath()
         {
+            if (UsesTurnStamina) throw new NotSupportedException("This ruleset restores Stamina through card effects.");
             RequirePlayerTurn(); var config = _mechanics["stamina"]?["catchBreath"] as JObject ?? throw new NotSupportedException("Catch Breath is not enabled in this ruleset.");
             var cost = CardMechanics.Nonnegative(config["actionCost"], "Catch Breath action cost"); var recovery = CardMechanics.Nonnegative(config["recovery"], "Catch Breath recovery"); var limit = CardMechanics.Nonnegative(config["usesPerTurn"], "Catch Breath limit");
             if (recovery == 0 || _catchBreathUses >= limit || (int)_player["stamina"] >= (int)_player["maxStamina"]) throw new ArgumentException("Catch Breath is unavailable.");
@@ -145,7 +152,7 @@ namespace AshenSpire.Domain.Original
         {
             _turn++; _phase = "player"; _catchBreathUses = 0; _player["counters"]["cardsPlayedThisTurn"] = 0;
             if (!_statuses.Flag(_player,"retainBlock")) _player["block"] = 0; else { var cap = BlockCap(_player); if (cap.HasValue) _player["block"] = Math.Min((int)_player["block"],cap.Value); }
-            var wallet = Wallet(); wallet.BeginTurn((int)_player["energyMax"]); CopyWallet(wallet); Draw(TurnDrawCount());
+            BeginResources(false); Draw(TurnDrawCount());
             Emit("playerTurnStart",new JObject { ["turn"] = _turn }); OwnerHooks(_player,"ownerTurnStart"); Drain();
         }
         public JObject Snapshot()
@@ -159,6 +166,7 @@ namespace AshenSpire.Domain.Original
         public static CombatSession Restore(OriginalContentCatalog content, JObject mechanics, JObject snapshot, Func<JObject,JObject> resolveCard)
         {
             if ((int?)snapshot["schemaVersion"] != 1 || !new[] { "player", "enemy", "ended" }.Contains((string)snapshot["phase"])) throw new ArgumentException("Unsupported combat snapshot.");
+            if (OriginalTurnStamina.Enabled(mechanics)) OriginalTurnStamina.Validate((JObject)snapshot["player"]);
             var random = new RandomStreams((uint)snapshot["seed"], ((JObject)snapshot["rng"]).ToObject<Dictionary<string,uint>>());
             var session = new CombatSession(content,mechanics,random,(JObject)snapshot["player"].DeepClone(),(JObject)snapshot["attributes"].DeepClone(),(JObject)snapshot["weights"].DeepClone(),resolveCard);
             session._turn = CardMechanics.Nonnegative(snapshot["turn"],"turn"); session._phase = (string)snapshot["phase"]; session._result = (string)snapshot["result"]; session._idCounter = CardMechanics.Nonnegative(snapshot["idCounter"],"instance counter"); session._catchBreathUses = CardMechanics.Nonnegative(snapshot["catchBreathUses"],"Catch Breath uses");
@@ -174,7 +182,7 @@ namespace AshenSpire.Domain.Original
                 if (pending != null && (pending.Type != JTokenType.Integer || (long)pending < 0 || (long)pending > 99)) throw new ArgumentException("pendingDiscardDraw must be an integer from 0 to 99");
                 session._pendingDiscardDraw = pending == null ? 0 : (int)pending;
             }
-            session.Wallet(); return session;
+            session.ValidateResources(); return session;
         }
         private static JObject MakePlayer(JObject input)
         {

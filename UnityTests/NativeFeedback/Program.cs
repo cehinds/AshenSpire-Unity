@@ -76,6 +76,15 @@ var breath = new CombatSession(catalog, liveMechanics, new RandomStreams((uint)b
 var breathEvents = breath.CatchBreath(); Verify(breathEvents, "authored Catch Breath"); commands++;
 Check(NativeFeedbackProjection.FromEvents(breathEvents).CueId == "heal", "Catch Breath recovery cue");
 Check(NativeFeedbackProjection.FromEvents(new JArray()) == null, "empty silent");
+var peerEvents = JArray.Parse("[{type:'damageDealt',sourceId:'player',targetId:'e1',actorMemberId:'peer',amount:7},{type:'hpLost',targetId:'e1',actorMemberId:'peer',amount:7},{type:'hpLost',targetId:'player',playerId:'peer',amount:3}]");
+var peerFeedback = NativeFeedbackProjection.FromCoopEvents(peerEvents, "self");
+Check(peerFeedback.Outcome.Damage == 7 && peerFeedback.Outcome.Hurt == 0 && !peerFeedback.AnimatePlayer && peerFeedback.EnemyTargetId == "e1", "co-op: peer attacks never animate this seat or attribute its health loss");
+var ownFeedback = NativeFeedbackProjection.FromCoopEvents(peerEvents, "peer");
+Check(ownFeedback.AnimatePlayer && ownFeedback.CueId == "attack" && ownFeedback.Outcome.Hurt == 3, "co-op: local attack and self-cost keep actual receipt values");
+Check((string)peerEvents[0]["sourceId"] == "player", "co-op: projection does not mutate server receipts");
+var guardEvents = JArray.Parse("[{type:'blockGained',targetId:'player',actorMemberId:'self',amount:4},{type:'staminaRecovered',actorMemberId:'peer',amount:2}]");
+Check(NativeFeedbackProjection.FromCoopEvents(guardEvents, "self").Outcome.Block == 4, "co-op: guard uses actor annotation when no recipient annotation exists");
+Check(!NativeFeedbackProjection.FromCoopEvents(guardEvents, "self").Outcome.Action.Contains("STAMINA"), "co-op: another member's recovery is not assigned to this seat");
 Check(NativeFeedbackProjection.FromEvents(JArray.Parse("[{type:'cardDrawn',cardId:'strike'}]")) == null, "housekeeping silent");
 foreach (var key in new[] { "attack", "attackWithSelfLoss", "enemyTurn", "guard", "heal", "manaRestored", "staminaRecovered", "status", "flask", "equipment", "recoveryCue", "guardCue" }) Check(coverage.GetValueOrDefault(key) > 0, "missing executed coverage: " + key);
 Directory.CreateDirectory("TestResults/NativeFeedback"); File.WriteAllText("TestResults/NativeFeedback/checks.json", new JObject { ["checks"] = checks, ["executedCommands"] = commands, ["coverage"] = JObject.FromObject(coverage), ["status"] = "passed" }.ToString());

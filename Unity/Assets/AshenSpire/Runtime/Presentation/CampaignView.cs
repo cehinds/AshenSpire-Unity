@@ -20,6 +20,8 @@ namespace AshenSpire.Presentation
         private IVisualElementScheduledItem _controlReport;
         private int _controlReportAttempts;
         private int _controlReportSequence;
+        private FeelTween _screenTransition;
+        private string _screenIdentity;
         private VisualElement _body;
         private ScrollView _scroll;
         private Image _player;
@@ -41,7 +43,7 @@ namespace AshenSpire.Presentation
         private readonly List<VisualElement> _interruptionDisabled = new List<VisualElement>();
         public event Action ReturnRequested;
         public event Action FoundationRequested;
-        public event Action NativeRequested, NativeContinueRequested;
+        public event Action NativeRequested, NativeContinueRequested, NativeQuickStartRequested, NativeHistoryRequested;
         public event Action ProfileRequested;
         public event Action CoopRequested;
         public bool NativeSaveAvailable { get; set; }
@@ -62,6 +64,7 @@ namespace AshenSpire.Presentation
             _muted = muted;
             FeelDriver.Load(); FeelDriver.Configure(reducedMotion, fast); // F07 feel profile: all motion timing
             MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
+            MapView.MinimumTapSize = () => _playerSettings?.MinimumTapSize ?? 44;
             MapView.SetMapSurface = SetMapSurface;
             MapView.Report = () => Report();
             Gamepad = new GamepadNavigator(root, () => _playerSettings, () => Report());
@@ -70,6 +73,7 @@ namespace AshenSpire.Presentation
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalTheme"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCards"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCombat"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalAccessibility"));
             root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
@@ -86,7 +90,7 @@ namespace AshenSpire.Presentation
         private void RefreshTouchTargets()
         {
             BindInterfaceSounds();
-            var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight);
+            var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight) * (_playerSettings?.MinimumTapSize ?? 44) / 44f;
             foreach (var button in _root.Query<Button>().ToList())
             {
                 if (button.ClassListContains("map-node")) continue; // Map geometry delivers its own physical tap floor.
@@ -100,12 +104,13 @@ namespace AshenSpire.Presentation
                 field.style.minHeight = Mathf.Max(field.ClassListContains("report-field") ? 240 : 52, minimum);
             foreach (var tray in _root.Query<ScrollView>(className: "original-utility-rail").ToList())
             {
+                if (tray.ClassListContains("combat-tools-popup")) continue;
                 var height = Mathf.Max(58, minimum + 8, 58f * (float)(_playerSettings?.TextScale ?? 1));
                 tray.style.height = height; tray.style.minHeight = height;
             }
             ScheduleTextScale(); // CampaignView.PlayerSettings.cs; no-op at the default text size.
         }
-        public void Dispose() { _disposed = true; Gamepad.Capture = null; Gamepad.Reset(); _controlReport?.Pause(); _feedback.Dispose(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
+        public void Dispose() { _disposed = true; Gamepad.Capture = null; Gamepad.Reset(); foreach (var tween in _enemyDeaths) tween.Stop(); _enemyDeaths.Clear(); _screenTransition?.Stop(); _controllerPoll?.Pause(); _textScaleJob?.Pause(); _controlReport?.Pause(); _feedback.Dispose(); UninstallController(); _root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); _root.Clear(); }
         public void ShowInterruption(bool canReturn)
         {
             _feedback.Cancel();
@@ -150,12 +155,18 @@ namespace AshenSpire.Presentation
         {
             Shell("", ""); _body.Clear(); _body.AddToClassList("title-screen");
             _scroll.contentContainer.style.flexGrow = 1;
-            var backdrop = new Image { image = Resources.Load<Texture2D>("Art/background1"), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
+            var backdrop = new Image { image = Resources.Load<Texture2D>("Art/html898/title-city-tower") ?? Resources.Load<Texture2D>("Art/background1"), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
             backdrop.AddToClassList("original-title-background"); _root.Insert(0, backdrop);
+            var travelerTexture = Resources.Load<Texture2D>("Art/html898/title-traveler");
+            if (travelerTexture != null)
+            {
+                var traveler = new Image { image = travelerTexture, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                traveler.AddToClassList("original-title-traveler"); _root.Insert(1,traveler);
+            }
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
-                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), NativeUnsavedProgress));
+                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), () => NativeQuickStartRequested?.Invoke(), () => NativeHistoryRequested?.Invoke(), NativeUnsavedProgress));
             Report();
         }
         // Keep earlier playable checkpoints and developer tools accessible without
@@ -229,23 +240,25 @@ namespace AshenSpire.Presentation
         }
         public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
         {
-            Shell("ASHENEDSPIRE", "THE ORIGINAL CLIMB");
+            Shell("ASHENEDSPIRE", "THE ORIGINAL CLIMB", "solo:" + game.Phase + ":" + game.ActNumber);
             var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke(), PlayerSettings);
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
+            EnemyDeaths(game.LastEvents);
             if (panel.Stage == null || projection == null) return null;
             var cue = feedback.Cue(projection.CueId);
-            _feedback.Play(panel.Stage, panel.PlayerImage, panel.EnemyImage, (string)game.RunPlayer["classId"], cue, projection.Outcome, projection.EnemyTurn, _reducedMotion, _fast, _diagnostics);
+            var victim = panel.Stage.Q<Image>("native-enemy-art-" + projection.EnemyTargetId) ?? panel.EnemyImage;
+            _feedback.Play(panel.Stage, panel.PlayerImage, victim, (string)game.RunPlayer["classId"], cue, projection.Outcome, projection.EnemyTurn, _reducedMotion, _fast, _diagnostics);
             return cue.Id;
         }
 
-        public void Profile(AshenSpire.Domain.Original.OriginalProfile profile)
+        public void Profile(AshenSpire.Domain.Original.OriginalProfile profile, bool historyOnly = false)
         {
-            Shell("CHRONICLE", "YOUR WANDERERS AND DISCOVERIES");
+            Shell(historyOnly ? "RUN HISTORY" : "CHRONICLE", historyOnly ? "YOUR COMPLETED CLIMBS" : "YOUR WANDERERS AND DISCOVERIES");
             _body.AddToClassList("profile-screen");
             var state = profile.Snapshot(); var progress = state["progress"];
             _body.Add(Text(progress["runs"] + " climbs · " + progress["wins"] + " victories · Act " + progress["maxAct"] + " reached", "lead"));
             var discoveries = new VisualElement(); discoveries.AddToClassList("profile-discoveries"); _body.Add(discoveries);
-            foreach (var row in profile.UnlockView())
+            foreach (var row in historyOnly ? new Newtonsoft.Json.Linq.JArray() : profile.UnlockView())
             {
                 var card = new VisualElement(); card.AddToClassList("profile-discovery");
                 card.EnableInClassList("earned", (bool)row["earned"]);
@@ -548,8 +561,13 @@ namespace AshenSpire.Presentation
         {
             _feedback.Play(_stage ?? _root, _player, _enemy, _heroArt, cue, outcome, enemyTurn, _reducedMotion, _fast, _diagnostics);
         }
-        private void Shell(string title, string subtitle)
+        private void Shell(string title, string subtitle, string identity = null)
         {
+            CaptureEnemyPositions();
+            _capturingController = null;
+            _screenTransition?.Stop();
+            identity = identity ?? subtitle;
+            var entering = _screenIdentity != identity; _screenIdentity = identity;
             _feedback.Cancel();
             _stage = null;
             _root.Clear();
@@ -564,6 +582,20 @@ namespace AshenSpire.Presentation
             _scroll.Add(_body);
             _body.Add(Text(title, "eyebrow"));
             _body.Add(Text(subtitle, "subtitle"));
+            if (entering)
+            {
+                var body = _body;
+                body.schedule.Execute(() =>
+                {
+                    if (_disposed || body != _body || body.panel == null) return;
+                    var motion = FeelDriver.Profile.Resolve("screen.enter", FeelDriver.Settings);
+                    if (!motion.Play) return;
+                    PresentationTrace("screen.enter", "started");
+                    _screenTransition = FeelTween.Run(body, motion.DurationMs,
+                        ms => { body.style.opacity = (float)motion.SampleAt(FeelProperty.Opacity, ms); FeelDriver.Place(body, 0, (float)motion.SampleAt(FeelProperty.Y, ms)); },
+                        status => { body.style.opacity = StyleKeyword.Null; FeelDriver.Rest(body); PresentationTrace("screen.enter", status); });
+                });
+            }
         }
         private void SetMapSurface(bool active)
         {
@@ -582,7 +614,8 @@ namespace AshenSpire.Presentation
         }
         private Button Control(string id, string label, Action clicked, string style = null)
         {
-            var result = new Button(clicked) { text = label, name = id };
+            var result = new Button { text = label, name = id };
+            result.clicked += clicked;
             result.AddToClassList("button");
             if (style != null)
                 result.AddToClassList(style);
@@ -604,7 +637,7 @@ namespace AshenSpire.Presentation
         [Serializable]
         private sealed class ControlBounds
         {
-            public string Id; public float X, Y, Width, Height; public bool Enabled;
+            public string Id, Text; public float X, Y, Width, Height; public bool Enabled, Focused;
         }
         [Serializable]
         private sealed class ControlList
@@ -646,7 +679,9 @@ namespace AshenSpire.Presentation
                 .Where(x => !string.IsNullOrEmpty(x.name) && !FeelDriver.InOverlay(x))
                 .Select(x => (Control: x, Bound: FeelDriver.SettledBound(x))) // settled: feel transforms are visual only
                 .Select(x => new ControlBounds { Id = x.Control.name, X = x.Bound.x, Y = x.Bound.y,
-                    Width = x.Bound.width, Height = x.Bound.height, Enabled = OriginalCombatLayout.Selectable(x.Control) }).ToArray();
+                    Width = x.Bound.width, Height = x.Bound.height, Enabled = OriginalCombatLayout.Selectable(x.Control),
+                    Text = x.Control is Button button ? button.text : null,
+                    Focused = x.Control == _root.focusController?.focusedElement }).ToArray();
             var width = _root.resolvedStyle.width;
             var height = _root.resolvedStyle.height;
             // Rotation and detached elements can expose unmeasured bounds. Never

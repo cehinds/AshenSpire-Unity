@@ -1,0 +1,262 @@
+{
+  "buildNumber": 36,
+  "version": "0.0.30.5",
+  "sourceDigest": "0baacd88861ab9e1a5a842b0cf6f1bd816e2c52fb39bb6e5fa29c78ac8cd4fcb",
+  "checks": [
+    {
+      "check": "Build 35 save continues in build 36",
+      "passed": true,
+      "observed": "Turn 3; player HP49/49 MP0/1 SP2/2; enemy HP16/26; Bleed buildup3/7; one action; draw1/discard5; no gameplay input spent."
+    }
+  ],
+  "report": {
+    "Controls": [
+      {
+        "Id": "native-target-e1",
+        "Text": "",
+        "X": 853.750061,
+        "Y": 133.750015,
+        "Width": 685.000061,
+        "Height": 300,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-card-starting:3",
+        "Text": "",
+        "X": 456.250031,
+        "Y": 490.000031,
+        "Width": 158.750031,
+        "Height": 257.500031,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-card-starting:2",
+        "Text": "",
+        "X": 635.000061,
+        "Y": 490.000031,
+        "Width": 157.5,
+        "Height": 257.500031,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-card-starting:5",
+        "Text": "",
+        "X": 812.500061,
+        "Y": 490.000031,
+        "Width": 157.5,
+        "Height": 236.250031,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-card-starting:0",
+        "Text": "",
+        "X": 990.000061,
+        "Y": 490.000031,
+        "Width": 158.750061,
+        "Height": 257.500031,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-play",
+        "Text": "Select a card",
+        "X": 60.0000038,
+        "Y": 775.000061,
+        "Width": 737.500061,
+        "Height": 55,
+        "Enabled": false,
+        "Focused": false
+      },
+      {
+        "Id": "native-end-turn",
+        "Text": "End turn · 1 action",
+        "X": 802.500061,
+        "Y": 775.000061,
+        "Width": 737.500061,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-pile-draw",
+        "Text": "Draw pile · 1",
+        "X": 57.5000038,
+        "Y": 838.750061,
+        "Width": 120.000015,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-pile-discard",
+        "Text": "Discard pile · 5",
+        "X": 177.500015,
+        "Y": 838.750061,
+        "Width": 136.250015,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-pile-exhaust",
+        "Text": "Exhausted · 0",
+        "X": 313.750031,
+        "Y": 838.750061,
+        "Width": 128.75,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-combat-keys",
+        "Text": "Keyboard controls",
+        "X": 442.500031,
+        "Y": 838.750061,
+        "Width": 156.250031,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-inspect-enemy",
+        "Text": "Inspect selected enemy",
+        "X": 598.750061,
+        "Y": 838.750061,
+        "Width": 193.75,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-inspect-card",
+        "Text": "Inspect selected card",
+        "X": 792.500061,
+        "Y": 838.750061,
+        "Width": 177.5,
+        "Height": 55,
+        "Enabled": false,
+        "Focused": false
+      },
+      {
+        "Id": "native-hand-prev",
+        "Text": "Previous cards",
+        "X": 970.000061,
+        "Y": 838.750061,
+        "Width": 135.000061,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-hand-next",
+        "Text": "Next cards",
+        "X": 1105.00012,
+        "Y": 838.750061,
+        "Width": 107.5,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-breath",
+        "Text": "Catch Breath · 1 action → 1 stamina",
+        "X": 1212.50012,
+        "Y": 838.750061,
+        "Width": 277.5,
+        "Height": 55,
+        "Enabled": false,
+        "Focused": false
+      },
+      {
+        "Id": "native-crimson",
+        "Text": "Crimson · 2",
+        "X": 1490.00012,
+        "Y": 838.750061,
+        "Width": 113.75,
+        "Height": 55,
+        "Enabled": false,
+        "Focused": false
+      },
+      {
+        "Id": "native-azure",
+        "Text": "Azure · 1",
+        "X": 1603.75012,
+        "Y": 838.750061,
+        "Width": 96.25,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-deck",
+        "Text": "Deck and equipment",
+        "X": 1700.00012,
+        "Y": 838.750061,
+        "Width": 173.75,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      },
+      {
+        "Id": "native-menu",
+        "Text": "Save and return to title",
+        "X": 1873.75012,
+        "Y": 838.750061,
+        "Width": 186.250122,
+        "Height": 55,
+        "Enabled": true,
+        "Focused": false
+      }
+    ],
+    "PanelWidth": 1600.00012,
+    "PanelHeight": 900.000061,
+    "Labels": [
+      "Reaver",
+      "ACT 1 · TURN 3 · 0 cinders",
+      "HP 49/49",
+      "MP 0/1",
+      "SP 2/2",
+      "",
+      " 49/49",
+      "Guard 0",
+      "↑",
+      "Wandering Soldier",
+      " 16/26",
+      "Guard 0 · Strength 2 · Bleed buildup 3/7",
+      "1",
+      "Slashing Strike",
+      "⚔",
+      "ATTACK",
+      "⚔",
+      "Blade",
+      "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+      "1",
+      "Slashing Strike",
+      "⚔",
+      "ATTACK",
+      "⚔",
+      "Blade",
+      "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+      "1",
+      "Shield Defend",
+      "🛡",
+      "SKILL",
+      "🛡",
+      "Guard",
+      "Gain 11 Block. Includes +6 block from Defense Rating.",
+      "1",
+      "Slashing Strike",
+      "⚔",
+      "ATTACK",
+      "⚔",
+      "Blade",
+      "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+      "Drag a card upward onto its target · hold or right-click to inspect"
+    ],
+    "LayoutAttempts": 1
+  }
+}

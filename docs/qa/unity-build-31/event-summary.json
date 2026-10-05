@@ -1,0 +1,264 @@
+{
+  "success": true,
+  "sourceDigest": "a269b8d1b67b99a951a84cec4f35646c4382688eaea9841a4eea5772b2c27f8d",
+  "events": 22,
+  "choices": 62,
+  "coverage": [
+    "abandonedCart:leave",
+    "abandonedCart:lootStrongbox",
+    "ancientRuneStone:leave",
+    "ancientRuneStone:smashStone",
+    "ancientRuneStone:studyStone",
+    "bloodstainedAltar:leave",
+    "bloodstainedAltar:offerBlood",
+    "cinderbearDen:leave",
+    "cinderbearDen:skimEdges",
+    "cinderbearDen:takeHoard",
+    "discardedReliquary:burnPack",
+    "discardedReliquary:leave",
+    "discardedReliquary:takeCurse",
+    "fadedGrace:leave",
+    "fadedGrace:temperBlade",
+    "fadedGrace:warmYourself",
+    "feralShrine:leave",
+    "feralShrine:takeOffering",
+    "goldboughAvatar:leave",
+    "goldboughAvatar:offerCard",
+    "goldboughAvatar:pray",
+    "goldenMoth:gatherCinders",
+    "goldenMoth:keepVigil",
+    "goldenMoth:leave",
+    "graveOfTheNameless:digForCinders",
+    "graveOfTheNameless:leave",
+    "graveOfTheNameless:payRespects",
+    "handspiderNest:backAway",
+    "handspiderNest:snatchStrongbox",
+    "merchantsGhost:leave",
+    "merchantsGhost:payInKind",
+    "merchantsGhost:stealRelic",
+    "namelessKeeper:acceptThanks",
+    "namelessKeeper:faceKeeper",
+    "namelessKeeper:leave",
+    "namelessKeeper:returnCinders",
+    "namelessRest:keepVigil",
+    "namelessRest:leave",
+    "namelessRest:lootBarrow",
+    "namelessRest:restAmongStones",
+    "omensAltar:acceptGaze",
+    "omensAltar:leave",
+    "omensAltar:shatterAltar",
+    "rotPriestOffer:acceptBlessing",
+    "rotPriestOffer:leave",
+    "rotPriestOffer:robPriest",
+    "sleepingSmith:leave",
+    "sleepingSmith:takeBlade",
+    "sleepingSmith:wakeSmith",
+    "stakeOfTheMartyr:leave",
+    "stakeOfTheMartyr:makeOffering",
+    "twoFingersRiddle:leave",
+    "twoFingersRiddle:mend",
+    "twoFingersRiddle:sharpen",
+    "wanderingPhysician:leave",
+    "wanderingPhysician:patch",
+    "wanderingPhysician:procedure",
+    "weepingPilgrim:giveCinders",
+    "weepingPilgrim:refuse",
+    "wyrmTrial:circleRing",
+    "wyrmTrial:enterRing",
+    "wyrmTrial:leave"
+  ],
+  "cases": [
+    {
+      "name": "Events-respect-1",
+      "fixture": "events-respect-1-replay.json",
+      "checks": 828,
+      "commands": 249,
+      "choices": [
+        "abandonedCart:lootStrongbox",
+        "abandonedCart:leave",
+        "bloodstainedAltar:offerBlood",
+        "bloodstainedAltar:leave",
+        "rotPriestOffer:acceptBlessing",
+        "rotPriestOffer:robPriest",
+        "rotPriestOffer:leave",
+        "fadedGrace:warmYourself",
+        "fadedGrace:temperBlade",
+        "fadedGrace:leave",
+        "graveOfTheNameless:digForCinders",
+        "graveOfTheNameless:payRespects",
+        "graveOfTheNameless:leave",
+        "weepingPilgrim:giveCinders",
+        "weepingPilgrim:refuse",
+        "sleepingSmith:takeBlade",
+        "sleepingSmith:wakeSmith",
+        "sleepingSmith:leave",
+        "handspiderNest:snatchStrongbox",
+        "handspiderNest:backAway",
+        "merchantsGhost:payInKind",
+        "merchantsGhost:stealRelic",
+        "merchantsGhost:leave",
+        "goldenMoth:gatherCinders",
+        "goldenMoth:keepVigil",
+        "goldenMoth:leave"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "Victory",
+      "finalAct": 3,
+      "scope": "full climb to recorded terminal result"
+    },
+    {
+      "name": "Events-respect-2",
+      "fixture": "events-respect-2-replay.json",
+      "checks": 619,
+      "commands": 208,
+      "choices": [
+        "wyrmTrial:enterRing",
+        "wyrmTrial:circleRing",
+        "wyrmTrial:leave",
+        "omensAltar:acceptGaze",
+        "omensAltar:shatterAltar",
+        "omensAltar:leave",
+        "cinderbearDen:takeHoard",
+        "cinderbearDen:skimEdges",
+        "cinderbearDen:leave",
+        "twoFingersRiddle:sharpen",
+        "twoFingersRiddle:mend",
+        "twoFingersRiddle:leave",
+        "feralShrine:takeOffering",
+        "feralShrine:leave"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "Victory",
+      "finalAct": 3,
+      "scope": "full climb to recorded terminal result"
+    },
+    {
+      "name": "Events-respect-3",
+      "fixture": "events-respect-3-replay.json",
+      "checks": 633,
+      "commands": 230,
+      "choices": [
+        "discardedReliquary:takeCurse",
+        "discardedReliquary:burnPack",
+        "discardedReliquary:leave",
+        "wanderingPhysician:procedure",
+        "wanderingPhysician:patch",
+        "wanderingPhysician:leave",
+        "stakeOfTheMartyr:makeOffering",
+        "stakeOfTheMartyr:leave"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "Victory",
+      "finalAct": 3,
+      "scope": "full climb to recorded terminal result"
+    },
+    {
+      "name": "Events-PolicyRune",
+      "fixture": "PolicyRune-replay.json",
+      "checks": 47,
+      "commands": 4,
+      "choices": [
+        "ancientRuneStone:studyStone",
+        "ancientRuneStone:smashStone",
+        "ancientRuneStone:leave"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "EventResult",
+      "finalAct": 1,
+      "scope": "authored event choices reached through normal gameplay and real copied-slot branches"
+    },
+    {
+      "name": "Events-PolicyAvatar",
+      "fixture": "PolicyAvatar-replay.json",
+      "checks": 97,
+      "commands": 23,
+      "choices": [
+        "goldboughAvatar:offerCard",
+        "goldboughAvatar:pray",
+        "goldboughAvatar:leave"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "EventResult",
+      "finalAct": 1,
+      "scope": "authored event choices reached through normal gameplay and real copied-slot branches"
+    },
+    {
+      "name": "Events-Rest-dig",
+      "fixture": "Rest-dig-replay.json",
+      "checks": 772,
+      "commands": 304,
+      "choices": [
+        "namelessKeeper:returnCinders",
+        "namelessKeeper:faceKeeper",
+        "namelessKeeper:leave",
+        "namelessRest:restAmongStones"
+      ],
+      "viewport": {
+        "width": 320,
+        "height": 640,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "EventResult",
+      "finalAct": 4,
+      "scope": "authored event choices reached through normal gameplay and real copied-slot branches"
+    },
+    {
+      "name": "Events-Rest-respect",
+      "fixture": "Rest-respect-replay.json",
+      "checks": 772,
+      "commands": 306,
+      "choices": [
+        "namelessKeeper:acceptThanks",
+        "namelessRest:keepVigil",
+        "namelessRest:leave"
+      ],
+      "viewport": {
+        "width": 768,
+        "height": 1024,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "EventResult",
+      "finalAct": 4,
+      "scope": "authored event choices reached through normal gameplay and real copied-slot branches"
+    },
+    {
+      "name": "Events-Rest-face",
+      "fixture": "Rest-face-replay.json",
+      "checks": 760,
+      "commands": 311,
+      "choices": [
+        "namelessRest:lootBarrow"
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "deviceScaleFactor": 2
+      },
+      "finalPhase": "EventResult",
+      "finalAct": 4,
+      "scope": "authored event choices reached through normal gameplay and real copied-slot branches"
+    }
+  ],
+  "saveInjection": false,
+  "physicalDevice": false
+}

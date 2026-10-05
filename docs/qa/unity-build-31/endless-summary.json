@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "sourceDigest": "a269b8d1b67b99a951a84cec4f35646c4382688eaea9841a4eea5772b2c27f8d",
+  "scope": "Endless Act-4 checkpoint, reload and next room",
+  "checks": 559,
+  "commands": 225,
+  "bosses": [
+    {
+      "act": 1,
+      "enemyId": "fellWarden",
+      "asset": {
+        "enemyId": "fellWarden",
+        "resource": "Art/painted_fellWarden",
+        "width": 512,
+        "height": 512
+      },
+      "file": "boss-act1-fellWarden.png"
+    },
+    {
+      "act": 2,
+      "enemyId": "stitchedKing",
+      "asset": {
+        "enemyId": "stitchedKing",
+        "resource": "Art/painted_stitchedKing",
+        "width": 512,
+        "height": 512
+      },
+      "file": "boss-act2-stitchedKing.png"
+    },
+    {
+      "act": 3,
+      "enemyId": "blightedValkyrie",
+      "asset": {
+        "enemyId": "blightedValkyrie",
+        "resource": "Art/Enemies/Painted/BlightedValkyrie",
+        "width": 512,
+        "height": 512
+      },
+      "file": "boss-act3-blightedValkyrie.png"
+    }
+  ],
+  "finalPhase": "Combat",
+  "finalAct": 4,
+  "errors": [],
+  "physicalDevice": false
+}

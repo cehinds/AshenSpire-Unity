@@ -1,0 +1,23 @@
+{
+  "version": "0.0.30.4",
+  "buildNumber": 35,
+  "sourceDigest": "a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465",
+  "runtimeReferenceCompileFiles": 136,
+  "focusedCardQolChecks": 174,
+  "exportedPayloadCounts": { "Web": 8, "Windows": 162, "Android": 1 },
+  "nativePayloadChecks": 163,
+  "companionSourceAndBinaryChecks": 457,
+  "candidateMetadataChecks": 6,
+  "finalSoloWebBrowserChecks": 7,
+  "finalTwoPlayerCoopBrowserChecks": 9,
+  "actualPortableWindowsCompanionStarted": true,
+  "companionMutationChecks": 24,
+  "archiveHostingTests": 27,
+  "channelStorageChecks": 35,
+  "candidate": "Builds/PlatformCandidates/build35-retry-20261003/Delivery",
+  "physicalDeviceTested": false,
+  "graphicalWindowsTested": false,
+  "ownerAccepted": false,
+  "remoteCiVerified": false,
+  "published": false
+}

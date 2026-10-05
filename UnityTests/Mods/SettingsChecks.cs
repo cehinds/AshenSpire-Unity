@@ -11,6 +11,22 @@ static class SettingsChecks
 
         // Defaults reproduce the current build.
         var d = new OriginalPlayerSettings();
+        var accessibility = new OriginalPlayerSettings { HighContrast = true, ReduceFlashes = true, HoldToConfirm = true, ControlHints = false, MinimumTapSize = 64, Accent = "jade", CardMotif = "band" };
+        Check(accessibility.TryBindController("submit", 9, out _), "controller: free button can be bound");
+        Check(!accessibility.TryBindController("cancel", 9, out var controllerConflict) && controllerConflict == "submit", "controller: collision preserves existing binding");
+        var restoredAccessibility = OriginalPlayerSettings.FromJson(accessibility.ToJson(), out var accessibilityNotes);
+        Check(restoredAccessibility.HighContrast && restoredAccessibility.ReduceFlashes && restoredAccessibility.HoldToConfirm && !restoredAccessibility.ControlHints && restoredAccessibility.MinimumTapSize == 64, "accessibility: preferences survive reload");
+        Check(restoredAccessibility.Accent == "verdant" && restoredAccessibility.CardMotif == "band" && restoredAccessibility.ControllerBindings["submit"] == 9 && accessibilityNotes.Count == 0, "display and controller: preferences survive reload");
+        Check(!accessibility.TryBindController("unknown", 7, out _) && !accessibility.TryBindController("submit", 99, out _), "controller: unknown actions and out of range buttons refused");
+        var invalidAccessibility = OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:1,minimumTapSize:3,accent:'invalid',cardMotif:'invalid',controllerBindings:{submit:1}}"), out var invalidAccessibilityNotes);
+        Check(invalidAccessibility.MinimumTapSize == 44 && invalidAccessibility.Accent == "gold" && invalidAccessibility.CardMotif == OriginalPlayerSettings.DefaultCardMotif && invalidAccessibility.ControllerBindings["submit"] == 0 && invalidAccessibilityNotes.Count == 5, "preferences: unsafe sizes and controller collisions safely recover");
+        Check(OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:3,accent:{bad:true}}"), out _).Accent == "gold", "display: malformed accent defaults without throwing");
+        accessibility.ResetControllerBindings();
+        var gameplay = new OriginalPlayerSettings { AutoCollectRewards = true, MerchantBuyBack = false, CompactMapHeader = true, MapHeaderSeed = true, MapHeaderRelics = true };
+        var restoredGameplay = OriginalPlayerSettings.FromJson(gameplay.ToJson(), out _);
+        Check(restoredGameplay.AutoCollectRewards && !restoredGameplay.MerchantBuyBack && restoredGameplay.CompactMapHeader && restoredGameplay.MapHeaderSeed && restoredGameplay.MapHeaderRelics, "gameplay: reward, merchant and map preferences survive reload");
+        Check(d.MerchantBuyBack && !d.AutoCollectRewards, "gameplay: old settings retain merchant offers and manual rewards");
+        Check(accessibility.ControllerBindings.SequenceEqual(OriginalPlayerSettings.DefaultControllerBindings), "controller: reset restores navigation defaults");
         Check(d.TextScale == 1 && d.UiScale == 1 && d.AnimationSpeed == 1 && !d.InstantAnimations && d.AnimationDurationScale == 1, "defaults: text/UI scale 1 and full-length feedback");
         Check(!d.ReducedMotion && !d.ScreenShake && d.ScreenShakeIntensity == 1 && !d.HitStop && d.ColorblindPalette == ColorblindPalette.None, "defaults: motion on, no shake or hit-stop, no palette");
         Check(d.MasterVolume == 1 && d.MusicVolume == 1 && d.SfxVolume == 1 && d.UiVolume == 1 && !d.Muted && d.Gain("sfx") == 1, "defaults: unattenuated, unmuted audio buses");

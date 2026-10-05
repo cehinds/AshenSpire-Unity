@@ -18,6 +18,7 @@ namespace AshenSpire.Domain.Original
         private OriginalRunContent _content;
         private RandomStreams _random;
         private OriginalCoopCombat _combat;
+        private WeaponCardProjection _weaponProjection;
         private readonly Dictionary<string,AttributeProgression> _progression = new Dictionary<string,AttributeProgression>();
         private readonly Dictionary<string,JObject> _profiles = new Dictionary<string,JObject>();
         private JObject Scene => (JObject)_state["scene"];
@@ -47,6 +48,9 @@ namespace AshenSpire.Domain.Original
         private void Initialize(JObject data,JObject supplement,JObject mechanics)
         {
             _data = (JObject)data.DeepClone(); _catalog = new OriginalContentCatalog(_data.ToString());
+            // Frozen catalog projection is immutable; reuse its table copies
+            // when simulating previews instead of rebuilding them per card.
+            _weaponProjection = new WeaponCardProjection(_catalog);
             _supplement = (JObject)supplement.DeepClone(); _mechanics = (JObject)mechanics.DeepClone(); _rules = new OriginalRunRules(_data);
             _supplement["mechanics"] = _mechanics.DeepClone();
             _content = new OriginalRunContent(_catalog,reconcile:new OriginalPlayerProjection(_catalog,_mechanics).Reconcile);
@@ -132,7 +136,7 @@ namespace AshenSpire.Domain.Original
             {
                 case "start": Require("lobby"); if (Id(Members.First) != id) throw new ArgumentException("Only the host can start."); if (!Present.Any()) throw new ArgumentException("No connected party."); _state["started"] = true; BuildMap(); break;
                 case "chooseNode": Require("map"); var node = (string)intent["nodeId"]; if (!((JArray)_state["reachableIds"]).Values<string>().Contains(node)) throw new ArgumentException("Node is not reachable."); ((JObject)Scene["votes"])[id] = node; break;
-                case "playCard": Require("combat"); return _combat.Play(id,(string)intent["cardInstanceId"],(string)intent["targetId"]);
+                case "playCard": Require("combat"); return _combat.Play(id,(string)intent["cardInstanceId"],(string)intent["targetId"],(string)intent["choice"]);
                 case "endTurn": Require("combat"); return _combat.EndTurn(id);
                 case "useFlask": Require("combat"); return _combat.UseFlask(id,(int)intent["slot"],(string)intent["targetId"],(string)intent["chargeKind"]);
                 case "chooseReward": ChooseReward(member,intent); break;
@@ -212,7 +216,7 @@ namespace AshenSpire.Domain.Original
         {
             var run = Run(Member(memberId));
             if (!_progression.TryGetValue(memberId,out var rules)) { rules = new AttributeProgression((JObject)run["progression"]); _progression[memberId] = rules; _profiles[memberId] = rules.BaselineProfiles(_catalog); }
-            var projection = new WeaponCardProjection(_catalog).Resolve(instance,(JObject)run["loadout"],(string)run["classId"],(JObject)run["attributes"],_profiles[memberId]);
+            var projection = _weaponProjection.Resolve(instance,(JObject)run["loadout"],(string)run["classId"],(JObject)run["attributes"],_profiles[memberId]);
             return (JObject)rules.ResolveCard(projection,(JObject)run["attributes"],_catalog)["card"];
         }
         private JObject CombatPlayer(JObject member)
@@ -320,11 +324,20 @@ namespace AshenSpire.Domain.Original
                 if (_combat != null)
                 {
                     var seat = _combat.Players.OfType<JObject>().FirstOrDefault(s => Id(s) == memberId);
-                    if (seat != null) { local["combat"] = seat.DeepClone(); local["hand"] = new JArray(((JArray)seat["piles"]["hand"]).OfType<JObject>().Select(card => new JObject { ["instance"] = card.DeepClone(), ["card"] = _combat.Card(memberId,card), ["cost"] = _combat.Cost(memberId,card), ["targets"] = _combat.FriendlyTargets(memberId,_combat.Card(memberId,card)) })); }
+                    if (seat != null) { local["combat"] = seat.DeepClone(); local["hand"] = new JArray(((JArray)seat["piles"]["hand"]).OfType<JObject>().Select(card => ProjectHandCard(memberId, card))); }
                 }
                 local["room"] = Run(member)["room"].DeepClone(); view["local"] = local;
             }
             return view;
+        }
+        private JObject ProjectHandCard(string memberId, JObject instance)
+        {
+            var card = _combat.Card(memberId, instance); var targets = _combat.FriendlyTargets(memberId, card);
+            var previews = new JObject();
+            var ids = (bool)targets["active"] ? targets["legalIds"].Values<string>()
+                : CardMechanics.HasProperty(CardMechanics.FromDefinition(card), "targeting.enemy") ? _combat.Enemies.Where(e => (bool?)e["alive"] == true).Select(e => (string)e["id"]) : new[] { "_" };
+            foreach (var id in ids) previews[id] = _combat.PreviewCard(memberId, (string)instance["instanceId"], id == "_" ? null : id);
+            return new JObject { ["instance"] = instance.DeepClone(), ["card"] = card, ["cost"] = _combat.Cost(memberId, instance), ["targets"] = targets, ["previews"] = previews };
         }
     }
 }

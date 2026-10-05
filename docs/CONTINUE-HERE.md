@@ -12,14 +12,180 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
+October 4: the owner authorized an intermediate merge and rejected visual parity.
+Read [integration checkpoint](Unity-Integration-Checkpoint.md). Build 43 below
+is historical preview evidence; it does not certify this integrated source.
+
+The active owner request is now the full native migration to match published
+HTML test **898** (`0.7.1.898`, digest `1b60c22e01`). Read
+[the migration tracker](Unity-HTML-Parity-Migration.md) before continuing.
+Build 36 below is the archived pre-migration rollback baseline; migration source
+edits do not share its source digest.
+
+Historical local preview build 43 (`0.0.30.12`) was an intermediate migration preview.
+Read [guided creation and card proportions](Unity-Guided-Creation.md) for the
+latest owner-requested fixes: one-screen creation steps, ready Reaver defaults,
+fixed 2:3 card faces and visible map paths with compact tools. Export/receipt,
+desktop/portrait setup and a real Reaver card play passed. Preview: port 8907.
+The following build-42 notes describe the preceding combat reframe.
+Read [the combat reframe](Unity-Combat-Reframe.md) for the latest work: generated
+hilt repair/card back, seven SpriteRenderer prefabs, compact combat controls,
+reference select/play, width-aware card fan and a scrollable menu. Build 42
+export/receipt and desktop/390x844 player checks passed. Preview: port 8906.
+The following build-40 notes are historical; broader migration remains incomplete.
+The owner selected `http://127.0.0.1:4175/` and its Starseer screenshot as the
+appearance reference; test 898 remains the gameplay reference. See
+[the appearance tracker](Unity-Owner-Appearance.md). Eleven verified image
+imports, Cormorant typography, painted combatants and the card fan are in source.
+The combined published-JS comparisons and compact-card checks pass 40,399 checks, including native
+stance-choice command refusal, selection and replay cases. The full current
+content bundle is not yet active. Build 37 was exported and playtested in solo
+combat with reload/continue and portrait checks. Build 38's separate export in
+`Builds/OwnerAppearance/build38` compiled, passed its receipt/hash check and
+ran a Starseer fight with inspection and payment. Its desktop and portrait
+checks exposed layout issues corrected and player-checked in build 39. Its
+portrait view revealed that the copied background import settings had resized
+non-square cutouts to square textures. Build-40 source disables that resampling
+and compression, and checks all eleven actual imported dimensions before export.
+Its export in `Builds/OwnerAppearance/build40/Web` succeeded and passed its
+source/eight-payload receipt, digest
+`59f51ce9999d1472f043cabc2b39c490d0be7e8b154c3f3b934e42b5b3cc936f`.
+Fresh desktop/portrait player checks confirmed correct proportions. Inspection,
+play and reload/Continue preserved actions 2, hand 5, discard 1 and soldier HP
+18/25 with no console errors. The new playable preview is
+`http://127.0.0.1:8904/`; screenshots and controls are in
+`docs/qa/unity-owner-appearance`. Complete gesture checks, remaining screen
+styling, current gameplay integration and owner acceptance remain open.
+
+Archived build-36 checkpoint: the owner requested Phase 2 polish and
+Phase 3 platform work together. Builds 34–35 improve status meters and resolve
+authored description numbers; build 36 explains co-op readiness and disables
+Start until the public roster is connected and ready. Runtime compilation
+checks 137 files; 192 focused checks include 18 readiness/notice cases. The
+fresh Web player preserves the prior combat save, and eleven two-player checks
+against the separately packaged matching preview companion cover readiness,
+disconnection, saved-seat rejoin, shared-map start and a 390x844 guest caption.
+See [build-36 evidence](qa/unity-build-36/README.md), [Phase 2](Unity-Phase-2.md)
+and [Phase 3](Unity-Phase-3.md) for current nested checkboxes.
+
+Build 35's matching Web/Windows/Android/companion delivery is preserved.
+Build 36 Web and Windows exports match digest
+`0baacd88861ab9e1a5a842b0cf6f1bd816e2c52fb39bb6e5fa29c78ac8cd4fcb`.
+Android recovery finished successfully. The final matching Web, Windows,
+Android and companion candidate is archived with receipts; six candidate
+metadata checks passed. Its companion ZIP is byte-identical to the one used
+for the eleven browser checks. Physical-device/controller, graphical-Windows, iOS,
+owner acceptance and remote publication remain separate open gates. No current
+remote CI or new published release is claimed.
+
+Historical build-33 checkpoint:
+
+Build 33 (`0.0.30.2`) implements solo/co-op upward drag
+and flick play, live sanitized combat previews, hostile target memory, readable
+filters/keyboard choices and aligned card offers. The first Web export exercised
+solo and two-browser co-op input and found missing co-op Escape behavior. That
+gap and hand-rebuild focus loss are fixed. The final frozen-source Web export
+and all eight payload hashes match digest
+`0c9916e6e4bbb00ff3f75803f6696876885b43fb0a311762b15c2adb197cbb90`.
+Final normal-input solo/co-op checks passed: Escape, upward drops, contextual
+play, peer damage, next-turn recovery, victory/reward inspection and retained
+keyboard pile filters. Phase 2 implementation and available Web verification
+are complete; owner acceptance and physical-device/controller testing remain open.
+Read [build-33 QA](qa/unity-build-33/README.md) for the final receipt
+and checkbox state. Focused domain checks: 158; co-op: 461 / 146 command batches
+through three-act victory; transient panel state: 21. Owner/physical-device
+acceptance remains separate. The Unity export process has finished.
+
+Historical build-32 checkpoint:
+
+Build 32 (`0.0.30.1`) card QoL source now includes shared faces/inspection,
+contextual actions, hold/right-click reading, deck/pile filters and target-tap
+confirmation. Hand-inspection Back cancels arming; solo target memory survives
+accepted-command panel refreshes and co-op keeps a legal target on card changes.
+Runtime compilation passed 133 source files; co-op domain validation passed
+461 checks / 146 batches. The final frozen-source Web export passed at
+2026-10-02T20:29:27Z and all eight payload hashes verified. Read the
+[build-32 evidence and receipt](qa/unity-build-32/README.md) before marking checks.
+Do not use the earlier intermediate build-32 payload: source changed during it.
+Source digest is da4968c5caac3fd65406e95874670dc08dde6bc8defe43a7b6f231cd7bd93b4c.
+CUA played the final export on a fresh isolated origin 8802, seed QOL2026,
+Reaver/Iron Vanguard: target/self taps, explicit Play, right-click reading,
+Escape cancellation, deck/pile filters and one normal fight/reward claim passed.
+Phone-sized inspection wrapped and scrolled at 390 x 844. The port-8802 save is
+at Act 1 Rewards with Shield Bash claimed; cinders remain unclaimed. Port 8801
+has the earlier opening-fight checkpoint. The owner's port-8791 run was not played.
+The historical next steps were: improve filter-field contrast, card/offer alignment and armed enemy
+colouring; verify dropdown keyboard navigation, hold inspection, multiple-enemy
+target memory and fresh co-op UI. Build 33 supersedes that source-work list.
+The original-core agent's two-turn build-765 audit is
+saved beside the build-32 checklist; original/editor repositories were unchanged.
+
+2026-10-02 owner correction: the preview still lacks quality-of-life conveniences.
+Audit the current core AshenSpire through actual play, then port its confirmed
+card-play and card-presentation conveniences. Build 31's 6,280 checks remain
+valid bounded evidence, not complete feature parity or Phase 2 sign-off.
+
+Earlier 2026-10-02 verification report:
+6,280 assertions in 48 source/payload-matched cases include all 22 events
+and 62 choices, the history-gated Nameless chain, four target viewports,
+Custom/Sealed/Draft/Endless exact reload, Ascensions 0–6 and all 11 modifiers.
+[Evidence](qa/unity-build-31/README.md). Build 31 is the local Web preview;
+build 30 remains the packaged multi-platform checkpoint. Owner acceptance and
+physical controller/device testing stay open. No player saves or original/editor
+repository files were changed by these isolated playtests.
+
+Historical build-31 work: the owner requested completion of Phase 2 and use of
+AshenedSpire-Editor where useful. Build 31 (`0.0.30.0`) adds controller bindings,
+accessibility/display preferences, automatic rewards, enemy inspection,
+room/death transitions, co-op receipt feedback and bundled Web/Android packs.
+See [Phase 2](Unity-Phase-2.md) for separate implementation, compiled evidence
+and acceptance checkboxes. The editor's real pose validator/sampler was used
+read-only; it has no Unity asset adapter. Build 30 remains the packaged
+multi-platform checkpoint. Existing Foundation acceptance and physical-device
+work are still open. Older build notes below are historical context.
+
+Historical 2026-10-01 continuation: build 31's focused exported Web suites now pass **268
+checks across 15 cases**, including audio, merchant/shrine and two-player
+host-restart recovery. [QA](qa/unity-build-31/README.md) verifies the exact source
+and served payloads. The later victory replay, all three boss encounters,
+Endless Act 4 reload/next-room entry and UI-focus hold interruption now bring the
+completed count to **1,375 checks across 18 cases**. Current work expands all
+22 events and 62 authored choices through normal controls and copied save slots;
+incomplete event runs are excluded from the count. New test profiles/dependencies
+use D: in accordance with the owner's storage decision.
+
+Owner authorized merging PR #57 on 2026-09-29. It is merged into `dev` at
+`e107f87e97240b267f712df42609c9187a83d8f9`. Continue Phase 1 on
+`feature/ashenedspire-phase1`. Build 29 is now live at https://cehinds.github.io/AshenSpire-Unity/dev/ after successful deployment and public browser verification; see [hosting](Unity-Archive-Hosting.md). Build-30 profile-import source is under compiled
+validation; build 29 remains the last packaged candidate until those exports
+and checks finish. Merge approval does not constitute gameplay acceptance.
+
+Build 30 update: source `e3cecca` fixes the compiled profile preview's false
+stale-record refusal. The updated importer passes 469 domain checks; the first
+compiled failure and interrupted exports remain recorded in [build-30 QA](qa/unity-build-30/README.md).
+The Windows restart workflow is the task workspace's `work/finish-build30.ps1`.
+Do not run a second Unity Editor against this project while it is active.
+Codex Process Jobs is unavailable on Windows (controller reports unsupported
+platform), so do not rely on a completion notification from that plugin.
+
+Owner scope correction (2026-09-29): the original AshenSpire supplies assets and
+current gameplay mechanics, not agent instructions or management requirements.
+The initial repository seed copied its Markdown too broadly. Root AGENTS.md now
+records Unity-specific guidance; old workflow prose is historical context, not
+an additional owner approval requirement. Existing remote protections and CI
+behavior still need to be handled as actual technical constraints.
+
+
+## Current dev integration context
+
 The Unity game is named **AshenedSpire** (owner, 2026-09-28). The original game
 remains AshenSpire. See [core phases](Unity-Milestones.md) and the
 [original-game review](Unity-Upstream-Review.md). Build 29 fixes fixed-action clearance and passes its scoped Web checks. Build 28's initial original-save importer preserves compatible map checkpoints, with 879 scoped browser checks recorded for that build. Foundation acceptance remains open; see [build-29 QA](qa/unity-build-29/README.md) and [build-28 QA](qa/unity-build-28/README.md).
 
 | | |
 |---|---|
-| Version / build / stage | **0.0.28.1 · build 29 · Foundation in progress** (`GameContent/Unity/version.json`). Read `Published/build.json` for the matching package receipt. |
-| Feature in progress | **F00 Foundation**: finish its acceptance ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)) |
+| Version / build / stage | **0.0.30.2 · build 33 · Phase 2 gameplay and card QoL validation** (`GameContent/Unity/version.json`). `Published/build.json` still describes packaged build 30. |
+| Feature in progress | **Phase 2 F01–F16**, per the current owner request; **F00 Foundation** acceptance remains open ([detail](Unity-Roadmap.md#foundation-f00-detailed-acceptance)). |
 | Reference game | HTML: `index.html`, `src/`, `content/`, `assets/`, `styles/`, [SPEC.md](../SPEC.md) |
 | Unity project | `Unity/` (Unity **6000.6.0f1**, `Unity/ProjectSettings/ProjectVersion.txt`) |
 | Domain C# | `Unity/Assets/AshenSpire/Runtime/Domain` and `Domain/Original` (engine-independent) |

@@ -103,6 +103,13 @@ namespace AshenSpire.Editor
             Directory.CreateDirectory(Path.GetDirectoryName(target));
             if (!File.Exists(target) || File.ReadAllText(target) != json)
                 File.WriteAllText(target, json);
+            // Web and APK players cannot enumerate StreamingAssets directories.
+            // Bundle the same authored JSON files for the existing validated loader.
+            var modsRoot = Path.Combine(UnityEngine.Application.streamingAssetsPath, "Mods");
+            var modFiles = new Newtonsoft.Json.Linq.JObject();
+            if (Directory.Exists(modsRoot)) foreach (var file in Directory.GetFiles(modsRoot, "*.json", SearchOption.AllDirectories).OrderBy(path => path, StringComparer.Ordinal))
+                modFiles["Mods/" + file.Substring(modsRoot.Length + 1).Replace('\\', '/')] = File.ReadAllText(file);
+            File.WriteAllText(Root + "/Resources/Original/mod-packs.json", modFiles.ToString());
             AssetDatabase.Refresh();
             OriginalSpriteImport.Configure();
             ImportMusic();
@@ -182,6 +189,35 @@ namespace AshenSpire.Editor
 
         [MenuItem("AshenSpire/3. Build Web Preview")]
         public static void BuildWeb() => Build(BuildTarget.WebGL, "Web");
+
+        // Isolated migration output; keep the owner's existing preview intact.
+        public static void BuildPublishedParityPreview() => Build(BuildTarget.WebGL, "HtmlParity/test898/Web");
+        public static void BuildOwnerAppearancePreview()
+        {
+            CombatSpriteAuthoring.Build();
+            var folder = Path.Combine(UnityEngine.Application.dataPath,"AshenSpire/Resources/Art/OwnerAppearance");
+            var count = 0;
+            foreach (var file in Directory.GetFiles(folder,"*.png"))
+            {
+                var header = new byte[24];
+                using (var stream = File.OpenRead(file))
+                    if (stream.Read(header,0,header.Length) != header.Length) throw new InvalidOperationException("Invalid owner texture: " + file);
+                int Dimension(int offset) => (header[offset] << 24) | (header[offset+1] << 16) | (header[offset+2] << 8) | header[offset+3];
+                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/AshenSpire/Resources/Art/OwnerAppearance/" + Path.GetFileName(file));
+                if (asset == null || asset.width != Dimension(16) || asset.height != Dimension(20))
+                    throw new InvalidOperationException("Owner appearance texture was resized: " + file);
+                count++;
+            }
+            if (count != 11) throw new InvalidOperationException("Owner appearance requires eleven source textures.");
+            Debug.Log("Owner appearance: all eleven imported textures retain source dimensions.");
+            var optimization = UnityEditor.WebGL.UserBuildSettings.codeOptimization;
+            try
+            {
+                UnityEditor.WebGL.UserBuildSettings.codeOptimization = UnityEditor.WebGL.WasmCodeOptimization.BuildTimes;
+                Build(BuildTarget.WebGL, "OwnerAppearance/build43/Web");
+            }
+            finally { UnityEditor.WebGL.UserBuildSettings.codeOptimization = optimization; }
+        }
 
         [MenuItem("AshenSpire/4. Build Windows Player")]
         public static void BuildWindows() => Build(BuildTarget.StandaloneWindows64, "Windows/AshenSpire.exe");
@@ -264,20 +300,19 @@ namespace AshenSpire.Editor
                 .Select(path => path.Substring(Repository.Length + 1).Replace('\\', '/'))
                 .OrderBy(path => path, StringComparer.Ordinal);
             using (var hash = SHA256.Create())
-            using (var stream = new MemoryStream())
             {
                 foreach (var path in paths)
                 {
                     var name = Encoding.UTF8.GetBytes(path);
-                    stream.Write(name, 0, name.Length);
+                    hash.TransformBlock(name, 0, name.Length, null, 0);
                     var bytes = File.ReadAllBytes(Path.Combine(Repository, path));
                     var extension = Path.GetExtension(path).ToLowerInvariant();
                     if (!new[] { ".png", ".jpg", ".webp", ".ttf", ".otf", ".mp3", ".ogg", ".wav", ".aiff", ".aif", ".flac" }.Contains(extension))
                         bytes = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace("\r\n", "\n"));
-                    stream.Write(bytes, 0, bytes.Length);
+                    hash.TransformBlock(bytes, 0, bytes.Length, null, 0);
                 }
-                stream.Position = 0;
-                return string.Concat(hash.ComputeHash(stream).Select(value => value.ToString("x2")));
+                hash.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+                return string.Concat(hash.Hash.Select(value => value.ToString("x2")));
             }
         }
     }

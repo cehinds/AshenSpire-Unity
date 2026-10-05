@@ -21,6 +21,7 @@ namespace AshenSpire.Presentation
         private static readonly HashSet<VisualElement> Moved = new HashSet<VisualElement>();
         public static FeelProfile Profile => _profile ?? Load();
         public static FeelSettings Settings { get; private set; } = new FeelSettings();
+        public static bool ReduceFlashes { get; private set; }
 
         /// <summary>Loads and validates the profile. Called once at startup by CampaignView.</summary>
         public static FeelProfile Load()
@@ -45,6 +46,7 @@ namespace AshenSpire.Presentation
                 reducedMotion: settings.ReducedMotion, reduceFlashes: settings.ReduceFlashes,
                 screenShake: settings.ScreenShake, screenShakeIntensity: settings.ScreenShakeIntensity,
                 hitStop: settings.HitStop);
+            ReduceFlashes = settings.ReduceFlashes;
         }
 
         /// <summary>Writes a sampled transform. Rest values (0, 0, 1, 0°) clear the inline style.</summary>

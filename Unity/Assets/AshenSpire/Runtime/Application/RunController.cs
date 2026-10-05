@@ -99,6 +99,8 @@ namespace AshenSpire.Application
                 _view.FoundationRequested += OpenFoundation;
                 _view.NativeRequested += NewOriginal;
                 _view.NativeContinueRequested += ResumeOriginal;
+                _view.NativeQuickStartRequested += QuickStartOriginal;
+                _view.NativeHistoryRequested += ShowOriginalHistory;
                 _view.ProfileRequested += ShowOriginalProfile;
                 _view.CoopRequested += OpenCoop;
                 InitSaveSlots(channel); // RunController.Slots.cs: three run slots + legacy migration
@@ -413,6 +415,8 @@ namespace AshenSpire.Application
             _view.NativeRequested -= NewOriginal;
             _view.SlotsRequested -= ShowSaveSlots;
             _view.NativeContinueRequested -= ResumeOriginal;
+            _view.NativeQuickStartRequested -= QuickStartOriginal;
+            _view.NativeHistoryRequested -= ShowOriginalHistory;
             _view.ProfileRequested -= ShowOriginalProfile;
             _view.CoopRequested -= OpenCoop;
             _view.MuteRequested -= Mute;

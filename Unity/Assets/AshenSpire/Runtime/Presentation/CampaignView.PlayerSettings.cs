@@ -63,6 +63,9 @@ namespace AshenSpire.Presentation
             FeelDriver.Configure(settings);
             _muted = settings.Muted;
             MapView.KeyAction = code => OriginalKeyBindings.Action(_playerSettings?.KeyBindings, code);
+            _root.EnableInClassList("high-contrast", settings.HighContrast);
+            _root.EnableInClassList("hide-control-hints", !settings.ControlHints);
+            foreach (var motif in new[] { "off", "accent", "band" }) _root.EnableInClassList("motif-" + motif, settings.CardMotif == motif);
             ApplyPalette();
             _root.EnableInClassList(HighContrastClass, settings.HighContrast);
             ApplyDisplayClasses(settings);
@@ -173,6 +176,7 @@ namespace AshenSpire.Presentation
             SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
             _body.Add(Text("UI size scales the whole interface; L and XL grow only as far as the screen fits. Accent tints highlights, borders and primary buttons. Card motif colours class cards: Wash tints the body, Accent puts your accent on the border with a rarity pip, Band adds a class stripe. Compact tightens the map header; relics and seed show in a line under it. Control hints list keyboard shortcuts under the map and combat in wide windows.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
+            AddButton("fullscreen", "Toggle fullscreen", () => Screen.fullScreen = !Screen.fullScreen);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
             intensity = SettingSlider("screen-shake-intensity", "Shake intensity", 0, 100, Percent(s.ScreenShakeIntensity), v => s.ScreenShakeIntensity = v / 100.0);
@@ -201,6 +205,7 @@ namespace AshenSpire.Presentation
             SettingToggle("high-contrast", "High contrast", s.HighContrast, v => s.HighContrast = v);
             _body.Add(Text("Reduce flashes skips the bright hit flash and the glowing attack lunge; damage numbers stay. High contrast brightens secondary text and borders.", "caption"));
             SettingSlider("text-scale", "Text size", 80, 160, Percent(s.TextScale), v => s.TextScale = v / 100.0);
+            SettingChoice("minimum-tap", "Minimum tap size", new[] { "44", "52", "64" }, s.MinimumTapSize.ToString(), v => s.MinimumTapSize = int.Parse(v));
             var palette = new DropdownField("Colorblind palette", PaletteChoices, (int)s.ColorblindPalette) { name = "colorblind-palette" };
             palette.AddToClassList("setting");
             palette.RegisterValueChangedCallback(e =>

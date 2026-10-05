@@ -1,0 +1,20 @@
+// Trim a real-command domain run at an authored event; never manufacture run state.
+import {readFile,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const [source,eventId,output,...choices]=process.argv.slice(2);
+assert(source&&eventId&&output,'Pass results.json, event id, output and optional choice ids');
+const report=JSON.parse(await readFile(source,'utf8'));
+const run=report.runs.find(row=>row.trace.some(action=>action.eventId===eventId));
+assert(run,'Requested event was not reached through real commands');
+const index=run.trace.findIndex(action=>action.eventId===eventId);
+const action=run.trace[index];
+assert.equal(action.phase,'EventResult','Canonical choice must end at EventResult');
+const filter=choices.length?choices.map(choice=>choice.includes(':')?choice:eventId+':'+choice):action.branches.map(row=>eventId+':'+row.id);
+const available=new Set(run.trace.slice(0,index+1).flatMap(row=>(row.branches||[]).map(branch=>row.eventId+':'+branch.id)));
+assert(filter.length&&filter.every(choice=>available.has(choice))&&new Set(filter).size===filter.length,'Some requested choices are unavailable or duplicated in this history');
+run.trace=run.trace.slice(0,index+1);
+run.sourceCommands=run.commands;run.result=action.phase;run.act=action.act;run.commands=run.trace.length;run.hp=action.hp;
+for(const field of ['counts','phaseCounts','resumeChecks','fightsWon','floor','coveredEventChoices'])delete run[field];
+run.checkpoint='event-choice-checkpoint';run.eventChoiceFilter=filter;
+await writeFile(output,JSON.stringify({runtimeSourceDigest:report.runtimeSourceDigest,runs:[run]},null,2)+'\n');
+console.log(`${eventId}: ${filter.join(', ')}; ${run.commands} real commands to Act ${run.act}.`);

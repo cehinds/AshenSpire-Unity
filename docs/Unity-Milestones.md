@@ -44,11 +44,42 @@ acceptance or physical-device certification.
     - [ ] Owner review of disclosure wording.
   - [x] Field guide and AshenedSpire branding implemented; 36 combined welcome/guide/About browser checks passed.
     - [x] Compiled Windows startup/window caption and Android launcher metadata verified.
-  - [ ] Remaining controls, animation, visual/input parity and feature acceptance.
+  - [x] Build 31 implementation: controller navigation/rebinding, accessibility
+    and display settings, merchant buy-back visibility and automatic rewards.
+  - [x] Build 31 implementation: enemy status inspection, room/death transitions,
+    authoritative co-op feedback and bundled Web/Android content packs.
+  - [x] Use AshenedSpire-Editor's pose validator/sampler: 21 reference samples.
+  - [x] Build 31 focused exported Web verification: 268 checks across 15 cases,
+    including virtual-controller input, accessibility, combat tools, rewards,
+    four appearance styles, audio, merchant/shrine and co-op host restart.
+  - [x] Current Web victory replay (542 checks), all three boss encounters and
+    Endless Act 4 reload/next-room entry (559 checks), plus held-confirmation
+    focus interruption (6 checks). Those original suites total 1,375 checks.
+  - [x] All 22 events/62 choices, four-viewport Web coverage, current mode reloads,
+    Ascensions 0–6 and all 11 modifiers. Current build: 6,280 checks in 48
+    cases; see the [detailed Phase 2 checklist](Unity-Phase-2.md).
+  - [x] Listed build-31 features and bounded exported Web verification complete.
+  - [ ] Current-core quality-of-life follow-up: card play, inspection, targeting and presentation (owner review, 2026-10-02).
+    - [x] Build 33 implementation: visual offers/readers, target-tap play, drag/flick, live previews, target memory, filters and co-op Escape.
+    - [x] Compile 135 source files; focused preview/flick 158 checks, co-op 461 checks / 146 batches, transient target state 21 checks.
+    - [x] Final frozen-source Web export, eight payload hashes and normal-input solo/two-peer regression; see [build 33](qa/unity-build-33/README.md).
+    - [x] Builds 34–35: readable status meters/thresholds, resolved authored
+      description numbers and fresh solo/co-op player checks.
+    - [x] Build 36: readable lobby readiness, conservative Start availability,
+      137-file compile, 192 focused checks and eleven two-player preview checks.
+      See [build 36](qa/unity-build-36/README.md) for matching delivery status.
+    - [ ] Owner acceptance and physical hold/flick/controller input.
+  - [ ] Owner acceptance and physical-controller/device checks.
 - [ ] **Phase 3 — Platform and performance (F17)**
+  - [x] Matching build-35 Web/Windows/Android/companion candidate, exact hashes,
+    download size gates and six metadata refusal/preservation checks.
+  - [x] Candidate tooling preserves earlier exports and Published releases;
+    portable Windows companion runs the two-browser playtests.
   - [ ] US-17.1: establish and meet reference-device performance budgets.
   - [ ] US-17.2: physical Android and graphical Windows playtesting.
   - [ ] US-17.3: native iOS delivery and device validation.
+  - [ ] US-17.4: final hosted archive capacity and network delivery.
+  - [ ] Owner acceptance. See [detailed Phase 3](Unity-Phase-3.md).
 - [ ] **Phase 4 — Final playtesting and release**
   - [ ] Real-player pacing, balance and fun checks.
   - [ ] Final regression and owner approval.
@@ -56,11 +87,16 @@ acceptance or physical-device certification.
 
 No whole phase is currently signed off. The content/rules port, native runtime,
 save slots and companion pipeline are implemented components of Foundation.
-Build 29 is the latest locally verified Web patch. Build 28's 879 scoped compiled
-browser checks remain historical evidence; see [build 29](qa/unity-build-29/README.md)
+Build 36 is the archived verified multi-platform rollback checkpoint. Build 37
+is the current intermediate migration source; complete published-test-898
+behavior, visual parity and final delivery remain open in the
+[migration tracker](Unity-HTML-Parity-Migration.md).
+Build 28's 879 scoped compiled browser checks remain
+historical evidence; see [build 29](qa/unity-build-29/README.md)
 and [build 28](qa/unity-build-28/README.md). No whole phase is accepted by these checks.
 
-The next milestone is Foundation acceptance. Build 27 completes the rename,
+Foundation acceptance remains open while the owner-requested Phase 2 work proceeds.
+Build 27 completes the rename,
 first-visit guidance and focused opening-mode/upgrade checks. Continue the
 unaccepted foundation stories and review relevant changes in the original game. A guide is not an interactive
 tutorial, opening-mode checks are not full playthroughs, and a compiled portrait

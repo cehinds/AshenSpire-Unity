@@ -50,7 +50,7 @@ namespace AshenSpire.Domain.Original
         {
             var session = new OriginalGameSession { _catalog = catalog, _mechanics = (JObject)mechanics.DeepClone() };
             var stats = new OriginalPlayerProjection(catalog, mechanics);
-            session._callbacks = new OriginalRunContent(catalog, reconcile: stats.Reconcile);
+            session._callbacks = new OriginalRunContent(catalog, reconcile: stats.Reconcile, mechanics: mechanics);
             player = (JObject)player.DeepClone(); stats.Reconcile(player);
             var frozen = (JObject)supplement.DeepClone(); frozen["mechanics"] = mechanics.DeepClone();
             session._run = OriginalRunSession.Start(catalog, frozen, player, seed, session._callbacks);
@@ -70,7 +70,7 @@ namespace AshenSpire.Domain.Original
             // of both fields admits the explicit baseline migration; partial IDs fail.
             new OriginalStartingOptions(_catalog).ValidateSaved((JObject)snapshot["run"], snapshot["run"]["profileMeta"] as JObject, legacy: true);
             _mechanics = (JObject)snapshot["supplement"]["mechanics"].DeepClone();
-            _callbacks = new OriginalRunContent(_catalog, reconcile: new OriginalPlayerProjection(_catalog, _mechanics).Reconcile);
+            _callbacks = new OriginalRunContent(_catalog, reconcile: new OriginalPlayerProjection(_catalog, _mechanics).Reconcile, mechanics: _mechanics);
             _run = OriginalRunSession.Restore(snapshot, _callbacks); _combat = null; InitializeProjection(); EnsureCombat();
         }
         private void InitializeProjection()
@@ -89,6 +89,20 @@ namespace AshenSpire.Domain.Original
             return (JObject)_progression.ResolveCard(projection, (JObject)run["attributes"], _catalog)["card"];
         }
         public JObject Cost(JObject instance) => _combat != null ? _combat.CardCost(instance) : CardMechanics.CostProfile(Resolve(instance));
+        public JObject CardChoice(JObject instance) => _combat?.CardChoice(instance);
+        public JObject PreviewCard(string instanceId, string targetId, string choice = null)
+        {
+            if (_combat == null) return OriginalCardPreview.Refused("No active fight.");
+            var instance = _combat.Hand.OfType<JObject>().FirstOrDefault(c => (string)c["instanceId"] == instanceId);
+            if (instance == null) return OriginalCardPreview.Refused("Choose a card in your hand.");
+            if (OriginalCardPreview.Random(Resolve(instance))) return OriginalCardPreview.Variable();
+            var copy = CombatSession.Restore(_catalog, _mechanics, _combat.Snapshot(), Resolve);
+            var before = new[] { copy.Player }.Concat(copy.Enemies.OfType<JObject>()).ToArray();
+            try { copy.PlayCard(instanceId, targetId, choice); }
+            catch (ArgumentException e) { return OriginalCardPreview.Refused(e.Message); }
+            catch (InvalidOperationException e) { return OriginalCardPreview.Refused(e.Message); }
+            return OriginalCardPreview.Compare(before, new[] { copy.Player }.Concat(copy.Enemies.OfType<JObject>()));
+        }
         private void EnsureCombat()
         {
             if (_run.Phase != OriginalRunPhase.Combat) { _combat = null; return; }
@@ -127,7 +141,7 @@ namespace AshenSpire.Domain.Original
         }
         public void Enter(string id) => Change(() => { if (!_run.EnterNode(id)) throw new ArgumentException("Choose a connected route."); });
         public void PickDraft(string cardId) => Change(() => { if (!_run.PickDraft(cardId)) throw new ArgumentException("Choose one of the current draft offers."); });
-        public void Play(string instance, string target) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.PlayCard(instance, target); CommitCombat(); });
+        public void Play(string instance, string target, string choice = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.PlayCard(instance, target, choice); CommitCombat(); });
         public void EndTurn() => EndTurn(null);
         /// <summary>End the turn discarding the chosen retained cards; DiscardPlan says how many must or may be chosen.</summary>
         public void EndTurn(System.Collections.Generic.IEnumerable<string> discardIds) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.EndTurn(discardIds); CommitCombat(); });
@@ -138,6 +152,23 @@ namespace AshenSpire.Domain.Original
         public void DrinkFlask(int slot, string target = null) => Change(() => { if (_combat == null) throw new InvalidOperationException("No active fight."); LastEvents = _combat.DrinkFlask(slot, target); CommitCombat(); });
         public void Service(string service, JObject request) => Change(() => { if (!_run.UseService(service, request)) throw new ArgumentException("This service is unavailable here or its requirements are not met."); });
         public void Reward(string kind, string id = null) => Change(() => { if (!_run.CollectReward(kind, id)) throw new ArgumentException("That reward cannot be collected."); });
+        public void ClaimLevel() => Change(() => { if (!_run.ClaimProgression()) throw new ArgumentException("No earned level is waiting here."); });
+        public void ClaimSkill(string id) => Change(() => { if (!_run.ClaimProgression(id)) throw new ArgumentException("No earned skill level is waiting here."); });
+        public JObject EarnedProgressionView()
+        {
+            var run = _run.Player(); if (!(run["level"] is JObject)) return null;
+            var rules = new OriginalEarnedProgression(_catalog.Data(),_mechanics);
+            var skills = new JArray();
+            foreach (var track in rules.Tracks())
+            {
+                var id = (string)track["id"]; var row = run["skills"]?[id] as JObject;
+                var level = (int?)row?["level"] ?? 0;
+                skills.Add(new JObject { ["id"] = id, ["label"] = track["label"].DeepClone(), ["level"] = level,
+                    ["xp"] = row?["xp"]?.DeepClone() ?? new JValue(0), ["xpToNext"] = rules.SkillCost((string)track["kind"],level),
+                    ["pendingLevels"] = rules.PendingSkillLevels(run,id), ["pendingDrafts"] = row?["pendingDrafts"]?.DeepClone() ?? new JValue(0) });
+            }
+            return new JObject { ["level"] = run["level"].DeepClone(), ["xpToNext"] = rules.CharacterCost(OriginalEarnedProgression.CharacterLevel(run)), ["pendingLevels"] = rules.PendingCharacterLevels(run), ["skills"] = skills };
+        }
         /// <summary>Continue leaving everything still pending, cinders included (the pre-setting behaviour; replays and
         /// tests use it). The player's Continue is ContinueRewards(mode).</summary>
         public void ContinueRewards() => Change(() => _run.ContinueRewards(false));
@@ -157,6 +188,7 @@ namespace AshenSpire.Domain.Original
             catch { RestoreState(before); throw; }
             Changed?.Invoke(); return true;
         }
+        public void ContinueRewards(bool autoCollect) => ContinueRewards(autoCollect ? "auto" : "manual");
         public void ChooseEvent(string id) => Change(() => { if (!_run.ChooseEvent(id)) throw new ArgumentException("This choice's requirements are not met."); });
         public void LeaveEvent() => Change(() => _run.LeaveEvent());
         public void Rest() => Change(() => _run.Rest());

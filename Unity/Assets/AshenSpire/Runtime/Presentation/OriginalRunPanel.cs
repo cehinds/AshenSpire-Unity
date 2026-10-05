@@ -26,18 +26,19 @@ namespace AshenSpire.Presentation
         private readonly OriginalMapViewServices _mapView;
         private readonly RunSummary _summary; private readonly Action _history; private VisualElement _summaryButtons;
         private VisualElement _actions, _combatTools;
-        private string _target, _selected;
+        private string _selected;
         private Label _notice;
         private static int _diagnosticSequence;
         public Image PlayerImage { get; private set; }
         public Image EnemyImage { get; private set; }
         public VisualElement Stage { get; private set; }
         public OriginalRunPanel(VisualElement root, VisualElement actionHost, OriginalGameSession game, Action report, Action menu, bool diagnostics, OriginalMapViewServices mapView = null, RunSummary summary = null, Action history = null, OriginalPlayerSettings settings = null)
-        { _root = root; _actionHost = actionHost; _game = game; _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; _settings = settings; BindCombatKeys(); Render(); }
+        { _root = root; _actionHost = actionHost; _game = game; _aim = AimFor(game); _report = report; _menu = menu; _diagnostics = diagnostics; _mapView = mapView; _summary = summary; _history = history; _settings = settings; BindCombatKeys(); Render(); }
         private void Render()
         {
             _backAction = null;
             _root.RemoveFromClassList("combat-inspection");
+            _root.RemoveFromClassList("combat-reframed");
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             var combatSurface = _game.Phase == OriginalRunPhase.Combat;
             if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
@@ -72,6 +73,7 @@ namespace AshenSpire.Presentation
             }
             Button("native-deck", "Deck and equipment", Deck, _combatTools ?? _summaryButtons);
             Button("native-menu", _summaryButtons != null ? "Return to title" : "Save and return to title", _menu, _combatTools ?? _summaryButtons).EnableInClassList("primary", _summaryButtons != null);
+            if (combatSurface) CombatChrome.Mount(_root, _combatTools, p, _game.Turn, _report);
             if (combatSurface) _root.Focus();
             if (_diagnostics) ReportNativeState();
             _report();
@@ -146,10 +148,11 @@ namespace AshenSpire.Presentation
         {
             Text("Shape your opening deck", "node-title");
             Text("Choose one card. Your current offer is saved, so returning keeps the same choices.", "caption");
+            var grid = OriginalCardInspection.Grid(); _root.Add(grid);
             foreach (var token in _game.DraftChoices)
             {
                 var id = (string)token; var card = _game.Catalog.Record("cards", id);
-                Button("native-draft-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.PickDraft(id));
+                CardOffer(grid, card, "native-draft-" + id, "Choose " + card["name"], () => _game.PickDraft(id));
             }
         }
         private void Combat()
@@ -159,8 +162,9 @@ namespace AshenSpire.Presentation
             var run = _game.RunPlayer;
             var figure = new OriginalPlayerFigure(_game);
             figure.Configure((string)run["classId"], run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(run["loadout"] as JObject));
+            figure.UseOwnerBattleArt((string)run["classId"]);
             PlayerImage = figure; OriginalAppearance.Apply(figure, null, run["customization"] as JObject);
-            stage.Add(OriginalCombatLayout.Player(figure, _game.Player));
+            stage.Add(OriginalCombatLayout.Player(figure, _game.Player, ArmedFor("self") && !ArmedFor("enemy") ? () => Execute(() => PlayCard(_selected, null)) : (Action)null, "native-self-target"));
             var enemies = _game.Enemies.OfType<JObject>().Where(x => (bool?)x["alive"] == true).ToArray();
             if (!enemies.Any(x => (string)x["id"] == _target)) _target = (string)enemies.FirstOrDefault()?["id"];
             EnemyImage = null; var telegraphs = _game.Telegraphs();
@@ -168,7 +172,9 @@ namespace AshenSpire.Presentation
             {
                 var id = (string)enemy["id"]; var definition = _game.Catalog.Record("enemies", (string)enemy["enemyId"]);
                 var target = OriginalCombatLayout.Enemy(enemy, (string)definition["name"], "native-target-" + id,
-                    () => { _target = id; Render(); }, id == _target, out var image);
+                    () => Execute(() => PickCombatTarget(id)), id == _target, out var image);
+                target.EnableInClassList("card-target-armed", ArmedFor("enemy"));
+                image.name = "native-enemy-art-" + id;
                 if (id == _target) EnemyImage = image;
                 EnemyTelegraphView.Attach(target, telegraphs.FirstOrDefault(t => t.InstanceId == id));
                 EnemyTelegraphView.ExplainStatuses(target, (string)definition["name"], id, enemy, StatusExplainer.Describe(_game.Catalog, enemy["statuses"] as JObject));
@@ -179,24 +185,32 @@ namespace AshenSpire.Presentation
             foreach (var instance in _game.Hand.OfType<JObject>())
             {
                 var id = (string)instance["instanceId"];
-                hand.Add(new OriginalCardView(_game.Catalog, _game.Resolve(instance), _game.Cost(instance), _game.Player,
-                    _selected == id, () => { _selected = _selected == id ? null : id; Render(); }, "native-card-" + id));
+                var tile = new OriginalCardView(_game.Catalog, _game.Resolve(instance), _game.Cost(instance), _game.Player,
+                    _selected == id, () => SelectOrPlayCard(id), "native-card-" + id,
+                    inspect: () => { _selected = id; InspectHandCard(); }, drop: (p, f) => DropCard(id, p, f), aim: (p, f) => AimDrag(id, p, f));
+                var index = hand.contentContainer.childCount;
+                tile.style.rotate = new Rotate(new Angle((index - (_game.Hand.Count - 1) / 2f) * 3, AngleUnit.Degree));
+                hand.Add(tile);
             }
             _root.Add(hand);
+            _dragPreviewKey = null;
+            _cardPreview = Text(_selected == null ? "Select a card, then a foe · Drag or flick to play" : Preview(_selected, _target), "original-card-preview");
             _actions = OriginalCombatLayout.Actions(); _root.Add(_actions);
             var selected = _game.Hand.OfType<JObject>().FirstOrDefault(x => (string)x["instanceId"] == _selected);
             var selectedCard = selected == null ? null : _game.Resolve(selected);
             var unplayable = selectedCard != null && CardMechanics.HasProperty(CardMechanics.FromDefinition(selectedCard), "internal.unplayable");
             var shortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
             var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selectedCard["name"];
-            Button("native-play", playLabel, () => _game.Play(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
-            Button("native-end-turn", "End turn · " + _game.Player["energy"] + ((int)_game.Player["energy"] == 1 ? " action" : " actions"), EndTurnChoice, _actions);
+            Button("native-play", playLabel, () => PlayCard(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
+            Button("native-end-turn", "End turn", EndTurnChoice, _actions);
             foreach (var kind in new[] { "draw", "discard", "exhaust" })
             {
                 var pile = kind;
                 Button("native-pile-" + pile, PileName(pile) + " · " + _game.Pile(pile).Count, () => ShowPile(pile), _combatTools);
             }
             Button("native-combat-keys", "Keyboard controls", ShowCombatKeys, _combatTools);
+            Button("native-inspect-enemy", "Inspect selected enemy", InspectEnemy, _combatTools);
+            Button("native-inspect-card", "Inspect selected card", InspectHandCard, _combatTools).SetEnabled(selected != null);
             Button("native-hand-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report(); }, _combatTools);
             Button("native-hand-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report(); }, _combatTools);
             Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
@@ -218,6 +232,19 @@ namespace AshenSpire.Presentation
         private void Rewards()
         {
             Text("Spoils of the climb", "node-title"); var room = _game.Room; var offers = room["rewards"];
+            var earned = _game.EarnedProgressionView();
+            if (earned != null)
+            {
+                Text("Character level " + earned["level"]["level"] + " · " + earned["level"]["xp"] + " / " + earned["xpToNext"] + " XP", "stat");
+                Button("native-claim-level", "Level up! · " + earned["pendingLevels"] + " waiting", _game.ClaimLevel).SetEnabled((int)earned["pendingLevels"] > 0);
+                foreach (var skill in earned["skills"])
+                {
+                    if ((double)skill["xp"] == 0 && (int)skill["level"] == 0) continue;
+                    var id = (string)skill["id"];
+                    Text(skill["label"] + " · level " + skill["level"] + " · " + skill["xp"] + " / " + skill["xpToNext"] + " XP", "caption");
+                    if ((int)skill["pendingLevels"] > 0) Button("native-claim-skill-" + id, "Level up " + skill["label"], () => _game.ClaimSkill(id));
+                }
+            }
             foreach (var kind in new[] { "cinders", "relic", "flask", "armament" })
             {
                 if (room["states"][kind] != null) continue;
@@ -230,8 +257,13 @@ namespace AshenSpire.Presentation
                     if (refusal != null) Text(refusal + " You can leave this reward behind.", "caption");
                 }
             }
-            if (room["states"]["card"] == null) foreach (var token in offers["cardIds"] ?? new JArray())
-            { var id = (string)token; var card = _game.Catalog.Record("cards", id); Button("native-reward-card-" + id, (string)card["name"] + "\n" + OriginalCardText.Describe(card, _game.Catalog), () => _game.Reward("card", id)); }
+            if (room["states"]["card"] == null)
+            {
+                Text("Choose a card · tap its face to inspect", "caption");
+                var grid = OriginalCardInspection.Grid(); _root.Add(grid);
+                foreach (var token in offers["cardIds"] ?? new JArray())
+                { var id = (string)token; var card = _game.Catalog.Record("cards", id); CardOffer(grid, card, "native-reward-card-" + id, "Take " + card["name"], () => _game.Reward("card", id)); }
+            }
             // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Owner decision 2026-10-02:
             // the default is manual, where Continue takes only the pending cinders (reward.js grants them on arrival)
             // and every other reward is the player's to take or skip; auto also takes every other un-skipped row.
@@ -250,15 +282,20 @@ namespace AshenSpire.Presentation
         private void Shop()
         {
             Text("The wandering merchant", "node-title");
+            var grid = OriginalCardInspection.Grid(); _root.Add(grid);
             foreach (var kind in new[] { "cards", "relics", "flasks" })
                 foreach (var entry in (_game.Room[kind] as JArray ?? new JArray()).Select((value, index) => (value, index)))
                 {
                     var row = _game.Catalog.Record(kind, (string)entry.value["id"]); var index = entry.index;
                     var refusal = OriginalRewardAvailability.Refusal(_game.Catalog.Data(), _game.RunPlayer, kind.TrimEnd('s'), (string)row["id"]);
-                    Button("native-buy-" + kind + "-" + index, (string)row["name"] + " · " + entry.value["cost"] + " cinders", () => _game.Buy(kind.TrimEnd('s'), index)).SetEnabled((bool?)entry.value["sold"] != true && (int)entry.value["cost"] <= (int)_game.RunPlayer["cinders"] && refusal == null);
+                    var available = (bool?)entry.value["sold"] != true && (int)entry.value["cost"] <= (int)_game.RunPlayer["cinders"] && refusal == null;
+                    if (kind == "cards") CardOffer(grid, row, "native-buy-" + kind + "-" + index, "Buy · " + entry.value["cost"] + " cinders", () => _game.Buy("card", index), available,
+                        (bool?)entry.value["sold"] == true ? "Sold" : (int)entry.value["cost"] > (int)_game.RunPlayer["cinders"] ? "Not enough cinders" : refusal);
+                    else Button("native-buy-" + kind + "-" + index, (string)row["name"] + " · " + entry.value["cost"] + " cinders", () => _game.Buy(kind.TrimEnd('s'), index)).SetEnabled(available);
                     if (refusal != null) Text(refusal, "caption");
                 }
             Services();
+            if (_settings?.MerchantBuyBack != false)
             foreach (JObject row in new OriginalRunServices(_game.Catalog).Sellables(_game.RunPlayer))
             {
                 var sale = (JObject)row.DeepClone();
@@ -277,7 +314,7 @@ namespace AshenSpire.Presentation
             }
             Services();
             var levels = new OriginalRunServices(_game.Catalog).LevelPlan(_game.RunPlayer, 1);
-            Button("native-level-up", "Level up · next point " + levels["cost"] + " cinders", () => LevelUp(new JObject())).SetEnabled((bool)levels["offerable"]);
+            Button("native-level-up", (bool?)levels["earned"] == true ? "Assign attributes · " + levels["points"] + " points" : "Level up · next point " + levels["cost"] + " cinders", () => LevelUp(new JObject())).SetEnabled((bool)levels["offerable"]);
             var canRest = new OriginalRunRules(_game.Catalog.Data()).CanRest(_game.RunPlayer);
             Button("native-rest", "Rest and continue", _game.Rest).SetEnabled(canRest);
             if (!canRest) Text("Your relic prevents resting. Choose another shrine service.", "notice");
@@ -289,7 +326,8 @@ namespace AshenSpire.Presentation
             var service = new OriginalRunServices(_game.Catalog); var run = _game.RunPlayer;
             var budget = service.LevelBudget(run); var count = pending.Properties().Sum(p => (int)p.Value);
             var cost = budget["costs"].Take(count).Sum(x => (int)x);
-            Text(count + " points · " + cost + " of " + run["cinders"] + " cinders", "stat");
+            var earned = (bool?)budget["earned"] == true;
+            Text(earned ? count + " of " + budget["points"] + " earned points" : count + " points · " + cost + " of " + run["cinders"] + " cinders", "stat");
             foreach (var row in service.LevelPlan(run, 1)["attributes"])
             {
                 var id = (string)row["id"]; var added = (int?)pending[id] ?? 0;
@@ -298,8 +336,8 @@ namespace AshenSpire.Presentation
                 Button("native-level-down-" + id, "− " + OriginalCardText.Humanize(id), () => { pending[id] = added - 1; LevelUp(pending); }, buttons).SetEnabled(added > 0);
                 Button("native-level-up-" + id, "+ " + OriginalCardText.Humanize(id), () => { pending[id] = added + 1; LevelUp(pending); }, buttons).SetEnabled(count < (int)budget["levels"]);
             }
-            Button("native-level-confirm", "Spend " + cost + " cinders", () => _game.Service("levelUp", new JObject { ["allocation"] = pending })).SetEnabled(count > 0);
-            Button("native-level-cancel", "Cancel · keep your cinders", Render); _report();
+            Button("native-level-confirm", earned ? "Assign " + count + " points" : "Spend " + cost + " cinders", () => _game.Service("levelUp", new JObject { ["allocation"] = pending })).SetEnabled(count > 0);
+            Button("native-level-cancel", earned ? "Cancel · keep your points" : "Cancel · keep your cinders", Render); _report();
         }
         private void Services()
         {
@@ -358,7 +396,8 @@ namespace AshenSpire.Presentation
             _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
             foreach (var item in new WeaponLoadout(_game.Catalog).Pieces((JObject)run["loadout"], (string)run["classId"])) Text((string)item["name"], "stat");
             if (_game.Phase != OriginalRunPhase.Victory && _game.Phase != OriginalRunPhase.Defeat) Button("native-equipment", _game.Phase == OriginalRunPhase.Combat ? "Switch prepared weapon sets" : "Change equipment and weapon sets", Equipment);
-            foreach (var instance in ((JArray)run["deck"]).OfType<JObject>()) { var card = _game.Resolve(instance); Text((string)card["name"], "stat"); Text(OriginalCardText.Describe(card, _game.Catalog), "caption"); }
+            OriginalCardInspection.Browse(_root, ((JArray)run["deck"]).OfType<JObject>(), _game.Resolve, _game.Cost, _game.Catalog, "native-deck",
+                instance => ReadCard(_game.Resolve(instance), _game.Cost(instance), Deck), _report, _deckBrowse);
             Button("native-deck-back", "Back to run", Render); _report();
         }
         private void Equipment()

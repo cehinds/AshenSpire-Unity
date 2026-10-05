@@ -1,0 +1,1200 @@
+{
+  "version": "0.0.30.4",
+  "sourceDigest": "a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465",
+  "buildUrl": "http://127.0.0.1:8812/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465",
+  "input": "Normal CUA native browser controls; public control diagnostics",
+  "checks": [
+    {
+      "check": "build 34 saved fight reloads on build 35 with HP, pools, hand and meter preserved",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-target-e1",
+            "Text": "",
+            "X": 853.750061,
+            "Y": 133.750015,
+            "Width": 685.000061,
+            "Height": 300,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:1",
+            "Text": "",
+            "X": 367.500031,
+            "Y": 490.000031,
+            "Width": 157.500031,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:3",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 490.000031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:2",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 490.000031,
+            "Width": 157.5,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:5",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 490.000031,
+            "Width": 158.750061,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:0",
+            "Text": "",
+            "X": 1080.00012,
+            "Y": 490.000031,
+            "Width": 157.5,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 775.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-end-turn",
+            "Text": "End turn · 2 actions",
+            "X": 802.500061,
+            "Y": 775.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-draw",
+            "Text": "Draw pile · 1",
+            "X": 57.5000038,
+            "Y": 838.750061,
+            "Width": 120.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-discard",
+            "Text": "Discard pile · 4",
+            "X": 177.500015,
+            "Y": 838.750061,
+            "Width": 136.250015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-exhaust",
+            "Text": "Exhausted · 0",
+            "X": 313.750031,
+            "Y": 838.750061,
+            "Width": 128.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-combat-keys",
+            "Text": "Keyboard controls",
+            "X": 442.500031,
+            "Y": 838.750061,
+            "Width": 156.250031,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-enemy",
+            "Text": "Inspect selected enemy",
+            "X": 598.750061,
+            "Y": 838.750061,
+            "Width": 193.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 792.500061,
+            "Y": 838.750061,
+            "Width": 177.5,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-prev",
+            "Text": "Previous cards",
+            "X": 970.000061,
+            "Y": 838.750061,
+            "Width": 135.000061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-next",
+            "Text": "Next cards",
+            "X": 1105.00012,
+            "Y": 838.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-breath",
+            "Text": "Catch Breath · 1 action → 1 stamina",
+            "X": 1212.50012,
+            "Y": 838.750061,
+            "Width": 277.5,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-crimson",
+            "Text": "Crimson · 2",
+            "X": 1490.00012,
+            "Y": 838.750061,
+            "Width": 113.75,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-azure",
+            "Text": "Azure · 1",
+            "X": 1603.75012,
+            "Y": 838.750061,
+            "Width": 96.25,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-deck",
+            "Text": "Deck and equipment",
+            "X": 1700.00012,
+            "Y": 838.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-menu",
+            "Text": "Save and return to title",
+            "X": 1873.75012,
+            "Y": 838.750061,
+            "Width": 186.250122,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "Reaver",
+          "ACT 1 · TURN 3 · 0 cinders",
+          "HP 49/49",
+          "MP 0/1",
+          "SP 2/2",
+          "",
+          " 49/49",
+          "Guard 0",
+          "↑",
+          "Wandering Soldier",
+          " 25/26",
+          "Guard 0 · Strength 2 · Bleed buildup 3/7",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "final desktop description resolves authored numbers",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-inspection-back",
+            "Text": "Back to combat",
+            "X": 320.000031,
+            "Y": 391.250031,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "↑",
+          "Wandering Soldier",
+          "",
+          "HP 25/26 · Guard 0",
+          "Strength 2",
+          "Attacks deal +1 damage per stack.",
+          "Bleed buildup 3/7",
+          "Build-up: points do not decay. At 7, burst for 15% of max HP (min 8, max 35), ignoring Block, plus 3 Poise damage; then the build-up resets to zero. Fleshy targets briefly resist further Bleed after a burst."
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "390x844 resolved status inspection fits",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-inspection-back",
+            "Text": "Back to combat",
+            "X": 20.2606621,
+            "Y": 432.9384,
+            "Width": 375.355438,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "↑",
+          "Wandering Soldier",
+          "",
+          "HP 25/26 · Guard 0",
+          "Strength 2",
+          "Attacks deal +1 damage per stack.",
+          "Bleed buildup 3/7",
+          "Build-up: points do not decay. At 7, burst for 15% of max HP (min 8, max 35), ignoring Block, plus 3 Poise damage; then the build-up resets to zero. Fleshy targets briefly resist further Bleed after a burst."
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "reader Escape preserves pools and meter",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-target-e1",
+            "Text": "",
+            "X": 222.8673,
+            "Y": 137.559235,
+            "Width": 181.279617,
+            "Height": 300.710876,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:1",
+            "Text": "",
+            "X": 24.5260658,
+            "Y": 496.9194,
+            "Width": 157.8199,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:3",
+            "Text": "",
+            "X": 202.606628,
+            "Y": 496.9194,
+            "Width": 157.819885,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:2",
+            "Text": "",
+            "X": 380.6872,
+            "Y": 496.9194,
+            "Width": 158.88623,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:5",
+            "Text": "",
+            "X": 559.8341,
+            "Y": 496.9194,
+            "Width": 157.819885,
+            "Height": 238.862579,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:0",
+            "Text": "",
+            "X": 737.9147,
+            "Y": 496.9194,
+            "Width": 157.819885,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-play",
+            "Text": "Select a card",
+            "X": 10.6635065,
+            "Y": 783.767761,
+            "Width": 195.142166,
+            "Height": 50.11847,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-end-turn",
+            "Text": "End turn · 2 actions",
+            "X": 210.071075,
+            "Y": 783.767761,
+            "Width": 195.142181,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-draw",
+            "Text": "Draw pile · 1",
+            "X": 8.530806,
+            "Y": 843.4834,
+            "Width": 118.364922,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-discard",
+            "Text": "Discard pile · 4",
+            "X": 126.895729,
+            "Y": 843.4834,
+            "Width": 134.3602,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-exhaust",
+            "Text": "Exhausted · 0",
+            "X": 261.25592,
+            "Y": 843.4834,
+            "Width": 126.895721,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-combat-keys",
+            "Text": "Keyboard controls",
+            "X": 388.151642,
+            "Y": 843.4834,
+            "Width": 155.687225,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-enemy",
+            "Text": "Inspect selected enemy",
+            "X": 543.838867,
+            "Y": 843.4834,
+            "Width": 191.943115,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 735.782,
+            "Y": 843.4834,
+            "Width": 175.947815,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-prev",
+            "Text": "Previous cards",
+            "X": 911.7298,
+            "Y": 843.4834,
+            "Width": 134.360168,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-next",
+            "Text": "Next cards",
+            "X": 1046.09,
+            "Y": 843.4834,
+            "Width": 106.635132,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-breath",
+            "Text": "Catch Breath · 1 action → 1 stamina",
+            "X": 1152.7251,
+            "Y": 843.4834,
+            "Width": 276.1848,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-crimson",
+            "Text": "Crimson · 2",
+            "X": 1428.90991,
+            "Y": 843.4834,
+            "Width": 111.9668,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-azure",
+            "Text": "Azure · 1",
+            "X": 1540.87671,
+            "Y": 843.4834,
+            "Width": 95.97156,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-deck",
+            "Text": "Deck and equipment",
+            "X": 1636.84827,
+            "Y": 843.4834,
+            "Width": 172.748779,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-menu",
+            "Text": "Save and return to title",
+            "X": 1809.597,
+            "Y": 843.4834,
+            "Width": 185.545044,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "Reaver",
+          "ACT 1 · TURN 3 · 0 cinders",
+          "HP 49/49",
+          "MP 0/1",
+          "SP 2/2",
+          "",
+          " 49/49",
+          "Guard 0",
+          "↑",
+          "Wandering Soldier",
+          " 25/26",
+          "Guard 0 · Strength 2 · Bleed buildup 3/7",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "final phone attack preview uses readable ranges",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-target-e1",
+            "Text": "",
+            "X": 221.800934,
+            "Y": 127.962082,
+            "Width": 182.345978,
+            "Height": 300.710876,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:1",
+            "Text": "",
+            "X": 24.5260658,
+            "Y": 477.7251,
+            "Width": 157.8199,
+            "Height": 259.12323,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:3",
+            "Text": "",
+            "X": 202.606628,
+            "Y": 477.7251,
+            "Width": 157.819885,
+            "Height": 259.12323,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:2",
+            "Text": "",
+            "X": 380.6872,
+            "Y": 477.7251,
+            "Width": 158.88623,
+            "Height": 259.12323,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:5",
+            "Text": "",
+            "X": 559.8341,
+            "Y": 477.7251,
+            "Width": 157.819885,
+            "Height": 238.862549,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:0",
+            "Text": "",
+            "X": 737.9147,
+            "Y": 477.7251,
+            "Width": 157.819885,
+            "Height": 259.12323,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-play",
+            "Text": "Play Slashing Strike",
+            "X": 10.6635065,
+            "Y": 783.767761,
+            "Width": 195.142166,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-end-turn",
+            "Text": "End turn · 2 actions",
+            "X": 210.071075,
+            "Y": 783.767761,
+            "Width": 195.142181,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-draw",
+            "Text": "Draw pile · 1",
+            "X": 8.530806,
+            "Y": 843.4834,
+            "Width": 118.364922,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-discard",
+            "Text": "Discard pile · 4",
+            "X": 126.895729,
+            "Y": 843.4834,
+            "Width": 134.3602,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-exhaust",
+            "Text": "Exhausted · 0",
+            "X": 261.25592,
+            "Y": 843.4834,
+            "Width": 126.895721,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-combat-keys",
+            "Text": "Keyboard controls",
+            "X": 388.151642,
+            "Y": 843.4834,
+            "Width": 155.687225,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-enemy",
+            "Text": "Inspect selected enemy",
+            "X": 543.838867,
+            "Y": 843.4834,
+            "Width": 191.943115,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 735.782,
+            "Y": 843.4834,
+            "Width": 175.947815,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-prev",
+            "Text": "Previous cards",
+            "X": 911.7298,
+            "Y": 843.4834,
+            "Width": 134.360168,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-next",
+            "Text": "Next cards",
+            "X": 1046.09,
+            "Y": 843.4834,
+            "Width": 106.635132,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-breath",
+            "Text": "Catch Breath · 1 action → 1 stamina",
+            "X": 1152.7251,
+            "Y": 843.4834,
+            "Width": 276.1848,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-crimson",
+            "Text": "Crimson · 2",
+            "X": 1428.90991,
+            "Y": 843.4834,
+            "Width": 111.9668,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-azure",
+            "Text": "Azure · 1",
+            "X": 1540.87671,
+            "Y": 843.4834,
+            "Width": 95.97156,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-deck",
+            "Text": "Deck and equipment",
+            "X": 1636.84827,
+            "Y": 843.4834,
+            "Width": 172.748779,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-menu",
+            "Text": "Save and return to title",
+            "X": 1809.597,
+            "Y": 843.4834,
+            "Width": 185.545044,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "Reaver",
+          "ACT 1 · TURN 3 · 0 cinders",
+          "HP 49/49",
+          "MP 0/1",
+          "SP 2/2",
+          "",
+          " 49/49",
+          "Guard 0",
+          "↑",
+          "Wandering Soldier",
+          " 25/26",
+          "Guard 0 · Strength 2 · Bleed buildup 3/7",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Tap a highlighted enemy to play · Esc cancels",
+          "Preview · You: actions 2 to 1 · Wandering Soldier: HP 25 to 16"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "final enemy tap resolves one attack and preserves existing buildup",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-target-e1",
+            "Text": "",
+            "X": 222.8673,
+            "Y": 137.559235,
+            "Width": 181.279617,
+            "Height": 300.710876,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:3",
+            "Text": "",
+            "X": 24.5260658,
+            "Y": 496.9194,
+            "Width": 157.8199,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:2",
+            "Text": "",
+            "X": 202.606628,
+            "Y": 496.9194,
+            "Width": 157.819885,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:5",
+            "Text": "",
+            "X": 380.6872,
+            "Y": 496.9194,
+            "Width": 158.88623,
+            "Height": 238.862579,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-starting:0",
+            "Text": "",
+            "X": 559.8341,
+            "Y": 496.9194,
+            "Width": 157.819885,
+            "Height": 259.1232,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-play",
+            "Text": "Select a card",
+            "X": 10.6635065,
+            "Y": 783.767761,
+            "Width": 195.142166,
+            "Height": 50.11847,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-end-turn",
+            "Text": "End turn · 1 action",
+            "X": 210.071075,
+            "Y": 783.767761,
+            "Width": 195.142181,
+            "Height": 50.11847,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-draw",
+            "Text": "Draw pile · 1",
+            "X": 8.530806,
+            "Y": 843.4834,
+            "Width": 118.364922,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-discard",
+            "Text": "Discard pile · 5",
+            "X": 126.895729,
+            "Y": 843.4834,
+            "Width": 134.3602,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-pile-exhaust",
+            "Text": "Exhausted · 0",
+            "X": 261.25592,
+            "Y": 843.4834,
+            "Width": 126.895721,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-combat-keys",
+            "Text": "Keyboard controls",
+            "X": 388.151642,
+            "Y": 843.4834,
+            "Width": 155.687225,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-enemy",
+            "Text": "Inspect selected enemy",
+            "X": 543.838867,
+            "Y": 843.4834,
+            "Width": 191.943115,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 735.782,
+            "Y": 843.4834,
+            "Width": 175.947815,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-prev",
+            "Text": "Previous cards",
+            "X": 911.7298,
+            "Y": 843.4834,
+            "Width": 134.360168,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-hand-next",
+            "Text": "Next cards",
+            "X": 1046.09,
+            "Y": 843.4834,
+            "Width": 106.635132,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-breath",
+            "Text": "Catch Breath · 1 action → 1 stamina",
+            "X": 1152.7251,
+            "Y": 843.4834,
+            "Width": 276.1848,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-crimson",
+            "Text": "Crimson · 2",
+            "X": 1428.90991,
+            "Y": 843.4834,
+            "Width": 111.9668,
+            "Height": 49.052124,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "native-azure",
+            "Text": "Azure · 1",
+            "X": 1540.87671,
+            "Y": 843.4834,
+            "Width": 95.97156,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-deck",
+            "Text": "Deck and equipment",
+            "X": 1636.84827,
+            "Y": 843.4834,
+            "Width": 172.748779,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-menu",
+            "Text": "Save and return to title",
+            "X": 1809.597,
+            "Y": 843.4834,
+            "Width": 185.545044,
+            "Height": 49.052124,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 415.87677,
+        "PanelHeight": 899.999939,
+        "Labels": [
+          "Reaver",
+          "ACT 1 · TURN 3 · 0 cinders",
+          "HP 49/49",
+          "MP 0/1",
+          "SP 2/2",
+          "",
+          " 49/49",
+          "Guard 0",
+          "↑",
+          "Wandering Soldier",
+          " 16/26",
+          "Guard 0 · Strength 2 · Bleed buildup 3/7",
+          "Attack  ·  FOE -9",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "final contextual card action names its target",
+      "report": {
+        "Controls": [
+          {
+            "Id": "native-card-inspection-back",
+            "Text": "Back",
+            "X": 320.000031,
+            "Y": 73.75001,
+            "Width": 960.0001,
+            "Height": 55.0000076,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "card-inspection-face",
+            "Text": "",
+            "X": 332.500031,
+            "Y": 146.250015,
+            "Width": 230.000031,
+            "Height": 293.75,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "native-card-inspection-action",
+            "Text": "Play Slashing Strike on Wandering Soldier",
+            "X": 320.000031,
+            "Y": 505.000031,
+            "Width": 960.0001,
+            "Height": 55.00003,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "Slashing Strike",
+          "",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Starter · Attack",
+          "1 action",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Blade",
+          "Steel and edge — direct weapon work.",
+          "Preview · You: actions 1 to 0 · Wandering Soldier: HP 16 to 7"
+        ],
+        "LayoutAttempts": 1
+      }
+    }
+  ],
+  "consoleWarningsAndErrors": [
+    {
+      "level": "warn",
+      "message": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+      "timestamp": "2026-10-03T17:35:50.479Z",
+      "url": "http://127.0.0.1:8812/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+    }
+  ],
+  "ownerAccepted": false,
+  "physicalDeviceTested": false
+}

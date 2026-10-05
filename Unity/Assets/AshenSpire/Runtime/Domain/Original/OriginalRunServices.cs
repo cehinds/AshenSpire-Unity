@@ -30,6 +30,18 @@ namespace AshenSpire.Domain.Original
         }
         public JObject LevelPlan(JObject run, int? pointsPerLevel = null)
         {
+            if (run["level"] is JObject earned)
+            {
+                var earnedPoints = Count(earned["unspentPoints"], "unspent earned points");
+                var level = Count(earned["level"], "earned character level");
+                var cap = _data["balance"]["levelUp"]?["maxLevels"];
+                var earnedCapped = cap?.Type == JTokenType.Integer && level >= (int)cap;
+                return new JObject { ["earned"] = true, ["level"] = level, ["xp"] = earned["xp"].DeepClone(),
+                    ["xpToNext"] = new OriginalEarnedProgression(_data,new JObject()).CharacterCost(level), ["points"] = earnedPoints,
+                    ["levelsTaken"] = Count(run["levelUps"],"assigned points"), ["cost"] = 0, ["cinders"] = Count(run["cinders"],"cinders"),
+                    ["affordable"] = earnedPoints > 0, ["capped"] = earnedCapped, ["short"] = 0, ["blockedBy"] = earnedPoints > 0 ? null : earnedCapped ? "cap" : "points",
+                    ["offerable"] = earnedPoints > 0, ["pointsPerLevel"] = 1, ["attributes"] = Attributes() };
+            }
             var table = _data["balance"]["levelUp"]; var levels = Count(run["levelUps"],"level purchases"); var cost = LevelCost(levels);
             var cinders = Count(run["cinders"],"cinders"); var capped = table?["maxLevels"]?.Type == JTokenType.Integer && levels >= Count(table["maxLevels"],"level cap");
             var points = pointsPerLevel > 0 ? pointsPerLevel.Value : Math.Max(1,Count(table?["pointsPerLevel"],"points per level",1));
@@ -39,6 +51,11 @@ namespace AshenSpire.Domain.Original
         }
         public JObject LevelBudget(JObject run)
         {
+            if (run["level"] is JObject earned)
+            {
+                var points = Count(earned["unspentPoints"],"unspent earned points");
+                return new JObject { ["earned"] = true, ["levels"] = points, ["points"] = points, ["costs"] = new JArray(Enumerable.Repeat(0,points)), ["total"] = 0 };
+            }
             var taken = Count(run["levelUps"],"level purchases"); var left = Count(run["cinders"],"cinders"); var costs = new JArray();
             var cap = _data["balance"]["levelUp"]?["maxLevels"]; int total = 0;
             for (var k = 0; ; k++)
@@ -91,6 +108,7 @@ namespace AshenSpire.Domain.Original
                 {
                     var plan = LevelPlan(next,1); if (!(bool)plan["offerable"]) throw new InvalidOperationException("Level budget changed during allocation.");
                     next["cinders"] = (int)next["cinders"] - (int)plan["cost"];
+                    if (next["level"] is JObject earned) earned["unspentPoints"] = Count(earned["unspentPoints"],"unspent earned points") - 1;
                     next["attributes"][id] = checked(Count(next["attributes"][id],"attribute")+1);
                     next["levelUps"] = checked((int)plan["levelsTaken"]+1); next["levelPoints"] = checked(Count(next["levelPoints"],"granted level points")+1);
                     _reconcile(next); paid.Add(new JObject { ["attributeId"] = id, ["cost"] = plan["cost"].DeepClone(), ["level"] = next["levelUps"].DeepClone() });

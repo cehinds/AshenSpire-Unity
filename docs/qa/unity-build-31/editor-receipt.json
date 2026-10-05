@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "tool": "https://github.com/cehinds/AshenedSpire-Editor",
+  "hashes": {
+    "src/native/model/presentationSequence.js": "5f5db15098c8fe1be08432eb01b5aae7dbac493b955926f81aaf359fe803bd0b",
+    "src/native/config/generated/ui.js": "5aa666535e7e277be894849c28bae6c11f2a04e9e17304bd60adf7fbaffae279",
+    "src/native/config/authored.js": "a4159d8572187e34a7f4209e005ce0fe06dcc07d02c19fbda954faabb8acc52e"
+  },
+  "samples": 21,
+  "use": "Authored pose/effect timing and reduced-flash reference for the Unity presentation pass.",
+  "boundary": "Editor sampler only; exported Unity player must be tested separately. No original or editor files modified."
+}

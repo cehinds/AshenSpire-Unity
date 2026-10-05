@@ -109,3 +109,16 @@ test('--case selects exactly one case and refuses a stale case count',()=>{
  assert.throws(()=>selectedCases(4,['--case=4/4']),/outside/);
  assert.throws(()=>selectedCases(4,['--case=one']),/Use --case/);
 });
+
+
+test('guided creation reaches optional fields using visible navigation',async()=>{
+ const ui=Object.create(NativeUiDriver.prototype);let step=0;const clicks=[];
+ const render=()=>{ui.controls={Controls:[{Id:'native-creation-back',Enabled:true},...(step<4?[{Id:'native-creation-next',Text:'Next · '+['Attributes','Equipment','Relic','Ready'][step],Enabled:true}]:step===4?[{Id:'native-customize',Enabled:true}]:[{Id:'native-name',Enabled:true}])]};};
+ ui.click=async id=>{clicks.push(id);step=id==='native-customize'?6:id==='native-creation-back'?(step===6?4:step-1):step+1;render();};render();
+ await ui.creationControl('native-name');assert.equal(step,6);assert.deepEqual(clicks,['native-creation-next','native-creation-next','native-creation-next','native-creation-next','native-customize']);
+});
+test('guided creation refuses to skip an incomplete attributes step',async()=>{
+ const ui=Object.create(NativeUiDriver.prototype);ui.controls={Controls:[{Id:'native-creation-back',Enabled:true},{Id:'native-creation-next',Text:'Next · Equipment',Enabled:false}]};
+ ui.click=async()=>{throw Error('must not activate a disabled control');};
+ await assert.rejects(()=>ui.creationControl('native-name'),/complete the current step/);
+});

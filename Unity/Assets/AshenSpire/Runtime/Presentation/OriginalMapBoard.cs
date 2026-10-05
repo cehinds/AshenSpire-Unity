@@ -58,21 +58,24 @@ namespace AshenSpire.Presentation
             _authored = JObject.Parse(Resources.Load<TextAsset>("Original/map-presentation").text);
             var preferences = _services.Read?.Invoke(scope) ?? new JObject();
             string Preference(string key) => preferences[key]?.Type == JTokenType.String ? (string)preferences[key] : null;
-            _mode = scope == "coop" ? "path" : Preference("mode") == "path" ? "path" : "fog";
+            _mode = scope == "coop" ? "path" : Preference("mode") == "fog" ? "fog" : "path";
             _setting = OriginalMapViewport.SavedZoom(Preference("setting")).HasValue ? Preference("setting") : "Fit";
             _glow = preferences["shrineGlow"]?.Type != JTokenType.Boolean || (bool)preferences["shrineGlow"];
             if (Preference("identity") == identity) _saved = OriginalMapViewport.Snapshot.FromJson(preferences["camera"]);
             name = _prefix + "-map"; AddToClassList("map-board");
-            var toolbar = Row(); Add(toolbar);
+            var toolbar = Row(); toolbar.AddToClassList("map-secondary-tools"); toolbar.style.display = DisplayStyle.None;
             Control(toolbar, "zoom-out", "-", () => Zoom(-1)).tooltip = "Zoom out";
             _fit = Control(toolbar, "fit", "Fit", () => { _setting = "Fit"; Place(true); });
             Control(toolbar, "zoom-in", "+", () => Zoom(1)).tooltip = "Zoom in";
             Control(toolbar, "recenter", "Recenter", () => { _setting = "Fit"; Place(true); });
             var options = Row(); Add(options);
-            if (scope == "solo") _modeButton = Control(options, "mode", ModeLabel, () => { _mode = _mode == "fog" ? "path" : "fog"; _modeButton.text = ModeLabel; Place(true); });
-            _glowButton = Control(options, "glow", GlowLabel, () => { _glow = !_glow; _glowButton.text = GlowLabel; Place(); });
-            Control(options, "routes", "Routes", Routes);
+            Control(options, "view-options", "Map options", () => { toolbar.style.display = toolbar.style.display == DisplayStyle.None ? DisplayStyle.Flex : DisplayStyle.None; });
+            Control(options, "routes", "Choose route", Routes);
             Control(options, "legend", "Key", Legend);
+            Add(toolbar);
+            var extra = toolbar;
+            if (scope == "solo") _modeButton = Control(extra, "mode", ModeLabel, () => { _mode = _mode == "fog" ? "path" : "fog"; _modeButton.text = ModeLabel; Place(true); });
+            _glowButton = Control(extra, "glow", GlowLabel, () => { _glow = !_glow; _glowButton.text = GlowLabel; Place(); });
             _viewport.name = _prefix + "-map-viewport"; _viewport.AddToClassList("map-viewport"); _viewport.focusable = true;
             _content.AddToClassList("map-content"); _viewport.Add(_content); Add(_viewport);
             _overlay.AddToClassList("map-overlay"); _overlay.style.display = DisplayStyle.None; _viewport.Add(_overlay);
@@ -126,7 +129,7 @@ namespace AshenSpire.Presentation
             if (recenter) _setting = "Fit";
             _scale = Math.Max(.1, _services.DisplayScale?.Invoke() ?? 1);
             _knowledge = OriginalMapKnowledge.Project(_map, _path, _current, _mode == "fog", _reveal, _glow);
-            var layout = new OriginalMapViewport(OriginalMapViewport.NodesFromMap(_map), (int)_map["columns"], (double)_authored["tapPixels"], _scale);
+            var layout = new OriginalMapViewport(OriginalMapViewport.NodesFromMap(_map), (int)_map["columns"], Math.Max((double)_authored["tapPixels"], _services.MinimumTapSize?.Invoke() ?? 44), _scale);
             _camera = layout.Project(new OriginalMapViewport.Request {
                 ActNumber = _act, CurrentId = _current, ReachableIds = _legal, VisibleIds = _knowledge.VisibleIds,
                 StartIds = (_map["startIds"] as JArray ?? new JArray()).Values<string>(), Width = width, Height = height,
@@ -148,9 +151,9 @@ namespace AshenSpire.Presentation
                 ColorUtility.TryParseHtmlString((string)row["color"], out var color);
                 var icon = new MapIcon((string)row["icon"], node.Current ? new Color(.18f,.16f,.12f) : color); button.Add(icon);
                 button.SetEnabled(legal); _content.Add(button);
-                if (node.Current || node.Revealed || _votes.ContainsKey(id))
+                if (legal || node.Current || node.Revealed || _votes.ContainsKey(id))
                 {
-                    var label = new Label(_votes.TryGetValue(id, out var names) ? string.Join(", ", names) : node.Current ? "YOU" : "REVEALED") { pickingMode = PickingMode.Ignore };
+                    var label = new Label(_votes.TryGetValue(id, out var names) ? string.Join(", ", names) : node.Current ? "YOU" : legal ? (string)row["name"] + " · ENTER" : "REVEALED") { pickingMode = PickingMode.Ignore };
                     label.AddToClassList("map-marker"); label.style.left = (float)bounds.X0 - 24; label.style.top = (float)bounds.Y1 + 2; label.style.width = (float)bounds.Width + 48; _content.Add(label);
                 }
                 button.RegisterCallback<PointerEnterEvent>(_ => _detail.text = (string)row["name"] + " · " + state + ". " + row["description"]);

@@ -5,9 +5,10 @@ const {NativeUiDriver}=require('./native-ui-driver.cjs');
 let browser,ui;
 (async()=>{
  const url=process.argv[2],output=path.resolve(process.argv[3]);
- browser=await chromium.launch({channel:'msedge',headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({channel:'msedge',headless:true,args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  const results=[];
- for(const viewport of [{width:320,height:640},{width:1440,height:900}]){
+ const viewports=process.env.AS_LAYOUT_MATRIX==='1'?[{width:320,height:640},{width:390,height:844},{width:768,height:1024},{width:1440,height:900}]:[{width:320,height:640},{width:1440,height:900}];
+ for(const viewport of viewports){
   const context=await browser.newContext({viewport}),page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));
   await ui.open(url,{dismissWelcome:false});
@@ -37,11 +38,26 @@ let browser,ui;
   ui.controls=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});
   await ui.until(()=>ui.has('native-new')||ui.has('native-welcome-continue'),'reloaded landing');
   ui.check(ui.has('native-new')&&!ui.has('native-welcome-continue'),'welcome acknowledgement persists through reload');
-  await ui.click('settings',false);await ui.click('settings-section-5',false);await ui.click('native-guide');
+  await ui.click('settings',false);await ui.click('settings-section-6',false);await ui.click('native-guide');
   ui.check(labels().includes('READ THE BATTLE'),'field guide remains available from Settings');
-  await ui.click('native-guide-back');ui.check(ui.has('settings-section-5'),'guide returns to Settings');
-  await ui.click('settings-section-5',false);await ui.click('back',false);await ui.click('native-new');
+  await ui.click('native-guide-back');ui.check(ui.has('settings-section-6'),'guide returns to Settings');
+  await ui.click('settings-section-6',false);await ui.click('back',false);await ui.click('native-new');
   ui.check(ui.has('native-begin'),'normal character creation remains reachable after onboarding');
+  if(process.env.AS_TERMINAL_LAYOUT==='1'&&viewport.width===320){
+   await ui.useStandard();await ui.fill('native-seed','1');await ui.command('native-begin');await ui.command('native-route-'+ui.state.legalNodes[0]);
+   for(let turn=0;ui.state.phase==='Combat'&&turn<30;turn++)await ui.command('native-end-turn');
+   ui.check(ui.state.phase==='Defeat','actual normal enemy turns reach the death summary');
+   const terminal=JSON.stringify(ui.state);
+   for(const size of viewports){
+    await page.setViewportSize(size);await page.waitForTimeout(1200);
+    await ui.click('native-deck');ui.check(JSON.stringify(ui.state)===terminal,'terminal inventory preserves the completed run at '+size.width);await ui.click('native-deck-back');
+    await ui.shot('death-'+size.width);await ui.click('native-menu');await ui.command('native-continue');
+    ui.check(JSON.stringify(ui.state)===terminal,'terminal actions remain reachable and exact at '+size.width);
+   }
+   await ui.click('native-menu');await ui.click('native-profile');
+   ui.check(labels().some(t=>t.trim().startsWith('1 climbs · 0 victories')),'terminal navigation records the real defeat exactly once');
+   for(const size of viewports){await page.setViewportSize(size);await page.waitForTimeout(1200);await ui.shot('chronicle-'+size.width);await ui.click('native-profile-back');await ui.click('native-profile');ui.check(labels().some(t=>t.trim().startsWith('1 climbs · 0 victories')),'Chronicle navigation preserves its record at '+size.width);}
+  }
   ui.check(ui.errors.length===0,'no browser or Unity errors');ui.save(true);
   results.push({viewport,checks:ui.checks.length});await context.close();
  }

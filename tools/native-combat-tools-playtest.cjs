@@ -7,8 +7,8 @@ let browser,ui;
 (async()=>{
  const url=process.argv[2];if(!url)throw Error('Pass the compiled Web URL.');
  const output=path.resolve(process.argv[3]||'TestResults/NativeCombatTools');fs.mkdirSync(output,{recursive:true});
- const viewports=[{width:320,height:640},{width:1440,height:900}],summaries=[];
- browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ const viewports=process.env.AS_LAYOUT_MATRIX==='1'?[{width:320,height:640},{width:390,height:844},{width:768,height:1024},{width:1440,height:900}]:[{width:320,height:640},{width:1440,height:900}],summaries=[];
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  for(const index of selectedCases(viewports.length)){
   const viewport=viewports[index],context=await browser.newContext({viewport,deviceScaleFactor:1}),page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,viewport.width+'x'+viewport.height));
@@ -49,6 +49,11 @@ let browser,ui;
   ui.check(labels().includes('Combat: end turn · Z'),'combat help displays the saved binding');
   await ui.key('z');await settle();ui.check(state()===start,'help blocks combat shortcuts');
   await ui.shot('02-combat-controls');await keyboard('Escape',()=>ui.has('native-end-turn'),'Escape closes help');
+  await ui.click('native-inspect-enemy');
+  ui.check(ui.has('native-inspection-back') && labels().some(text=>text.startsWith('HP ')), 'enemy inspection exposes health and telegraph');
+  await ui.key('z'); await settle();
+  ui.check(state()===start, 'enemy inspection does not advance combat');
+  await ui.shot('02-enemy-inspection'); await keyboard('Escape',()=>ui.has('native-end-turn'),'Escape closes enemy inspection');
   const first=ui.state.cards[0],cost=first.cost;
   ui.check(cost.action<=ui.state.player.energy&&cost.mana<=ui.state.player.mana&&cost.stamina<=ui.state.player.stamina,'first seeded card can be played');
   await keyboard('1',()=>ui.has('native-play'),'positional key selects first card');

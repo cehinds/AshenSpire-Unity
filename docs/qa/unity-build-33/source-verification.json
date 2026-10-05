@@ -1,0 +1,16 @@
+{
+  "version": "0.0.30.2",
+  "buildNumber": 33,
+  "builtAt": "2026-10-03T05:24:50.0070476Z",
+  "sourceDigest": "0c9916e6e4bbb00ff3f75803f6696876885b43fb0a311762b15c2adb197cbb90",
+  "sourceMatches": true,
+  "payloadHashesVerified": 8,
+  "compileSourceFiles": 135,
+  "domainChecks": 158,
+  "coopChecks": 461,
+  "coopCommandBatches": 146,
+  "panelStateChecks": 21,
+  "companionReleaseCompiled": true,
+  "ownerAccepted": false,
+  "physicalDeviceTested": false
+}

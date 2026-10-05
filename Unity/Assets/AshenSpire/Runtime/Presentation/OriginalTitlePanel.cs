@@ -10,27 +10,25 @@ namespace AshenSpire.Presentation
     public sealed class OriginalTitlePanel : VisualElement
     {
         public OriginalTitlePanel(Action begin, Action resume, bool canResume, Action collection,
-            Action cooperative, Action settings, Action extras, Action saves = null, bool unsavedProgress = false)
+            Action cooperative, Action settings, Action extras, Action saves = null, Action quickStart = null, Action history = null, bool unsavedProgress = false)
         {
             AddToClassList("original-title");
             var wordmark = new Label("ASHENEDSPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
             RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .09f, 22, 58));
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
-            var invitation = new Label(canResume ? "Your climb is waiting." : "Gather your cards. Brave the Spire.");
-            invitation.AddToClassList("original-title-invitation"); Add(invitation);
-            // US-13.3 loadSlot: when the climb in memory could not be saved, Continue would replace it with
-            // the older saved checkpoint, so it needs a hold or a second tap (HoldConfirmButton).
-            var primary = canResume ? (unsavedProgress ? Held("native-continue", "Continue the saved climb", resume) : Entry("native-continue", "Continue the climb", resume)) : Entry("native-new", "Begin a new climb", begin);
-            primary.AddToClassList("title-primary"); Add(primary);
             var menu = new VisualElement(); menu.AddToClassList("title-menu-grid"); Add(menu);
-            menu.Add(canResume ? Entry("native-new", "New climb", begin) : Entry("native-continue", "Continue", resume, false));
-            if (saves != null) menu.Add(Entry("native-slots", "Saved climbs", saves));
-            menu.Add(Entry("native-profile", "Collection", collection));
-            menu.Add(Entry("native-coop", "Climb together", cooperative));
+            var resumeButton = canResume && unsavedProgress ? Held("native-continue", "Continue the saved climb", resume) : Entry("native-continue", "Continue", resume, canResume); menu.Add(resumeButton);
+            if (canResume) resumeButton.AddToClassList("title-primary");
+            if (quickStart != null) { var quick = Entry("native-quick-start", "Quick start", quickStart); quick.AddToClassList("title-quick"); quick.tooltip = "Begin with the recommended character and a fresh seed."; menu.Add(quick); }
+            if (saves != null) menu.Add(Entry("native-slots", "Load", saves));
+            var start = Entry("native-new", "Begin the climb", begin); start.AddToClassList("title-new"); menu.Add(start);
+            if (history != null) menu.Add(Entry("native-history", "Run history", history));
+            menu.Add(Entry("native-profile", "Compendium", collection));
             menu.Add(Entry("settings", "Settings", settings));
-            menu.Add(Entry("title-extras", "Extras", extras));
+            menu.Add(Entry("native-coop", "Forsaken together", cooperative));
             Add(Ornament());
+            var more = Entry("title-extras", "More", extras); more.AddToClassList("title-more"); Add(more);
             var tagline = new Label("THE EMBER FLOWS UPWARD. FOLLOW IT."); tagline.AddToClassList("original-tagline"); Add(tagline);
         }
         private static Button Entry(string id, string label, Action action, bool enabled = true)

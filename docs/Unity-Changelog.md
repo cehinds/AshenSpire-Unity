@@ -3,7 +3,71 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.1 · build 35 · 2026-10-05
+
+- Integrate guided setup, card QoL and illustrated Unity combat with current dev; full parity and owner acceptance remain open.
+
 ## 0.0.33.0 · build 34 · 2026-10-02
+## 0.0.30.12 · build 43 · 2026-10-05
+
+- One-screen setup defaults, readable route map and consistent 2:3 card faces.
+
+## 0.0.30.11 · build 42 · 2026-10-05
+
+- Readable hand, raised enemy labels, scrollable utilities, painted 2D prefabs and repaired sword hilt.
+
+## 0.0.30.10 · build 41 · 2026-10-04
+
+- Replace scrolling combat toolbar with contextual tools, fitted hand, action orb and pile controls; author seven painted SpriteRenderer prefabs and repair soldier hilt.
+
+## 0.0.30.9 · build 40 · 2026-10-04
+
+- Preserve all eleven reference texture dimensions without NPOT resampling, validate imported dimensions before export, and separate HUD statuses from pool labels.
+
+## 0.0.30.8 · build 39 · 2026-10-04
+
+- Correct portrait actor aspect ratios, separate HUD and tools, position telegraph overlays, and keep resolved card rules compact.
+
+## 0.0.30.7 · build 38 · 2026-10-04
+
+- Apply the owner-selected 4175 battlefield, painted actors, Cormorant typography and card fan in native Unity.
+- Port and compare current card cost and stance choices; published test-898 gameplay migration remains incomplete.
+
+## 0.0.30.6 · build 37 · 2026-10-04
+
+- Import native illustrated card documents and title art from published test 898; preserve legacy costs and saves.
+- Add current XP ledgers, stat-row arithmetic and tag adapters; full content migration and visual parity remain in progress.
+
+## 0.0.30.5 · build 36 · 2026-10-03
+
+- No notes recorded.
+
+## 0.0.30.4 · build 35 · 2026-10-03
+
+- Resolve authored status inspection numbers and live meter thresholds; preserve unknown bindings and combat state.
+
+## 0.0.30.3 · build 34 · 2026-10-03
+
+- Show status buildup consistently across solo and co-op; use readable card preview/action words.
+
+## 0.0.30.2 · build 33 · 2026-10-02
+
+- Add solo and host-generated co-op card outcome previews without mutating live combat or revealing future draws.
+- Add upward drag and flick target play with cancellation, horizontal browsing and inspection preserved.
+- Polish card offer alignment, readable filters, keyboard choices and hostile target highlighting.
+- Let Escape close co-op card reading and cancel selection without leaving the shared run.
+
+## 0.0.30.1 · build 32 · 2026-10-02
+
+- Add visual card offers, readable card and tag inspection, and searchable deck and pile browsing.
+- Add hand hold/right-click inspection and preserve the last legal co-op target.
+
+## 0.0.30.0 · build 31 · 2026-09-30
+
+- Add controller rebinding, accessibility and display preferences, automatic solo rewards, enemy inspection and authoritative co-op feedback.
+- Complete Phase 2 Web verification: 6,280 checks in 48 matching cases, all 22 events/62 choices, four viewports, custom modes, all Ascensions/modifiers, three-act victory and Endless Act 4. Owner/device acceptance remains open.
+
+## 0.0.29.0 · build 30 · 2026-09-29
 
 - Sealed and Draft runs can no longer extract equipment cards at the smith
 

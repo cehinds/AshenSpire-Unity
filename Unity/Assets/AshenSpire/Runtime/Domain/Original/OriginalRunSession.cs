@@ -282,6 +282,11 @@ namespace AshenSpire.Domain.Original
             return true;
         });
         public bool UseService(string service,JObject request) => Service(service,request);
+        public bool ClaimProgression(string skillId = null) => Change((run,rng) =>
+        {
+            Require(run,OriginalRunPhase.Rewards);
+            return _callbacks.ApplyService(run,skillId == null ? "claimLevel" : "claimSkill",new JObject { ["skillId"] = skillId },rng);
+        });
         public int OpenedSets(string slotId) => _rules.OpenedSets(_state,slotId);
         public bool Equip(string slotId,int setIndex,string itemId) => EquipmentCommand("equip",new JObject { ["slotId"] = slotId, ["setIndex"] = setIndex, ["itemId"] = itemId });
         public bool SelectSet(string slotId,int index) => EquipmentCommand("selectSet",new JObject { ["slotId"] = slotId, ["setIndex"] = index });

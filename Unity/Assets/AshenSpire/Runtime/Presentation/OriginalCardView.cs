@@ -46,10 +46,12 @@ namespace AshenSpire.Presentation
         public string FullText { get; }
         public Label Art { get; }
         internal Func<OriginalCardView> Ghost { get; }
+        private bool _suppressClick;
 
         public OriginalCardView(OriginalContentCatalog catalog, JObject card, JObject cost,
-            JObject player, bool selected, Action clicked, string controlId, Font glyphFont = null) : base(clicked)
+            JObject player, bool selected, Action clicked, string controlId, Font glyphFont = null, Action inspect = null, Func<Vector2, bool, bool> drop = null, Action<Vector2?, bool> aim = null) : base()
         {
+            this.clicked += () => { if (!_suppressClick) clicked?.Invoke(); };
             if (catalog == null) throw new ArgumentNullException(nameof(catalog));
             if (card == null) throw new ArgumentNullException(nameof(card));
             if (cost == null) throw new ArgumentNullException(nameof(cost));
@@ -71,6 +73,7 @@ namespace AshenSpire.Presentation
                 motif.style.backgroundColor = classTint; Add(motif); AddToClassList("has-class-tint");
             }
             var pip = new VisualElement { pickingMode = PickingMode.Ignore }; pip.AddToClassList("original-card-pip"); Add(pip);
+            AddToClassList("class-" + ((string)card["class"] ?? "neutral"));
             if ((bool?)card["upgraded"] == true || ((string)card["name"] ?? "").EndsWith("+", StringComparison.Ordinal)) AddToClassList("upgraded");
 
             var title = (string)card["name"] ?? (string)card["id"];
@@ -134,10 +137,68 @@ namespace AshenSpire.Presentation
                 (shortage == null ? "" : " " + shortage) +
                 (tagLines.Count == 0 ? "" : "\n" + string.Join("\n", tagLines));
             tooltip = FullText;
+            var illustrated = new OwnerCardFace(card,cost,title,OriginalCardText.Describe(card,catalog,includeRatingBreakdown:false),typeName);
+            if (illustrated != null)
+            {
+                Clear(); AddToClassList("owner-card"); Add(illustrated);
+                if (shortage != null) Add(Text(shortage,"card-shortage","original-card-shortage"));
+            }
             // card.hover lift/scale, only inside a hand rail. The lift is drawn by an unnamed,
             // unpickable copy in FeelDriver's overlay, so this control never moves or reorders.
             Ghost = () => { var copy = new OriginalCardView(catalog, card, cost, player, selected, null, "", glyphFont); copy.Art.text = Art.text; copy.Art.style.unityFont = Art.style.unityFont; return copy; };
             FeelDriver.HandCardHover(this);
+            if (inspect != null || drop != null) BindInspection(inspect, drop, aim);
+        }
+
+        private void BindInspection(Action inspect, Func<Vector2, bool, bool> drop, Action<Vector2?, bool> aim)
+        {
+            IVisualElementScheduledItem hold = null; var down = false; var dragging = false; var start = Vector2.zero; var pointer = -1;
+            var points = new List<(Vector2 Position, double Time)>();
+            void Sample(Vector2 position) { var now = (double)Time.realtimeSinceStartup; points.Add((position, now)); while (points.Count > 2 && points[1].Time < now - .12) points.RemoveAt(0); }
+            void Cancel()
+            {
+                down = false; dragging = false; hold?.Pause(); hold = null;
+                RemoveFromClassList("card-dragging"); aim?.Invoke(null, false);
+                if (pointer >= 0 && this.HasPointerCapture(pointer)) this.ReleasePointer(pointer);
+                pointer = -1;
+            }
+            void Suppress() { _suppressClick = true; schedule.Execute(() => _suppressClick = false).StartingIn(100); }
+            RegisterCallback<PointerDownEvent>(e =>
+            {
+                if (e.button == 1 && inspect != null) { Cancel(); Suppress(); e.StopImmediatePropagation(); inspect(); return; }
+                if (e.button != 0) return;
+                Cancel(); down = true; start = e.position; pointer = e.pointerId;
+                points.Clear(); Sample(start);
+                if (inspect != null) hold = schedule.Execute(() => { if (!down || dragging) return; Suppress(); Cancel(); inspect(); }).StartingIn(550);
+            }, TrickleDown.TrickleDown);
+            RegisterCallback<PointerMoveEvent>(e =>
+            {
+                if (!down) return;
+                var delta = (Vector2)e.position - start;
+                Sample(e.position);
+                if (delta.magnitude > 12) { hold?.Pause(); hold = null; }
+                // Horizontal motion belongs to the scrolling hand. Only upward
+                // motion arms a card drag, so browsing never plays a card.
+                if (!dragging && drop != null && delta.y < -18 && Mathf.Abs(delta.y) > Mathf.Abs(delta.x))
+                { dragging = true; Suppress(); this.CapturePointer(e.pointerId); AddToClassList("card-dragging"); }
+                if (dragging) { aim?.Invoke(e.position, OriginalCardFlick.DistanceMet(start.x, start.y, e.position.x, e.position.y)); e.StopImmediatePropagation(); }
+            }, TrickleDown.TrickleDown);
+            RegisterCallback<PointerUpEvent>(e =>
+            {
+                var play = dragging; var position = (Vector2)e.position;
+                var now = (double)Time.realtimeSinceStartup;
+                var recent = points.FirstOrDefault(p => p.Time >= now - .12 && p.Time < now);
+                var flick = play && OriginalCardFlick.Qualifies(start.x, start.y, position.x, position.y, recent.Position.y, now - recent.Time);
+                if (play) { Suppress(); e.StopImmediatePropagation(); }
+                Cancel();
+                if (play) drop(position, flick);
+            }, TrickleDown.TrickleDown);
+            RegisterCallback<PointerLeaveEvent>(_ => { if (!dragging) { hold?.Pause(); hold = null; } });
+            RegisterCallback<PointerCancelEvent>(_ => Cancel());
+            RegisterCallback<PointerCaptureOutEvent>(_ => Cancel());
+            RegisterCallback<DetachFromPanelEvent>(_ => Cancel());
+            RegisterCallback<FocusOutEvent>(_ => { if (!dragging) Cancel(); });
+            RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Escape && dragging) { Suppress(); Cancel(); e.StopImmediatePropagation(); } }, TrickleDown.TrickleDown);
         }
 
         private static void ApplyGlyphFont(Label label, string glyph)

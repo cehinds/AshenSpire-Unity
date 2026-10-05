@@ -1,0 +1,1538 @@
+{
+  "version": "0.0.30.4",
+  "sourceDigest": "a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465",
+  "sharedSeed": 2026,
+  "hostUrl": "http://127.0.0.1:8813/",
+  "peerUrl": "http://localhost:8813/",
+  "input": "Normal CUA UI actions; actual self-contained companion executable",
+  "checks": [
+    {
+      "check": "two authenticated players vote into first battle",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 601.250061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1072.50012,
+            "Y": 113.750008,
+            "Width": 466.25,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.499969,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:5",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 236.249969,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:8",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 276.249969,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 3 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 1 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 48/48",
+          "Guard 0",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Weapon Technique selection leaves pools/actions/guard unchanged and preview uses to",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-self-target",
+            "Text": "",
+            "X": 61.2500038,
+            "Y": 113.750008,
+            "Width": 536.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 602.500061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1073.75012,
+            "Y": 113.750008,
+            "Width": 465,
+            "Height": 300.000031,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:5",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:8",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 276.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Play Weapon Technique",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 3 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 1 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 48/48",
+          "Guard 0",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "Preview · You: guard 0 to 3, actions 3 to 2"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "co-op reader has readable preview and Play Weapon Technique on Forsaken",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-card-inspection-back",
+            "Text": "Back",
+            "X": 320.000031,
+            "Y": 102.500008,
+            "Width": 960.0001,
+            "Height": 55.0000076,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "card-inspection-face",
+            "Text": "",
+            "X": 332.500031,
+            "Y": 175.000015,
+            "Width": 230.000031,
+            "Height": 296.25,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-inspection-action",
+            "Text": "Play Weapon Technique on Forsaken",
+            "X": 320.000031,
+            "Y": 536.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 601.250061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Weapon Technique",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "Starter · Skill",
+          "1 action",
+          "Gain 3 Block. Draw 1 card.",
+          "Blade",
+          "Steel and edge — direct weapon work.",
+          "Flourish",
+          "Finesse — footwork and multi-hit.",
+          "Preview · You: guard 0 to 3, actions 3 to 2"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Escape cancels reader/selection without changing actions, health, guard or pools",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 601.250061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1072.50012,
+            "Y": 113.750008,
+            "Width": 466.25,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:5",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:8",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 276.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 3 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 1 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 48/48",
+          "Guard 0",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "Weapon Technique actual guard 0 to 3 and actions 3 to 2 match host preview",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 601.250061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1072.50012,
+            "Y": 113.750008,
+            "Width": 466.25,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:5",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:4",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 2 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 1 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 3",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 48/48",
+          "Guard 0",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "Card played  ·  BLOCK +3",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "peer Gorefire preview: actions 3 to 2, mana 1 to 0, Husk Brute HP 48 to 41, Bleed buildup 0 to 3",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 600.000061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1071.25012,
+            "Y": 113.750008,
+            "Width": 467.5,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:8",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 276.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:9",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 332.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Play Gorefire Slash",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 3 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 2 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 48/48",
+          "Guard 0",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "1",
+          "◆ 1",
+          "Gorefire Slash",
+          "🗡",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "🩸",
+          "Blood",
+          "🔥",
+          "Gorefire",
+          "Deal 7 damage. Apply 3 Bleed. Includes +2 total damage from Attack Rating.",
+          "Preview · You: actions 3 to 2, mana 1 to 0 · Husk Brute: HP 48 to 41, Bleed buildup 0 to 3"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "peer reader names Play Gorefire Slash on Husk Brute and preserves preview",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-card-inspection-back",
+            "Text": "Back",
+            "X": 320.000031,
+            "Y": 102.500008,
+            "Width": 960.0001,
+            "Height": 55.0000076,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "card-inspection-face",
+            "Text": "",
+            "X": 332.500031,
+            "Y": 175.000015,
+            "Width": 230.000031,
+            "Height": 348.750061,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-inspection-action",
+            "Text": "Play Gorefire Slash on Husk Brute",
+            "X": 320.000031,
+            "Y": 588.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 320.000031,
+            "Y": 653.750061,
+            "Width": 960.0001,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Gorefire Slash",
+          "1",
+          "◆ 1",
+          "Gorefire Slash",
+          "🗡",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "🩸",
+          "Blood",
+          "🔥",
+          "Gorefire",
+          "Deal 7 damage. Apply 3 Bleed. Includes +2 total damage from Attack Rating.",
+          "Starter · Attack",
+          "1 action · 1 MP",
+          "Deal 7 damage. Apply 3 Bleed. Includes +2 total damage from Attack Rating.",
+          "Blade",
+          "Steel and edge — direct weapon work.",
+          "Blood",
+          "Bleed, and the letting of it.",
+          "Gorefire",
+          "The blood-and-flame stance.",
+          "Preview · You: actions 3 to 2, mana 1 to 0 · Husk Brute: HP 48 to 41, Bleed buildup 0 to 3"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "peer Gorefire actual HP 48 to 41, mana 1 to 0, actions 3 to 2 and Bleed buildup 3/7 match preview",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 601.250061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1072.50012,
+            "Y": 113.750008,
+            "Width": 466.25,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:2",
+            "Text": "",
+            "X": 635.000061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:8",
+            "Text": "",
+            "X": 812.500061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 276.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 2 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 2 · 0 cinders",
+          "HP 49/49",
+          "MP 0/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 41/48",
+          "Guard 0 · Bleed buildup 3/7",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "Attack · FOE bleed +3  ·  FOE -7",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Weapon Technique",
+          "✧",
+          "SKILL",
+          "⚔",
+          "Blade",
+          "✧",
+          "Flourish",
+          "Gain 3 Block. Draw 1 card.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    },
+    {
+      "check": "host sees peer damage and Bleed buildup 3/7 while its own mana 1 and actions 3 stay unchanged",
+      "report": {
+        "Controls": [
+          {
+            "Id": "coop-target-e1",
+            "Text": "",
+            "X": 601.250061,
+            "Y": 113.750008,
+            "Width": 466.250061,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-target-e2",
+            "Text": "",
+            "X": 1072.50012,
+            "Y": 113.750008,
+            "Width": 466.25,
+            "Height": 300.000031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:0",
+            "Text": "",
+            "X": 545.000061,
+            "Y": 431.250031,
+            "Width": 158.75,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:7",
+            "Text": "",
+            "X": 723.750061,
+            "Y": 431.250031,
+            "Width": 157.5,
+            "Height": 236.250031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-card-starting:1",
+            "Text": "",
+            "X": 901.250061,
+            "Y": 431.250031,
+            "Width": 158.750061,
+            "Height": 257.500031,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-play",
+            "Text": "Select a card",
+            "X": 60.0000038,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-end-turn",
+            "Text": "End turn · 3 actions",
+            "X": 802.500061,
+            "Y": 715.000061,
+            "Width": 737.500061,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-inspect-card",
+            "Text": "Inspect selected card",
+            "X": 57.5000038,
+            "Y": 778.750061,
+            "Width": 177.500015,
+            "Height": 55,
+            "Enabled": false,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-prev",
+            "Text": "Previous cards",
+            "X": 235.000015,
+            "Y": 778.750061,
+            "Width": 135.000015,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-cards-next",
+            "Text": "Next cards",
+            "X": 370.000031,
+            "Y": 778.750061,
+            "Width": 107.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-flasks",
+            "Text": "Flasks",
+            "X": 477.500031,
+            "Y": 778.750061,
+            "Width": 78.75003,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-deck",
+            "Text": "Deck and equipment",
+            "X": 556.250061,
+            "Y": 778.750061,
+            "Width": 173.75,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          },
+          {
+            "Id": "coop-menu",
+            "Text": "Disconnect and return to title",
+            "X": 1372.50012,
+            "Y": 838.750061,
+            "Width": 167.5,
+            "Height": 55,
+            "Enabled": true,
+            "Focused": false
+          }
+        ],
+        "PanelWidth": 1600.00012,
+        "PanelHeight": 900.000061,
+        "Labels": [
+          "",
+          "Reaver",
+          "ACT 1 · TURN 2 · 0 cinders",
+          "HP 49/49",
+          "MP 1/1",
+          "SP 2/2",
+          "Forsaken 49/49 · Peer 49/49",
+          " 49/49",
+          "Guard 0",
+          "⚔",
+          "9",
+          "Husk Brute",
+          " 41/48",
+          "Guard 0 · Bleed buildup 3/7",
+          "☾",
+          "Grave Wisp",
+          " 18/18",
+          "Guard 0",
+          "FOE bleed +3  ·  FOE -7",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "1",
+          "Shield Defend",
+          "🛡",
+          "SKILL",
+          "🛡",
+          "Guard",
+          "Gain 11 Block. Includes +6 block from Defense Rating.",
+          "1",
+          "Slashing Strike",
+          "⚔",
+          "ATTACK",
+          "⚔",
+          "Blade",
+          "Deal 9 damage. Includes +4 total damage from Attack Rating.",
+          "Drag a card upward onto its target · hold or right-click to inspect"
+        ],
+        "LayoutAttempts": 1
+      }
+    }
+  ],
+  "diagnostics": {
+    "host": [
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T18:51:00.296Z",
+        "url": "http://127.0.0.1:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T18:51:00.296Z",
+        "url": "http://127.0.0.1:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      }
+    ],
+    "peer": [
+      {
+        "level": "warn",
+        "message": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+        "timestamp": "2026-10-03T18:55:52.275Z",
+        "url": "http://127.0.0.1:8814/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T18:57:58.419Z",
+        "url": "http://127.0.0.1:8814/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T18:57:58.436Z",
+        "url": "http://127.0.0.1:8814/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+        "timestamp": "2026-10-03T19:00:18.873Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:01:08.449Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:01:08.450Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:08:57.162Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:08:57.162Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:09:40.404Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:09:40.496Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:10:12.017Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      },
+      {
+        "level": "warn",
+        "message": "No suitable font asset found for emoji support in the provided text.\n",
+        "timestamp": "2026-10-03T19:10:12.018Z",
+        "url": "http://localhost:8813/Build/Web.framework.js?build=a17b17e07cf104f75499b8ff7981bec944d44272721cce7e1cdac30df5e8d465"
+      }
+    ]
+  },
+  "knownFollowUps": [
+    "One-seat start shows raw all_players_must_be_ready; explain the party requirement."
+  ],
+  "expectedRefusals": [
+    "WebSocket from separately served 127.0.0.1:8814 refused by origin check; successful peer served by localhost:8813 with matching WebSocket authority."
+  ]
+}

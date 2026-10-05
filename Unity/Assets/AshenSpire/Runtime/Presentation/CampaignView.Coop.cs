@@ -35,6 +35,7 @@ namespace AshenSpire.Presentation
         {
             Shell("CLIMB TOGETHER", "WAITING AT THE FOOT OF THE SPIRE");
             var lobby = snapshot["lobby"];
+            var startBlocker = OriginalCoopLobbyText.StartBlocker(lobby);
             _body.Add(Text("Seed " + lobby?["seed"] + ((bool?)lobby?["endless"] == true ? " · Endless" : " · Three acts"), "heading"));
             foreach (var seat in lobby?["seats"] ?? new JArray())
             {
@@ -47,7 +48,9 @@ namespace AshenSpire.Presentation
                     AddButton("coop-remove-seat-" + id, "Remove disconnected seat: " + (string)seat["name"], () => removeSeat(id));
                 }
             }
-            if (notice != null) _body.Add(Text(notice, "notice"));
+            var feedback = OriginalCoopLobbyText.Notice(notice, lobby);
+            if (feedback != null) _body.Add(Text(feedback, "notice"));
+            if (startBlocker != null && startBlocker != feedback) _body.Add(Text(startBlocker, "caption"));
             if (host)
             {
                 var seed = new TextField("Shared seed (number)") { name = "coop-seed", value = lobby?["seed"]?.ToString() ?? "1" }; seed.AddToClassList("seed-field"); _body.Add(seed);
@@ -57,14 +60,24 @@ namespace AshenSpire.Presentation
             }
             AddButton("coop-ready", "I'm ready", () => ready(true), "primary");
             AddButton("coop-not-ready", "Wait for me", () => ready(false));
-            if (host) AddButton("coop-start", "Begin shared climb", start, "primary");
+            if (host) AddButton("coop-start", "Begin shared climb", start, "primary").SetEnabled(startBlocker == null);
             AddButton("coop-leave", "Disconnect and return to title", back); Report();
         }
         public void CoopGame(JObject snapshot, OriginalContentCatalog catalog, JObject supplement, Action<JObject> send, Action back)
         {
-            Shell("ASHENEDSPIRE", "THE SHARED CLIMB");
-            _coopPanel = new OriginalCoopPanel(_body, snapshot, catalog, supplement, send, () => Report(), back, _coopPanelState, MapView, _diagnostics);
+            Shell("ASHENEDSPIRE", "THE SHARED CLIMB", "coop:" + snapshot["scene"]?["kind"] + ":" + snapshot["cursorId"]);
+            _coopPanel = new OriginalCoopPanel(_body, snapshot, catalog, supplement, send, () => Report(), back, _coopPanelState, MapView, _diagnostics, _playerSettings);
         }
         public void CoopError(string message) { _coopPanel?.ShowError(message); }
+        public string CoopFeedback(JArray events, string memberId, AshenSpire.Domain.FeedbackDefinition feedback)
+        {
+            EnemyDeaths(events);
+            var projection = NativeFeedbackProjection.FromCoopEvents(events, memberId);
+            if (_coopPanel?.Stage == null || projection == null) return null;
+            var cue = feedback.Cue(projection.CueId);
+            _feedback.Play(_coopPanel.Stage, projection.AnimatePlayer ? _coopPanel.PlayerImage : null, _coopPanel.EnemyImage(projection.EnemyTargetId),
+                null, cue, projection.Outcome, projection.EnemyTurn, _reducedMotion, _fast, _diagnostics);
+            return cue.Id;
+        }
     }
 }

@@ -29,6 +29,24 @@ namespace AshenSpire.Domain.Original
             return fate == "discard" && _handRules != null && (bool)_handRules["retain"] ? "keep" : fate;
         }
 
+        // Published test 898 returns only ordinary unplayed cards. Explicit
+        // discards and overflow already went to discard; Ethereal was exhausted.
+        // The optional saved flag keeps old fights on their original behavior.
+        private void ReturnUnplayedCards(List<JObject> cards)
+        {
+            if (cards.Count == 0) return;
+            if ((bool?)_handRules?["shuffleHand"] == true)
+            {
+                _piles["draw"].AddRange(cards);
+                var shuffled = _random.Shuffle("shuffle", _piles["draw"]).ToArray();
+                _piles["draw"].Clear(); _piles["draw"].AddRange(shuffled);
+                Emit("deckShuffled", new JObject { ["size"] = _piles["draw"].Count, ["reason"] = "handRefresh",
+                    ["cardInstanceIds"] = new JArray(cards.Select(c => c["instanceId"].DeepClone())) });
+                return;
+            }
+            foreach (var card in cards) { _piles["discard"].Add(card); CardEvent("cardDiscarded", card, "turnEnd"); }
+        }
+
         /// <summary>
         /// The turn-end discard choice (web discardChoicePlan): eligible retained cards, the forced minimum
         /// (retained cards past capacity when overflow is "discard"), the optional maximum, and whether the

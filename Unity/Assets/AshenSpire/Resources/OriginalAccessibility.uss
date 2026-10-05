@@ -1,0 +1,23 @@
+/* Local presentation preferences. Never changes costs, targets or saves. */
+.app.high-contrast { background-color: rgb(12, 12, 14); color: rgb(255, 250, 237); }
+.high-contrast .panel, .high-contrast .settings-section, .high-contrast .original-card { background-color: rgb(20, 20, 24); }
+.high-contrast .caption, .high-contrast .stat, .high-contrast .lead, .high-contrast .original-fighter-caption { color: rgb(244, 237, 219); }
+.high-contrast Button { border-color: rgb(225, 212, 177); color: rgb(255, 250, 237); }
+.high-contrast Button.primary { background-color: rgb(229, 208, 157); color: rgb(20, 20, 24); }
+.high-contrast Button:disabled { color: rgb(180, 178, 172); }
+Button:focus, Toggle:focus, DropdownField:focus { border-color: rgb(255, 239, 183); border-width: 3px; }
+.accent-ember .primary, .accent-ember .selected { border-color: rgb(235, 137, 103); }
+.accent-jade .primary, .accent-jade .selected { border-color: rgb(123, 208, 161); }
+.accent-violet .primary, .accent-violet .selected { border-color: rgb(195, 162, 237); }
+.motif-accent .original-card { border-color: rgb(215, 189, 119); }
+.motif-accent.accent-ember .original-card { border-color: rgb(235, 137, 103); }
+.motif-accent.accent-jade .original-card { border-color: rgb(123, 208, 161); }
+.motif-accent.accent-violet .original-card { border-color: rgb(195, 162, 237); }
+.motif-band .original-card { border-top-width: 7px; border-top-color: rgb(215, 189, 119); }
+.motif-band .class-reaver { border-top-color: rgb(218, 119, 102); }
+.motif-band .class-starseer { border-top-color: rgb(130, 160, 232); }
+.motif-band .class-rogue { border-top-color: rgb(122, 195, 158); }
+.motif-band .class-herald { border-top-color: rgb(219, 196, 124); }
+.hide-control-hints .control-hint { display: none; }
+.controller-hint { white-space: normal; margin-top: 8px; margin-bottom: 8px; }
+.hold-confirming { background-color: rgb(91, 63, 35); }

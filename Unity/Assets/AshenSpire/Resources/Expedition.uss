@@ -106,6 +106,8 @@ Label { white-space: normal; }
 .map-screen #native-run-appearance { display: none; }
 .map-board { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 .map-tools { flex-direction: row; flex-shrink: 0; align-items: center; }
+.map-secondary-tools { flex-wrap: wrap; }
+.map-secondary-tools > .map-tool { flex-basis: 28%; }
 .map-tool { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 2px; padding: 3px; font-size: 13px; }
 .map-viewport { position: relative; flex-grow: 1; flex-shrink: 1; min-height: 0; overflow: hidden; background-color: rgb(21, 24, 26); border-width: 1px; border-color: rgb(66, 60, 49); border-radius: 10px; margin-top: 4px; }
 .map-content { position: absolute; left: 0; flex-shrink: 0; }

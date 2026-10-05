@@ -4,12 +4,15 @@ const fs=require('node:fs'),path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const {NativeUiDriver}=require('./native-ui-driver.cjs');
 let browser,players=[];
+const combatFeedback = new Map();
 (async()=>{
  const output=path.resolve(process.argv[3]||'TestResults/NativeCoopBrowser'),credentials=JSON.parse(fs.readFileSync(process.argv[4],'utf8'));
- browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
+ browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{}),args:process.env.AS_BROWSER_GPU==='1'?[]:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});
  for(let seat=0;seat<2;seat++){
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
   const ui=new NativeUiDriver(await context.newPage(),path.join(output,seat?'Guest':'Host'));players.push(ui);
+  combatFeedback.set(ui,[]);
+  ui.page.on('console',message=>{const text=message.text(),prefix='ASHENSPIRE_FEEDBACK ',at=text.indexOf(prefix);if(at<0)return;try{combatFeedback.get(ui).push(JSON.parse(text.slice(at+prefix.length)));}catch(error){ui.errors.push(error.message);}});
   const wire=[];ui.page.on('websocket',socket=>{socket.on('framesent',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'sent',type:message.type,hello:message.type==='hello'?{inviteMatches:message.payload.joinToken===credentials.joinToken,hostMatches:message.payload.hostToken===credentials.hostToken,setup:message.payload.setup}:undefined});}catch{}});socket.on('framereceived',frame=>{try{const message=JSON.parse(frame.payload);wire.push({direction:'received',type:message.type,error:message.type==='error'?message.payload:undefined});}catch{}});socket.on('close',()=>fs.writeFileSync(path.join(ui.output,'wire-summary.json'),JSON.stringify(wire,null,2)));});
   await ui.open(process.argv[2]);await ui.click('native-coop');await ui.click('coop-create');await ui.useStandard();await ui.fill('native-name',seat?'Guest':'Host');await ui.click('native-begin');
   await ui.fill('coop-endpoint',credentials.endpoint);await ui.fill('coop-invite',credentials.joinToken);if(!seat)await ui.fill('coop-host-key',credentials.hostToken);
@@ -47,8 +50,12 @@ let browser,players=[];
  async function playCard(ui,row,selected=false){
   if(!selected)await selectCard(ui,row);
   const target=ui.coop.game.scene.enemies.filter(e=>e.alive).sort((a,b)=>a.hp-b.hp)[0];
-  if(target&&ui.has('coop-target-'+target.id))await ui.click('coop-target-'+target.id);
-  const before=ui.coop.game.local.sequence;await ui.coopCommand('coop-play');
+  const before=ui.coop.game.local.sequence;
+  // An armed hostile target now commits once. The explicit Play path remains
+  // useful for self/friendly cards, but must not submit again after target-tap.
+  const hostile=row.card.effects.some(e=>['enemy','allEnemies','randomEnemy'].includes(e.target));
+  if(hostile&&target&&ui.has('coop-target-'+target.id))await ui.coopCommand('coop-target-'+target.id);
+  else await ui.coopCommand('coop-play');
   await ui.until(()=>ui.coop.game.local.sequence===before+1,'own card accepted once');
  }
  await host.until(()=>host.coop.game.scene.turn>rejoinTurn&&!host.coop.game.local.combat.ended,'host next player phase');
@@ -76,6 +83,37 @@ let browser,players=[];
  await guest.until(()=>guest.coop.game.scene.kind==='rewards','shared reward room');host.check(host.coop.game.scene.kind==='rewards','two Unity clients defeat actual encounter');
  for(const ui of players){await ui.shot('04-rewards');await ui.coopCommand('coop-reward-confirm');}
  await host.until(()=>host.coop.game.scene.kind==='map','party rewards complete');
- for(const ui of players){ui.check(ui.coop.game.local.run.fightsWon===1,'real fight counted once');ui.check(ui.errors.length===0,'no browser or Unity errors');await ui.shot('05-shared-route');ui.save(true);}
+ await guest.until(()=>guest.coop.game.scene.kind==='map','guest rewards complete');
+ if(credentials.restartRequest){
+  const before=players.map(ui=>({id:ui.coop.game.local.id,run:JSON.stringify(ui.coop.game.local.run),sequence:ui.coop.game.local.sequence}));
+  fs.writeFileSync(credentials.restartRequest,'restart owned test companion');
+  for(const ui of players)await ui.until(()=>ui.has('coop-rejoin'),'host disconnect exposes saved-seat recovery',45000);
+  const deadline=Date.now()+45000;
+  while(!fs.existsSync(credentials.restartAck)){if(Date.now()>deadline)throw Error('Owned test companion restart timed out');await new Promise(resolve=>setTimeout(resolve,250));}
+  for(let index=0;index<players.length;index++){
+   const ui=players[index],revision=ui.coopRevision;
+   await ui.click('coop-rejoin');
+   await ui.until(()=>ui.coopRevision>revision&&ui.coop?.game?.scene?.kind==='map'&&ui.has('coop-menu'),'saved seat rejoins restarted host');
+   ui.check(ui.coop.game.local.id===before[index].id,'host restart preserves authenticated seat');
+   ui.check(JSON.stringify(ui.coop.game.local.run)===before[index].run,'host restart preserves exact run, inventory and reward state');
+   ui.check(ui.coop.game.local.sequence===before[index].sequence,'host restart does not replay an accepted action');
+   await ui.shot('06-host-restart-rejoined');
+  }
+  const next=host.coop.game.reachableIds[0];
+  await host.coopCommand('coop-route-'+next);await guest.coopCommand('coop-route-'+next);
+  for(let index=0;index<players.length;index++){
+   const ui=players[index];await ui.until(()=>ui.coop.game.local.sequence===before[index].sequence+1,'post-restart vote accepted exactly once');
+   ui.check(ui.coop.game.local.sequence===before[index].sequence+1,'normal route input works after companion restart');
+  }
+ }
+ for(const ui of players){
+  if(process.env.AS_COOP_EXPECT_FEEDBACK==='1'){
+   const rows=combatFeedback.get(ui)||[];
+   ui.check(rows.some(r=>r.Status==='started'),'co-op command receipts drive compiled combat feedback');
+   ui.check(rows.some(r=>r.Status==='impact'),'co-op feedback reaches impact');
+   fs.writeFileSync(path.join(ui.output,'feedback.json'),JSON.stringify(rows,null,2));
+  }
+  ui.check(ui.coop.game.local.run.fightsWon===1,'real fight counted once');ui.check(ui.errors.length===0,'no browser or Unity errors');await ui.shot('05-shared-route');ui.save(true);
+ }
  console.log('Two native Unity players completed a shared fight, rewards, and exact-hand rejoin.');await browser.close();
 })().catch(async e=>{console.error(e);for(const ui of players){ui.errors.push(e.stack);await ui.shot('failure').catch(()=>{});ui.save(false);}if(browser)await browser.close();process.exitCode=1;});
