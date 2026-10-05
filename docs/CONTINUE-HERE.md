@@ -17,10 +17,17 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   - [x] 42 targeted desktop/portrait browser assertions and screenshot inspection.
   - [x] Public ZIP downloaded back; SHA-256 matches the local package.
   - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
+- [ ] Build 53 (`0.0.33.6`): clear inherited popup height and bound deck filter fields.
+  - [x] Runtime reference compilation (169 files); driver/report regression checks pass.
+  - [ ] Unity export, full solo/co-op player checks and delivery.
+  - Source: `d4f77dd`; tools explicitly observe which card is selected and handle
+    a peer redraw closing the inspector during a Back gesture.
 - [ ] Build 52 (`0.0.33.5`): party phone layout, combat menu and retained inspection selection.
   - [x] Final Unity export from `2b04486`; source digest `6b29f12a4624d7ae60463ef888ff792402b4f7c6f4b5a1b83cb93ff832e010bb` and eight payload hashes verified.
   - [x] Runtime reference compilation (169 files), 23 party presentation-state checks.
-  - [ ] Exported-player solo/co-op checks and screenshot review; currently running.
+  - [ ] Co-op acceptance remains open: geometry/menu/deck and rejoin/peer-selection
+    checks passed before a later inspector/peer-update driver failure. Screenshots
+    exposed a collapsed tools menu and oversized deck filters, corrected in 53.
   - Build 51 already exported and passed 18 solo browser assertions. Its co-op checks
     failed during selection; screenshots exposed party/target/control overlaps addressed in 52.
 - [ ] [Mounted property integration](Unity-Property-Integration.md), included in builds 51–52.

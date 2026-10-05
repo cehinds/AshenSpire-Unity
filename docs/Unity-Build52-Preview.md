@@ -17,8 +17,13 @@
     all eight payload hashes verified.
   - [x] ZIP: 120,873,485 bytes; SHA-256
     `479c25c4c4aca7b72815c18c770dadbba46c46fc764f363568d76506fc48e286`.
-- [ ] Desktop/portrait solo and two-browser co-op playtests; screenshot inspection.
-- [ ] Download delivery and download-back verification.
+- [ ] Final player acceptance: two-browser run reached exact-hand rejoin, next-turn
+  play and retained selection across a peer action, then failed when a peer
+  redraw closed an inspector during the driver's Back gesture. Screenshot review
+  also found a collapsed tools popup and oversized deck filters. Build 53 fixes
+  those issues and strengthens exact-card selection observations; 52 is not a
+  completed co-op acceptance result.
+- [ ] Download delivery: superseded by the build-53 candidate before publication.
 - [ ] Current content activation, complete upstream migration and owner acceptance.
 
 Earlier build-52 attempts remain separate evidence. The first was superseded
