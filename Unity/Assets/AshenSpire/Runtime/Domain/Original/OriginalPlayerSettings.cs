@@ -364,7 +364,8 @@ namespace AshenSpire.Domain.Original
             s.SwapCostRule = Choice("swapCostRule", s.SwapCostRule, SwapCostRuleIds);
             s.Fullscreen = Bool(json["fullscreen"], "fullscreen", s.Fullscreen);
             s.UiSize = Choice("uiSize", s.UiSize, UiSizes);
-            s.Accent = (string)json["accent"] == "jade" ? "verdant" : (string)json["accent"] == "ember" ? "crimson" : Choice("accent", s.Accent, Accents);
+            var legacyAccent = json["accent"]?.Type == JTokenType.String ? (string)json["accent"] : null;
+            s.Accent = legacyAccent == "jade" ? "verdant" : legacyAccent == "ember" ? "crimson" : Choice("accent", s.Accent, Accents);
             s.CardMotif = Choice("cardMotif", s.CardMotif, CardMotifs);
             s.CardMotifStrength = Choice("cardMotifStrength", s.CardMotifStrength, CardMotifStrengths);
             s.MapHeaderDensity = Choice("mapHeaderDensity", s.MapHeaderDensity, MapHeaderDensities);

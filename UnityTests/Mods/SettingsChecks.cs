@@ -20,6 +20,7 @@ static class SettingsChecks
         Check(!accessibility.TryBindController("unknown", 7, out _) && !accessibility.TryBindController("submit", 99, out _), "controller: unknown actions and out of range buttons refused");
         var invalidAccessibility = OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:1,minimumTapSize:3,accent:'invalid',cardMotif:'invalid',controllerBindings:{submit:1}}"), out var invalidAccessibilityNotes);
         Check(invalidAccessibility.MinimumTapSize == 44 && invalidAccessibility.Accent == "gold" && invalidAccessibility.CardMotif == OriginalPlayerSettings.DefaultCardMotif && invalidAccessibility.ControllerBindings["submit"] == 0 && invalidAccessibilityNotes.Count == 5, "preferences: unsafe sizes and controller collisions safely recover");
+        Check(OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:3,accent:{bad:true}}"), out _).Accent == "gold", "display: malformed accent defaults without throwing");
         accessibility.ResetControllerBindings();
         var gameplay = new OriginalPlayerSettings { AutoCollectRewards = true, MerchantBuyBack = false, CompactMapHeader = true, MapHeaderSeed = true, MapHeaderRelics = true };
         var restoredGameplay = OriginalPlayerSettings.FromJson(gameplay.ToJson(), out _);
