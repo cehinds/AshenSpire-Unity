@@ -12,6 +12,13 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
+Build 50 is exported and verified: [build 50 preview evidence](Unity-Build50-Preview.md).
+Its source and eight payload hashes match; 42 targeted desktop/portrait player
+assertions pass and representative screenshots were inspected. The next source
+increment is build 51 in `D:/repos/.codex/worktrees/unity-current-rules`, where
+solo property carriers are being integrated. Current-content activation and
+complete migration acceptance remain open.
+
 Build 49 is now a verified Web preview: source/eight payload hashes, archive CRC,
 and 80 desktop/portrait browser assertions pass. Its startup settings choices,
 paintings, settings recovery and combat reload have screenshot review. See
