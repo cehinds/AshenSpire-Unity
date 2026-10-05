@@ -31,15 +31,8 @@ let browser,ui;
   ui.check(ui.state.player.energy===energy-row.cost.action,'inspector Play pays one action cost');
   ui.check(!ui.state.hand.some(card=>card.instanceId===row.instance.instanceId),'played basic leaves the hand once');
   const saved=JSON.stringify(ui.state);
-  if(ui.has('native-combat-menu')){
-   await ui.click('native-combat-menu');
-   // The title action is at the bottom of a clipped, scrollable popup. Its
-   // reported canvas rectangle alone does not prove it is exposed.
-   const canvas=await page.locator('#unity-canvas').boundingBox();
-   await page.mouse.move(canvas.x+canvas.width*.9,canvas.y+canvas.height*.35);
-   for(let step=0;step<20;step++){await page.mouse.wheel(0,900);await page.waitForTimeout(100);}
-  }
-  await ui.click('native-menu');
+  // Reload straight after the paid action to verify autosave, independently
+  // of the title/menu route (covered by the settings-preservation scenario).
   ui.controls=null;await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});
   await ui.until(()=>ui.has('native-continue'),'saved fight on title');await ui.command('native-continue');
   ui.check(JSON.stringify(ui.state)===saved,'reload preserves the exact played combat state');
