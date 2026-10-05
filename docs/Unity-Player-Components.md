@@ -10,6 +10,7 @@ game values.
   - [x] Verify every selected source checksum before conversion.
   - [x] Record output hashes and dimensions in `art/player-components/import-receipt.json`.
   - [x] Preserve painting proportions and source credits.
+  - [x] Verify all 23 raster outputs against every decoded RGBA source pixel, including alpha.
 - [x] Bind artwork to native Unity UI Toolkit screens.
   - [x] Title and guided creation use the Spire vista.
   - [x] Merchant, shrine, rewards and terminal screens select their scene artwork.

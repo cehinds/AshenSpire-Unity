@@ -46,7 +46,8 @@ for asset in manifest['assets']:
     else:
         # Convert WebP for Unity's native importer. Never resize either dimension independently.
         with Image.open(source) as image:
-            image.convert('RGBA' if asset.get('hasTransparency') else 'RGB').save(output)
+            has_alpha = 'A' in image.getbands() or 'transparency' in image.info
+            image.convert('RGBA' if has_alpha else 'RGB').save(output)
     meta = output.with_suffix('.png.meta')
     if not meta.exists():
         import re
