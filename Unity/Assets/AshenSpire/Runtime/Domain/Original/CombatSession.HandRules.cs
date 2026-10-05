@@ -10,6 +10,39 @@ namespace AshenSpire.Domain.Original
 {
     public sealed partial class CombatSession
     {
+        // Saved independently of hand rules: deck-order mode also applies to
+        // old-style discards. Generated cards follow original instances stably.
+        private List<string> _orderedDrawOrder;
+        private void InitializeDraw(IEnumerable<JObject> source, bool ordered)
+        {
+            var cards = source.ToList();
+            _orderedDrawOrder = ordered ? cards.Select(c => (string)c["instanceId"]).ToList() : null;
+            var opening = ordered ? cards : _random.Shuffle("shuffle", cards);
+            bool Innate(JObject card) => CardMechanics.HasProperty(CardMechanics.FromDefinition(ResolvedCard(card), UsesTurnStamina), "lifecycle.innate");
+            _piles["draw"].AddRange(opening.Where(Innate));
+            _piles["draw"].AddRange(opening.Where(c => !Innate(c)));
+        }
+        private IEnumerable<JObject> OrderedReturn(IEnumerable<JObject> cards)
+        {
+            var positions = _orderedDrawOrder.Select((id, index) => new { id, index }).ToDictionary(p => p.id, p => p.index, StringComparer.Ordinal);
+            return cards.OrderBy(c => positions.TryGetValue((string)c["instanceId"], out var index) ? index : int.MaxValue);
+        }
+        private void RestoreDrawOrder(JToken token)
+        {
+            _orderedDrawOrder = null;
+            if (token == null || token.Type == JTokenType.Null) return;
+            if (!(token is JObject saved) || !(saved["order"] is JArray order) ||
+                order.Any(id => id.Type != JTokenType.String || string.IsNullOrWhiteSpace((string)id)) ||
+                order.Values<string>().Distinct(StringComparer.Ordinal).Count() != order.Count)
+                throw new ArgumentException("Saved deck order must contain unique, nonempty instance IDs.");
+            _orderedDrawOrder = order.Values<string>().ToList();
+        }
+        private void ReturnDiscardInOrder()
+        {
+            _piles["draw"].AddRange(OrderedReturn(_piles["discard"]));
+            _piles["discard"].Clear();
+            Emit("deckShuffled", new JObject { ["size"] = _piles["draw"].Count, ["ordered"] = true });
+        }
         // Web turnDrawCount: the opening hand on turn 1, then fill-to-capacity or a fixed
         // turn draw plus replacements owed for last turn's optional discards; never past capacity.
         private int TurnDrawCount()
@@ -25,7 +58,7 @@ namespace AshenSpire.Domain.Original
         // Web endTurnCardFate: retention turns an ordinary discard into a keep; Retain and Ethereal stay authoritative.
         private string EndTurnCardFate(JObject card)
         {
-            var fate = CardMechanics.EndTurnFate(CardMechanics.FromDefinition(ResolvedCard(card)));
+            var fate = CardMechanics.EndTurnFate(CardMechanics.FromDefinition(ResolvedCard(card), UsesTurnStamina));
             return fate == "discard" && _handRules != null && (bool)_handRules["retain"] ? "keep" : fate;
         }
 
@@ -37,11 +70,16 @@ namespace AshenSpire.Domain.Original
             if (cards.Count == 0) return;
             if ((bool?)_handRules?["shuffleHand"] == true)
             {
-                _piles["draw"].AddRange(cards);
-                var shuffled = _random.Shuffle("shuffle", _piles["draw"]).ToArray();
-                _piles["draw"].Clear(); _piles["draw"].AddRange(shuffled);
-                Emit("deckShuffled", new JObject { ["size"] = _piles["draw"].Count, ["reason"] = "handRefresh",
-                    ["cardInstanceIds"] = new JArray(cards.Select(c => c["instanceId"].DeepClone())) });
+                _piles["draw"].AddRange(_orderedDrawOrder == null ? cards : OrderedReturn(cards));
+                if (_orderedDrawOrder == null)
+                {
+                    var shuffled = _random.Shuffle("shuffle", _piles["draw"]).ToArray();
+                    _piles["draw"].Clear(); _piles["draw"].AddRange(shuffled);
+                }
+                var receipt = new JObject { ["size"] = _piles["draw"].Count, ["reason"] = "handRefresh",
+                    ["cardInstanceIds"] = new JArray(cards.Select(c => c["instanceId"].DeepClone())) };
+                if (_orderedDrawOrder != null) receipt["ordered"] = true;
+                Emit("deckShuffled", receipt);
                 return;
             }
             foreach (var card in cards) { _piles["discard"].Add(card); CardEvent("cardDiscarded", card, "turnEnd"); }

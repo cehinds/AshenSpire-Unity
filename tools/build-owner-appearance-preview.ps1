@@ -1,8 +1,9 @@
 param([string]$EditorPath='D:/Unity/6000.6.0f1/Editor/Unity.exe')
 $ErrorActionPreference='Stop'
 $appearanceRoot=Split-Path $PSScriptRoot -Parent
-$appearanceOutput=Join-Path $appearanceRoot 'Builds/OwnerAppearance/build43'
-$appearanceTemp='D:/repos/.codex/tmp/owner-appearance-build43'
+$appearanceVersion=Get-Content -LiteralPath (Join-Path $appearanceRoot 'GameContent/Unity/version.json') -Raw | ConvertFrom-Json
+$appearanceOutput=Join-Path $appearanceRoot ("Builds/OwnerAppearance/build"+$appearanceVersion.BuildNumber)
+$appearanceTemp="D:/repos/.codex/tmp/owner-appearance-build"+$appearanceVersion.BuildNumber
 New-Item -ItemType Directory -Path $appearanceOutput,$appearanceTemp -Force | Out-Null
 $env:TEMP=$appearanceTemp; $env:TMP=$appearanceTemp; $env:TMPDIR=$appearanceTemp
 $appearanceProject=Join-Path $appearanceRoot 'Unity'

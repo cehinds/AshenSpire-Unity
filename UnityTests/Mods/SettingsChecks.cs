@@ -11,6 +11,38 @@ static class SettingsChecks
 
         // Defaults reproduce the current build.
         var d = new OriginalPlayerSettings();
+        var customized = new OriginalPlayerSettings { Muted = true, LoadContentMods = true, TextScale = 1.4, Accent = "jade" };
+        customized.TryBind("endTurn", "Z", out _);
+        var original = customized.ToJson(); var storedReset = original.DeepClone();
+        var reset = customized.ResetSaved(s => storedReset = s.ToJson());
+        var acknowledgedDefaults = new OriginalPlayerSettings { DefaultsChoiceRevision = OriginalPlayerSettings.CurrentDefaultsRevision };
+        Check(JToken.DeepEquals(reset.ToJson(), acknowledgedDefaults.ToJson()) && JToken.DeepEquals(storedReset, acknowledgedDefaults.ToJson()), "reset: every typed preference and the defaults acknowledgement persist together");
+        Check(JToken.DeepEquals(customized.ToJson(), original), "reset: live previous preferences are immutable until the caller commits");
+        var writes = 0; var failed = false;
+        try { customized.ResetSaved(s => { storedReset = s.ToJson(); if (++writes == 1) throw new IOException("Storage full"); }); } catch (IOException) { failed = true; }
+        Check(failed && writes == 2 && JToken.DeepEquals(storedReset, original), "reset: a partial persistence failure restores previous settings");
+        Check(JToken.DeepEquals(customized.ToJson(), original), "reset: persistence refusal preserves current preferences and bindings");
+        failed = false;
+        try { customized.ResetSaved(s => throw new IOException("Storage unavailable")); } catch (AggregateException error) { failed = error.InnerExceptions.Count == 2; }
+        Check(failed, "reset: rollback failure is explicit and cannot report success");
+        Check(!d.NeedsDefaultsChoice && customized.NeedsDefaultsChoice, "promotion: only actual non-default preferences need a decision");
+        Check(!new OriginalPlayerSettings { MasterVolume = 1 - 1e-12 }.NeedsDefaultsChoice, "promotion: floating-point noise is not a custom preference");
+        var localChoice = new OriginalPlayerSettings { MasterVolume = .3, RewardCollect = "auto", Accent = "verdant", HoldToConfirm = true };
+        localChoice.TryBind("endTurn", "Z", out _);
+        var beforeChoice = localChoice.ToJson();
+        JToken storedChoice = null;
+        var kept = localChoice.ChooseDefaultsSaved(false, s => storedChoice = s.ToJson());
+        Check(kept.MasterVolume == .3 && kept.RewardCollect == "auto" && kept.Accent == "verdant" && kept.HoldToConfirm && kept.KeyBindings["endTurn"] == "Z", "promotion: keep preserves audio, gameplay, display, accessibility and bindings");
+        Check(JToken.DeepEquals(beforeChoice, localChoice.ToJson()), "promotion: choosing does not mutate the live settings before commit");
+        Check(!kept.NeedsDefaultsChoice && !OriginalPlayerSettings.FromJson(storedChoice, out _).NeedsDefaultsChoice, "promotion: successful keep survives reload and does not ask on the next build");
+        kept.DefaultsChoiceRevision = "older-defaults";
+        Check(kept.NeedsDefaultsChoice, "promotion: a later defaults revision asks again for custom values");
+        writes = 0; failed = false;
+        try { localChoice.ChooseDefaultsSaved(false, s => { storedChoice = s.ToJson(); if (++writes == 1) throw new IOException("Quota"); }); } catch (IOException) { failed = true; }
+        Check(failed && writes == 2 && JToken.DeepEquals(storedChoice, beforeChoice) && localChoice.NeedsDefaultsChoice, "promotion: refused keep rolls acknowledgement back and remains retryable");
+        var promoted = localChoice.ChooseDefaultsSaved(true, s => storedChoice = s.ToJson());
+        Check(promoted.MasterVolume == 1 && promoted.RewardCollect == "manual" && !promoted.HoldToConfirm && !promoted.NeedsDefaultsChoice, "promotion: accepted defaults apply the manual reward policy once");
+        Check(!OriginalPlayerSettings.FromJson(JObject.Parse("{schemaVersion:3,defaultsChoiceRevision:42}"), out _).NeedsDefaultsChoice, "promotion: malformed metadata does not make default preferences custom");
         var accessibility = new OriginalPlayerSettings { HighContrast = true, ReduceFlashes = true, HoldToConfirm = true, ControlHints = false, MinimumTapSize = 64, Accent = "jade", CardMotif = "band" };
         Check(accessibility.TryBindController("submit", 9, out _), "controller: free button can be bound");
         Check(!accessibility.TryBindController("cancel", 9, out var controllerConflict) && controllerConflict == "submit", "controller: collision preserves existing binding");

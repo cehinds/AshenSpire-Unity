@@ -3,6 +3,39 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.2 · build 49 · 2026-10-05
+
+- Combine settings recovery, painted card routing and saved deck-order adapters with current Unity controller, import, extraction and validation fixes.
+- Offer keep/current-defaults for customized device settings after profile loading; persist the choice and preferences together, preserve saved climbs and retry after write refusal.
+- Remove the duplicate fullscreen control and apply the desktop windowed default on explicit reset.
+
+## 0.0.33.2 · build 48 · 2026-10-05
+
+- Advance the migration preview beyond refreshed dev 0.0.33.1; retain settings recovery, painted cards and saved deck-order adapters.
+
+## 0.0.33.1 · build 47 · 2026-10-05
+
+- Export cancelled before completion after refreshing remote dev, which already used this version; build 48 advances one patch beyond that verified remote version.
+- Restore monotonic versioning against dev; retain settings recovery, painted card routing and saved deck-order work from the migration branch.
+
+## 0.0.30.15 · build 46 · 2026-10-05
+
+- Export cancelled before completion after detecting that the branch version was below dev; carried forward under the corrected build-47 version.
+- Share card/profile artwork between native face layouts so the imported starter paintings reach the visible cards.
+- Preserve saved deck order through solo/co-op opening draws, hand refresh and discard returns; explicit shuffle effects remain random.
+- Intermediate Web migration preview; current-content activation and broader upstream parity remain incomplete.
+
+## 0.0.30.14 · build 45 · 2026-10-05
+
+- Restore visible keyboard focus after resetting or cancelling settings; 22 desktop/portrait player checks cover persistence and saved-climb preservation.
+- Import three verified starter paintings. Visual review found the active card layout still used generic art, corrected in build 46.
+
+## 0.0.30.13 · build 44 · 2026-10-05
+
+- Add settings-only reset confirmation and persistence-failure recovery.
+- Add opt-in hand refresh and shared turn-Stamina adapters, preserving legacy saved mechanics and equipment-pool behavior.
+- Intermediate export; browser review found the return-focus scroll defect corrected in build 45.
+
 ## 0.0.33.1 · build 35 · 2026-10-05
 
 - Integrate guided setup, card QoL and illustrated Unity combat with current dev; full parity and owner acceptance remain open.

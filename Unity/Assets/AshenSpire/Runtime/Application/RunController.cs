@@ -113,7 +113,9 @@ namespace AshenSpire.Application
                         try { PlayerPrefs.SetInt(welcomeKey, 1); PlayerPrefs.Save(); }
                         catch (Exception error) { Debug.LogWarning("Could not remember the welcome screen: " + error.Message); }
                         Menu();
+                        OfferUpdatedSettings();
                     });
+                else OfferUpdatedSettings();
                 Debug.Log("ASHENSPIRE_UI_READY");
                 _view.MuteRequested += Mute;
                 BrowserVisibility.Install(gameObject.name);

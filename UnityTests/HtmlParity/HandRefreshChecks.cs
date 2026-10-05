@@ -81,6 +81,65 @@ internal static class HandRefreshChecks
                 Check(!seat["piles"]!["discard"]!.Any(),"Refresh creates no turn-end discard");
             }
         }
+        JObject OrderedCard(JObject card)
+        {
+            var def = catalog.Record("cards", "defend");
+            def["cost"] = 0; def["manaCost"] = 0; def["staminaCost"] = 0;
+            def["keywords"] = (string?)card["instanceId"] == "refresh3" ? new JArray("innate") : new JArray();
+            if ((string?)card["instanceId"] == "shuffle") def["effects"] = new JArray(new JObject { ["op"]="shuffleDiscardIntoDraw", ["target"]="self" });
+            return def;
+        }
+        string Ids(JToken cards) => string.Join(",", cards.Select(c => (string?)c["instanceId"]));
+        CombatSession Ordered(JObject rules) => new CombatSession(catalog, mechanics, new RandomStreams(9), Player(),
+            deck.OfType<JObject>(), new[]{"wanderingSoldier"}, OrderedCard, handRules:rules, orderedDraw:true);
+        var openingRules=Rules(true,4); openingRules["starting"]=Row(3);
+        var ordered=Ordered(openingRules);
+        Check(Ids(ordered.Hand)=="refresh3,refresh0,refresh1", "Ordered opening puts Innate first and keeps relative order");
+        Check((int)ordered.Snapshot()["rng"]!["shuffle"]! == 0, "Ordered opening consumes no shuffle RNG");
+        var orderedSave=ordered.Snapshot();
+        var orderedReload=CombatSession.Restore(catalog,mechanics,orderedSave,OrderedCard);
+        Equal(orderedSave,orderedReload.Snapshot(),"Ordered solo state round-trips exactly");
+        Equal(ordered.EndTurn(),orderedReload.EndTurn(),"Ordered refresh receipts survive reload");
+        Equal(ordered.Snapshot(),orderedReload.Snapshot(),"Ordered refresh state survives reload");
+        Check(Ids(ordered.Hand)=="refresh2,refresh4,refresh5,refresh0", "Refresh keeps remaining draw ahead of returned original-order cards");
+        Check(Ids(ordered.Pile("draw"))=="refresh1,refresh3", "Innate promotion applies only to opening, not refresh");
+        Check((int)ordered.Snapshot()["rng"]!["shuffle"]! == 0, "Ordered refresh consumes no shuffle RNG");
+        Check(ordered.Snapshot()["events"]!.Any(e=>(string?)e["reason"]=="handRefresh"&&(bool?)e["ordered"]==true),"Ordered refresh identifies its receipt");
+        var recycle=Ordered(Rules(false,6));
+        foreach(var id in new[]{"refresh2","refresh5","refresh0"})recycle.PlayCard(id);
+        recycle.EndTurn();
+        Check(Ids(recycle.Hand)=="refresh0,refresh1,refresh2,refresh3,refresh4,refresh5", "Empty-pile return uses original order, not played/discarded order");
+        Check((int)recycle.Snapshot()["rng"]!["shuffle"]! == 0,"Empty-pile ordered return consumes no shuffle RNG");
+        var generated=Ordered(Rules(false,8)).Snapshot();
+        ((JArray)generated["piles"]!["hand"]!).Insert(0,new JObject{["instanceId"]="generatedB",["cardId"]="defend"});
+        ((JArray)generated["piles"]!["hand"]!).Insert(0,new JObject{["instanceId"]="generatedA",["cardId"]="defend"});
+        var withGenerated=CombatSession.Restore(catalog,mechanics,generated,OrderedCard);withGenerated.EndTurn();
+        Check(Ids(withGenerated.Hand)=="refresh0,refresh1,refresh2,refresh3,refresh4,refresh5,generatedA,generatedB", "Generated cards follow originals in stable discard order");
+        var explicitShuffle=Ordered(Rules(false,0)).Snapshot();
+        ((JArray)explicitShuffle["piles"]!["hand"]!).Add(new JObject{["instanceId"]="shuffle",["cardId"]="defend"});
+        var shuffleGame=CombatSession.Restore(catalog,mechanics,explicitShuffle,OrderedCard);
+        shuffleGame.PlayCard("refresh5");shuffleGame.PlayCard("refresh1");var shuffleEvents=shuffleGame.PlayCard("shuffle");
+        Check((int)shuffleGame.Snapshot()["rng"]!["shuffle"]! > 0,"Explicit shuffle effect still consumes RNG in ordered mode");
+        Check(shuffleEvents.Any(e=>(string?)e["type"]=="deckShuffled"&&e["ordered"]==null),"Explicit shuffle keeps its ordinary receipt");
+        foreach(var malformed in new JToken[]{new JValue(true),new JObject(),new JObject{["order"]=new JArray("x","x")},new JObject{["order"]=new JArray(1)},new JObject{["order"]=new JArray("")}})
+        {
+            var invalid=(JObject)orderedSave.DeepClone();invalid["orderedDraw"]=malformed.DeepClone();var bytes=invalid.ToString();
+            var refused=false;try{CombatSession.Restore(catalog,mechanics,invalid,OrderedCard);}catch(ArgumentException){refused=true;}
+            Check(refused,"Malformed saved order is refused");Check(invalid.ToString()==bytes,"Refused order does not mutate saved bytes");
+        }
+        var orderedPlayers=fixture["fixtures"]![0]!["players"]!.OfType<JObject>().Select(p=>{
+            var result=(JObject)p.DeepClone();result["deck"]=deck.DeepClone();result["handRules"]=openingRules.DeepClone();result["orderedDraw"]=true;return result;
+        }).ToArray();
+        JObject OrderedSeat(string id,JObject card)=>OrderedCard(card);
+        var orderedParty=new OriginalCoopCombat(catalog,mechanics,new RandomStreams(9),orderedPlayers,new[]{"wanderingSoldier"},OrderedSeat);
+        foreach(var seat in orderedParty.Players)Check(Ids(seat["piles"]!["hand"]!)=="refresh3,refresh0,refresh1","Each ordered seat opens its own stable deck");
+        orderedParty.EndTurn("p1");var partySave=orderedParty.Snapshot();
+        var partyReload=OriginalCoopCombat.Restore(catalog,mechanics,partySave,OrderedSeat);
+        Equal(partySave,partyReload.Snapshot(),"Partly ended ordered co-op state round-trips exactly");
+        Equal(orderedParty.EndTurn("p2"),partyReload.EndTurn("p2"),"Ordered co-op receipts replay after restore");
+        Equal(orderedParty.Snapshot(),partyReload.Snapshot(),"Ordered co-op state replays after restore");
+        foreach(var seat in orderedParty.Players)Check(Ids(seat["piles"]!["hand"]!)=="refresh2,refresh4,refresh5,refresh0","Every seat preserves its ordered return");
+        Check((int)orderedParty.Snapshot()["rng"]!["shuffle"]! == 0,"Ordered party never consumes shuffle RNG for draw/refresh");
         return checks;
     }
 }

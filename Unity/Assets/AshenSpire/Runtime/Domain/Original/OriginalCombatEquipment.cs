@@ -54,6 +54,8 @@ namespace AshenSpire.Domain.Original
         { return (string)_cfg["swapCostKind"] != "allowance" ? 0 : Number(battle["player"]?["equipmentSwapTurn"], "swap turn", -1) == Number(battle["turn"], "turn") ? Number(battle["player"]["equipmentSwapsLeft"], "swaps left") : Math.Max(0, Number(_cfg["swapAllowancePerTurn"], "swap allowance")); }
         public JObject Apply(JObject run, JObject battle, string slotId, int setIndex)
         {
+            var turnBudget = OriginalTurnStamina.Enabled(_mechanics);
+            if (turnBudget) OriginalTurnStamina.Validate((JObject)battle["player"]);
             if ((string)battle["phase"] != "player" || !string.IsNullOrEmpty((string)battle["result"])) throw new InvalidOperationException("Equipment swaps require an active player turn.");
             if ((bool?)_cfg["enabled"] != true) throw new InvalidOperationException("Equipment is disabled.");
             var slot = _catalog.Record("equipment.slots", slotId); if ((string)slot["swap"] != "combat") throw new ArgumentException((string)slot["label"] + " stays fastened until the fight ends.");
@@ -65,18 +67,21 @@ namespace AshenSpire.Domain.Original
             var composer = new WeaponCardComposer(_catalog); _ = composer.BuildAttackPlan(after, ClassId(run)); // Reject incompatible two-hand layouts before spending.
             var beforeMods = new EquipmentRunModifiers(_catalog).Resolve(before, ClassId(run)); var afterMods = new EquipmentRunModifiers(_catalog).Resolve(after, ClassId(run));
             var player = (JObject)nextBattle["player"];
+            // Current rules charge the shared pool before resizing its vessel.
+            if (turnBudget && !allowance) new OriginalTurnStamina(player).Write("stamina", checked(Number(player["stamina"], "Stamina") - (int)price["cost"]));
             var deficits = (JObject)(player["equipmentPoolDeficits"] ?? run["equipmentPoolDeficits"] ?? new JObject()).DeepClone();
             if (Number(before["active"]?[slotId], "active set") != setIndex)
             {
                 foreach (var resource in new[] { "hp", "mana", "stamina" })
                 {
                     var max = "max" + char.ToUpperInvariant(resource[0]) + resource.Substring(1); var oldMax = Number(player[max], max); var newMax = Math.Max(resource == "hp" ? 1 : 0, checked(oldMax + Number(afterMods[max], max) - Number(beforeMods[max], max)));
-                    var moved = EquipmentRunModifiers.MovePool(oldMax, Number(player[resource], resource), newMax, deficits[resource] == null ? (int?)null : Number(deficits[resource], "pool deficit")); player[max] = newMax; player[resource] = moved["current"].DeepClone(); deficits[resource] = moved["deficit"].DeepClone();
+                    var moved = EquipmentRunModifiers.MovePool(oldMax, Number(player[resource], resource), newMax, deficits[resource] == null ? (int?)null : Number(deficits[resource], "pool deficit"), turnBudget && resource == "stamina"); player[max] = newMax; player[resource] = moved["current"].DeepClone(); deficits[resource] = moved["deficit"].DeepClone();
                 }
             }
             player["equipmentPoolDeficits"] = deficits; nextRun["equipmentPoolDeficits"] = deficits.DeepClone();
             player["equipmentSwapTurn"] = battle["turn"].DeepClone(); player["equipmentSwapsLeft"] = allowance ? SwapsLeft(battle) - 1 : 0;
-            if (!allowance) player["energy"] = checked(Number(player["energy"], "actions") - (int)price["cost"]);
+            if (turnBudget) new OriginalTurnStamina(player);
+            else if (!allowance) player["energy"] = checked(Number(player["energy"], "actions") - (int)price["cost"]);
             var rule = Rule(run, battle); if (rule != null) player["equipmentSwapRule"] = rule;
             var mounts = nextRun["itemMounts"] as JObject; var quota = Number(nextRun["equipmentAttackSlotCount"], "birth attack quota", ((JArray)nextRun["deck"]).Count(c => (string)c["equipmentRole"] == "attack"));
             nextRun["deck"] = composer.Recompose((JArray)nextRun["deck"], after, ClassId(run), OriginalCustomRunRules.IsPoolDeckRun(run), mounts);
@@ -89,6 +94,7 @@ namespace AshenSpire.Domain.Original
             player["poiseThreshold"] = projection["poiseThreshold"].DeepClone();
             if (player["poiseMeter"] is JObject meter) meter["max"] = projection["poiseThreshold"].DeepClone();
             foreach (var key in new[] { "hp", "maxHp", "mana", "maxMana", "stamina", "maxStamina" }) nextRun[key] = player[key].DeepClone();
+            if (turnBudget) new OriginalTurnStamina(nextRun);
             nextRun["equipmentPoolBonuses"] = new JObject { ["maxHp"] = afterMods["maxHp"].DeepClone(), ["maxMana"] = afterMods["maxMana"].DeepClone(), ["maxStamina"] = afterMods["maxStamina"].DeepClone() };
             var events = new JArray(Changed(before, after), new JObject { ["type"] = "armamentSwapped", ["slotId"] = slotId, ["setIndex"] = setIndex, ["cost"] = price["cost"].DeepClone(), ["rule"] = price["ruleId"]?.DeepClone() });
             return new JObject { ["run"] = nextRun, ["combat"] = nextBattle, ["receipt"] = price, ["events"] = events, ["endsTurn"] = (bool?)_cfg["swapEndsTurn"] == true };
@@ -107,5 +113,4 @@ namespace AshenSpire.Domain.Original
         }
     }
 }
-
 

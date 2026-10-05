@@ -214,7 +214,7 @@ namespace AshenSpire.Editor
             try
             {
                 UnityEditor.WebGL.UserBuildSettings.codeOptimization = UnityEditor.WebGL.WasmCodeOptimization.BuildTimes;
-                Build(BuildTarget.WebGL, "OwnerAppearance/build43/Web");
+                Build(BuildTarget.WebGL, "OwnerAppearance/build" + ReadVersion().BuildNumber + "/Web");
             }
             finally { UnityEditor.WebGL.UserBuildSettings.codeOptimization = optimization; }
         }

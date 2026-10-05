@@ -40,6 +40,7 @@ namespace AshenSpire.Domain.Original
             {
                 var loss = CardMechanics.Nonnegative(_player["pendingActionLoss"] ?? 0, "pending action loss");
                 WriteEnergy(Math.Max(0, (int)_player["maxStamina"] - loss));
+                if (_player["equipmentPoolDeficits"] is JObject deficits) deficits["stamina"] = Math.Min(loss, (int)_player["maxStamina"]);
                 _player["pendingActionLoss"] = 0;
                 _player["counters"]["staminaSpentThisTurn"] = 0;
             }

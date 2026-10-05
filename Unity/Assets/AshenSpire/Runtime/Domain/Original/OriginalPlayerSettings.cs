@@ -26,6 +26,10 @@ namespace AshenSpire.Domain.Original
         /// (fullscreen, uiSize, accent, cardMotif, cardMotifStrength, mapHeader*, controlHints) and
         /// gamepadBindings. A schema-1 or schema-2 record gets their defaults and a migration note.</summary>
         public const int SchemaVersion = 3;
+        // A promotion identity, not the application build number: rebuilding the
+        // player must not ask again when its defaults have not changed.
+        public const string CurrentDefaultsRevision = "unity-schema3-manual-rewards";
+        public string DefaultsChoiceRevision;
         /// <summary>The key keeps its v1 name so existing saves are found; schemaVersion inside the record is what changes.</summary>
         public const string StorageKey = "AshenSpire.Settings.v1";
         public const string LegacyReducedMotionKey = "AshenSpire.ReducedMotion", LegacyFastMotionKey = "AshenSpire.FastMotion", LegacyMutedKey = "AshenSpire.Muted";
@@ -143,6 +147,47 @@ namespace AshenSpire.Domain.Original
                 }
             }
         }
+        /// <summary>Persist defaults before replacing live settings. A failed commit restores
+        /// the previous preferences through the same settings-only persistence boundary.</summary>
+        public OriginalPlayerSettings ResetSaved(Action<OriginalPlayerSettings> persist)
+        {
+            return ChooseDefaultsSaved(true, persist);
+        }
+        public bool NeedsDefaultsChoice
+        {
+            get
+            {
+                if (DefaultsChoiceRevision == CurrentDefaultsRevision) return false;
+                var local = ToJson(); var defaults = new OriginalPlayerSettings().ToJson();
+                local.Remove("defaultsChoiceRevision"); defaults.Remove("defaultsChoiceRevision");
+                return !SamePreferences(local, defaults);
+            }
+        }
+        private static bool SamePreferences(JToken left, JToken right)
+        {
+            bool Number(JToken t) => t.Type == JTokenType.Integer || t.Type == JTokenType.Float;
+            if (Number(left) && Number(right)) return Math.Abs((double)left - (double)right) < 1e-9;
+            if (left is JObject a && right is JObject b)
+                return a.Count == b.Count && a.Properties().All(p => b[p.Name] != null && SamePreferences(p.Value, b[p.Name]));
+            return JToken.DeepEquals(left, right);
+        }
+        /// <summary>Preferences and acknowledgement share one saved record. Live
+        /// settings change only after persistence succeeds; refusal restores the
+        /// previous record and leaves the decision available for retry.</summary>
+        public OriginalPlayerSettings ChooseDefaultsSaved(bool useDefaults, Action<OriginalPlayerSettings> persist)
+        {
+            if (persist == null) throw new ArgumentNullException(nameof(persist));
+            var candidate = useDefaults ? new OriginalPlayerSettings() : Clone();
+            candidate.DefaultsChoiceRevision = CurrentDefaultsRevision;
+            try { persist(candidate); }
+            catch (Exception failure)
+            {
+                try { persist(this); }
+                catch (Exception rollback) { throw new AggregateException("Settings reset and rollback could not be saved.", failure, rollback); }
+                throw;
+            }
+            return candidate;
+        }
         /// <summary>Whether packs apply to this content load. Co-op (host, guest, companion) always uses the
         /// shipped content so every seat runs the same rules; the toggle only affects solo play.</summary>
         public bool ContentModsActive(bool coop) => LoadContentMods && !coop;
@@ -216,6 +261,7 @@ namespace AshenSpire.Domain.Original
             return new JObject
             {
                 ["schemaVersion"] = SchemaVersion, ["textScale"] = TextScale, ["uiScale"] = UiScale,
+                ["defaultsChoiceRevision"] = DefaultsChoiceRevision,
                 ["animationSpeed"] = AnimationSpeed, ["instantAnimations"] = InstantAnimations, ["reducedMotion"] = ReducedMotion,
                 ["screenShake"] = ScreenShake, ["screenShakeIntensity"] = ScreenShakeIntensity, ["hitStop"] = HitStop,
                 ["reduceFlashes"] = ReduceFlashes, ["highContrast"] = HighContrast,
@@ -279,6 +325,8 @@ namespace AshenSpire.Domain.Original
             if (version.Type != JTokenType.Integer || (long)version < 1) { notes.Add("unknown schemaVersion " + version + "; defaults used"); return s; }
             if ((long)version > SchemaVersion) notes.Add("schemaVersion " + version + " is newer than " + SchemaVersion + "; known fields read");
             else if ((long)version < SchemaVersion) notes.Add("migrated schema " + version + " to schema " + SchemaVersion); // 1 → 2 → 3: new fields keep their defaults
+            if (json["defaultsChoiceRevision"]?.Type == JTokenType.String)
+                s.DefaultsChoiceRevision = (string)json["defaultsChoiceRevision"];
             double Number(JToken value, string name, double fallback, double min, double max)
             {
                 if (value == null) return fallback;

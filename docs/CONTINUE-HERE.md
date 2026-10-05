@@ -12,17 +12,60 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
-October 4: the owner authorized an intermediate merge and rejected visual parity.
-Read [integration checkpoint](Unity-Integration-Checkpoint.md). Build 43 below
-is historical preview evidence; it does not certify this integrated source.
+The owner authorized the earlier intermediate merge and rejected visual parity.
+The current increment is being reconciled onto dev `3c7ebff`, including its
+controller, settings, import and content-validation fixes. See
+[the prior integration checkpoint](Unity-Integration-Checkpoint.md).
 
-The active owner request is now the full native migration to match published
-HTML test **898** (`0.7.1.898`, digest `1b60c22e01`). Read
+The active owner request is the full native migration, including **all recorded
+upstream changes through original build 913** (explicit owner answer on October 4).
+Published HTML test **898** (`0.7.1.898`, digest `1b60c22e01`) remains the frozen oracle baseline. Read
 [the migration tracker](Unity-HTML-Parity-Migration.md) before continuing.
 Build 36 below is the archived pre-migration rollback baseline; migration source
 edits do not share its source digest.
 
-Historical local preview build 43 (`0.0.30.12`) was an intermediate migration preview.
+Current source is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff` in
+`D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its export and player
+checks remain pending. Build 48 exported successfully from the prior checkpoint;
+its source digest `612a0f6d9de3710a0cf1acc21ed783d6765db6ea4666a9c31da49df602666fc0`
+and all eight payload hashes were verified. Its 14 starter-art and 22 settings
+checks passed; actual paintings were visually inspected. Combat QA is being
+rerun after accommodating the existing hold-to-inspect input path.
+The reconciled increment passes 40,544 migration checks, 211 settings/mod checks,
+195 gamepad checks and the 166-file runtime reference check (three documented
+Unity-6 API gaps in the older NuGet reference remain accepted).
+Build 49 also offers existing custom preferences a keep/defaults choice after
+profile loading, once per defaults revision; acknowledgement and values persist
+together with rollback on failure. New profiles keep an uninterrupted startup.
+Builds 46 and 47 were deliberately cancelled before export to repair the stale
+branch version line against refreshed dev `3c7ebff` (`0.0.33.1`, build 35).
+Build 48 passed all six version checks against that exact remote commit without
+declaring another feature complete.
+This increment adds native settings-reset confirmation/failure recovery and
+saved, opt-in combat rules for hand refresh and a shared Stamina turn budget.
+The combat rules are **not activated** in the older shipped content bundle.
+Focused evidence: 40,544 migration checks, 6,587 legacy co-op checks after the
+deck-order change, 2,063 legacy
+equipment-swap checks, 172 hand-rule checks and 101 settings/mod checks passed.
+The user expanded scope rather than accepting the current milestone; broader
+progression, world/services, schema-20 import and content activation remain open.
+The three v11 starter paintings are imported with verified pixels into
+`Resources/Art/upstream913`, preserving equipment-profile artwork precedence.
+Receipts: `TestResults/HtmlParity/upstream913/starter-art-import.json`.
+Build 44 exported successfully and verified all eight payload hashes with digest
+`3a98ced68694ca1e326ba1bb1dbbb6a22466371df104b9557f99bd469ba776fb`.
+Its desktop test found off-screen return focus after reset cancellation; build 45
+adds a layout-aware scroll/focus fix. Build 45 passed 22 desktop/portrait reset,
+focus, persistence and unchanged-climb checks; screenshots were inspected.
+Its source/eight-payload digest was verified before subsequent source edits:
+`37f93e78fa9d86893f1aa3afb4602f0565a82f3850277e4b97ce2aede4512d38`.
+However, visual inspection of its three starter-card previews found generic
+OwnerCardFace artwork despite the imported paintings. Build-48 source shares the
+card/profile artwork resolver across both native layouts to correct this.
+It also adds saved deck-order behavior to solo/co-op combat (including ordered
+hand refresh and generated-card returns). Deck/settings UI activation is still open.
+
+The preceding verified player is build 43 (`0.0.30.12`), an intermediate migration preview.
 Read [guided creation and card proportions](Unity-Guided-Creation.md) for the
 latest owner-requested fixes: one-screen creation steps, ready Reaver defaults,
 fixed 2:3 card faces and visible map paths with compact tools. Export/receipt,

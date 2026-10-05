@@ -17,15 +17,30 @@ namespace AshenSpire.Presentation
         private float _lastWidth = -1;
         public static OriginalIllustratedCardFace Create(JObject card,JObject cost,string title,string rules,string tags)
         {
+            if (!LoadReference()) return null;
+            return new OriginalIllustratedCardFace(card,cost,title,rules,tags);
+        }
+        private static bool LoadReference()
+        {
             if (_reference == null)
             {
                 var asset = Resources.Load<TextAsset>("Original/illustrated-reference");
-                if (asset == null) return null;
+                if (asset == null) return false;
                 var parsed = JObject.Parse(asset.text);
                 if ((int?)parsed["referenceBuild"] != 898) throw new ArgumentException("Unknown illustrated card reference.");
                 _reference = parsed;
             }
-            return new OriginalIllustratedCardFace(card,cost,title,rules,tags);
+            return true;
+        }
+        // Artwork bindings are shared by both native face layouts. A weapon's
+        // authored profile still wins over the underlying basic card's picture.
+        public static Texture2D Artwork(JObject card)
+        {
+            if (!LoadReference()) return null;
+            var id = (string)card["id"] ?? (string)card["cardId"] ?? "";
+            var resource = (string)_reference["profiles"]?[(string)card["equipmentProfileId"] ?? (string)card["profileId"] ?? ""]
+                ?? (string)_reference["artwork"]?[id]?["resource"];
+            return string.IsNullOrEmpty(resource) ? null : Resources.Load<Texture2D>(resource);
         }
         private OriginalIllustratedCardFace(JObject card,JObject cost,string title,string rules,string tags)
         {
@@ -48,10 +63,8 @@ namespace AshenSpire.Presentation
                 if ((string)layer["type"] == "image")
                 {
                     var resource = (string)layer["resource"];
-                    if ((string)layer["bind"] == "artwork" && string.IsNullOrEmpty(resource))
-                        resource = (string)_reference["profiles"]?[(string)card["equipmentProfileId"] ?? (string)card["profileId"] ?? ""]
-                            ?? (string)_reference["artwork"]?[id]?["resource"];
-                    var texture = string.IsNullOrEmpty(resource) ? null : Resources.Load<Texture2D>(resource);
+                    var texture = (string)layer["bind"] == "artwork" && string.IsNullOrEmpty(resource) ? Artwork(card)
+                        : string.IsNullOrEmpty(resource) ? null : Resources.Load<Texture2D>(resource);
                     if (texture == null) continue;
                     view = (bool?)layer["clip"] == true ? (VisualElement)new ClippedArtwork(texture,layer,_document)
                         : new Image { image = texture, scaleMode = (string)layer["fit"] == "contain" ? ScaleMode.ScaleToFit

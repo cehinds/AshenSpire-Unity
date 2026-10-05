@@ -7,6 +7,101 @@ On 2026-10-04 the owner replaced the visual target with the supplied Starseer
 combat screenshot and `http://127.0.0.1:4175/`. Test 898 remains the gameplay
 reference; native appearance work is tracked in `Unity-Owner-Appearance.md`.
 
+Owner scope expansion, 2026-10-04: also implement all relevant upstream changes
+already recorded in `Unity-Upstream-Review.md`, through original build 913,
+commit `40c8a45fe951de4f757b2add0811aeeeb7f41fe1`. Test 898 remains the frozen
+oracle baseline; later changes need their own source comparisons and checks.
+Original assets and gameplay are references, not its Markdown governance.
+
+- [ ] Recorded upstream follow-through (build-49 work in progress).
+  - [ ] US: refresh unplayed hands under saved rules.
+    - [x] Optional `shuffleHand` rule; solo/co-op Retain, Ethereal and ordinary-card handling.
+    - [x] Deterministic shuffle receipts, exact mid-turn restore and absent/false legacy behavior.
+    - [x] Existing hand-rule regression suite: 172 checks.
+    - [x] Saved deck-order mode: stable Innate opening, ordered return, generated-card order,
+      no implicit shuffle draws, explicit shuffle effects unchanged, solo/co-op reload.
+    - [ ] Activate with the compatible new content bundle and deck/settings UI.
+    - [ ] Exported-player gameplay and owner acceptance.
+  - [ ] US: one Stamina turn budget under saved rules.
+    - [x] Explicit `mechanics.stamina.turnBudget` flag; absent/false retains legacy pools.
+    - [x] Atomic card/X payment, resource aliases, bonus energy, recovery and turn refill.
+    - [x] Solo/co-op save replay, pending loss, equipment payment/resizing and surplus preservation.
+    - [x] Migration suite: 40,544 checks. Legacy co-op corpus after deck-order change: 6,587 checks;
+      legacy equipment swaps: 2,063 checks.
+    - [ ] Current stat rows/new-run activation, complete status/foundation integration and UI.
+      - [x] Bind `restoreStamina` card text tokens, including repeated recovery amounts.
+      - [ ] Remove the legacy Catch Breath action from the current-rule HUD before enabling the new bundle.
+    - [ ] Exported-player gameplay and owner acceptance.
+  - [ ] US: reset device settings safely.
+    - [x] Native confirmation, cancel/Escape, return focus and settings-only persistence.
+    - [x] Restore prior preferences on failed save; report rollback failures without false success.
+    - [x] Settings/mod suite: 101 checks, including partial-write and rollback failures.
+    - [x] Build-44 export/receipt; desktop cancellation preserved the customized preference.
+    - [x] Fix off-screen focus restoration found by the build-44 browser test.
+    - [x] Build-45 desktop/portrait reset, focus, persistence and save-preservation checks:
+      22 assertions passed; confirmation/audio/map screenshots inspected at 1280x720 and 390x844.
+    - [ ] Owner acceptance.
+  - [ ] US: remaining monitored changes.
+    - [x] Updated-defaults keep/reset choice, saved acknowledgement and persistence rollback in source.
+    - [ ] Compiled desktop/portrait validation of both startup choices.
+    - [ ] Guided rewards, banked level claims and deferred chooser behavior.
+    - [ ] Class/book repeat rewards, feats, sigils and service/progression changes.
+    - [ ] Deck/sideboard/equipment eligibility, extraction restrictions and lent-card reconciliation.
+    - [ ] Current save import, audio/haptics and remaining art/UI parity.
+      - [x] Verify v11 pack and three starter paintings by SHA-256 and decoded RGBA pixels;
+        stage a repeatable native import without modifying the active export.
+      - [x] Import the three paintings and record their upstream overrides separately from test-898 layouts.
+      - [x] Inspect build 45: all three cards were reachable, but its active face still used generic art.
+      - [x] Route both native face layouts through shared card/profile artwork bindings.
+      - [x] Build 48: 14 desktop/portrait interaction checks and visual inspection of the actual paintings.
+    - [ ] Review each recorded item against the final compiled player before closing it.
+
+Recorded-change completion map (use the latest finding through build 913 when
+an older monitor entry describes superseded defaults):
+
+- [ ] UP-01: settings recovery and promoted-default choices.
+  - [x] Reset-all confirmation, focus, cancel, rollback handling and saved-climb preservation.
+  - [x] When new defaults are activated, offer keep/reset after profile loading;
+    persist acknowledgement transactionally and keep local values on dismissal.
+  - [x] Use a defaults revision so ordinary rebuilds do not repeat the prompt; 211 settings/mod checks pass.
+  - [ ] Exported-player checks for startup keep/defaults, saved climb and reload acknowledgement.
+- [ ] UP-02: current combat and hand rules.
+  - [x] Optional shared Stamina payment/refill, hand refresh and saved deck order in C#.
+  - [ ] Connect current stats, foundation/status effects, authored costs and draws,
+    swap rules, current HUD and new-run settings as one compatible bundle.
+  - [ ] Preserve Block totals while adding Arcane Ward provenance and solo/co-op displays.
+  - [ ] Validate stance selection/cancellation and enemy pile-effect fanout in the exported player.
+- [ ] UP-03: XP, claims and reward flow.
+  - [x] Pure XP/stat/cost/claim models compared with frozen published-JS oracles.
+  - [ ] Fight/quest/skill awards, banked claims, point allocation and saved rule versions.
+  - [ ] Source-bonus ledgers and current 10% combat-card/three-choice defaults,
+    combat feat bonuses and class-level rewards; preserve older run snapshots.
+  - [ ] Deferred choices survive reload, later victories and class changes without rerolls.
+  - [ ] Guided claim feedback leaves unlocked choosers available without forcing them open.
+- [ ] UP-04: books, class library, feats and card ownership.
+  - [ ] Repeatable book reads, quoted choices/rewards and successful-read revision checks.
+  - [ ] Class learning/equipping, class cards/core tags/armour and class skill trees.
+  - [ ] Deck/sideboard identity allocation, copy limits and equipment eligibility.
+  - [ ] Restamping preserves set-aside lent cards; extraction/install restrictions
+    and upgraded weapon-art provenance match current source.
+- [ ] UP-05: world and persistent services.
+  - [ ] Atlas/town journeys, quests, dialogue and reward checkpoints.
+  - [ ] Market books and compact offers replace direct card/art purchases only once teaching works.
+  - [ ] Blacksmith, master and legendary-sigil ownership/attunement, with persisted stock,
+    stale-transaction refusal and zero-chance RNG behavior.
+- [ ] UP-06: presentation and local feedback.
+  - [x] Native Quick Start and guided creation already have build-43 player evidence.
+  - [x] Verify the three new starter paintings in build 48 after fixing the active native renderer.
+  - [ ] Remaining service/scene/item art, prologue traveller placement, class-routed
+    animation, grounded formations and unobscured short-screen controls.
+  - [ ] Haptics settings, supported-platform delivery, local-seat routing and replay deduplication.
+- [ ] UP-07: saves and delivery.
+  - [ ] Schema-20 import only after the new mechanics/state above are supported;
+    preserve refused bytes and avoid silently enabling new non-XP rules.
+  - [ ] Final solo/co-op player, download, offline, device and owner acceptance checks.
+  - Native packaging remains an intentional platform difference: browser DOM,
+    service-worker/build-storage machinery and original Markdown are not transplanted.
+
 - [x] Freeze the reference identity.
   - [x] Published version `0.7.1.898`, source digest `1b60c22e01`.
   - [x] Commit `0b85909adc103a915aad5d37af53b4c2c66aa894`.

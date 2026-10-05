@@ -16,6 +16,9 @@ internal static class TurnBudgetChecks
         enemy["firstMove"] = "wait";
         enemy["moves"] = new JObject { ["wait"] = new JObject { ["weight"] = 1, ["intent"] = "defend", ["block"] = 1 } };
         var catalog = new OriginalContentCatalog(content.ToString());
+        var recoveryCard = new JObject { ["textTemplate"] = "Recover {restoreStamina} Stamina, then {restoreStamina.2} Stamina.",
+            ["effects"] = new JArray(new JObject { ["op"]="restoreStamina", ["target"]="self", ["amount"]=2 }, new JObject { ["op"]="restoreStamina", ["target"]="self", ["amount"]=3 }) };
+        Check(OriginalCardText.Describe(recoveryCard, catalog) == "Recover 2 Stamina, then 3 Stamina.", "Recovery effects render authored card numbers");
         var mechanics = JObject.Parse(File.ReadAllText(Path.Combine(root, "GameContent/Unity/Original/mechanics.json")));
         mechanics["stamina"]!["turnBudget"] = true;
         var deck = new JArray(Enumerable.Range(0, 7).Select(i => new JObject { ["instanceId"] = "budget" + i, ["cardId"] = "defend" }));
@@ -80,6 +83,31 @@ internal static class TurnBudgetChecks
         Equal(party.EndTurn("p2"), resumed.EndTurn("p2"), "Party next-turn events replay exactly");
         Equal(party.Snapshot(), resumed.Snapshot(), "Party next-turn state replays exactly");
         foreach (var seat in party.Players) Pools((JObject)seat["entity"]!, 5, "Every seat refills next round");
+        var swapFixture = JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests/Parity/swap-reference.json")))["fixtures"]![0]!;
+        var swapData = catalog.Data();
+        swapData["balance"]!["equipment"]!["swapCostKind"] = "action";
+        var dagger = swapData["equipment"]!["armaments"]!.First(p => (string?)p["id"] == "dagger");
+        ((JArray)dagger["mods"]!).Add("self.maxStamina=+2");
+        var swapCatalog = new OriginalContentCatalog(swapData.ToString());
+        var equipment = new OriginalCombatEquipment(swapCatalog, mechanics);
+        foreach (var stamina in new[] { 5, 8 })
+        {
+            var run = (JObject)swapFixture["run"]!.DeepClone(); var battle = (JObject)swapFixture["before"]!.DeepClone();
+            var body = (JObject)battle["player"]!;
+            body["maxStamina"] = 5; body["stamina"] = stamina; new OriginalTurnStamina(body);
+            body["equipmentPoolDeficits"] = new JObject { ["hp"] = 20, ["mana"] = 0, ["stamina"] = 0 };
+            var runBefore = run.DeepClone(); var battleBefore = battle.DeepClone();
+            var price = (int)equipment.Price(run, battle, "rightHand", 1)["cost"]!;
+            var changed = equipment.Apply(run, battle, "rightHand", 1);
+            var paidBody = (JObject)changed["combat"]!["player"]!;
+            Check((int)paidBody["stamina"]! == stamina - price + 2, "Equipment charges before resizing and preserves Stamina surplus");
+            Check((int)paidBody["maxStamina"]! == 7, "Equipment changes shared budget capacity");
+            Equal(paidBody["energy"]!, paidBody["stamina"]!, "Equipment current aliases agree");
+            Equal(paidBody["energyMax"]!, paidBody["maxStamina"]!, "Equipment maximum aliases agree");
+            Equal(changed["run"]!["energy"]!, paidBody["stamina"]!, "Run stores swapped budget");
+            Equal(runBefore, run, "Swap preserves input run"); Equal(battleBefore, battle, "Swap preserves input combat");
+            OriginalTurnStamina.Validate(paidBody);
+        }
         return checks;
     }
 }

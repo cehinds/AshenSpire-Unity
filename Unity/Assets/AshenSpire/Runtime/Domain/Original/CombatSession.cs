@@ -48,7 +48,7 @@ namespace AshenSpire.Domain.Original
             : CardMechanics.CostProfile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass());
         public JObject CardChoice(JObject instance) => new OriginalCardChoices(_content.Table("stances")).Plan(ResolvedCard(instance), (string)_player["classId"], (string)_player["stanceId"]);
         public JObject WeightClass() => (JObject)_weightSystem.Compute((int?)_attributes["constitution"] ?? 10, (int?)_attributes["strength"] ?? 10, _weights)["weightClass"];
-        public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null, JObject handRules = null)
+        public CombatSession(OriginalContentCatalog content, JObject mechanics, RandomStreams random, JObject player, IEnumerable<JObject> deck, IEnumerable<string> enemyIds, Func<JObject,JObject> resolveCard, double enemyHpMultiplier = 1, JArray enemyStatuses = null, JObject handRules = null, bool orderedDraw = false)
             : this(content, mechanics, random, MakePlayer(player), (JObject)(player["attributes"]?.DeepClone() ?? new JObject()), (JObject)(player["weights"]?.DeepClone() ?? new JObject()), resolveCard)
         {
             var sourceDeck = deck.Select(c => (JObject)c.DeepClone()).ToList();
@@ -68,9 +68,7 @@ namespace AshenSpire.Domain.Original
                 _enemies.Add(enemy); Emit("enemySpawned", new JObject { ["targetId"] = enemy["id"], ["enemyId"] = id });
             }
             if (_enemies.Count == 0) throw new ArgumentException("Combat requires enemies.");
-            var shuffled = _random.Shuffle("shuffle", sourceDeck);
-            _piles["draw"].AddRange(shuffled.Where(c => CardMechanics.HasProperty(CardMechanics.FromDefinition(ResolvedCard(c)), "lifecycle.innate")));
-            _piles["draw"].AddRange(shuffled.Where(c => !CardMechanics.HasProperty(CardMechanics.FromDefinition(ResolvedCard(c)), "lifecycle.innate")));
+            InitializeDraw(sourceDeck, orderedDraw);
             Emit("combatStart", new JObject()); foreach (var status in player["startStatuses"] as JArray ?? new JArray()) Queue(new JObject { ["op"] = "applyStatus", ["target"] = "self", ["status"] = status["status"], ["stacks"] = status["stacks"] ?? 1 },_player,_player,_player);
             foreach (var enemy in _enemies) foreach (var status in enemyStatuses ?? new JArray()) Queue(new JObject { ["op"] = "applyStatus", ["target"] = "self", ["status"] = status["status"], ["stacks"] = status["stacks"] ?? 1 },enemy,enemy,enemy);
             Drain(); RollIntents(true); if (_result == null) StartPlayerTurn();
@@ -91,7 +89,7 @@ namespace AshenSpire.Domain.Original
         {
             RequirePlayerTurn(); var start = _events.Count;
             var instance = _piles["hand"].FirstOrDefault(c => (string)c["instanceId"] == instanceId) ?? throw new ArgumentException("Card is not in hand: " + instanceId);
-            var definition = ResolvedCard(instance); var view = CardMechanics.FromDefinition(definition);
+            var definition = ResolvedCard(instance); var view = CardMechanics.FromDefinition(definition, UsesTurnStamina);
             OriginalCardChoices.Assert(CardChoice(instance), choice);
             if (CardMechanics.HasProperty(view,"internal.unplayable")) throw new ArgumentException("Card is unplayable: " + instance["cardId"]);
             ValidateEffects(definition["effects"]);
@@ -161,6 +159,7 @@ namespace AshenSpire.Domain.Original
             var saved = new JObject { ["schemaVersion"] = 1, ["seed"] = _random.Seed, ["rng"] = JObject.FromObject(_random.Snapshot()), ["turn"] = _turn, ["phase"] = _phase, ["result"] = _result, ["idCounter"] = _idCounter, ["catchBreathUses"] = _catchBreathUses, ["player"] = _player.DeepClone(), ["attributes"] = _attributes.DeepClone(), ["weights"] = _weights.DeepClone(), ["enemies"] = Enemies, ["piles"] = new JObject(_piles.Select(p => new JProperty(p.Key,new JArray(p.Value.Select(c => c.DeepClone()))))), ["triggerState"] = JObject.FromObject(_triggerState), ["events"] = new JArray(_events.Select(e => e.DeepClone())) };
             // Legacy snapshots omit both keys, and a restored legacy fight keeps the legacy draw.
             if (_handRules != null) { saved["handRules"] = _handRules.DeepClone(); saved["pendingDiscardDraw"] = _pendingDiscardDraw; }
+            if (_orderedDrawOrder != null) saved["orderedDraw"] = new JObject { ["order"] = new JArray(_orderedDrawOrder) };
             return saved;
         }
         public static CombatSession Restore(OriginalContentCatalog content, JObject mechanics, JObject snapshot, Func<JObject,JObject> resolveCard)
@@ -182,6 +181,7 @@ namespace AshenSpire.Domain.Original
                 if (pending != null && (pending.Type != JTokenType.Integer || (long)pending < 0 || (long)pending > 99)) throw new ArgumentException("pendingDiscardDraw must be an integer from 0 to 99");
                 session._pendingDiscardDraw = pending == null ? 0 : (int)pending;
             }
+            session.RestoreDrawOrder(snapshot["orderedDraw"]);
             session.ValidateResources(); return session;
         }
         private static JObject MakePlayer(JObject input)

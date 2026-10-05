@@ -33,12 +33,13 @@ namespace AshenSpire.Domain.Original
             result["startStatuses"] = new JArray(statuses.Where(x => x.Value > 0).Select(x => new JObject { ["status"] = x.Key, ["stacks"] = x.Value }));
             return result;
         }
-        public static JObject MovePool(int oldMaximum, int current, int newMaximum, int? carriedDeficit = null)
+        public static JObject MovePool(int oldMaximum, int current, int newMaximum, int? carriedDeficit = null, bool preserveSurplus = false)
         {
-            if (oldMaximum < 0 || newMaximum < 0 || current < 0 || current > oldMaximum || carriedDeficit < 0) throw new ArgumentException("Invalid resource pool.");
+            if (oldMaximum < 0 || newMaximum < 0 || current < 0 || (!preserveSurplus && current > oldMaximum) || carriedDeficit < 0) throw new ArgumentException("Invalid resource pool.");
+            var surplus = preserveSurplus ? Math.Max(0, current - oldMaximum) : 0;
             var observed = Math.Max(0, oldMaximum - current); var prior = carriedDeficit ?? observed;
             var deficit = checked(Math.Max(0, prior + observed - Math.Min(prior, oldMaximum)));
-            return new JObject { ["maximum"] = newMaximum, ["current"] = Math.Max(0, newMaximum - deficit), ["deficit"] = deficit };
+            return new JObject { ["maximum"] = newMaximum, ["current"] = checked(Math.Max(0, newMaximum - deficit) + surplus), ["deficit"] = deficit };
         }
     }
 }

@@ -45,6 +45,7 @@ namespace AshenSpire.Application
             _view.PlayerSettings = _playerSettings;
             _view.ContentModStatus = ModStatus();
             _view.PlayerSettingsChanged += SavePlayerSettings;
+            _view.ResetPlayerSettingsRequested += ResetPlayerSettings;
             _view.ContentModsChanged += ToggleContentMods;
             _view.InterfaceSoundRequested += PlayInterfaceSound;
             _view.SoundPreviewRequested += PreviewSound;
@@ -55,6 +56,7 @@ namespace AshenSpire.Application
             if (_view != null)
             {
                 _view.PlayerSettingsChanged -= SavePlayerSettings;
+                _view.ResetPlayerSettingsRequested -= ResetPlayerSettings;
                 _view.ContentModsChanged -= ToggleContentMods;
                 _view.InterfaceSoundRequested -= PlayInterfaceSound;
                 _view.SoundPreviewRequested -= PreviewSound;
@@ -94,12 +96,45 @@ namespace AshenSpire.Application
         private void SavePlayerSettings()
         {
             if (_playerSettings == null) return;
-            PlayerPrefs.SetString(OriginalPlayerSettings.StorageKey, _playerSettings.ToJson().ToString(Formatting.None));
-            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyReducedMotionKey, _playerSettings.ReducedMotion ? 1 : 0);
-            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyFastMotionKey, _playerSettings.QuickAnimations ? 1 : 0);
-            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyMutedKey, _playerSettings.Muted ? 1 : 0);
-            PlayerPrefs.Save();
+            PersistPlayerSettings(_playerSettings);
             ApplyPlayerSettings();
+        }
+        private static void PersistPlayerSettings(OriginalPlayerSettings settings)
+        {
+            PlayerPrefs.SetString(OriginalPlayerSettings.StorageKey, settings.ToJson().ToString(Formatting.None));
+            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyReducedMotionKey, settings.ReducedMotion ? 1 : 0);
+            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyFastMotionKey, settings.QuickAnimations ? 1 : 0);
+            PlayerPrefs.SetInt(OriginalPlayerSettings.LegacyMutedKey, settings.Muted ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+        private string ResetPlayerSettings()
+            => CommitSettingsDefaults(true);
+        private void OfferUpdatedSettings()
+        {
+            if (_playerSettings == null || !_playerSettings.NeedsDefaultsChoice) return;
+            // Load/recover the profile first. A failed profile load keeps its
+            // recovery screen and original bytes, rather than hiding the error.
+            if (!TryLoadOriginalProfile()) return;
+            _view.SettingsDefaultsChoice(CommitSettingsDefaults, Menu);
+        }
+        private string CommitSettingsDefaults(bool useDefaults)
+        {
+            if (_playerSettings == null) return "Settings are not available yet.";
+            var hadMods = _playerSettings.LoadContentMods;
+            try { _playerSettings = _playerSettings.ChooseDefaultsSaved(useDefaults, PersistPlayerSettings); }
+            catch (AggregateException) { return "The reset could not be saved, and restoring the saved preferences also failed. Your current preferences remain active. Free some storage and try again."; }
+            catch (Exception) { return "The reset could not be saved. Your previous preferences have been kept. Free some storage and try again."; }
+            _view.PlayerSettings = _playerSettings;
+            ApplyPlayerSettings();
+            // Reset is an explicit device preference change. Unlike startup's
+            // platform default, it also applies the windowed desktop default.
+            if (useDefaults && !UnityEngine.Application.isMobilePlatform) Screen.fullScreen = _playerSettings.Fullscreen;
+            if (hadMods != _playerSettings.LoadContentMods)
+            {
+                _originalContent = null; _profile = null; _modResult = null; _modsAttempted = false; _modNotice = null;
+                _view.ContentModStatus = ModStatus();
+            }
+            return null;
         }
 
         private void ToggleContentMods(bool enabled)

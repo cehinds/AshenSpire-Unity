@@ -42,6 +42,62 @@ namespace AshenSpire.Presentation
         public event Action PlayerSettingsChanged;
         /// <summary>Raised when "Load content mods" changes; PlayerSettings.LoadContentMods is already updated.</summary>
         public event Action<bool> ContentModsChanged;
+        /// <summary>Null means persisted; a message keeps the confirmation open for retry.</summary>
+        public event Func<string> ResetPlayerSettingsRequested;
+        public void SettingsDefaultsChoice(Func<bool, string> commit, Action back)
+        {
+            Shell("UPDATED SETTINGS", "Keep your preferences or use the current defaults.");
+            _body.Add(Text("Your saved climbs, profiles and unlocks are kept either way. Current defaults use manual reward collection; reset also restores sound, display, accessibility and controls.", "lead"));
+            var error = Text("", "caption"); error.name = "settings-defaults-error"; _body.Add(error);
+            void Choose(bool defaults)
+            {
+                error.text = commit(defaults);
+                if (string.IsNullOrEmpty(error.text)) back(); else Report();
+            }
+            var keep = AddButton("settings-defaults-keep", "Keep my settings", () => Choose(false), "primary");
+            AddButton("settings-defaults-use", "Use current defaults", () => Choose(true));
+            var dialog = new VisualElement { name = "settings-defaults-dialog" };
+            foreach (var child in _body.Children().ToList()) dialog.Add(child);
+            _body.Add(dialog);
+            dialog.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode != KeyCode.Escape) return; e.StopPropagation(); Choose(false); });
+            keep.Focus(); Report();
+        }
+        private void ResetSettingsConfirmation(Action back)
+        {
+            _capturingAction = null; _capturingController = null;
+            Shell("RESET SETTINGS?", "Restore this device's settings to their defaults.");
+            _body.Add(Text("This resets sound, display, accessibility, controls and content-mod preferences. Profiles, unlocks and saved climbs are kept.", "lead"));
+            var error = Text("", "caption"); error.name = "settings-reset-error"; _body.Add(error);
+            void ReturnToSettings()
+            {
+                Settings(back);
+                var reset = _root.Q<Button>("settings-reset");
+                if (reset == null) return;
+                EventCallback<GeometryChangedEvent> reveal = null;
+                reveal = change =>
+                {
+                    if (!(change.newRect.width > 0) || !(change.newRect.height > 0)) return;
+                    reset.UnregisterCallback(reveal);
+                    reset.schedule.Execute(() =>
+                    {
+                        if (_disposed || reset.panel == null) return;
+                        _scroll.ScrollTo(reset); reset.Focus(); Report();
+                    }).StartingIn(1);
+                };
+                reset.RegisterCallback(reveal);
+            }
+            var cancel = AddButton("back", "Keep my settings", ReturnToSettings);
+            AddButton("settings-reset-confirm", "Reset all settings", () =>
+            {
+                error.text = ResetPlayerSettingsRequested == null ? "Settings cannot be saved right now." : ResetPlayerSettingsRequested.Invoke();
+                if (string.IsNullOrEmpty(error.text)) ReturnToSettings(); else Report();
+            }, "primary");
+            var dialog = new VisualElement { name = "settings-reset-dialog" };
+            foreach (var child in _body.Children().ToList()) dialog.Add(child);
+            _body.Add(dialog);
+            dialog.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode != KeyCode.Escape) return; e.StopPropagation(); ReturnToSettings(); });
+            cancel.Focus(); Report();
+        }
         public OriginalPlayerSettings PlayerSettings
         {
             get => _playerSettings;
@@ -176,7 +232,6 @@ namespace AshenSpire.Presentation
             SettingToggle("control-hints", "Control hints", s.ControlHints, v => s.ControlHints = v);
             _body.Add(Text("UI size scales the whole interface; L and XL grow only as far as the screen fits. Accent tints highlights, borders and primary buttons. Card motif colours class cards: Wash tints the body, Accent puts your accent on the border with a rarity pip, Band adds a class stripe. Compact tightens the map header; relics and seed show in a line under it. Control hints list keyboard shortcuts under the map and combat in wide windows.", "caption"));
             SettingSlider("ui-scale", "Interface size", 75, 150, Percent(s.UiScale), v => s.UiScale = v / 100.0);
-            AddButton("fullscreen", "Toggle fullscreen", () => Screen.fullScreen = !Screen.fullScreen);
             SliderInt intensity = null;
             SettingToggle("screen-shake", "Screen shake", s.ScreenShake, v => { s.ScreenShake = v; intensity?.SetEnabled(v); });
             intensity = SettingSlider("screen-shake-intensity", "Shake intensity", 0, 100, Percent(s.ScreenShakeIntensity), v => s.ScreenShakeIntensity = v / 100.0);

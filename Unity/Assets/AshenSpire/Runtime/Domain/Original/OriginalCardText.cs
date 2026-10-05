@@ -16,7 +16,7 @@ namespace AshenSpire.Domain.Original
     public static class OriginalCardText
     {
         private static readonly HashSet<string> TokenizableOperations = new HashSet<string>(StringComparer.Ordinal)
-        { "damage", "block", "heal", "loseHp", "applyStatus", "poiseDamage", "draw", "gainEnergy", "restoreMana", "addCinders", "loseMaxHpPct" };
+        { "damage", "block", "heal", "loseHp", "applyStatus", "poiseDamage", "draw", "gainEnergy", "restoreMana", "restoreStamina", "addCinders", "loseMaxHpPct" };
         private static readonly Regex TemplateToken = new Regex(@"\{([A-Za-z][A-Za-z0-9_.]*)\}");
 
         /// <summary>Original binding receipt: token, effect index, field, opcode, numeric literal.</summary>

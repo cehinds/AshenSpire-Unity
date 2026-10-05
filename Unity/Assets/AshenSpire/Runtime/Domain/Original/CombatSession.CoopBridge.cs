@@ -23,9 +23,9 @@ namespace AshenSpire.Domain.Original
             if (input["handRules"] != null) _handRules = HandRules.ForClass(HandRules.Validate(input["handRules"]), (string)input["classId"]);
             var cards=deck.Select(c=>(JObject)c.DeepClone()).ToArray();if(cards.Select(c=>(string)c["instanceId"]).Distinct().Count()!=cards.Length||cards.Any(c=>string.IsNullOrEmpty((string)c["instanceId"])))throw new ArgumentException("Duplicate or empty seat card identity.");
             foreach(var card in cards)ValidateEffects(ResolvedCard(card)["effects"]);
-            var shuffled=_random.Shuffle("shuffle",cards);
-            _piles["draw"].AddRange(shuffled.Where(c=>CardMechanics.HasProperty(CardMechanics.FromDefinition(ResolvedCard(c)),"lifecycle.innate")));
-            _piles["draw"].AddRange(shuffled.Where(c=>!CardMechanics.HasProperty(CardMechanics.FromDefinition(ResolvedCard(c)),"lifecycle.innate")));
+            var ordered = input["orderedDraw"];
+            if (ordered != null && ordered.Type != JTokenType.Boolean) throw new ArgumentException("Seat orderedDraw must be true or false.");
+            InitializeDraw(cards, (bool?)ordered == true);
         }
         internal JObject CoopBody=>_player;
         internal int CoopCounter=>_idCounter;
@@ -51,6 +51,7 @@ namespace AshenSpire.Domain.Original
         {
             var saved=Snapshot(); var result=new JObject{["player"]=saved["player"].DeepClone(),["piles"]=saved["piles"].DeepClone(),["catchBreathUses"]=saved["catchBreathUses"].DeepClone()};
             if (_handRules != null) result["handRules"] = _handRules.DeepClone();
+            if (_orderedDrawOrder != null) result["orderedDraw"] = saved["orderedDraw"].DeepClone();
             return result;
         }
         internal void CoopStartTurn()
@@ -75,6 +76,7 @@ namespace AshenSpire.Domain.Original
             _player.RemoveAll();foreach(var p in ((JObject)snapshot["player"]).Properties())_player[p.Name]=p.Value.DeepClone();
             var ids=new HashSet<string>();foreach(var pile in _piles.Keys){_piles[pile].Clear();foreach(var card in (JArray)snapshot["piles"][pile]){var copy=(JObject)card.DeepClone();if(!ids.Add((string)copy["instanceId"]))throw new ArgumentException("Duplicate saved seat card.");ResolvedCard(copy);_piles[pile].Add(copy);}}
             _handRules = snapshot["handRules"] == null ? null : HandRules.Validate(snapshot["handRules"]);
+            RestoreDrawOrder(snapshot["orderedDraw"]);
             _catchBreathUses=(int?)snapshot["catchBreathUses"]??0;ValidateResources();
         }
     }

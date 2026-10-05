@@ -105692,10 +105692,10 @@
       "resource": "Art/html898/509fadcc2ae110d22a49"
     },
     "starstonePebble": {
-      "path": "assets/cards/default-outline/icons/crystal.svg",
-      "kind": "outline",
+      "path": "assets/cards/starstone-pebble-512.webp",
+      "kind": "official",
       "equipment": false,
-      "resource": "Art/html898/d5bb71d38fdaeb5dd953"
+      "resource": "Art/upstream913/starstonePebble"
     },
     "cometFragment": {
       "path": "assets/cards/default-outline/icons/comet.svg",
@@ -106004,10 +106004,10 @@
       "resource": "Art/html898/7d4ced4fa1afdedc064f"
     },
     "urgentHeal": {
-      "path": "assets/cards/default-outline/icons/heal.svg",
-      "kind": "outline",
+      "path": "assets/cards/urgent-heal-512.webp",
+      "kind": "official",
       "equipment": false,
-      "resource": "Art/html898/3bbae97729496ccf2789"
+      "resource": "Art/upstream913/urgentHeal"
     },
     "bloodPact": {
       "path": "assets/cards/default-outline/icons/blood.svg",
@@ -106244,10 +106244,10 @@
       "resource": "Art/html898/01bd8f8cddb10666de86"
     },
     "ambush": {
-      "path": "assets/cards/default-outline/icons/dagger.svg",
-      "kind": "outline",
+      "path": "assets/cards/ambush-512.webp",
+      "kind": "official",
       "equipment": false,
-      "resource": "Art/html898/5904bf670ff94aa6553a"
+      "resource": "Art/upstream913/ambush"
     },
     "rogueShiv": {
       "path": "assets/cards/default-outline/icons/dagger.svg",
@@ -107096,6 +107096,18 @@
       "href": "assets/player-polish/illustrations/title-traveler.webp",
       "trim": null,
       "resource": "Art/html898/title-traveler"
+    }
+  },
+  "upstreamArtOverrides": {
+    "build913": {
+      "commit": "40c8a45fe951de4f757b2add0811aeeeb7f41fe1",
+      "release": "hd-assets-v11",
+      "packSha256": "b56250b1de8b08cb2ac2d2d423964b82afc2947da1811324bf8e852900a9fd1f",
+      "cardIds": [
+        "starstonePebble",
+        "urgentHeal",
+        "ambush"
+      ]
     }
   }
 }

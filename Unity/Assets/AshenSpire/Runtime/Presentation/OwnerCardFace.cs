@@ -14,7 +14,8 @@ namespace AshenSpire.Presentation
             var type = (string)card["type"];
             var art = type == "attack" ? "attack" : type == "skill" && (card["effects"] as JArray)?.Count == 1 && (string)card["effects"][0]["op"] == "block" ? "guard" : "ember";
             var name = Copy(title,"owner-card-name"); Add(name);
-            var image = new Image { image = Resources.Load<Texture2D>("Art/OwnerAppearance/card-" + art), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
+            var artwork = OriginalIllustratedCardFace.Artwork(card) ?? Resources.Load<Texture2D>("Art/OwnerAppearance/card-" + art);
+            var image = new Image { image = artwork, scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
             image.AddToClassList("owner-card-art"); Add(image);
             var band = Copy(typeName.ToUpperInvariant() + ((bool?)card["upgraded"] == true ? " · UPGRADED" : ""),"owner-card-kind"); band.AddToClassList(art); Add(band);
             var description = Copy(rules,"owner-card-rules");
