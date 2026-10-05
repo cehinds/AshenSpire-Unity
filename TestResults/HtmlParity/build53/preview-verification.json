@@ -1,0 +1,105 @@
+{
+  "version": "0.0.33.6",
+  "buildNumber": 53,
+  "runtimeSourceCommit": "c393630",
+  "sourceDigest": "646ee9eaa0422189c78ae79c3b038a84afe0a04dcca8560aa4685608a7605d4d",
+  "verifiedPayloadFiles": 8,
+  "zipBytes": 120873641,
+  "zipSha256": "f429b22d65246c92df52b33d1c64efccaf69c93238554edc515833d3eed5b9ea",
+  "browserReports": [
+    {
+      "path": "TestResults/NativeCoopBrowser/build53/Host/checks.json",
+      "sourceDigest": "a6cf2c4f06a4cac451495f6c206ca8b64dbde6db14243a623e6d29c55e545216",
+      "checks": [
+        "different authenticated seats",
+        "one vote waits for other connected player",
+        "phone layout exercises three actual enemies",
+        "all enemy targets stay inside the phone viewport",
+        "enemy target rectangles do not overlap",
+        "end turn remains clear of the hand",
+        "combat chrome leaves the flask subpage",
+        "combat controls leave the deck subpage unobscured",
+        "deck filters stay compact on a phone",
+        "both actual hands contain an affordable card after reconnect",
+        "host selected card is playable before peer action",
+        "peer action preserves host selected card and its hand page",
+        "two Unity clients defeat actual encounter",
+        "co-op command receipts drive compiled combat feedback",
+        "co-op feedback reaches impact",
+        "real fight counted once",
+        "no browser or Unity errors"
+      ],
+      "physicalDevice": false
+    },
+    {
+      "path": "TestResults/NativeCoopBrowser/build53/Guest/checks.json",
+      "sourceDigest": "a6cf2c4f06a4cac451495f6c206ca8b64dbde6db14243a623e6d29c55e545216",
+      "checks": [
+        "phone layout exercises three actual enemies",
+        "all enemy targets stay inside the phone viewport",
+        "enemy target rectangles do not overlap",
+        "end turn remains clear of the hand",
+        "combat chrome leaves the flask subpage",
+        "combat controls leave the deck subpage unobscured",
+        "deck filters stay compact on a phone",
+        "page reload rejoins same exact hand without extra draw",
+        "original disconnect semantics end this turn until the next player phase",
+        "rejoined guest becomes active on exactly the next player turn",
+        "rejoined guest plays an accepted card on the next turn",
+        "co-op command receipts drive compiled combat feedback",
+        "co-op feedback reaches impact",
+        "real fight counted once",
+        "no browser or Unity errors"
+      ],
+      "physicalDevice": false
+    },
+    {
+      "path": "TestResults/PaintedCombat/build53/1280x720/checks.json",
+      "sourceDigest": "646ee9eaa0422189c78ae79c3b038a84afe0a04dcca8560aa4685608a7605d4d",
+      "checks": [
+        "quick start offers a reachable opening fight",
+        "route enters native combat",
+        "opening hand has an affordable basic card",
+        "selecting the painted card does not spend resources",
+        "painted inspector exposes its Play action",
+        "inspector Play pays one action cost",
+        "played basic leaves the hand once",
+        "reload preserves the exact played combat state",
+        "no browser or Unity errors"
+      ],
+      "physicalDevice": false
+    },
+    {
+      "path": "TestResults/PaintedCombat/build53/390x844/checks.json",
+      "sourceDigest": "646ee9eaa0422189c78ae79c3b038a84afe0a04dcca8560aa4685608a7605d4d",
+      "checks": [
+        "quick start offers a reachable opening fight",
+        "route enters native combat",
+        "opening hand has an affordable basic card",
+        "selecting the painted card does not spend resources",
+        "painted inspector exposes its Play action",
+        "inspector Play pays one action cost",
+        "played basic leaves the hand once",
+        "reload preserves the exact played combat state",
+        "no browser or Unity errors"
+      ],
+      "physicalDevice": false
+    }
+  ],
+  "assertions": 50,
+  "cooperativeViewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 1
+  },
+  "cooperativeEvidenceScope": "32 checks on preceding candidate. Final change hides the phone encounter heading, which co-op already hid. WebAssembly and framework hashes are identical; final solo checks rerun.",
+  "currentContentActivated": false,
+  "ownerAccepted": false,
+  "phaseComplete": false,
+  "limits": [
+    "Intermediate Web preview",
+    "Original builds 914-963 assessed only",
+    "Current-content activation and full upstream migration remain open",
+    "No current Windows/Android, device/controller or channel-promotion acceptance"
+  ]
+}
