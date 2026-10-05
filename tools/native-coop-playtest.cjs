@@ -22,6 +22,20 @@ const combatFeedback = new Map();
  host.check(host.coop.game.local.id!==guest.coop.game.local.id,'different authenticated seats');
  const node=host.coop.game.reachableIds[0];await host.coopCommand('coop-route-'+node);host.check(host.coop.game.scene.kind==='map','one vote waits for other connected player');await guest.coopCommand('coop-route-'+node);await host.until(()=>host.coop.game.scene.kind==='combat','shared real encounter');
  await guest.until(()=>guest.coop?.game?.scene?.kind==='combat'&&Array.isArray(guest.coop.game.local?.hand)&&guest.has('coop-end-turn'),'guest combat hand received and rendered');
+ if(process.env.AS_COOP_LAYOUT==='1'){
+  for(const ui of players){
+   await ui.until(()=>ui.has('coop-combat-menu'),'compact combat menu');
+   const report=ui.controls,targets=report.Controls.filter(c=>/^coop-target-/.test(c.Id));
+   ui.check(targets.length===3,'phone layout exercises three actual enemies');
+   ui.check(targets.every(c=>c.X>=0&&c.Y>=0&&c.X+c.Width<=report.PanelWidth&&c.Y+c.Height<=report.PanelHeight),'all enemy targets stay inside the phone viewport');
+   const intersects=(a,b)=>Math.min(a.X+a.Width,b.X+b.Width)>Math.max(a.X,b.X)+1&&Math.min(a.Y+a.Height,b.Y+b.Height)>Math.max(a.Y,b.Y)+1;
+   ui.check(targets.every((a,i)=>targets.slice(i+1).every(b=>!intersects(a,b))),'enemy target rectangles do not overlap');
+   const end=report.Controls.find(c=>c.Id==='coop-end-turn'),cards=report.Controls.filter(c=>/^coop-card-/.test(c.Id));
+   ui.check(cards.every(c=>!intersects(c,end)),'end turn remains clear of the hand');
+   await ui.click('coop-combat-menu');await ui.until(()=>ui.has('coop-flasks'),'party menu exposes flasks');
+   await ui.click('coop-combat-menu');await ui.until(()=>!ui.has('coop-flasks'),'party menu closes');
+  }
+ }
  await host.shot('02-combat');await guest.shot('02-own-hand');
  const guestHand=JSON.stringify(guest.coop.game.local.hand.map(r=>r.instance));const guestSequence=guest.coop.game.local.sequence;
  await guest.click('coop-menu');const beforeReload=guest.coopRevision;await guest.page.reload();await guest.page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});await guest.click('native-coop');await guest.click('coop-rejoin');await guest.until(()=>guest.coopRevision>beforeReload&&guest.coop?.game?.local?.sequence===guestSequence&&guest.has('coop-menu'),'rejoined own seat');

@@ -29,7 +29,16 @@ It does not complete current combat foundations or activate the new content.
   - [x] 6,587 frozen legacy co-op checks after the shared-queue change.
   - [x] Runtime reference compilation: 169 files; three documented Unity-6 API gaps
     in the older NuGet reference remain accepted, not new compile failures.
-- [ ] Compile/export this exact source with Unity and verify its player.
+- [x] Compile/export build 51 from source `b7cf094` with Unity.
+  - [x] Source digest `1e3c089ddc4146c2ee0c1370b474b3b6f5d436ad41d7eae350e3cf7dab4e375f`
+    and all eight Web payload hashes verified; 18 desktop/portrait solo checks passed.
+  - [x] Web archive verified: 120,871,520 bytes, SHA-256
+    `9dd59e97ff2f618d1a270efc91efc6001466fc422f918e869c563a4286b7a29a`.
+  - [ ] Two-browser co-op acceptance: both build-51 attempts reached the real
+    encounter and exact-hand rejoin, then failed card selection. The second
+    attempt exposed inspector Back clearing selection. Phone screenshots also
+    showed overlapping party resources, enemy targets and lower controls.
+    Build 52 addresses these findings; no co-op pass is claimed for build 51.
   - The first build-51 attempt failed because the new partial class had a
     malformed 33-character GUID. The metadata was corrected before retry;
     the failed attempt is not an exported-player validation result.

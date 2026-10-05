@@ -6,6 +6,7 @@ var view=new JObject{["actNumber"]=1,["cursorId"]="a1",["local"]=new JObject{["i
 var frozen=view.DeepClone();var ui=new CoopPanelState();ui.Reconcile(view);ui.SelectedCard="c8";ui.Target="e2";ui.HandPage=2;ui.Surface="deck";ui.Reconcile(view);
 Check(ui.SelectedCard=="c8"&&ui.Target=="e2"&&ui.HandPage==2&&ui.Surface=="deck","peer update retains card target page deck");Check(JToken.DeepEquals(view,frozen),"UI never mutates game view");
 ui.HostileTarget="e2"; ui.Reconcile(view); Check(ui.HostileTarget=="e2","living hostile memory survives a peer revision");
+ui.CombatMenuOpen=true;ui.Reconcile(view);Check(ui.CombatMenuOpen,"peer update preserves the open combat menu");
 view["scene"]!["turn"]=2;ui.Reconcile(view);Check(ui.SelectedCard=="c8","turn change preserves retained card");
 view["scene"]!["enemies"]![1]!["alive"]=false;ui.Reconcile(view);Check(ui.Target==null,"dead target forgotten");
 Check(ui.HostileTarget==null,"dead hostile memory forgotten");
@@ -16,6 +17,7 @@ ui.HostileTarget="e1"; ui.Reconcile(view); Check(ui.HostileTarget=="e1"&&ui.Targ
 view["local"]!["hand"]![0]!["targets"]!["legalIds"]=new JArray();ui.Reconcile(view);Check(ui.Target==null,"no longer legal ally cleared");
 view["scene"]!["kind"]="rewards";view["scene"]!["offers"]=new JObject{["p1"]=new JObject{["cards"]=new JArray("reward1")}};ui.Reconcile(view);Check(ui.Surface=="main"&&ui.SelectedCard==null&&ui.HandPage==0,"new scene resets presentation");
 Check(ui.HostileTarget==null,"new room resets hostile memory");
+Check(!ui.CombatMenuOpen,"leaving the encounter closes its combat menu");
 ui.RewardCard="reward1";ui.TakeRelic=false;ui.TakeFlask=true;ui.Reconcile(view);Check(ui.RewardCard=="reward1"&&!ui.TakeRelic&&ui.TakeFlask,"peer reward update retains selection and toggles");
 view["scene"]!["offers"]!["p1"]!["cards"]=new JArray();ui.Reconcile(view);Check(ui.RewardCard==null,"removed reward cleared");
 ui.Surface="deck";view["cursorId"]="a2";ui.Reconcile(view);Check(ui.Surface=="main"&&ui.TakeRelic&&!ui.TakeFlask,"same-kind next room resets");
