@@ -48,3 +48,27 @@ the repaired soldier hilt remain the existing game assets.
 This work is isolated from the main checkout's concurrent gameplay/art changes.
 Those changes and player saves are preserved. An asset import or local domain
 test pass does not establish visual parity or exported-player verification.
+
+## Export and playtest evidence, October 4
+
+- [x] Initial Unity Web export compiled and loaded locally as 0.0.33.2/build36.
+  - [x] Desktop 1280x720: title and guided class/attributes/equipment screens rendered; Reaver was selected.
+  - [x] Portrait 390x844: equipment, relic, ready summary and footer remained visible without page scrolling.
+  - [x] Ready summary showed Standard, Straight Sword, Round Shield and Forsaken Medallion.
+  - [x] Began a run, selected a connected map node and entered combat.
+  - [x] Selected Slashing Strike and tapped Wandering Soldier: HP changed 25 to 16; actions changed 3 to 2.
+  - [ ] Drag input: browser automation timed out during the gesture; no success claim.
+- [x] The first visual pass exposed off-center card inspection; final styles center the face and enlarge it on desktop.
+- [ ] Final unchanged-source export and repeated visual checks (the initial export predates item-alpha, item-preview and inspection corrections).
+- [ ] Browser connection recovery: repeated tool timeouts prevented screenshot-file capture and further input after the drag attempt.
+
+The second launch collided with the first editor's delayed shutdown and exited
+before compilation. A third export was started only after the old editor had
+exited. Its result must be verified before the initial preview is considered
+current-source evidence.
+
+PR #71 remains a draft. Full CI failures inspected on this branch include
+`Companion version differs from the Unity player` in packaging and a timeout
+waiting for `merchant-buy-back` in the published-player browser suite. Neither
+has been waived or represented as passing. Published platform bundles have not
+been replaced by this isolated visual preview.
