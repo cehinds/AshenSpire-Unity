@@ -22,9 +22,13 @@ It does not complete current combat foundations or activate the new content.
   - [x] 102 focused checks, including actual property definitions, controlled queue
     scenarios, equipment transactions, corrupt content and invalid-command rollback.
   - [x] 41,149 migration checks.
+  - [x] 6,587 frozen legacy co-op checks after the shared-queue change.
   - [x] Runtime reference compilation: 169 files; three documented Unity-6 API gaps
     in the older NuGet reference remain accepted, not new compile failures.
 - [ ] Compile/export this exact source with Unity and verify its player.
+  - The first build-51 attempt failed because the new partial class had a
+    malformed 33-character GUID. The metadata was corrected before retry;
+    the failed attempt is not an exported-player validation result.
 - [ ] Activate the compatible content and validate visible property behavior in the player.
 - [ ] Finish foundation-wide trigger priority/ancestry, status clocks, location
   properties and scoped skill-XP readers before declaring current-rule parity.
