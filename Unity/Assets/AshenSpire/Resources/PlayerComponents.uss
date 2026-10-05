@@ -53,3 +53,7 @@
 .app .original-card.card.owner-card { flex-grow: 0; flex-shrink: 0; align-self: flex-start; padding: 4px; border-top-width: 1px; }
 .app .original-card-offer > .original-card { width: 180px; min-width: 180px; flex-grow: 0; }
 .app .owner-card-price { background-image: resource("Art/PlayerComponents/cost-hexagon"); -unity-background-scale-mode: scale-to-fit; border-width: 0; background-color: rgba(0,0,0,0); width: 34px; height: 38px; left: -16px; top: -13px; }
+/* Focused inspection keeps the fixed-ratio face centered and readable. */
+.app .original-card.card.owner-card.guided-card { align-self: center; }
+.app .creation-wide .original-card.card.owner-card.guided-card { width: 260px; min-width: 260px; max-width: 260px; }
+.creation-card-preview .creation-step > .caption { -unity-text-align: middle-center; }
