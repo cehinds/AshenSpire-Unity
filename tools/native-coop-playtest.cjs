@@ -57,18 +57,23 @@ const combatFeedback = new Map();
  function affordable(ui){const local=ui.coop.game.local,body=local.combat.entity;return local.hand.filter(r=>(r.cost.variable||r.cost.action<=body.energy)&&r.cost.mana<=body.mana&&r.cost.stamina<=body.stamina&&!['status','curse'].includes(r.card.type));}
  async function selectCard(ui,row){
   const id='coop-card-'+row.instance.instanceId;
+  const selected=()=>ui.has('coop-play')&&ui.controls.Controls.some(c=>c.Id===id&&c.Selected);
   // All hand cards now live in one horizontal rail. The shared pointer driver
   // scrolls the actual card into view; previous/next controls do not represent
   // page boundaries and can remain enabled at the start of the rail.
   // Peer redraws and scrolling can cross a pointer gesture. Confirm selection
   // before issuing a game command; only retry this reversible UI interaction.
-  for(let attempt=0;attempt<3;attempt++){
-   await ui.click(id);
+  for(let attempt=0;attempt<6;attempt++){
+   if(selected())return;
+   await ui.click(id,true,[.16,.84,.5][attempt%3]);
    // A slow software-rendered frame may turn the press into the supported
    // hold-to-inspect gesture. Back keeps this selection without replaying it.
-   if(ui.has('coop-card-inspection-back'))await ui.click('coop-card-inspection-back');
-   try{await ui.until(()=>ui.has('coop-play'),'affordable card selected',3000);return;}
-   catch(error){if(attempt===2)throw error;}
+   if(ui.has('coop-card-inspection-back')){
+    try{await ui.click('coop-card-inspection-back');}
+    catch(error){if(ui.has('coop-card-inspection-back')||!ui.has('coop-combat-menu'))throw error;}
+   }
+   try{await ui.until(selected,'requested affordable card selected',3000);return;}
+   catch(error){if(attempt===5)throw error;}
   }
  }
  async function playCard(ui,row,selected=false){

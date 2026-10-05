@@ -27,6 +27,9 @@ namespace AshenSpire.Presentation
             Move(prefix+"-deck", "combat-deck", "Deck");
             var toolsEnabled=tools.enabledInHierarchy;
             tools.AddToClassList("combat-tools-popup"); tools.AddToClassList("combat-chrome");
+            // An early control report may already have sized this as a horizontal
+            // touch tray. Clear that inline size when changing it into a popup.
+            tools.style.height=StyleKeyword.Null;tools.style.minHeight=StyleKeyword.Null;
             root.Add(tools); tools.SetEnabled(toolsEnabled);
             if (tools is ScrollView scroll)
             {

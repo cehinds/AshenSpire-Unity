@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.6 · build 53 · 2026-10-05
+
+- Keep combat menus at full height and fit deck filters without obscuring cards.
+
 ## 0.0.33.5 · build 52 · 2026-10-05
 
 - Fit party combat controls and multi-enemy formations to the phone viewport.

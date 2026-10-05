@@ -639,7 +639,7 @@ namespace AshenSpire.Presentation
         [Serializable]
         private sealed class ControlBounds
         {
-            public string Id, Text; public float X, Y, Width, Height; public bool Enabled, Focused;
+            public string Id, Text; public float X, Y, Width, Height; public bool Enabled, Focused, Selected;
         }
         [Serializable]
         private sealed class ControlList
@@ -683,7 +683,8 @@ namespace AshenSpire.Presentation
                 .Select(x => new ControlBounds { Id = x.Control.name, X = x.Bound.x, Y = x.Bound.y,
                     Width = x.Bound.width, Height = x.Bound.height, Enabled = OriginalCombatLayout.Selectable(x.Control),
                     Text = x.Control is Button button ? button.text : null,
-                    Focused = x.Control == _root.focusController?.focusedElement }).ToArray();
+                    Focused = x.Control == _root.focusController?.focusedElement,
+                    Selected = x.Control.ClassListContains("selected") }).ToArray();
             var width = _root.resolvedStyle.width;
             var height = _root.resolvedStyle.height;
             // Rotation and detached elements can expose unmeasured bounds. Never
