@@ -43,6 +43,9 @@ const combatFeedback = new Map();
   // before issuing a game command; only retry this reversible UI interaction.
   for(let attempt=0;attempt<3;attempt++){
    await ui.click(id);
+   // A slow software-rendered frame may turn the press into the supported
+   // hold-to-inspect gesture. Back keeps this selection without replaying it.
+   if(ui.has('coop-card-inspection-back'))await ui.click('coop-card-inspection-back');
    try{await ui.until(()=>ui.has('coop-play'),'affordable card selected',3000);return;}
    catch(error){if(attempt===2)throw error;}
   }
