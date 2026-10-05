@@ -12,7 +12,11 @@
   - [x] 169-file runtime reference compilation and 1,068 valid asset GUIDs.
   - [x] 23 co-op presentation-state checks and six version checks against build 51.
   - [x] 17 driver/control-report tests, including 42 report-assembly assertions.
-- [ ] Final Unity export, exact-source receipt and archive verification.
+- [x] Final Unity export from `2b04486`, exact-source receipt and archive verification.
+  - [x] Source digest `6b29f12a4624d7ae60463ef888ff792402b4f7c6f4b5a1b83cb93ff832e010bb`;
+    all eight payload hashes verified.
+  - [x] ZIP: 120,873,485 bytes; SHA-256
+    `479c25c4c4aca7b72815c18c770dadbba46c46fc764f363568d76506fc48e286`.
 - [ ] Desktop/portrait solo and two-browser co-op playtests; screenshot inspection.
 - [ ] Download delivery and download-back verification.
 - [ ] Current content activation, complete upstream migration and owner acceptance.

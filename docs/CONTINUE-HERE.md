@@ -18,7 +18,7 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
   - [x] Public ZIP downloaded back; SHA-256 matches the local package.
   - Evidence: [build 50](Unity-Build50-Preview.md). The broader art/reset coverage remains [build 49](Unity-Build49-Preview.md).
 - [ ] Build 52 (`0.0.33.5`): party phone layout, combat menu and retained inspection selection.
-  - [x] Unity export from `e4af81d`; source digest `a5039010b21a3f7c47669add467dada2f2efe06b7fd404da63b41210732cc7c6` and eight payload hashes verified.
+  - [x] Final Unity export from `2b04486`; source digest `6b29f12a4624d7ae60463ef888ff792402b4f7c6f4b5a1b83cb93ff832e010bb` and eight payload hashes verified.
   - [x] Runtime reference compilation (169 files), 23 party presentation-state checks.
   - [ ] Exported-player solo/co-op checks and screenshot review; currently running.
   - Build 51 already exported and passed 18 solo browser assertions. Its co-op checks
