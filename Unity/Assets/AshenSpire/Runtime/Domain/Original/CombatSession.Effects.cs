@@ -1,4 +1,4 @@
-// CombatSession.Effects.cs — closed native combat effect interpreter and pile operations.
+// CombatSession.Effects.cs - closed native combat effect interpreter and pile operations.
 // Preserve FIFO ordering: effects may enqueue reactions but never recursively execute them.
 // New content uses existing opcodes; unknown opcodes and scripts are rejected explicitly.
 using System;
@@ -10,7 +10,7 @@ namespace AshenSpire.Domain.Original
 {
     public sealed partial class CombatSession
     {
-        private static readonly string[] CombatOperations = { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "restoreStamina", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger" };
+        private static readonly string[] CombatOperations = { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "restoreStamina", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger", "arcaneBuildup" };
         private void ValidateEffects(JToken effects)
         {
             foreach (var token in effects as JArray ?? new JArray())
@@ -19,7 +19,7 @@ namespace AshenSpire.Domain.Original
                 if ((string)effect["script"] == "wondrousDraught") continue;
                 if (effect["script"] != null || !CombatOperations.Contains((string)effect["op"])) throw new NotSupportedException("Native combat effect unavailable: " + (effect["script"] ?? effect["op"]));
                 if (effect["if"] is JObject predicate) ValidatePredicate(predicate);
-                var target = (string)effect["target"]; if (target != null && !new[] { "self", "owner", "player", "enemy", "allEnemies", "randomEnemy", "ally" }.Contains(target)) throw new ArgumentException("Unknown effect target: " + target);
+                var target = (string)effect["target"]; if (target != null && !new[] { "self", "owner", "player", "enemy", "allEnemies", "otherEnemies", "randomEnemy", "ally" }.Contains(target)) throw new ArgumentException("Unknown effect target: " + target);
             }
         }
         private void QueueEffects(JToken effects,JObject source,JObject owner,JObject target,JObject meta = null,JObject carrier = null)
@@ -49,17 +49,17 @@ namespace AshenSpire.Domain.Original
                     var hits = Math.Max(0,Number(effect["hits"],1,action,null,meta)); if (hits > 10000) throw new ArgumentException("Hit count exceeds command budget.");
                     var tags = effect["tags"]?.Values<string>().ToArray() ?? carrier?["tags"]?.Values<string>().ToArray() ?? Array.Empty<string>();
                     var bonus = firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"attribute bonus") : 0;
-                    for (var h = 0; h < hits; h++) foreach (var target in Targets(action,(string)effect["target"])) if (Alive(target))
+                    for (var h = 0; h < hits; h++) foreach (var target in Targets(action,(string)effect["target"],meta)) if (Alive(target))
                     { var basis = Number(effect["amount"],0,action,target,meta) + AttributeHitBonus(bonus,hits,h); Attack(action.Source,target,basis,tags,carrier); }
                     break;
-                case "block": foreach (var target in Targets(action,(string)effect["target"])) GainBlock(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"block attribute bonus") : 0),carrier); break;
+                case "block": foreach (var target in Targets(action,(string)effect["target"],meta)) GainBlock(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"block attribute bonus") : 0),carrier); break;
                 case "dodgeRoll":
                     if ((string)action.Source?["id"] != "player") break;
                     var roll = _random.Int("misc",1,_weightSystem.DodgeDie); var weight = WeightClass(); var receipt = _weightSystem.Dodge(roll,(int?)_attributes["dexterity"] ?? 10,weight);
                     Emit("dodgeRolled",new JObject { ["sourceId"] = "player", ["roll"] = roll, ["check"] = receipt["check"], ["difficulty"] = receipt["difficulty"], ["success"] = receipt["success"], ["temporaryGuard"] = receipt["temporaryGuard"], ["weightClass"] = weight["id"] });
                     if ((bool)receipt["success"] && (int)receipt["temporaryGuard"] > 0) GainBlock(_player,(int)receipt["temporaryGuard"]); break;
-                case "applyStatus": foreach (var target in Targets(action,(string)effect["target"])) _statuses.Apply(target,(string)effect["status"],Number(effect["stacks"],1,action,target,meta),action.Source); break;
-                case "removeStatus": foreach (var target in Targets(action,(string)effect["target"])) _statuses.Remove(target,(string)effect["status"],"consumed"); break;
+                case "applyStatus": foreach (var target in Targets(action,(string)effect["target"],meta)) _statuses.Apply(target,(string)effect["status"],Number(effect["stacks"],1,action,target,meta),action.Source); break;
+                case "removeStatus": foreach (var target in Targets(action,(string)effect["target"],meta)) _statuses.Remove(target,(string)effect["status"],"consumed"); break;
                 case "draw": Draw(Math.Max(0,Number(effect["amount"],1,action,null,meta))); break;
                 case "discard": Discard(Math.Max(0,Number(effect["amount"],1,action,null,meta)),(bool?)effect["random"] ?? false,false); break;
                 case "exhaust": Discard(Math.Max(0,Number(effect["amount"],1,action,null,meta)),(bool?)effect["random"] ?? false,true); break;
@@ -79,7 +79,7 @@ namespace AshenSpire.Domain.Original
                     if (UsesTurnStamina) energyReceipt["turnStamina"] = true;
                     Emit("energyGained",energyReceipt); break;
                 case "restoreStamina":
-                    foreach (var target in Targets(action,(string)effect["target"]))
+                    foreach (var target in Targets(action,(string)effect["target"],meta))
                     {
                         var before = CardMechanics.Nonnegative(target["stamina"], "target Stamina");
                         var maximum = CardMechanics.Nonnegative(target["maxStamina"], "target Stamina capacity");
@@ -90,15 +90,18 @@ namespace AshenSpire.Domain.Original
                     }
                     break;
                 case "restoreMana":
-                    var mana = Math.Max(0,Number(effect["amount"],1,action,null,meta)); foreach (var target in Targets(action,(string)effect["target"])) { var before = (int?)target["mana"] ?? throw new ArgumentException("Target has no mana pool."); target["mana"] = Math.Min((int)target["maxMana"],checked(before + mana)); Emit("manaRestored",new JObject { ["targetId"] = target["id"], ["amount"] = (int)target["mana"] - before }); } break;
-                case "loseHp": foreach (var target in Targets(action,(string)effect["target"])) LoseHp(target,Number(effect["amount"],0,action,target,meta),(string)effect["cause"] ?? "effect"); break;
-                case "heal": foreach (var target in Targets(action,(string)effect["target"])) Heal(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"healing attribute bonus") : 0)); break;
+                    var mana = Math.Max(0,Number(effect["amount"],1,action,null,meta)); foreach (var target in Targets(action,(string)effect["target"],meta)) { var before = (int?)target["mana"] ?? throw new ArgumentException("Target has no mana pool."); target["mana"] = Math.Min((int)target["maxMana"],checked(before + mana)); Emit("manaRestored",new JObject { ["targetId"] = target["id"], ["amount"] = (int)target["mana"] - before }); } break;
+                case "loseHp": foreach (var target in Targets(action,(string)effect["target"],meta)) LoseHp(target,Number(effect["amount"],0,action,target,meta),(string)effect["cause"] ?? "effect"); break;
+                case "heal": foreach (var target in Targets(action,(string)effect["target"],meta)) Heal(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"healing attribute bonus") : 0)); break;
                 case "shuffleDiscardIntoDraw": Reshuffle(); break;
                 case "enterStance":
                     var id = (string)effect["stance"]; var stance = _content.Record("stances",id); if ((string)_player["stanceId"] == id) break;
                     if (_player["stanceId"].Type != JTokenType.Null) Emit("stanceExited",new JObject { ["stance"] = _player["stanceId"] }); _player["stanceId"] = id; Emit("stanceEntered",new JObject { ["stance"] = id }); QueueEffects(stance["onEnter"],_player,_player,action.Target,meta); break;
-                case "poiseDamage": foreach (var target in Targets(action,(string)effect["target"])) PoiseDamage(target,Number(effect["amount"],0,action,target,meta)); break;
-                case "stagger": foreach (var target in Targets(action,(string)effect["target"])) Stagger(target); break;
+                case "poiseDamage": foreach (var target in Targets(action,(string)effect["target"],meta)) PoiseDamage(target,Number(effect["amount"],0,action,target,meta)); break;
+                case "stagger": foreach (var target in Targets(action,(string)effect["target"],meta)) Stagger(target); break;
+                case "arcaneBuildup":
+                    foreach (var target in Targets(action,(string)effect["target"],meta)) DirectArcaneBuildup(action,target,meta);
+                    break;
                 default: throw new NotSupportedException("Native combat opcode unavailable: " + op);
             }
         }
@@ -112,7 +115,7 @@ namespace AshenSpire.Domain.Original
             var result = value.Type == JTokenType.Integer || value.Type == JTokenType.Float ? checked((int)Math.Floor((double)value)) : FormulaEvaluator.Evaluate(value,context);
             var mult = (double?)meta?["amountMult"] ?? 1; return mult == 1 ? result : checked((int)Math.Ceiling(result * mult));
         }
-        private List<JObject> Targets(CombatAction action,string target)
+        private List<JObject> Targets(CombatAction action,string target,JObject meta = null)
         {
             JObject entity;
             switch (target)
@@ -123,6 +126,7 @@ namespace AshenSpire.Domain.Original
                 case "player": entity = _player; break;
                 case "enemy": entity = (string)action.Target?["kind"] == "enemy" && Alive(action.Target) ? action.Target : (string)action.Source?["kind"] == "enemy" ? _player : _enemies.FirstOrDefault(Alive); break;
                 case "allEnemies": return _enemies.Where(Alive).ToList();
+                case "otherEnemies": return _enemies.Where(e => Alive(e) && !ReferenceEquals(e,action.Target) && (string)e["id"] != (string)meta?["event"]?["targetId"]).ToList();
                 case "randomEnemy": var living = _enemies.Where(Alive).ToList(); return living.Count == 0 ? living : new List<JObject> { living[_random.Int("misc",0,living.Count-1)] };
                 case "ally": entity = (string)action.Target?["kind"] == "player" && action.Target != action.Source && Alive(action.Target) ? action.Target : action.Source; break;
                 default: throw new ArgumentException("Unknown effect target: " + target);
@@ -153,11 +157,38 @@ namespace AshenSpire.Domain.Original
             var mode = (string)config["mode"]; var locked = mode == "configured" && StatusSystem.Stacks(target,(string)config["onBreak"]["status"]) > 0;
             if (mode == "immune" || locked) { Emit("arcaneExposureRefused",new JObject { ["targetId"] = target["id"], ["sourceId"] = source?["id"], ["reason"] = locked ? "locked" : "immune", ["school"] = school, ["attempted"] = perHit }); return; }
             if (mode != "configured") throw new ArgumentException("Unknown Arcane Exposure mode.");
-            var amount = (int)Math.Floor(perHit * mapped * (double)config["buildupMultiplier"]); if (amount <= 0) return; config["value"] = (int)config["value"] + amount;
+            var amount = (int)Math.Floor(perHit * mapped * (double)config["buildupMultiplier"]);
+            AccumulateArcaneExposure(source,target,config,school,amount);
+        }
+        private void AccumulateArcaneExposure(JObject source,JObject target,JObject config,string school,int amount)
+        {
+            if (amount <= 0) return; config["value"] = checked((int)config["value"] + amount);
             Emit("arcaneExposureChanged",new JObject { ["targetId"] = target["id"], ["sourceId"] = source?["id"], ["school"] = school, ["amount"] = amount, ["value"] = config["value"], ["threshold"] = config["threshold"] });
             if ((int)config["value"] < (int)config["threshold"]) return; config["value"] = 0; var onBreak = config["onBreak"];
             Emit("arcaneBreak",new JObject { ["targetId"] = target["id"], ["sourceId"] = source?["id"], ["school"] = school, ["threshold"] = config["threshold"], ["status"] = onBreak["status"], ["value"] = onBreak["value"], ["duration"] = onBreak["duration"] });
             _statuses.Apply(target,(string)onBreak["status"],(int)onBreak["value"],source); if (target["statuses"][(string)onBreak["status"]] is JObject status) status["duration"] = onBreak["duration"];
+        }
+        private void DirectArcaneBuildup(CombatAction action,JObject target,JObject meta)
+        {
+            if ((string)target["kind"] != "enemy" || !(target["arcaneExposure"] is JObject config)) return;
+            var school = (string)meta?["event"]?["school"] ?? "arcane";
+            var mode = (string)config["mode"];
+            var locked = mode == "configured" && StatusSystem.Stacks(target,(string)config["onBreak"]["status"]) > 0;
+            if (mode == "immune" || locked)
+            {
+                Emit("arcaneExposureRefused",new JObject { ["targetId"] = target["id"], ["sourceId"] = action.Source?["id"], ["reason"] = locked ? "locked" : "immune", ["school"] = school, ["attempted"] = null }); return;
+            }
+            if (mode != "configured") return;
+            var effect = action.Effect; int amount;
+            if (effect["pct"] != null)
+            {
+                var fired = meta?["event"]?["threshold"];
+                var threshold = fired != null && (fired.Type == JTokenType.Integer || fired.Type == JTokenType.Float) && !double.IsNaN((double)fired) && !double.IsInfinity((double)fired)
+                    ? (double)fired : (double)config["threshold"];
+                amount = checked((int)Math.Floor(threshold * Number(effect["pct"],0,action,target,meta) / 100));
+            }
+            else amount = Number(effect["amount"],0,action,target,meta);
+            AccumulateArcaneExposure(action.Source,target,config,school,amount);
         }
         private void LoseHp(JObject target,int amount,string cause)
         { if (!Alive(target) || amount <= 0) return; target["hp"] = (int)target["hp"] - amount; Emit("hpLost",new JObject { ["targetId"] = target["id"], ["amount"] = amount, ["cause"] = cause }); AfterHpChange(target); }

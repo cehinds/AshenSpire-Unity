@@ -11,17 +11,19 @@ let browser,ui;
  for(const viewport of [{width:1280,height:720},{width:390,height:844}]){
   const context=await browser.newContext({viewport,deviceScaleFactor:1}),page=await context.newPage();
   ui=new NativeUiDriver(page,path.join(output,`${viewport.width}x${viewport.height}`));
-  const settingsJump=async index=>{
+  const settingsJump=async label=>{
+   const id=ui.controls.Controls.find(c=>c.Id.startsWith('settings-section-')&&c.Text===label)?.Id;
+   if(!id)throw Error('Missing settings section: '+label);
    // Unity limits each wheel event. Reach the index using bounded repeated
    // gestures; one giant delta still moves only a short distance in the player.
    const canvas=await page.locator('#unity-canvas').boundingBox();
    await page.mouse.move(canvas.x+8,canvas.y+canvas.height/2);
    for(let step=0;step<120;step++){
-    const control=ui.controls.Controls.find(c=>c.Id==='settings-section-'+index);
+    const control=ui.controls.Controls.find(c=>c.Id===id);
     if(control&&control.Y>=0&&control.Y+control.Height<ui.controls.PanelHeight)break;
     await page.mouse.wheel(0,-1200);await page.waitForTimeout(120);
    }
-   await ui.click('settings-section-'+index,false);await page.waitForTimeout(400);
+   await ui.click(id,false);await page.waitForTimeout(400);
   };
   await ui.open(url);
   await ui.command('native-quick-start');await ui.until(()=>ui.has('native-menu'),'new saved climb');
@@ -29,10 +31,10 @@ let browser,ui;
   await ui.click('native-menu');await ui.until(()=>ui.has('settings'),'title after saving');
   await ui.click('settings');
   ui.check(ui.controls.Controls.filter(control=>control.Id==='fullscreen').length===1,'fullscreen has one consistent settings control');
-  await settingsJump(1);
+  await settingsJump('AUDIO');
   await ui.click('volume-master',false,.8);await ui.key('Home');
   await ui.until(()=>ui.controls.Labels.includes('Master volume · 0%'),'changed audio preference');
-  await settingsJump(6);
+  await settingsJump('RESTORE DEFAULTS');
   await ui.click('settings-reset');
   ui.check(ui.has('settings-reset-confirm')&&ui.has('back'),'reset requires an explicit confirmation');
   await ui.shot('01-confirmation');
@@ -49,13 +51,13 @@ let browser,ui;
   await ui.key('Enter');await ui.until(()=>ui.has('settings-reset-confirm'),'focus returns to reset control');
   ui.check(ui.has('settings-reset-confirm'),'keyboard focus returns to the reset button');
   await ui.key('Escape');await ui.until(()=>ui.has('settings-reset'),'cancel focused reset');
-  await settingsJump(1);await ui.shot('02-restored-audio');
+  await settingsJump('AUDIO');await ui.shot('02-restored-audio');
   await page.reload();await page.waitForFunction(()=>!!window.unityInstance,null,{timeout:120000});
   await ui.until(()=>ui.has('settings'),'title after player reload');
   ui.check(ui.has('native-continue'),'saved climb remains available after reset/reload');
   await ui.click('settings');
   ui.check(ui.controls.Labels.includes('Master volume · 100%'),'default persists through reload');
-  await settingsJump(7);await ui.click('back');
+  await settingsJump('HOW TO PLAY');await ui.click('back');
   await ui.command('native-continue');
   ui.check(JSON.stringify(ui.state)===savedRun,'saved climb is byte-equivalent through settings reset');
   await ui.shot('03-preserved-climb');

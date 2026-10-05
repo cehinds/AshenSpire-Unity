@@ -12,6 +12,17 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
+Build 49 is now a verified Web preview: source/eight payload hashes, archive CRC,
+and 80 desktop/portrait browser assertions pass. Its startup settings choices,
+paintings, settings recovery and combat reload have screenshot review. See
+[build 49 evidence](Unity-Build49-Preview.md). This does not accept the migration.
+
+Build-50 source adds Arcane Buildup fanout, authored flask refills and cross-zone
+card identity protection. Combined new-opcode/ownership checks: 127; full current
+migration suite: 41,047; frozen legacy co-op: 6,587. The 167-file runtime reference
+check and six version checks pass. Current-content activation, property carriers,
+full progression/services/import and a build-50 Unity export remain open.
+
 Build-50 source (`0.0.33.3`) is isolated in
 `D:/repos/.codex/worktrees/unity-current-rules` while build 49 exports from
 `unity-upstream-reconciled`. This increment adds Ward provenance under an
@@ -35,9 +46,10 @@ Published HTML test **898** (`0.7.1.898`, digest `1b60c22e01`) remains the froze
 Build 36 below is the archived pre-migration rollback baseline; migration source
 edits do not share its source digest.
 
-Current source is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff` in
-`D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its export and player
-checks remain pending. Build 48 exported successfully from the prior checkpoint;
+The latest compiled preview is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff`
+in `D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its export and 80 player
+checks pass. Active source is build 50 (`0.0.33.3`) in
+`D:/repos/.codex/worktrees/unity-current-rules`; its export remains open. Build 48 exported successfully from the prior checkpoint;
 its source digest `612a0f6d9de3710a0cf1acc21ed783d6765db6ea4666a9c31da49df602666fc0`
 and all eight payload hashes were verified. Its 14 starter-art and 22 settings
 checks passed; actual paintings were visually inspected. Its corrected combat

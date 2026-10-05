@@ -323,7 +323,8 @@ namespace AshenSpire.Domain.Original
             if (phase == OriginalRunPhase.Victory && ((int)run["actNumber"] != 3 || OriginalCustomRunRules.Enabled(run,"endless") || (string)run["mapGraph"]["nodes"][previous]["type"] != "boss" || (int)run["hp"] <= 0)) throw new ArgumentException("Victory requires the final boss and a living player");
             if (phase == OriginalRunPhase.Defeat && (int)run["hp"] != 0) throw new ArgumentException("Defeat requires zero HP");
             var knownCards = _content["cards"].Select(c => (string)c["id"]).ToHashSet(); var instanceIds = new HashSet<string>();
-            foreach (var card in run["deck"] as JArray ?? throw new ArgumentException("Missing saved deck"))
+            if (run["sideboard"] != null && !(run["sideboard"] is JArray)) throw new ArgumentException("Invalid saved sideboard");
+            foreach (var card in (run["deck"] as JArray ?? throw new ArgumentException("Missing saved deck")).Concat(run["sideboard"] as JArray ?? new JArray()))
                 if (!(card is JObject) || string.IsNullOrEmpty((string)card["instanceId"]) || !instanceIds.Add((string)card["instanceId"]) || !knownCards.Contains((string)card["cardId"])) throw new ArgumentException("Invalid, duplicate or unknown saved card instance");
             if (run["equipmentAttackSlotCount"] != null && (int)run["equipmentAttackSlotCount"] != ((JArray)run["deck"]).Count(card => (string)card["equipmentRole"] == "attack")) throw new ArgumentException("Saved equipment attack quota differs from deck");
         }

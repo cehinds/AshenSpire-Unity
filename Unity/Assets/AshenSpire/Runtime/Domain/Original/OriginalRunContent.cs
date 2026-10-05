@@ -22,7 +22,7 @@ namespace AshenSpire.Domain.Original
         private static string NewCardId(JObject run)
         {
             var next = (int?)run["nextCardInstance"] ?? 0; string id;
-            do { id = "nativeRun" + ++next; } while (Array(run,"deck").Any(c => (string)c["instanceId"] == id));
+            do { next = checked(next + 1); id = "nativeRun" + next; } while (Array(run,"deck").Concat(run["sideboard"] as JArray ?? new JArray()).Any(c => (string)c["instanceId"] == id));
             run["nextCardInstance"] = next; return id;
         }
         private void AddCard(JObject run,string id)
@@ -92,6 +92,12 @@ namespace AshenSpire.Domain.Original
                     case "damage": case "loseHp": facade["hp"] = Math.Max(0,(int)facade["hp"] - Number(effect["amount"])); break;
                     case "heal": facade["hp"] = Math.Min((int)facade["maxHp"],(int)facade["hp"] + Math.Max(0,Number(effect["amount"]))); break;
                     case "restoreMana": run["mana"] = Math.Min((int)run["maxMana"],(int)run["mana"] + Math.Max(0,Number(effect["amount"]))); break;
+                    case "refillFlasks":
+                        // Native runs always carry a saved charge ledger. Refill
+                        // the selected split without granting utility flasks or
+                        // rebuilding capacity from today's content defaults.
+                        var charges = new FlaskChargePool(run["flaskCharges"] as JObject ?? throw new ArgumentException("Flask refill requires the saved charge ledger."));
+                        charges.Refill(); run["flaskCharges"] = charges.Snapshot(); break;
                     case "addCinders": run["cinders"] = Math.Max(0,checked((int)run["cinders"] + Number(effect["amount"]))); break;
                     case "addCardToDeck": AddCard(run,(string)effect["card"]); break;
                     case "removeCardFromDeck":

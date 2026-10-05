@@ -44,7 +44,7 @@ Original assets and gameplay are references, not its Markdown governance.
     - [ ] Owner acceptance.
   - [ ] US: remaining monitored changes.
     - [x] Updated-defaults keep/reset choice, saved acknowledgement and persistence rollback in source.
-    - [ ] Compiled desktop/portrait validation of both startup choices.
+    - [x] Build 49: both startup choices, acknowledgement and exact saved-climb preservation; 24 desktop/portrait assertions.
     - [ ] Guided rewards, banked level claims and deferred chooser behavior.
     - [ ] Class/book repeat rewards, feats, sigils and service/progression changes.
     - [ ] Deck/sideboard/equipment eligibility, extraction restrictions and lent-card reconciliation.
@@ -65,7 +65,8 @@ an older monitor entry describes superseded defaults):
   - [x] When new defaults are activated, offer keep/reset after profile loading;
     persist acknowledgement transactionally and keep local values on dismissal.
   - [x] Use a defaults revision so ordinary rebuilds do not repeat the prompt; 211 settings/mod checks pass.
-  - [ ] Exported-player checks for startup keep/defaults, saved climb and reload acknowledgement.
+  - [x] Build 49: startup keep/defaults, saved climb and reload acknowledgement; 24 browser assertions.
+  - [ ] Owner acceptance.
 - [ ] UP-02: current combat and hand rules.
   - [x] Optional shared Stamina payment/refill, hand refresh and saved deck order in C#.
   - [ ] Connect current stats, foundation/status effects, authored costs and draws,
@@ -75,6 +76,8 @@ an older monitor entry describes superseded defaults):
   - [ ] Activate Ward generation with the compatible content/rules bundle and verify its player display.
     The optional saved `mechanics.block.wardProvenance` flag is absent in legacy runs;
     existing entities without provenance remain ordinary Block.
+  - [x] Direct `arcaneBuildup` and `otherEnemies`: firing-threshold percentages, immunity/lockout, shared break receipts and exact solo/co-op replay.
+  - [ ] Mount current property rules and their passive readers before activating this content.
   - [ ] Validate stance selection/cancellation and enemy pile-effect fanout in the exported player.
 - [ ] UP-03: XP, claims and reward flow.
   - [x] Pure XP/stat/cost/claim models compared with frozen published-JS oracles.
@@ -86,10 +89,13 @@ an older monitor entry describes superseded defaults):
 - [ ] UP-04: books, class library, feats and card ownership.
   - [ ] Repeatable book reads, quoted choices/rewards and successful-read revision checks.
   - [ ] Class learning/equipping, class cards/core tags/armour and class skill trees.
-  - [ ] Deck/sideboard identity allocation, copy limits and equipment eligibility.
+  - [x] Reward IDs reserve both deck and sideboard identities; saved unknown/duplicate cross-zone cards refuse without replacing the live run.
+  - [ ] Deck/sideboard controls, copy limits and equipment eligibility.
   - [ ] Restamping preserves set-aside lent cards; extraction/install restrictions
     and upgraded weapon-art provenance match current source.
 - [ ] UP-05: world and persistent services.
+  - [x] Authored `refillFlasks` uses the saved charge allocation, is idempotent and consumes no RNG; native saves require a charge ledger.
+  - [ ] Mount location arrival properties and present their refill receipts.
   - [ ] Atlas/town journeys, quests, dialogue and reward checkpoints.
   - [ ] Market books and compact offers replace direct card/art purchases only once teaching works.
   - [ ] Blacksmith, master and legendary-sigil ownership/attunement, with persisted stock,

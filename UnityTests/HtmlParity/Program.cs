@@ -3,10 +3,12 @@ using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 
 var root = args.Length > 0 ? args[0] : ".";
+if(args.Contains("--arcane")) { Console.WriteLine("Direct Arcane Buildup: "+ArcaneBuildupChecks.Run(root)+" checks passed.");return; }
 if(args.Contains("--ward")) { Console.WriteLine("Arcane Ward: "+WardChecks.Run(root)+" checks passed.");return; }
 if(args.Contains("--legacy-coop")) { Console.WriteLine("Legacy frozen co-op: "+CoopCombatChecks.Run(root)+" checks passed.");return; }
 if(args.Contains("--catalog")) { var catalogCheck=new OriginalContentCatalog(File.ReadAllText(Path.Combine(root,"TestResults/HtmlParity/test898/content-reference.json")));Console.WriteLine("Published catalog accepted: "+catalogCheck.Version);return; }
 var checks = 0;
+checks += ArcaneBuildupChecks.Run(root);
 checks += WardChecks.Run(root);
 checks += HandRefreshChecks.Run(root);
 checks += TurnBudgetChecks.Run(root);

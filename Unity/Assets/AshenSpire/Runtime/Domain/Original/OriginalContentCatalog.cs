@@ -68,7 +68,7 @@ namespace AshenSpire.Domain.Original
                 if (record["op"] != null)
                 {
                     var operation = (string)record["op"];
-                    var known = new[] { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger", "addCinders", "addCardToDeck", "removeCardFromDeck", "upgradeCard", "addRelic", "addFlask", "addFlaskCapacity", "loseMaxHpPct", "startCombat" };
+                    var known = new[] { "damage", "block", "dodgeRoll", "applyStatus", "removeStatus", "draw", "discard", "exhaust", "addCard", "gainEnergy", "restoreMana", "restoreStamina", "loseHp", "heal", "shuffleDiscardIntoDraw", "enterStance", "poiseDamage", "stagger", "arcaneBuildup", "addCinders", "addCardToDeck", "removeCardFromDeck", "upgradeCard", "addRelic", "addFlask", "addFlaskCapacity", "refillFlasks", "loseMaxHpPct", "startCombat" };
                     if (!known.Contains(operation)) throw new ArgumentException("Unknown original effect at " + record.Path + ": " + operation);
                     foreach (var reference in new[] { ("status", "statuses"), ("stance", "stances"), ("card", "cards"), ("relic", "relics"), ("flask", "flasks") })
                         if (record[reference.Item1]?.Type == JTokenType.String && !_content[reference.Item2].Any(x => (string)x["id"] == (string)record[reference.Item1])) throw new ArgumentException("Unknown " + reference.Item1 + " at " + record.Path);
