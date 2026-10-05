@@ -3,6 +3,11 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.3 · build 50 · 2026-10-05
+
+- Track Arcane Ward within existing Block under saved current rules; validate solo/co-op provenance and preserve legacy receipts.
+- Label shared Stamina once, hide legacy Catch Breath under that ruleset, and route settings-choice controller cancel to Keep.
+
 ## 0.0.33.2 · build 49 · 2026-10-05
 
 - Combine settings recovery, painted card routing and saved deck-order adapters with current Unity controller, import, extraction and validation fixes.

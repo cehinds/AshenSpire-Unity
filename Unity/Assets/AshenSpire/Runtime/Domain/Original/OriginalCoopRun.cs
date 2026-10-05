@@ -310,6 +310,7 @@ namespace AshenSpire.Domain.Original
         {
             var map = (JObject)_state["mapGraph"].DeepClone(); if (map["nodes"] is JObject nodes) foreach (var node in nodes.Properties()) ((JObject)node.Value).Remove("resolved");
             var scene = (JObject)Scene.DeepClone();
+            if (OriginalTurnStamina.Enabled(_mechanics)) scene["turnStamina"] = true;
             foreach (var key in new[] { "offers","choices","rooms" }) if (scene[key] is JObject privateRows) foreach (var property in privateRows.Properties().ToArray()) if (property.Name != memberId) property.Remove();
             if (_combat != null) { scene["players"] = _combat.Players; foreach (var row in (JArray)scene["players"]) ((JObject)row).Remove("piles"); scene["enemies"] = _combat.EnemyViewsFor(memberId); scene["turn"] = _combat.Turn; scene["phase"] = _combat.Phase; }
             var party = new JArray(Members.OfType<JObject>().Select(m => new JObject { ["id"] = Id(m), ["name"] = m["name"].DeepClone(), ["index"] = m["index"].DeepClone(), ["connected"] = m["connected"].DeepClone(), ["alive"] = m["alive"].DeepClone(), ["classId"] = Run(m)["classId"].DeepClone(), ["hp"] = Run(m)["hp"].DeepClone(), ["maxHp"] = Run(m)["maxHp"].DeepClone(), ["catchupCount"] = Queue(m).Count, ["sequence"] = m["sequence"].DeepClone() }));

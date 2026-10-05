@@ -58,6 +58,7 @@ namespace AshenSpire.Domain.Original
         {
             _catchBreathUses=0;_player["counters"]["cardsPlayedThisTurn"]=0;_player["counters"]["staminaSpentThisTurn"]=0;
             if(!_statuses.Flag(_player,"retainBlock"))_player["block"]=0;else{var cap=BlockCap(_player);if(cap.HasValue)_player["block"]=Math.Min((int)_player["block"],cap.Value);}
+            OriginalBlockPresentation.Reconcile(_player);
             BeginResources(true);CoopDraw();Emit("playerTurnStart",new JObject{["turn"]=_turn,["playerId"]=_coopSeatKey});OwnerHooks(_player,"ownerTurnStart");Drain();
         }
         internal void CoopEndTurn()
@@ -73,6 +74,7 @@ namespace AshenSpire.Domain.Original
         }
         internal void CoopRestore(JObject snapshot)
         {
+            OriginalBlockPresentation.Validate((JObject)snapshot["player"]);
             _player.RemoveAll();foreach(var p in ((JObject)snapshot["player"]).Properties())_player[p.Name]=p.Value.DeepClone();
             var ids=new HashSet<string>();foreach(var pile in _piles.Keys){_piles[pile].Clear();foreach(var card in (JArray)snapshot["piles"][pile]){var copy=(JObject)card.DeepClone();if(!ids.Add((string)copy["instanceId"]))throw new ArgumentException("Duplicate saved seat card.");ResolvedCard(copy);_piles[pile].Add(copy);}}
             _handRules = snapshot["handRules"] == null ? null : HandRules.Validate(snapshot["handRules"]);

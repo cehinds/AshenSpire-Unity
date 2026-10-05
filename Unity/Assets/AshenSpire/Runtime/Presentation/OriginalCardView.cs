@@ -85,7 +85,7 @@ namespace AshenSpire.Presentation
             var medallion = Text((bool?)cost["variable"] == true ? "X" : cost["action"].ToString(), "cost", "original-card-action");
             medallion.tooltip = costText; Add(medallion);
             if ((int)cost["mana"] > 0) Add(Text("◆ " + cost["mana"], "original-card-mana"));
-            if ((int)cost["stamina"] > 0) Add(Text("● " + cost["stamina"], "original-card-stamina"));
+            if (!OriginalCardCostText.UsesTurnStamina(cost) && (int)cost["stamina"] > 0) Add(Text("● " + cost["stamina"], "original-card-stamina"));
             Add(Text(title, "card-name", "original-card-name"));
             Art = Text((string)card["icon"] ?? "❖", "original-card-art");
             if (glyphFont != null) Art.style.unityFont = glyphFont;

@@ -122,7 +122,8 @@ namespace AshenSpire.Presentation
             var ids = command == "endTurn" ? new[] { "native-end-turn", "coop-end-turn" }
                 : command == "deck" ? new[] { "native-deck", "coop-deck" }
                 : new[] { "native-slot-cancel", "native-card-inspection-back", "coop-card-inspection-back", "native-pile-back", "native-inspection-back", "native-deck-back", "native-equipment-back", "native-service-back", "native-level-cancel", "foundation-back", "native-profile-back", "coop-deck-back", "coop-equipment-back", "coop-flasks-back", "coop-mounts-back", "coop-back", "back", "native-slots-back", "extras-back", "native-guide-back", "native-about-back", "native-menu", "coop-menu", "coop-leave" };
-            var button = ids.Select(id => _root.Q<Button>(id)).FirstOrDefault(Usable);
+            var button = command == "cancel" ? _root.Q<Button>("settings-defaults-keep") : null;
+            if (!Usable(button)) button = ids.Select(id => _root.Q<Button>(id)).FirstOrDefault(Usable);
             if (button == null && command == "cancel") button = _root.Query<Button>().ToList().FirstOrDefault(b => Usable(b) && b.name?.EndsWith("-back") == true);
             if (button != null) SubmitController(button);
         }

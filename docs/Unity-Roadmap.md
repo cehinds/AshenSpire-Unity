@@ -1,7 +1,7 @@
 # AshenedSpire Unity roadmap
 
 Build the original AshenSpire in Unity, preserving its painterly identity and
-content while improving phone play. Current source: **0.0.33.2 · build 49 ·
+content while improving phone play. Current source: **0.0.33.3 · build 50 ·
 Published test-898 and recorded upstream-through-913 migration in progress**
 (`GameContent/Unity/version.json`). Owner acceptance and physical-device/controller
 checks remain open; see [Phase 2](Unity-Phase-2.md). Published channels

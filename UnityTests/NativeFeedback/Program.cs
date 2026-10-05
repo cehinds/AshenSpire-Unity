@@ -85,6 +85,12 @@ Check((string)peerEvents[0]["sourceId"] == "player", "co-op: projection does not
 var guardEvents = JArray.Parse("[{type:'blockGained',targetId:'player',actorMemberId:'self',amount:4},{type:'staminaRecovered',actorMemberId:'peer',amount:2}]");
 Check(NativeFeedbackProjection.FromCoopEvents(guardEvents, "self").Outcome.Block == 4, "co-op: guard uses actor annotation when no recipient annotation exists");
 Check(!NativeFeedbackProjection.FromCoopEvents(guardEvents, "self").Outcome.Action.Contains("STAMINA"), "co-op: another member's recovery is not assigned to this seat");
+var sharedRecovery = NativeFeedbackProjection.FromEvents(JArray.Parse("[{type:'energyGained',amount:2,turnStamina:true}]"));
+Check(sharedRecovery.Outcome.Action.Contains("STAMINA +2") && !sharedRecovery.Outcome.Action.Contains("ACTIONS") && sharedRecovery.CueId=="heal", "shared turn recovery is labelled once as Stamina");
+var legacyRecovery = NativeFeedbackProjection.FromEvents(JArray.Parse("[{type:'energyGained',amount:2}]"));
+Check(legacyRecovery.Outcome.Action.Contains("ACTIONS +2") && !legacyRecovery.Outcome.Action.Contains("STAMINA"), "legacy action gain keeps its own resource label");
+var allyWard = JArray.Parse("[{type:'blockGained',targetId:'player',actorMemberId:'self',playerId:'peer',targetPlayerId:'peer',amount:5,wardBlockRemaining:5}]");
+Check(NativeFeedbackProjection.FromCoopEvents(allyWard,"self")==null && NativeFeedbackProjection.FromCoopEvents(allyWard,"peer").Outcome.Block==5, "ally Ward feedback is assigned to its recipient without extra mitigation");
 Check(NativeFeedbackProjection.FromEvents(JArray.Parse("[{type:'cardDrawn',cardId:'strike'}]")) == null, "housekeeping silent");
 foreach (var key in new[] { "attack", "attackWithSelfLoss", "enemyTurn", "guard", "heal", "manaRestored", "staminaRecovered", "status", "flask", "equipment", "recoveryCue", "guardCue" }) Check(coverage.GetValueOrDefault(key) > 0, "missing executed coverage: " + key);
 Directory.CreateDirectory("TestResults/NativeFeedback"); File.WriteAllText("TestResults/NativeFeedback/checks.json", new JObject { ["checks"] = checks, ["executedCommands"] = commands, ["coverage"] = JObject.FromObject(coverage), ["status"] = "passed" }.ToString());

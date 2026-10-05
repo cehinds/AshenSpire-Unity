@@ -58,8 +58,8 @@ namespace AshenSpire.Presentation
             var enemyAttack = rows.Any(row => (string)row["type"] == "damageDealt" && (string)row["sourceId"] != "player" && Player(row));
             var selfCost = Total("hpLost", row => Player(row) && (string)row["cause"] != "attack");
             var mana = Total("manaRestored", Player);
-            var stamina = Total("staminaRecovered", row => true);
-            var energy = Total("energyGained", row => true);
+            var stamina = Total("staminaRecovered", row => true) + Total("energyGained", row => (bool?)row["turnStamina"] == true);
+            var energy = Total("energyGained", row => (bool?)row["turnStamina"] != true);
             var equipment = Has("equipmentChanged");
             var flask = Has("flaskUsed") || Has("flaskThrown");
             var status = Has("statusApplied") || Has("statusExpired") || Has("stanceEntered") || Has("enemyStaggered");

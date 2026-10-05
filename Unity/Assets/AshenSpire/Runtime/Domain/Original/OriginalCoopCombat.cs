@@ -157,7 +157,9 @@ namespace AshenSpire.Domain.Original
         { if(_result!=null||_phase!="player")return;var living=Living();if(living.Length>0&&living.All(s=>s.Ended)){EnemyPhase();if(_result!=null)return;Use(_active??First(),c=>c.CoopIntents());StartPlayerPhase();} }
         private void EnemyPhase()
         {
-            _phase="enemy";Use(_active??First(),c=>c.CoopEmit("enemyTurnStart",new JObject{["turn"]=_turn}));foreach(var enemy in _enemies)if(Alive(enemy)&&!_active.Core.CoopFlag(enemy,"retainBlock"))enemy["block"]=0;Use(First(),c=>c.CoopDrain());if(_result!=null)return;
+            _phase="enemy";Use(_active??First(),c=>c.CoopEmit("enemyTurnStart",new JObject{["turn"]=_turn}));
+            foreach(var enemy in _enemies){if(Alive(enemy)&&!_active.Core.CoopFlag(enemy,"retainBlock"))enemy["block"]=0;OriginalBlockPresentation.Reconcile(enemy);}
+            Use(First(),c=>c.CoopDrain());if(_result!=null)return;
             foreach(var enemy in _enemies)
             {
                 if(_result!=null)return;if(!Alive(enemy))continue;Use(First(),c=>{c.CoopHooks(enemy,"ownerTurnStart");c.CoopDrain();});if(_result!=null||!Alive(enemy))continue;
@@ -204,6 +206,8 @@ namespace AshenSpire.Domain.Original
         {
             _previewCache.Clear();
             if((int?)snapshot["schemaVersion"]!=1||!new[]{"setup","player","enemy","ended","suspended"}.Contains((string)snapshot["phase"]))throw new ArgumentException("Invalid co-op save.");
+            foreach (var enemy in snapshot["enemies"].OfType<JObject>()) OriginalBlockPresentation.Validate(enemy);
+            foreach (var seat in snapshot["seats"].OfType<JObject>()) OriginalBlockPresentation.Validate((JObject)seat["combat"]["player"]);
             _hostRejoin.Clear();foreach(var id in (snapshot["hostRejoin"] as JArray??new JArray()).Values<string>())_hostRejoin.Add(id);_annotateMembers=(bool?)snapshot["annotateMembers"]??false;_turn=(int)snapshot["turn"];_phase=(string)snapshot["phase"];_result=(string)snapshot["result"];_counter=(int)snapshot["idCounter"];
             _factor=(double)snapshot["hpFactor"];_baseMultiplier=(double)snapshot["baseHpMultiplier"];_extraMultiplier=(double)snapshot["extraHpMultiplier"];
             _random=new RandomStreams((uint)snapshot["seed"],((JObject)snapshot["rng"]).ToObject<Dictionary<string,uint>>());_enemies.Clear();_events.Clear();_gates.Clear();_seats.Clear();

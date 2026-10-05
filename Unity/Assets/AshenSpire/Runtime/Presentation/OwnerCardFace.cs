@@ -25,7 +25,7 @@ namespace AshenSpire.Presentation
             Add(Copy(action,"owner-card-price"));
             if ((int?)cost["mana"] > 0) Add(Copy("MP " + cost["mana"],"owner-card-extra-price"));
             // The frozen older rules still have a separately charged pool.
-            if ((int?)cost["stamina"] > 0)
+            if (!AshenSpire.Domain.Original.OriginalCardCostText.UsesTurnStamina(cost) && (int?)cost["stamina"] > 0)
                 Add(Copy("SP " + cost["stamina"],"owner-card-stamina-price"));
             RegisterCallback<GeometryChangedEvent>(e =>
             {

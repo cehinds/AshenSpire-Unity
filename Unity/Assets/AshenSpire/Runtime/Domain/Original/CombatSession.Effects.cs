@@ -52,7 +52,7 @@ namespace AshenSpire.Domain.Original
                     for (var h = 0; h < hits; h++) foreach (var target in Targets(action,(string)effect["target"])) if (Alive(target))
                     { var basis = Number(effect["amount"],0,action,target,meta) + AttributeHitBonus(bonus,hits,h); Attack(action.Source,target,basis,tags,carrier); }
                     break;
-                case "block": foreach (var target in Targets(action,(string)effect["target"])) GainBlock(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"block attribute bonus") : 0)); break;
+                case "block": foreach (var target in Targets(action,(string)effect["target"])) GainBlock(target,Number(effect["amount"],0,action,target,meta) + (firstRepeat && effect["attributeBonus"] != null ? CardMechanics.Nonnegative(effect["attributeBonus"],"block attribute bonus") : 0),carrier); break;
                 case "dodgeRoll":
                     if ((string)action.Source?["id"] != "player") break;
                     var roll = _random.Int("misc",1,_weightSystem.DodgeDie); var weight = WeightClass(); var receipt = _weightSystem.Dodge(roll,(int?)_attributes["dexterity"] ?? 10,weight);
@@ -73,7 +73,11 @@ namespace AshenSpire.Domain.Original
                         var pile = _piles[pileName]; var position = (string)effect["position"] ?? "random"; pile.Insert(position == "top" ? 0 : position == "bottom" ? pile.Count : _random.Int("shuffle",0,pile.Count),card);
                     }
                     break;
-                case "gainEnergy": var energy = Math.Max(0,Number(effect["amount"],1,action,null,meta)); WriteEnergy(checked((int)_player["energy"] + energy)); Emit("energyGained",new JObject { ["amount"] = energy }); break;
+                case "gainEnergy":
+                    var energy = Math.Max(0,Number(effect["amount"],1,action,null,meta)); WriteEnergy(checked((int)_player["energy"] + energy));
+                    var energyReceipt = new JObject { ["amount"] = energy };
+                    if (UsesTurnStamina) energyReceipt["turnStamina"] = true;
+                    Emit("energyGained",energyReceipt); break;
                 case "restoreStamina":
                     foreach (var target in Targets(action,(string)effect["target"]))
                     {
@@ -130,7 +134,16 @@ namespace AshenSpire.Domain.Original
             if (!Alive(target)) return;
             var damage = AttackDamageCalculator.Calculate(_statuses,source,target,basis,tags,(string)carrier?["damageSchool"]);
             var blocked = Math.Min((int)target["block"],damage); target["block"] = (int)target["block"] - blocked; var loss = damage - blocked; if (loss > 0) target["hp"] = (int)target["hp"] - loss;
-            Emit("damageDealt",new JObject { ["sourceId"] = source?["id"], ["targetId"] = target["id"], ["amount"] = damage, ["blocked"] = blocked, ["isAttack"] = true });
+            OriginalBlockPresentation.Reconcile(target);
+            var damageReceipt = new JObject { ["sourceId"] = source?["id"], ["targetId"] = target["id"], ["amount"] = damage, ["blocked"] = blocked, ["isAttack"] = true };
+            if (OriginalBlockPresentation.Enabled(_mechanics) || target.Property("wardBlock") != null) damageReceipt["blockRemaining"] = target["block"];
+            if (OriginalBlockPresentation.Enabled(_mechanics) && _coopMemberFor != null)
+            {
+                damageReceipt["sourcePlayerId"] = source == null ? null : _coopMemberFor(source);
+                damageReceipt["targetPlayerId"] = _coopMemberFor(target);
+                if (_coopMemberFor(target) != null) damageReceipt["playerId"] = _coopMemberFor(target);
+            }
+            OriginalBlockPresentation.Receipt(target, damageReceipt); Emit("damageDealt",damageReceipt);
             if (loss > 0) { Emit("hpLost",new JObject { ["targetId"] = target["id"], ["amount"] = loss, ["cause"] = "attack" }); ArcaneExposure(source,target,carrier); } AfterHpChange(target);
         }
         private void ArcaneExposure(JObject source,JObject target,JObject carrier)
@@ -157,8 +170,28 @@ namespace AshenSpire.Domain.Original
             int? cap = null; foreach (var property in ((JObject)entity["statuses"]).Properties()) { var value = (int?)_statuses.Definition(property.Name)["modifiers"]?["blockCap"]; if (value.HasValue) cap = cap.HasValue ? Math.Min(cap.Value,value.Value) : value; }
             if ((string)entity["kind"] == "player" && (string)entity["stanceId"] != null) { var value = (int?)_content.Record("stances",(string)entity["stanceId"])["modifiers"]?["blockCap"]; if (value.HasValue) cap = cap.HasValue ? Math.Min(cap.Value,value.Value) : value; } return cap;
         }
-        private void GainBlock(JObject target,int basis)
-        { if (!Alive(target)) return; var amount = Math.Max(0,(int)Math.Floor((basis + _statuses.Add(target,"blockAdd")) * _statuses.Multiply(target,"blockGainedMult"))); var cap = BlockCap(target); if (cap.HasValue) amount = Math.Min(amount,Math.Max(0,cap.Value-(int)target["block"])); target["block"] = (int)target["block"] + amount; Emit("blockGained",new JObject { ["targetId"] = target["id"], ["amount"] = amount }); }
+        private void GainBlock(JObject target,int basis,JObject carrier = null)
+        {
+            if (!Alive(target)) return;
+            var amount = Math.Max(0,(int)Math.Floor((basis + _statuses.Add(target,"blockAdd")) * _statuses.Multiply(target,"blockGainedMult")));
+            var cap = BlockCap(target); if (cap.HasValue) amount = Math.Min(amount,Math.Max(0,cap.Value-(int)target["block"]));
+            OriginalBlockPresentation.Reconcile(target);
+            target["block"] = (int)target["block"] + amount;
+            if (amount > 0 && carrier != null && OriginalBlockPresentation.Enabled(_mechanics))
+            {
+                var face = carrier["cardId"] == null ? new JObject() : _content.Record("cards",(string)carrier["cardId"]);
+                foreach (var field in carrier.Properties()) if (field.Value.Type != JTokenType.Null) face[field.Name] = field.Value.DeepClone();
+                if (OriginalBlockPresentation.IsMagical(face)) target["wardBlock"] = ((int?)target["wardBlock"] ?? 0) + amount;
+            }
+            var receipt = new JObject { ["targetId"] = target["id"], ["amount"] = amount };
+            if (OriginalBlockPresentation.Enabled(_mechanics) && _coopMemberFor != null)
+            {
+                receipt["targetPlayerId"] = _coopMemberFor(target);
+                if (_coopMemberFor(target) != null) receipt["playerId"] = _coopMemberFor(target);
+                if (carrier != null) receipt["sourcePlayerId"] = _coopSeatKey;
+            }
+            OriginalBlockPresentation.Receipt(target, receipt); Emit("blockGained",receipt);
+        }
         private void Stagger(JObject enemy)
         { if (!Alive(enemy) || (string)enemy["kind"] != "enemy") return; var cancelled = (enemy["pendingMove"] as JObject)?["moveId"]; enemy["pendingMove"] = null; enemy["skipNextTurn"] = true; enemy["intent"] = new JObject { ["kind"] = "staggered", ["moveId"] = null }; Emit("enemyStaggered",new JObject { ["targetId"] = enemy["id"], ["enemyId"] = enemy["enemyId"], ["cancelledMove"] = cancelled }); }
         private void PoiseDamage(JObject enemy,int amount)

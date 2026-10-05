@@ -218,7 +218,7 @@ namespace AshenSpire.Presentation
             var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selected["card"]["name"];
             actions.Add(Command("play", playLabel, new JObject { ["type"] = "playCard", ["cardInstanceId"] = _selected, ["targetId"] = _target },
                 mayPlay && selected != null && !unplayable && shortage == null && (!friendly || legal.Contains(_target))));
-            actions.Add(Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for party" : "End turn · " + Body["energy"] + ((int)Body["energy"] == 1 ? " action" : " actions"),
+            actions.Add(Command("end-turn", (bool?)seat["ended"] == true ? "Waiting for party" : "End turn · " + Body["energy"] + ((bool?)Scene["turnStamina"] == true ? " stamina" : (int)Body["energy"] == 1 ? " action" : " actions"),
                 new JObject { ["type"] = "endTurn" }, mayPlay));
             _combatTools.Add(Button("inspect-card", "Inspect selected card", InspectHandCard));
             _combatTools.Q<Button>("coop-inspect-card").SetEnabled(selected != null);

@@ -43,7 +43,7 @@ namespace AshenSpire.Presentation
             bars.Add(Pool("HP", player["hp"], player["maxHp"], "health"));
             bars.Add(Pool("MP", player["mana"], player["maxMana"], "mana"));
             bars.Add(Pool("SP", player["stamina"], player["maxStamina"], "stamina")); hud.Add(bars);
-            hud.Add(Label("Block " + player["block"] + "  ·  " + run["cinders"] + " cinders", "combat-resources"));
+            hud.Add(Label(OriginalBlockPresentation.Label(player) + "  ·  " + run["cinders"] + " cinders", "combat-resources"));
             var statuses = player["statuses"] as JObject;
             if (statuses != null && statuses.Count > 0) hud.Add(Label(string.Join(" · ", statuses.Properties().Select(s => OriginalStatusText.Describe(s.Name, s.Value as JObject))), "original-combat-party"));
             return hud;
@@ -96,7 +96,7 @@ namespace AshenSpire.Presentation
             slot.EnableInClassList("card-self-armed", clicked != null);
             image.AddToClassList("original-combat-figure"); slot.Add(image);
             slot.Add(Pool("", player["hp"], player["maxHp"], "health"));
-            slot.Add(Label("Guard " + player["block"], "original-fighter-caption")); return slot;
+            slot.Add(Label(OriginalBlockPresentation.Label(player,"Guard"), "original-fighter-caption")); return slot;
         }
         public static Button Enemy(JObject enemy, string name, string controlId, Action clicked, bool selected, out Image image)
         {
@@ -112,7 +112,7 @@ namespace AshenSpire.Presentation
             image = OriginalEnemyFigure.Create((string)enemy["enemyId"]); image.AddToClassList("original-combat-figure"); button.Add(image);
             button.Add(Label(name, "original-fighter-name")); button.Add(Pool("", enemy["hp"], enemy["maxHp"], "health"));
             var status = string.Join(" · ", ((JObject)enemy["statuses"]).Properties().Select(s => OriginalStatusText.Describe(s.Name, s.Value as JObject)));
-            var detail = "Guard " + enemy["block"] + (status.Length == 0 ? "" : " · " + status);
+            var detail = OriginalBlockPresentation.Label(enemy,"Guard") + (status.Length == 0 ? "" : " · " + status);
             button.Add(Label(detail, "original-fighter-caption")); button.tooltip = name + ". " + intentText + ". HP " + enemy["hp"] + "/" + enemy["maxHp"] + ". " + detail;
             return button;
         }

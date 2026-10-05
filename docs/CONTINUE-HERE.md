@@ -12,6 +12,17 @@ the [roadmap feature tracker](Unity-Roadmap.md#feature-tracker).
 
 ## Where things stand
 
+Build-50 source (`0.0.33.3`) is isolated in
+`D:/repos/.codex/worktrees/unity-current-rules` while build 49 exports from
+`unity-upstream-reconciled`. This increment adds Ward provenance under an
+optional saved rule, one shared-Stamina cost/shortage label, current-rule
+Catch Breath removal and settings-choice controller cancellation. Ward has
+376 focused checks; the final source passes 40,920 migration checks, 10,299
+feedback checks across 1,263 commands, 2,139 cost/presentation checks and the
+167-file reference compile (three documented Unity-6 reference gaps). The Ward
+increment also passed 6,587 frozen legacy co-op checks. It is not an
+exported player and the new content bundle remains inactive.
+
 The owner authorized the earlier intermediate merge and rejected visual parity.
 The current increment is being reconciled onto dev `3c7ebff`, including its
 controller, settings, import and content-validation fixes. See
@@ -29,8 +40,12 @@ Current source is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff` in
 checks remain pending. Build 48 exported successfully from the prior checkpoint;
 its source digest `612a0f6d9de3710a0cf1acc21ed783d6765db6ea4666a9c31da49df602666fc0`
 and all eight payload hashes were verified. Its 14 starter-art and 22 settings
-checks passed; actual paintings were visually inspected. Combat QA is being
-rerun after accommodating the existing hold-to-inspect input path.
+checks passed; actual paintings were visually inspected. Its corrected combat
+playtest passed another 18 desktop/portrait assertions: inspector Play charges
+once, removes the card and survives immediate browser reload exactly.
+The monitor assessment through original build 913 has been carried forward
+byte-for-byte from the existing local review; its historical unchecked findings
+are reconciled by the implementation checklist in the migration tracker.
 The reconciled increment passes 40,544 migration checks, 211 settings/mod checks,
 195 gamepad checks and the 166-file runtime reference check (three documented
 Unity-6 API gaps in the older NuGet reference remain accepted).

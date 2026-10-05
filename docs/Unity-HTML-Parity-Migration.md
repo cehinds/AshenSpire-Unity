@@ -13,7 +13,7 @@ commit `40c8a45fe951de4f757b2add0811aeeeb7f41fe1`. Test 898 remains the frozen
 oracle baseline; later changes need their own source comparisons and checks.
 Original assets and gameplay are references, not its Markdown governance.
 
-- [ ] Recorded upstream follow-through (build-49 work in progress).
+- [ ] Recorded upstream follow-through (build-50 source increment; build 49 export remains isolated).
   - [ ] US: refresh unplayed hands under saved rules.
     - [x] Optional `shuffleHand` rule; solo/co-op Retain, Ethereal and ordinary-card handling.
     - [x] Deterministic shuffle receipts, exact mid-turn restore and absent/false legacy behavior.
@@ -30,7 +30,8 @@ Original assets and gameplay are references, not its Markdown governance.
       legacy equipment swaps: 2,063 checks.
     - [ ] Current stat rows/new-run activation, complete status/foundation integration and UI.
       - [x] Bind `restoreStamina` card text tokens, including repeated recovery amounts.
-      - [ ] Remove the legacy Catch Breath action from the current-rule HUD before enabling the new bundle.
+      - [x] Hide legacy Catch Breath under the shared-Stamina rules; use one cost/shortage and recovery label.
+      - [ ] Verify current-rule card badges, HUD and recovery feedback in an exported player.
     - [ ] Exported-player gameplay and owner acceptance.
   - [ ] US: reset device settings safely.
     - [x] Native confirmation, cancel/Escape, return focus and settings-only persistence.
@@ -69,7 +70,11 @@ an older monitor entry describes superseded defaults):
   - [x] Optional shared Stamina payment/refill, hand refresh and saved deck order in C#.
   - [ ] Connect current stats, foundation/status effects, authored costs and draws,
     swap rules, current HUD and new-run settings as one compatible bundle.
-  - [ ] Preserve Block totals while adding Arcane Ward provenance and solo/co-op displays.
+  - [x] Preserve Block totals while adding Arcane Ward provenance, receipt recipient tracking,
+    solo/co-op displays, exact replay and invalid-save refusal; 376 focused checks pass.
+  - [ ] Activate Ward generation with the compatible content/rules bundle and verify its player display.
+    The optional saved `mechanics.block.wardProvenance` flag is absent in legacy runs;
+    existing entities without provenance remain ordinary Block.
   - [ ] Validate stance selection/cancellation and enemy pile-effect fanout in the exported player.
 - [ ] UP-03: XP, claims and reward flow.
   - [x] Pure XP/stat/cost/claim models compared with frozen published-JS oracles.

@@ -13,6 +13,14 @@ var policy = new JObject { ["mana"] = new JObject { ["naturalRecoveryPerTurn"] =
 JObject FromWallet(ResourceWallet wallet) { var value = wallet.Snapshot(); value["energy"] = value["action"].DeepClone(); return value; }
 
 Equal(OriginalCardCostText.Describe(Cost(0)), "Free", "all-zero costs");
+var sharedCost = OriginalCardCostText.WithTurnStamina(Cost(2,1,2));
+Equal(OriginalCardCostText.Describe(sharedCost), "2 stamina · 1 MP", "aliased turn costs are described once");
+Equal(OriginalCardCostText.Shortage(sharedCost,Player(0,0,0)), "Need 1 MP, 2 stamina", "aliased shortage does not ask for a second action payment");
+Equal(OriginalCardCostText.Shortage(sharedCost,Player(0,1,2)), null, "shared affordability reads its authoritative Stamina pool");
+Equal(OriginalCardCostText.Describe(OriginalCardCostText.WithTurnStamina(Cost(0,variable:true))), "X stamina", "shared X keeps a variable label at zero");
+Equal(OriginalCardCostText.Shortage(OriginalCardCostText.WithTurnStamina(Cost(99,0,99,true)),Player(0)), null, "shared X does not require a fixed minimum");
+var disagreeRefused=false;try { OriginalCardCostText.WithTurnStamina(Cost(1,0,2)); } catch(ArgumentException) { disagreeRefused=true; }
+Check(disagreeRefused,"shared presentation refuses inconsistent aliases");
 Equal(OriginalCardCostText.Describe(Cost(1)), "1 action", "singular action without resource clutter");
 Equal(OriginalCardCostText.Describe(Cost(2)), "2 actions", "plural action");
 Equal(OriginalCardCostText.Describe(Cost(1, 2)), "1 action · 2 MP", "mana-only surcharge");

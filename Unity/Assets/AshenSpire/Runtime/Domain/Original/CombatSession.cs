@@ -44,7 +44,7 @@ namespace AshenSpire.Domain.Original
         public int HandCapacity => HandMaximum;
         public JObject ResolvedCard(JObject instance) => (JObject)_resolveCard((JObject)instance.DeepClone()).DeepClone();
         public JObject CardCost(JObject instance) => UsesTurnStamina
-            ? OriginalCardPayment.Profile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass())
+            ? OriginalCardCostText.WithTurnStamina(OriginalCardPayment.Profile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass()))
             : CardMechanics.CostProfile(ResolvedCard(instance), PassiveSum("powerCostReduction"), WeightClass());
         public JObject CardChoice(JObject instance) => new OriginalCardChoices(_content.Table("stances")).Plan(ResolvedCard(instance), (string)_player["classId"], (string)_player["stanceId"]);
         public JObject WeightClass() => (JObject)_weightSystem.Compute((int?)_attributes["constitution"] ?? 10, (int?)_attributes["strength"] ?? 10, _weights)["weightClass"];
@@ -78,6 +78,7 @@ namespace AshenSpire.Domain.Original
             _content = content ?? throw new ArgumentNullException(nameof(content)); _mechanics = (JObject)mechanics.DeepClone(); _balance = (JObject)content.Data()["balance"];
             _random = random ?? throw new ArgumentNullException(nameof(random)); _resolveCard = resolveCard ?? throw new ArgumentNullException(nameof(resolveCard));
             _player = player; _attributes = attributes; _weights = weights; _weightSystem = new WeightSystem(mechanics);
+            OriginalBlockPresentation.Enabled(_mechanics); OriginalBlockPresentation.Validate(_player);
             if (UsesTurnStamina) { new OriginalTurnStamina(_player); OriginalTurnStamina.Validate(_player); }
             foreach (var pile in new[] { "draw", "hand", "discard", "exhaust", "sealed", "removed" }) _piles[pile] = new List<JObject>();
             _context = new CombatContext(content, _player, _enemies); _statuses = new StatusSystem(_context);
@@ -150,6 +151,7 @@ namespace AshenSpire.Domain.Original
         {
             _turn++; _phase = "player"; _catchBreathUses = 0; _player["counters"]["cardsPlayedThisTurn"] = 0;
             if (!_statuses.Flag(_player,"retainBlock")) _player["block"] = 0; else { var cap = BlockCap(_player); if (cap.HasValue) _player["block"] = Math.Min((int)_player["block"],cap.Value); }
+            OriginalBlockPresentation.Reconcile(_player);
             BeginResources(false); Draw(TurnDrawCount());
             Emit("playerTurnStart",new JObject { ["turn"] = _turn }); OwnerHooks(_player,"ownerTurnStart"); Drain();
         }
@@ -169,7 +171,7 @@ namespace AshenSpire.Domain.Original
             var random = new RandomStreams((uint)snapshot["seed"], ((JObject)snapshot["rng"]).ToObject<Dictionary<string,uint>>());
             var session = new CombatSession(content,mechanics,random,(JObject)snapshot["player"].DeepClone(),(JObject)snapshot["attributes"].DeepClone(),(JObject)snapshot["weights"].DeepClone(),resolveCard);
             session._turn = CardMechanics.Nonnegative(snapshot["turn"],"turn"); session._phase = (string)snapshot["phase"]; session._result = (string)snapshot["result"]; session._idCounter = CardMechanics.Nonnegative(snapshot["idCounter"],"instance counter"); session._catchBreathUses = CardMechanics.Nonnegative(snapshot["catchBreathUses"],"Catch Breath uses");
-            foreach (var enemy in (JArray)snapshot["enemies"]) { var copy = (JObject)enemy.DeepClone(); content.Record("enemies",(string)copy["enemyId"]); session._enemies.Add(copy); }
+            foreach (var enemy in (JArray)snapshot["enemies"]) { var copy = (JObject)enemy.DeepClone(); OriginalBlockPresentation.Validate(copy); content.Record("enemies",(string)copy["enemyId"]); session._enemies.Add(copy); }
             var ids = new HashSet<string>(StringComparer.Ordinal);
             foreach (var pile in session._piles.Keys) foreach (var card in (JArray)snapshot["piles"][pile]) { var copy = (JObject)card.DeepClone(); var id = (string)copy["instanceId"]; if (string.IsNullOrWhiteSpace(id) || !ids.Add(id)) throw new ArgumentException("Duplicate saved card instance."); session.ResolvedCard(copy); session._piles[pile].Add(copy); }
             foreach (var entry in ((JObject)snapshot["triggerState"]).Properties()) session._triggerState.Add(entry.Name,(JObject)entry.Value.DeepClone());

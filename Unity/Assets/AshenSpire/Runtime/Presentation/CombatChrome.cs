@@ -6,12 +6,12 @@ namespace AshenSpire.Presentation
 {
     public static class CombatChrome
     {
-        public static void Mount(VisualElement root, VisualElement tools, JObject player, int turn, System.Action changed)
+        public static void Mount(VisualElement root, VisualElement tools, JObject player, int turn, System.Action changed, bool turnStamina = false)
         {
             root.AddToClassList("combat-reframed");
             var energy = OriginalCombatLayout.Label(player["energy"] + "", "combat-energy-value");
             var orb = new VisualElement(); orb.AddToClassList("combat-energy");
-            orb.Add(energy); orb.Add(OriginalCombatLayout.Label("ACTIONS", "combat-energy-caption")); root.Add(orb);
+            orb.Add(energy); orb.Add(OriginalCombatLayout.Label(turnStamina ? "STAMINA" : "ACTIONS", "combat-energy-caption")); root.Add(orb);
             var heading = new VisualElement(); heading.AddToClassList("combat-encounter");
             heading.Add(OriginalCombatLayout.Label("ASHENEDSPIRE · ENCOUNTER", "combat-eyebrow"));
             heading.Add(OriginalCombatLayout.Label("The Ashen Crossing", "combat-location")); root.Add(heading);
@@ -25,6 +25,9 @@ namespace AshenSpire.Presentation
                 scroll.mode = ScrollViewMode.Vertical;
                 scroll.verticalScrollerVisibility = ScrollerVisibility.Auto;
                 scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+                // Diagnostics must observe geometry after this nested popup
+                // scrolls, otherwise real-input QA targets its old coordinates.
+                scroll.verticalScroller.valueChanged += _ => scroll.schedule.Execute(() => changed?.Invoke()).StartingIn(1);
             }
             tools.style.display = DisplayStyle.None;
             var open = false;

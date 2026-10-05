@@ -20,6 +20,7 @@ namespace AshenSpire.Domain.Original
         public event Action Changed;
         public OriginalRunPhase Phase => _run.Phase;
         public OriginalContentCatalog Catalog => _catalog;
+        public bool UsesTurnStamina => OriginalTurnStamina.Enabled(_mechanics);
         public JObject Player => _combat?.Player ?? _run.Player();
         public JObject RunPlayer => _run.Player();
         public JObject Room => _run.Room();
@@ -88,7 +89,8 @@ namespace AshenSpire.Domain.Original
             if ((int?)run["webImport"]?["version"] == 1) return (JObject)projection["card"];
             return (JObject)_progression.ResolveCard(projection, (JObject)run["attributes"], _catalog)["card"];
         }
-        public JObject Cost(JObject instance) => _combat != null ? _combat.CardCost(instance) : CardMechanics.CostProfile(Resolve(instance));
+        public JObject Cost(JObject instance) => _combat != null ? _combat.CardCost(instance) : UsesTurnStamina
+            ? OriginalCardCostText.WithTurnStamina(OriginalCardPayment.Profile(Resolve(instance))) : CardMechanics.CostProfile(Resolve(instance));
         public JObject CardChoice(JObject instance) => _combat?.CardChoice(instance);
         public JObject PreviewCard(string instanceId, string targetId, string choice = null)
         {

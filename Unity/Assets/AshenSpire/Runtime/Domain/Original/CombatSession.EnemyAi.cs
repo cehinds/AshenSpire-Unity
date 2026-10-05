@@ -33,7 +33,12 @@ namespace AshenSpire.Domain.Original
         private void EnemyTurn()
         {
             _phase = "enemy"; Emit("enemyTurnStart",new JObject { ["turn"] = _turn });
-            foreach (var enemy in _enemies) if (Alive(enemy) && !_statuses.Flag(enemy,"retainBlock")) enemy["block"] = 0; Drain(); if (_result != null) return;
+            foreach (var enemy in _enemies)
+            {
+                if (Alive(enemy) && !_statuses.Flag(enemy,"retainBlock")) enemy["block"] = 0;
+                OriginalBlockPresentation.Reconcile(enemy);
+            }
+            Drain(); if (_result != null) return;
             foreach (var enemy in _enemies)
             {
                 if (_result != null) return; if (!Alive(enemy)) continue;

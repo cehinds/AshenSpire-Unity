@@ -73,7 +73,7 @@ namespace AshenSpire.Presentation
             }
             Button("native-deck", "Deck and equipment", Deck, _combatTools ?? _summaryButtons);
             Button("native-menu", _summaryButtons != null ? "Return to title" : "Save and return to title", _menu, _combatTools ?? _summaryButtons).EnableInClassList("primary", _summaryButtons != null);
-            if (combatSurface) CombatChrome.Mount(_root, _combatTools, p, _game.Turn, _report);
+            if (combatSurface) CombatChrome.Mount(_root, _combatTools, p, _game.Turn, _report, _game.UsesTurnStamina);
             if (combatSurface) _root.Focus();
             if (_diagnostics) ReportNativeState();
             _report();
@@ -84,7 +84,7 @@ namespace AshenSpire.Presentation
             // diagnostics so large hands never truncate the JSON QA observes.
             var player = _game.Player;
             var summary = new JObject();
-            foreach (var key in new[] { "classId", "hp", "maxHp", "mana", "maxMana", "stamina", "maxStamina", "energy", "block", "statuses", "flaskCharges", "flasks" })
+            foreach (var key in new[] { "classId", "hp", "maxHp", "mana", "maxMana", "stamina", "maxStamina", "energy", "block", "wardBlock", "statuses", "flaskCharges", "flasks" })
                 if (player[key] != null) summary[key] = player[key].DeepClone();
             var room = _game.Room; room.Remove("combatSnapshot");
             var run = _game.RunPlayer; var visibleRun = new JObject();
@@ -213,7 +213,7 @@ namespace AshenSpire.Presentation
             Button("native-inspect-card", "Inspect selected card", InspectHandCard, _combatTools).SetEnabled(selected != null);
             Button("native-hand-prev", "Previous cards", () => { hand.scrollOffset = new Vector2(Math.Max(0, hand.scrollOffset.x - 160), 0); _report(); }, _combatTools);
             Button("native-hand-next", "Next cards", () => { hand.scrollOffset = new Vector2(hand.scrollOffset.x + 160, 0); _report(); }, _combatTools);
-            Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
+            if (!_game.UsesTurnStamina) Button("native-breath", "Catch Breath · 1 action → 1 stamina", _game.CatchBreath, _combatTools)
                 .SetEnabled((int)_game.Player["energy"] > 0 && (int)_game.Player["stamina"] < (int)_game.Player["maxStamina"]);
             var charges = _game.Player["flaskCharges"];
             Button("native-crimson", "Crimson · " + charges["hpCurrent"], () => _game.DrinkCharge("hp"), _combatTools)

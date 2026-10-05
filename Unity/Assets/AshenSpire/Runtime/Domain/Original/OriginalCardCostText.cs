@@ -13,6 +13,20 @@ namespace AshenSpire.Domain.Original
 {
     public static class OriginalCardCostText
     {
+        public static JObject WithTurnStamina(JObject cost)
+        {
+            var display = (JObject)cost.DeepClone(); display["turnStamina"] = true;
+            UsesTurnStamina(display); return display;
+        }
+        public static bool UsesTurnStamina(JObject cost)
+        {
+            var flag = cost?["turnStamina"];
+            if (flag == null) return false;
+            if (flag.Type != JTokenType.Boolean) throw new ArgumentException("Invalid turn Stamina cost marker.");
+            if (!(bool)flag) return false;
+            if (Read(cost,"action") != Read(cost,"stamina")) throw new ArgumentException("Turn Stamina cost aliases disagree.");
+            return true;
+        }
         public static string Describe(JObject cost)
         {
             if (cost == null) throw new ArgumentNullException(nameof(cost));
@@ -20,10 +34,11 @@ namespace AshenSpire.Domain.Original
             var mana = Read(cost, "mana");
             var stamina = Read(cost, "stamina");
             var variable = Variable(cost);
+            var shared = UsesTurnStamina(cost);
             if (!variable && action == 0 && mana == 0 && stamina == 0) return "Free";
-            var parts = new List<string> { variable ? "X actions" : Actions(action) };
+            var parts = new List<string> { shared ? variable ? "X stamina" : Number(stamina) + " stamina" : variable ? "X actions" : Actions(action) };
             if (mana > 0) parts.Add(Number(mana) + " MP");
-            if (stamina > 0) parts.Add(Number(stamina) + " stamina");
+            if (!shared && stamina > 0) parts.Add(Number(stamina) + " stamina");
             return string.Join(" · ", parts);
         }
 
@@ -40,13 +55,14 @@ namespace AshenSpire.Domain.Original
             var manaPool = Read(player, "mana");
             var staminaPool = Read(player, "stamina");
             var parts = new List<string>();
-            if (!Variable(cost) && action > energy)
+            var shared = UsesTurnStamina(cost);
+            if (!shared && !Variable(cost) && action > energy)
             {
                 var deficit = action - energy;
                 parts.Add(Number(deficit) + " more " + (deficit == 1 ? "action" : "actions"));
             }
             if (mana > manaPool) parts.Add(Number(mana - manaPool) + " MP");
-            if (stamina > staminaPool) parts.Add(Number(stamina - staminaPool) + " stamina");
+            if ((!shared || !Variable(cost)) && stamina > staminaPool) parts.Add(Number(stamina - staminaPool) + " stamina");
             return parts.Count == 0 ? null : "Need " + string.Join(", ", parts);
         }
 
