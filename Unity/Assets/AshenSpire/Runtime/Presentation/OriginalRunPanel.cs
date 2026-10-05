@@ -42,6 +42,7 @@ namespace AshenSpire.Presentation
             _mapView?.SetMapSurface?.Invoke(_game.Phase == OriginalRunPhase.Map);
             var combatSurface = _game.Phase == OriginalRunPhase.Combat;
             if (combatSurface || _root.ClassListContains("combat-screen")) OriginalCombatLayout.SetSurface(_root, combatSurface);
+            PlayerComponentArt.Scene(_root, _game.Phase == OriginalRunPhase.Shop ? "merchant" : _game.Phase == OriginalRunPhase.Shrine ? "chapel-rest" : _game.Phase == OriginalRunPhase.Rewards ? "spoils" : RunSummary.IsTerminal(_game.Phase) ? "aftermath" : "spire-vista");
             _combatTools = null; _summaryButtons = null;
             _root.Clear(); _root.AddToClassList("native-run"); _actions?.RemoveFromHierarchy(); var p = _game.Player; var run = _game.RunPlayer;
             if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));

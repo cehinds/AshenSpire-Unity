@@ -1,0 +1,49 @@
+/* Owner-supplied production artwork. Only frame shells use nine-slicing.
+   Paintings cover; character illustrations and card faces preserve their ratio. */
+.player-component-scene, .player-component-veil { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.player-component-veil { background-color: rgba(8,8,7,0.56); }
+.app { --ash-panel: #191713; --ash-inset: #100f0d; --ash-edge: #746343; --ash-ink: #eee2c8; --ash-muted: #b6a68b; }
+.app .body { background-color: rgba(15,14,11,0.88); }
+.app .body.title-screen { background-color: rgba(0,0,0,0); }
+.app .button, .app .original-menu-entry {
+    background-image: resource("Art/PlayerComponents/action-neutral"); -unity-slice-left: 36; -unity-slice-right: 36; -unity-slice-top: 36; -unity-slice-bottom: 36; -unity-slice-scale: 0.5px;
+    background-color: rgba(0,0,0,0); border-width: 0; border-radius: 0; color: #eadbbd;
+}
+.app .button:hover, .app .button:focus, .app .button.primary, .app .title-primary {
+    background-image: resource("Art/PlayerComponents/action-selected"); background-color: rgba(0,0,0,0); color: #fff0cb;
+}
+.app .button.primary, .app .original-menu-entry.title-primary, .app #native-begin, .app #native-end-turn {
+    background-image: resource("Art/PlayerComponents/action-ready"); color: #fff0cb; background-color: rgba(0,0,0,0);
+}
+.app .button:disabled, .app #native-begin:disabled, .app #native-end-turn:disabled, .app .original-menu-entry.title-primary:disabled { background-image: resource("Art/PlayerComponents/action-disabled"); color: #8f8575; opacity: 0.8; }
+.app .button:focus { border-width: 1px; border-color: #ffe3a3; }
+.app .panel, .app .settings-section, .app .profile-discovery {
+    background-image: resource("Art/PlayerComponents/engraved-folio-backed"); -unity-slice-left: 80; -unity-slice-right: 80; -unity-slice-top: 80; -unity-slice-bottom: 80; -unity-slice-scale: 0.5px;
+    background-color: rgba(0,0,0,0); border-width: 0; border-radius: 0; padding: 22px;
+}
+.app .original-title { background-image: resource("Art/PlayerComponents/menu-window"); -unity-slice-left: 80; -unity-slice-right: 80; -unity-slice-top: 80; -unity-slice-bottom: 80; -unity-slice-scale: 0.5px; padding: 24px; }
+.app .original-wordmark { color: #edcf8b; }
+.app .body.creation-guided { max-width: 1120px; background-color: rgba(15,14,11,0.8); }
+.creation-wide .creation-step { width: 54%; align-self: flex-end; padding: 16px 20px; background-color: rgba(11,10,8,0.7); }
+.guided-stage-figure { display: none; }
+.creation-wide .guided-stage-figure { display: flex; position: absolute; left: 2%; top: 100px; width: 39%; bottom: 154px; }
+.creation-wide .guided-portrait { display: none; }
+.creation-wide.creation-card-preview .creation-step, .creation-wide.creation-custom-step .creation-step { width: 100%; }
+.creation-wide.creation-card-preview .guided-stage-figure, .creation-wide.creation-custom-step .guided-stage-figure { display: none; }
+.app .guided-footer { background-image: resource("Art/PlayerComponents/mobile-action-tray"); -unity-slice-left: 64; -unity-slice-right: 64; -unity-slice-top: 64; -unity-slice-bottom: 64; -unity-slice-scale: 0.5px; padding: 12px; border-width: 0; margin-top: 12px; }
+.app .guided-attribute { background-image: resource("Art/PlayerComponents/stat-chip"); -unity-slice-left: 24; -unity-slice-right: 24; -unity-slice-top: 24; -unity-slice-bottom: 24; -unity-slice-scale: 0.5px; background-color: rgba(0,0,0,0); }
+.app .map-viewport { background-color: rgba(15,14,11,0.72); border-radius: 2px; border-color: #88744f; }
+.app .map-node { background-image: resource("Art/PlayerComponents/chamber-known"); -unity-background-scale-mode: scale-to-fit; background-color: rgba(0,0,0,0); border-width: 0; }
+.app .map-node.current, .app .map-node.available { background-image: resource("Art/PlayerComponents/chamber-current"); }
+.app .map-node.visited { background-image: resource("Art/PlayerComponents/chamber-visited"); }
+.app .map-node:focus { border-width: 2px; border-color: #ffe3a3; }
+.app .map-screen { max-width: 1400px; padding: 12px 20px; background-color: rgba(15,14,11,0.66); }
+.app .body.combat-screen { background-color: rgba(0,0,0,0); }
+.app .combat-reframed .original-combat-hud { background-image: resource("Art/PlayerComponents/hud-rail"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.5px; background-color: rgba(0,0,0,0); border-width: 0; }
+.app .combat-energy { background-image: resource("Art/PlayerComponents/turn-orb"); -unity-background-scale-mode: scale-to-fit; background-color: rgba(0,0,0,0); border-width: 0; }
+.app .original-enemy-intent { background-image: resource("Art/PlayerComponents/combat-intent"); -unity-slice-left: 36; -unity-slice-right: 36; -unity-slice-top: 36; -unity-slice-bottom: 36; -unity-slice-scale: 0.5px; background-color: rgba(0,0,0,0); border-width: 0; }
+/* The face owns its fixed ratio; the parent can never stretch it to a row's height. */
+.app .original-card-grid { align-items: flex-start; }
+.app .original-card.card.owner-card { flex-grow: 0; flex-shrink: 0; align-self: flex-start; padding: 4px; border-top-width: 1px; }
+.app .original-card-offer > .original-card { width: 180px; min-width: 180px; flex-grow: 0; }
+.app .owner-card-price { background-image: resource("Art/PlayerComponents/cost-hexagon"); -unity-background-scale-mode: scale-to-fit; border-width: 0; background-color: rgba(0,0,0,0); width: 34px; height: 38px; left: -16px; top: -13px; }

@@ -74,6 +74,7 @@ namespace AshenSpire.Presentation
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCards"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCombat"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalAccessibility"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("PlayerComponents"));
             root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
@@ -155,14 +156,6 @@ namespace AshenSpire.Presentation
         {
             Shell("", ""); _body.Clear(); _body.AddToClassList("title-screen");
             _scroll.contentContainer.style.flexGrow = 1;
-            var backdrop = new Image { image = Resources.Load<Texture2D>("Art/html898/title-city-tower") ?? Resources.Load<Texture2D>("Art/background1"), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
-            backdrop.AddToClassList("original-title-background"); _root.Insert(0, backdrop);
-            var travelerTexture = Resources.Load<Texture2D>("Art/html898/title-traveler");
-            if (travelerTexture != null)
-            {
-                var traveler = new Image { image = travelerTexture, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-                traveler.AddToClassList("original-title-traveler"); _root.Insert(1,traveler);
-            }
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
@@ -571,6 +564,7 @@ namespace AshenSpire.Presentation
             _feedback.Cancel();
             _stage = null;
             _root.Clear();
+            PlayerComponentArt.Scene(_root, "spire-vista");
             _player = null;
             _enemy = null;
             _scroll = new ScrollView(ScrollViewMode.Vertical) { verticalScrollerVisibility = ScrollerVisibility.Hidden };

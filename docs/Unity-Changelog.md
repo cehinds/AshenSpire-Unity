@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.33.2 · build 36 · 2026-10-05
+
+- Integrate owner-supplied illustrated screens, engraved controls, and fixed-ratio card faces.
+
 ## 0.0.33.1 · build 35 · 2026-10-05
 
 - Integrate guided setup, card QoL and illustrated Unity combat with current dev; full parity and owner acceptance remain open.

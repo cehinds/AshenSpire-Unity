@@ -15,6 +15,8 @@ namespace AshenSpire.Presentation
         private void GuidedCreation()
         {
             _root.Clear(); _root.AddToClassList("original-creation"); _root.AddToClassList("creation-guided");
+            _root.EnableInClassList("creation-card-preview", _step == 5);
+            _root.EnableInClassList("creation-custom-step", _step == 6);
             _root.EnableInClassList("creation-wide", _root.contentRect.width >= 850);
             _root.style.height = Length.Percent(100); _root.style.minHeight = 0; _root.style.flexShrink = 1;
             var outer = _root.GetFirstAncestorOfType<ScrollView>();
@@ -29,6 +31,7 @@ namespace AshenSpire.Presentation
             var preview = _builder.Preview(_creation, _kit, _profileMeta, _starting);
             var hero = _catalog.Record("classes", _creation.ClassId);
             var relic = _catalog.Record("relics", (string)preview["relicId"]);
+            var stageFigure = new OriginalPlayerFigure(_setup); stageFigure.UseOwnerBattleArt(_creation.ClassId); stageFigure.AddToClassList("guided-stage-figure"); _root.Add(stageFigure);
             var body = new VisualElement(); body.AddToClassList("creation-step"); _root.Add(body); _target = body;
             string Item(string hand) { var id = (string)preview["loadout"]["sets"][hand][0]; return string.IsNullOrEmpty(id) ? "Empty hand" : (string)_catalog.Record("equipment.armaments", id)["name"]; }
             void Go(int step) { _step = step; Creation(); }

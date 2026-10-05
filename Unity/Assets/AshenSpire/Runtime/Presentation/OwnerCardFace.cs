@@ -8,13 +8,30 @@ namespace AshenSpire.Presentation
 {
     public sealed class OwnerCardFace : VisualElement
     {
+        public const float HeightPerWidth = 1.5f;
+        private static JObject _artReference;
+        private static Texture2D Artwork(JObject card, string fallback)
+        {
+            if (_artReference == null)
+            {
+                var source = Resources.Load<TextAsset>("Original/illustrated-reference");
+                _artReference = source == null ? new JObject() : JObject.Parse(source.text);
+            }
+            var id = (string)card["id"] ?? (string)card["cardId"] ?? "";
+            var profile = (string)card["equipmentProfileId"] ?? (string)card["profileId"] ?? "";
+            var resource = (string)_artReference["profiles"]?[profile];
+            if (resource == null && (string)_artReference["artwork"]?[id]?["kind"] == "illustrated")
+                resource = (string)_artReference["artwork"]?[id]?["resource"];
+            return (string.IsNullOrEmpty(resource) ? null : Resources.Load<Texture2D>(resource))
+                ?? Resources.Load<Texture2D>("Art/OwnerAppearance/card-" + fallback);
+        }
         public OwnerCardFace(JObject card, JObject cost, string title, string rules, string typeName)
         {
             AddToClassList("owner-card-face"); pickingMode = PickingMode.Ignore;
             var type = (string)card["type"];
             var art = type == "attack" ? "attack" : type == "skill" && (card["effects"] as JArray)?.Count == 1 && (string)card["effects"][0]["op"] == "block" ? "guard" : "ember";
             var name = Copy(title,"owner-card-name"); Add(name);
-            var image = new Image { image = Resources.Load<Texture2D>("Art/OwnerAppearance/card-" + art), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
+            var image = new Image { image = Artwork(card, art), scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
             image.AddToClassList("owner-card-art"); Add(image);
             var band = Copy(typeName.ToUpperInvariant() + ((bool?)card["upgraded"] == true ? " · UPGRADED" : ""),"owner-card-kind"); band.AddToClassList(art); Add(band);
             var description = Copy(rules,"owner-card-rules");
@@ -31,7 +48,14 @@ namespace AshenSpire.Presentation
                 var width = e.newRect.width;
                 if (width <= 0) return;
                 // The face always stays 2:3; the containing rail may wrap or pan.
-                style.height = width * 1.5f; style.minHeight = width * 1.5f;
+                style.height = width * HeightPerWidth; style.minHeight = width * HeightPerWidth;
+                if (parent is OriginalCardView container)
+                {
+                    // Border and padding are outside the fixed-ratio face.
+                    var outer = width * HeightPerWidth + container.resolvedStyle.paddingTop + container.resolvedStyle.paddingBottom
+                        + container.resolvedStyle.borderTopWidth + container.resolvedStyle.borderBottomWidth;
+                    container.style.height = outer; container.style.minHeight = outer;
+                }
                 name.style.height = width * .23f;
                 name.style.fontSize = Mathf.Clamp(width * .12f, 17, 24);
                 image.style.height = width * .49f;
