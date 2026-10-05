@@ -25,8 +25,9 @@ Build 36 below is the archived pre-migration rollback baseline; migration source
 edits do not share its source digest.
 
 Current source is build 49 (`0.0.33.2`), reconciled onto dev `3c7ebff` in
-`D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its export and player
-checks remain pending. Build 48 exported successfully from the prior checkpoint;
+`D:/repos/.codex/worktrees/unity-upstream-reconciled`. Its Unity Web export,
+source/eight-payload verification and 80 desktop/portrait browser assertions pass.
+The verified ZIP and screenshot review are recorded in [build 49 preview](Unity-Build49-Preview.md). Build 48 exported successfully from the prior checkpoint;
 its source digest `612a0f6d9de3710a0cf1acc21ed783d6765db6ea4666a9c31da49df602666fc0`
 and all eight payload hashes were verified. Its 14 starter-art and 22 settings
 checks passed; actual paintings were visually inspected. Its corrected combat

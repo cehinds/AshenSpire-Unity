@@ -43,7 +43,7 @@ Original assets and gameplay are references, not its Markdown governance.
     - [ ] Owner acceptance.
   - [ ] US: remaining monitored changes.
     - [x] Updated-defaults keep/reset choice, saved acknowledgement and persistence rollback in source.
-    - [ ] Compiled desktop/portrait validation of both startup choices.
+    - [x] Build 49: both startup choices, acknowledgement and exact saved-climb preservation; 24 desktop/portrait assertions.
     - [ ] Guided rewards, banked level claims and deferred chooser behavior.
     - [ ] Class/book repeat rewards, feats, sigils and service/progression changes.
     - [ ] Deck/sideboard/equipment eligibility, extraction restrictions and lent-card reconciliation.
@@ -64,7 +64,8 @@ an older monitor entry describes superseded defaults):
   - [x] When new defaults are activated, offer keep/reset after profile loading;
     persist acknowledgement transactionally and keep local values on dismissal.
   - [x] Use a defaults revision so ordinary rebuilds do not repeat the prompt; 211 settings/mod checks pass.
-  - [ ] Exported-player checks for startup keep/defaults, saved climb and reload acknowledgement.
+  - [x] Build 49: startup keep/defaults, saved climb and reload acknowledgement; 24 browser assertions.
+  - [ ] Owner acceptance.
 - [ ] UP-02: current combat and hand rules.
   - [x] Optional shared Stamina payment/refill, hand refresh and saved deck order in C#.
   - [ ] Connect current stats, foundation/status effects, authored costs and draws,
