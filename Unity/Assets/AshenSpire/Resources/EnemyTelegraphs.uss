@@ -3,7 +3,8 @@
    `.as-meter[data-tone="poise"]`. Colours are the OriginalTheme / base.css tokens:
    gold #c9a227, danger #d4622e, frost #7fa8c9, violet #a07ad6, line #3a3024,
    muted #7a6f5a, bg #0d0b08, panel #171310, parchment #e8dcc0.
-   EnemyTelegraphView loads this on each enemy slot; no rule depends on an ancestor. */
+   EnemyTelegraphView loads this on each enemy slot; no rule depends on an ancestor.
+   On the battlefield OriginalCombat.uss overrides these with the JS 1815 overhead read. */
 .telegraph-intent { flex-direction: row; align-items: center; justify-content: center; align-self: center;
   min-height: 24px; margin: 0; padding: 1px 9px; border-width: 1px; border-radius: 12px;
   border-color: #3a3024; background-color: #171310; }
@@ -25,6 +26,23 @@
 .telegraph-severity-lethal { background-color: #3a1510; border-color: #ff5a3a; border-width: 2px; }
 .telegraph-severity-lethal > Label { color: #ff8a66; }
 .telegraph-intent:hover { background-color: #241d15; }
+/* JS 1815 read (EnemyTelegraphView.Badge): number + "Total … HP" column, then the intent sigil
+   image (Art/js1815/combat/icons, white, tinted here). Combat restyles it without the pill in
+   OriginalCombat.uss; this is the generic look (e.g. the enemy inspection page). */
+.telegraph-intent-read { flex-direction: column; align-items: center; }
+.telegraph-intent-read > Label { margin: 0; padding: 0; -unity-text-align: middle-center; color: #7a6f5a; white-space: nowrap; }
+.telegraph-intent-total { font-size: 10px; }
+.telegraph-attack .telegraph-intent-read > Label { color: #d4622e; }
+.telegraph-block .telegraph-intent-read > Label { color: #7fa8c9; }
+.telegraph-buff .telegraph-intent-read > Label, .telegraph-staggered .telegraph-intent-read > Label { color: #c9a227; }
+.telegraph-debuff .telegraph-intent-read > Label { color: #a07ad6; }
+.telegraph-severity-lethal .telegraph-intent-read > Label { color: #ff8a66; }
+.telegraph-intent-icon { width: 18px; height: 18px; margin-left: 4px; --unity-image-tint-color: #c7ccd4; }
+.telegraph-attack .telegraph-intent-icon { --unity-image-tint-color: #d4622e; }
+.telegraph-block .telegraph-intent-icon { --unity-image-tint-color: #7fa8c9; }
+.telegraph-buff .telegraph-intent-icon { --unity-image-tint-color: #c9a227; }
+.telegraph-debuff .telegraph-intent-icon { --unity-image-tint-color: #a07ad6; }
+.telegraph-intent-delay-icon { width: 12px; height: 12px; margin-left: 3px; --unity-image-tint-color: #c5b99f; }
 
 .telegraph-poise { flex-direction: row; align-items: center; height: 9px; min-height: 9px; flex-shrink: 0; margin: 1px 6px 2px 6px; }
 .telegraph-poise-track { position: relative; flex-grow: 1; height: 6px; border-width: 1px; border-color: #3a3024; border-radius: 3px; background-color: #0d0b08; overflow: hidden; }

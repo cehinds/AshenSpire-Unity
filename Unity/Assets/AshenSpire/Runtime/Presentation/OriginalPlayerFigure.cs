@@ -63,6 +63,20 @@ namespace AshenSpire.Presentation
             var values = loadout?["sets"]?["armor"] as JArray; var index = (int?)loadout?["active"]?["armor"] ?? 0;
             return values != null && index >= 0 && index < values.Count ? (string)values[index] ?? "default" : "default";
         }
+        /// <summary>
+        /// The JS 1815 battlefield figure: the class's "ready" card-action frame
+        /// (Art/js1815/combat/player). Returns false when the class has none, so the
+        /// caller can keep the owner art.
+        /// </summary>
+        public bool UseJsBattleArt(string classId)
+        {
+            var texture = OriginalCombatLayout.Art("player/" + classId + "-ready");
+            if (texture == null) return false;
+            _paintedPresentation = texture;
+            _paintedArt.image = texture; _paintedArt.style.display = DisplayStyle.Flex;
+            _viewport.style.display = DisplayStyle.None;
+            return true;
+        }
         public void UseOwnerBattleArt(string classId)
         {
             _paintedPresentation = Resources.Load<Texture2D>("Art/OwnerAppearance/" + classId);

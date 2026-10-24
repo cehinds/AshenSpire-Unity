@@ -159,11 +159,11 @@ namespace AshenSpire.Presentation
         private void Combat()
         {
             _combatTools = OriginalCombatLayout.Utilities("native-combat-tools", _report);
-            var stage = OriginalCombatLayout.Field(ContentAct); Stage = stage;
             var run = _game.RunPlayer;
+            var stage = OriginalCombatLayout.Field(ContentAct, (string)run["runId"] + "/" + run["mapNodeId"]); Stage = stage;
             var figure = new OriginalPlayerFigure(_game);
             figure.Configure((string)run["classId"], run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(run["loadout"] as JObject));
-            figure.UseOwnerBattleArt((string)run["classId"]);
+            if (!figure.UseJsBattleArt((string)run["classId"])) figure.UseOwnerBattleArt((string)run["classId"]);
             PlayerImage = figure; OriginalAppearance.Apply(figure, null, run["customization"] as JObject);
             stage.Add(OriginalCombatLayout.Player(figure, _game.Player, ArmedFor("self") && !ArmedFor("enemy") ? () => Execute(() => PlayCard(_selected, null)) : (Action)null, "native-self-target"));
             var enemies = _game.Enemies.OfType<JObject>().Where(x => (bool?)x["alive"] == true).ToArray();
@@ -182,6 +182,7 @@ namespace AshenSpire.Presentation
                 stage.Add(target);
             }
             _root.Add(stage);
+            _root.Q("combat-hud-band")?.BringToFront(); // the HUD band paints over the battlefield, under the hand and footer
             var hand = OriginalCombatLayout.Hand(_game, (string)run["runId"] + "/" + run["mapNodeId"], "native-hand-rail", _report);
             foreach (var instance in _game.Hand.OfType<JObject>())
             {
@@ -203,7 +204,9 @@ namespace AshenSpire.Presentation
             var shortage = selected == null ? null : OriginalCardCostText.Shortage(_game.Cost(selected), _game.Player);
             var playLabel = selected == null ? "Select a card" : unplayable ? "Cannot play this card" : shortage ?? "Play " + selectedCard["name"];
             Button("native-play", playLabel, () => PlayCard(_selected, _target), _actions).SetEnabled(selected != null && !unplayable && shortage == null);
-            Button("native-end-turn", "End turn", EndTurnChoice, _actions);
+            var endTurn = Button("native-end-turn", "End Turn", EndTurnChoice, _actions);
+            var endKey = (_settings?.KeyBindings ?? OriginalPlayerSettings.DefaultKeyBindings).TryGetValue("endTurn", out var boundEnd) ? OriginalKeyBindings.DisplayKey(boundEnd) : null;
+            if (!string.IsNullOrEmpty(endKey)) endTurn.Add(OriginalCombatLayout.Label(endKey, "js-key-hint"));
             foreach (var kind in new[] { "draw", "discard", "exhaust" })
             {
                 var pile = kind;
