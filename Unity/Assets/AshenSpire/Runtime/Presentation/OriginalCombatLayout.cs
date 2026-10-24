@@ -145,7 +145,7 @@ namespace AshenSpire.Presentation
         }
         /// <summary>Height of the read above each figure; OriginalCombat.uss stacks the intent, poise trim, bar and statuses in it.</summary>
         public const float OverheadHeight = 70;
-        private const float HudBand = 98;
+        internal const float HudBand = 98;
         // The painting's horizon sits at about 46% of its height; this keeps the floor under the figures.
         private const float SceneHorizon = .457f;
         private static void PlaceActors(VisualElement field)
@@ -196,13 +196,14 @@ namespace AshenSpire.Presentation
                         : width * (count == 1 ? .68f : .50f + index * .32f / Math.Max(1, count - 1));
                     feet = height * (player ? .52f : .40f);
                     actorHeight = Mathf.Clamp(height * (player ? .20f : boss ? .26f : hound ? .145f : .17f), 70, player ? 190 : 230);
-                    if (!player) feet = Math.Max(feet, HudBand + OverheadHeight + actorHeight); // keep intents clear of the HUD band
                 }
                 var aspect = player ? actor.Q<OriginalPlayerFigure>()?.OwnerAspect ?? .7f : actor.Q<OriginalEnemyFigure>()?.ArtAspect ?? 1f;
                 var actorWidth = actorHeight * aspect;
                 var spacing = player ? (mobile ? width * .40f : width * .22f) : width * (mobile ? (crowd > 2 ? .9f / crowd : .40f) : crowd > 1 ? .30f / (crowd - 1) * .95f : .26f);
                 var maximumWidth = Math.Min(spacing, mobile ? width * .40f : width * .22f);
                 if (actorWidth > maximumWidth) { actorHeight *= maximumWidth / actorWidth; actorWidth = maximumWidth; }
+                // Both layouts: the opaque HUD band sits over the field top, so enemy intents must start below it.
+                if (!player) feet = Math.Max(feet, HudBand + OverheadHeight + actorHeight);
                 // The slot (hit box, drop target, selection frame) spans the overhead read (intent,
                 // bar, statuses: OverheadHeight, wider than the sprite) and the sprite standing under it.
                 var overhead = Mathf.Min(mobile ? 110 : 246, Math.Max(actorWidth, spacing * .92f));
@@ -342,7 +343,15 @@ namespace AshenSpire.Presentation
         }
         public void Configure(bool mobile) { if (_mobile == mobile) { MarkDirtyRepaint(); return; } _mobile = mobile; EnableInClassList("board", mobile); MarkDirtyRepaint(); }
         /// <summary>The portrait board rectangle for a field of this size (x, y, width, height).</summary>
-        public static Rect Board(float width, float height) => new Rect(width * .04f, height * .27f, width * .92f, height * .32f);
+        // The portrait 3x3 board. On short fields it drops so the back row's intents (feet at .55 of a row, the
+        // tallest sprite .16 of the field) start below the opaque HUD band; tiles and figures move together.
+        public static Rect Board(float width, float height)
+        {
+            float top = height * .27f, tall = height * .32f;
+            var clear = OriginalCombatLayout.HudBand + OriginalCombatLayout.OverheadHeight + height * .16f - (top + tall / 3 * .55f);
+            if (clear > 0) top = Math.Min(top + clear, Math.Max(height * .27f, height - tall - 4));
+            return new Rect(width * .04f, top, width * .92f, tall);
+        }
         private void Draw(MeshGenerationContext context)
         {
             var w = contentRect.width; var h = contentRect.height; if (w <= 0 || h <= 0) return;
