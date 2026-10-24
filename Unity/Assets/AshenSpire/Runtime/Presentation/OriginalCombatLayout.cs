@@ -98,7 +98,9 @@ namespace AshenSpire.Presentation
         private static VisualElement StatusChip(string id, JObject instance)
         {
             var chip = new VisualElement { pickingMode = PickingMode.Ignore }; chip.AddToClassList("js-status-chip");
-            var icon = StatusIcons.FirstOrDefault(s => id.StartsWith(s, StringComparison.Ordinal));
+            // Exact ids only: bleedResist, frostExposed and similar are distinct effects and must not borrow
+            // their buildup's icon; unmatched ids fall back to initials.
+            var icon = StatusIcons.FirstOrDefault(s => string.Equals(id, s, StringComparison.Ordinal));
             if (icon != null) chip.Add(Icon("icons/status-" + icon, "js-status-icon"));
             else chip.Add(Label(OriginalCardText.Humanize(id).Substring(0, Math.Min(2, id.Length)), "js-status-initials"));
             var meter = instance?["meter"] as JObject;
