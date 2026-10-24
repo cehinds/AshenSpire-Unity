@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -91,7 +92,6 @@ namespace AshenSpire.Presentation
             var overrides = _document["costLayouts"]?[layout]?["layers"] as JObject;
             var views = new List<(int Z, VisualElement View)>();
             var lift = (float?)_face?["lift"] ?? 0;
-            var faceRecord = reference["cards"]?[id] as JObject;
             foreach (JObject original in _document["layers"])
             {
                 var layer = (JObject)original.DeepClone();
@@ -157,7 +157,7 @@ namespace AshenSpire.Presentation
                 views.Add((3, Place(Backdrop(_face["titleFade"], tint), (JObject)_face["titleFade"], "title-fade")));
                 views.Add((3, Place(Backdrop(_face["footerBackdrop"], tint), (JObject)_face["footerBackdrop"], "footer-backdrop")));
                 views.Add((4, Place(Backdrop(_face["actionFrame"], tint), (JObject)_face["actionFrame"], "action-frame")));
-                views.Add((7, Band(card, faceRecord, typeName, tint)));
+                views.Add((7, Band(card, typeName, tint)));
                 var rail = Rail(card, tint);
                 if (rail != null) views.Add((7, rail));
                 _slot = new Label { pickingMode = PickingMode.Ignore, name = "published-card-slot" };
@@ -211,30 +211,27 @@ namespace AshenSpire.Presentation
             return LoadTexture(fallback) ?? LoadTexture("Art/OwnerAppearance/card-" + kind);
         }
 
-        // Footer: the action sigil (a mirrored spell shows two) and its uppercase word.
-        private VisualElement Band(JObject card, JObject record, string typeName, Color tint)
+        // Footer: the resolved Unity card's type word and the reference sigil for that type
+        // (OriginalCardRailTags.FooterSigil). The JS stance identity is not used.
+        private VisualElement Band(JObject card, string typeName, Color tint)
         {
             var rect = (JObject)_face["tagsBand"];
             _band = new VisualElement(); _band.AddToClassList("published-card-band");
             _band.style.flexDirection = FlexDirection.Row; _band.style.alignItems = Align.Center; _band.style.justifyContent = Justify.Center;
-            var action = (string)record?["action"] ?? FallbackAction((string)card["type"]);
             var sigils = _reference["sigils"] as JObject;
-            foreach (var mark in new[] { action, (string)record?["mirror"] })
-                if (mark != null && LoadTexture((string)sigils?[mark]?["resource"]) is Texture2D texture)
-                {
-                    var holder = Mark(texture, (float)_face["sigil"]["size"], (float)_face["sigil"]["pad"], tint);
-                    holder.AddToClassList("published-card-sigil"); _band.Add(holder);
-                }
-            var word = (string)record?["label"] ?? (string)sigils?[action]?["label"] ?? typeName ?? "";
+            var action = OriginalCardRailTags.FooterSigil((string)card["type"], s => sigils?[s]?["resource"] != null);
+            if (action != null && LoadTexture((string)sigils[action]["resource"]) is Texture2D texture)
+            {
+                var holder = Mark(texture, (float)_face["sigil"]["size"], (float)_face["sigil"]["pad"], tint);
+                holder.AddToClassList("published-card-sigil"); _band.Add(holder);
+            }
+            var word = typeName ?? OriginalCardText.Humanize((string)card["type"] ?? "");
             _bandLabel = new Label(word.ToUpperInvariant()) { pickingMode = PickingMode.Ignore, tooltip = word };
             _bandLabel.AddToClassList("published-card-text"); _bandLabel.AddToClassList("published-card-type");
             if (ColorUtility.TryParseHtmlString((string)rect["color"], out var color)) _bandLabel.style.color = color;
             _band.Add(_bandLabel);
             return Place(_band, rect, "tags");
         }
-
-        private static string FallbackAction(string type)
-            => type == "attack" ? "attack" : type == "power" ? "power" : type == "status" || type == "curse" ? "status" : "skill";
 
         // Right-edge rail: up to five engraved marks, each with an optional count chip.
         private VisualElement Rail(JObject card, Color tint)

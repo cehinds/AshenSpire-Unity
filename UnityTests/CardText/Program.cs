@@ -131,6 +131,26 @@ foreach (var card in shippedJson["cards"]!.OfType<JObject>())
     if (marks.Count > 0) railCards++;
 }
 Console.WriteLine("Card tag rails: " + railCards + " cards");
+// The footer word is the resolved Unity card's type label and its sigil the reference mark for that
+// type (generic family mark otherwise), never the frozen JS stance identity (Shield Bash is an ATTACK).
+var cardTypes = (JObject)shippedJson["balance"]!["ui"]!["cardTypes"]!;
+var railSigils = (JObject)railReference["sigils"]!;
+Func<string, bool> hasSigil = id => railSigils[id]?["resource"] != null;
+var footers = 0;
+foreach (var card in shippedJson["cards"]!.OfType<JObject>())
+{
+    var unityType = (string)card["type"]!;
+    var expected = (string?)cardTypes[unityType]?["label"] ?? OriginalCardText.Humanize(unityType);
+    Check(OriginalCardRailTags.TypeLabel(card, cardTypes) == expected, card["id"] + " footer: word is its Unity type label " + expected);
+    var sigil = OriginalCardRailTags.FooterSigil(unityType, hasSigil);
+    Check(sigil != null && hasSigil(sigil) && (sigil == unityType || !hasSigil(unityType)), card["id"] + " footer: sigil " + sigil + " is the reference mark for " + unityType);
+    footers++;
+}
+var shieldBash = (JObject)shippedJson["cards"]!.First(c => (string)c["id"]! == "shieldBash");
+Check(OriginalCardRailTags.TypeLabel(shieldBash, cardTypes).ToUpperInvariant() == "ATTACK" && OriginalCardRailTags.FooterSigil("attack", hasSigil) == "attack",
+    "footer: Shield Bash reads ATTACK with the attack sigil, not the reference's COUNTER");
+Check(OriginalCardRailTags.FooterSigil("curse", hasSigil) == "status" && OriginalCardRailTags.FooterSigil("noSuchType", hasSigil) == "skill", "footer: types without a mark use the generic family sigil");
+Console.WriteLine("Card footers: " + footers + " cards");
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);

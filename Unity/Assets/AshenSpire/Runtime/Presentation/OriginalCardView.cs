@@ -63,7 +63,7 @@ namespace AshenSpire.Presentation
             var metadata = MetadataByCatalog.GetValue(catalog, c => new Metadata(c));
             var typeId = (string)card["type"] ?? "";
             var type = metadata.Types[typeId] as JObject;
-            var typeName = (string)type?["label"] ?? OriginalCardText.Humanize(typeId);
+            var typeName = OriginalCardRailTags.TypeLabel(card, metadata.Types);
             var rarity = (string)card["rarity"] ?? "common";
             AddToClassList("rarity-" + rarity); AddToClassList("type-" + typeId);
             // Card motif (Settings → Card motif): one unpickable layer behind the face, tinted with the

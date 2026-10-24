@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 
 namespace AshenSpire.Presentation
@@ -50,6 +51,28 @@ namespace AshenSpire.Presentation
                 Add("status:" + group.Key, Humanize(group.Key), only == null ? null : Whole(only["stacks"]));
             }
             return marks;
+        }
+
+        /// <summary>
+        /// The footer word: the resolved Unity card's type label (balance.ui.cardTypes), never the
+        /// JS reference's stance word. OriginalCardView passes this to the face as typeName.
+        /// </summary>
+        public static string TypeLabel(JObject card, JObject cardTypes)
+        {
+            var type = (string)card?["type"] ?? "";
+            return (string)cardTypes?[type]?["label"] ?? OriginalCardText.Humanize(type);
+        }
+
+        /// <summary>
+        /// The footer sigil for a Unity card type: the reference mark for that type when it has
+        /// one, otherwise the generic mark for its family (status for curses, skill otherwise).
+        /// </summary>
+        public static string FooterSigil(string type, Func<string, bool> hasSigil)
+        {
+            if (hasSigil == null) throw new ArgumentNullException(nameof(hasSigil));
+            if (!string.IsNullOrEmpty(type) && hasSigil(type)) return type;
+            var generic = type == "curse" ? "status" : "skill";
+            return hasSigil(generic) ? generic : null;
         }
 
         // The rules text's own number: the authored amount plus a folded attribute
