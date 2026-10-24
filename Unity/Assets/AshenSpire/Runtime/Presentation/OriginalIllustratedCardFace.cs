@@ -44,15 +44,23 @@ namespace AshenSpire.Presentation
         /// <summary>
         /// A face from the named reference, or null when that reference is not bundled.
         /// baseRules is the same rules text without attribute bonuses (numbers that rose are
-        /// highlighted); fallbackTags are the card's own tag ids and labels, used when the
-        /// reference has no entry for this card id; dimmed is the unaffordable treatment.
+        /// highlighted); dimmed is the unaffordable treatment. The tag rail is derived from
+        /// the resolved card itself (OriginalCardRailTags); the reference supplies its art.
         /// </summary>
         public static OriginalIllustratedCardFace Create(string reference, JObject card, JObject cost, string title, string rules, string typeName,
-            string baseRules = null, IEnumerable<(string Id, string Label)> fallbackTags = null, bool dimmed = false)
+            string baseRules = null, bool dimmed = false)
         {
             var parsed = Load(reference);
-            return parsed == null ? null : new OriginalIllustratedCardFace(parsed, card, cost, title, rules, typeName, baseRules, fallbackTags, dimmed);
+            return parsed == null ? null : new OriginalIllustratedCardFace(parsed, card, cost, title, rules, typeName, baseRules, dimmed);
         }
+
+        /// <summary>
+        /// The card's logical position in its hand (0-based), set by the hand builder; the badge
+        /// shows its quick-play key 1–9. Null (the default, e.g. rewards, decks) shows no badge.
+        /// Never derived from sibling order: the hand brings the selected card to the front.
+        /// </summary>
+        public int? SlotIndex { get => _slotIndex; set { _slotIndex = value; Slot(); } }
+        private int? _slotIndex;
 
         private static JObject Load(string resource)
         {
@@ -70,7 +78,7 @@ namespace AshenSpire.Presentation
         }
 
         private OriginalIllustratedCardFace(JObject reference, JObject card, JObject cost, string title, string rules, string typeName,
-            string baseRules, IEnumerable<(string Id, string Label)> fallbackTags, bool dimmed)
+            string baseRules, bool dimmed)
         {
             _reference = reference;
             _face = reference["face"] as JObject;
@@ -150,12 +158,11 @@ namespace AshenSpire.Presentation
                 views.Add((3, Place(Backdrop(_face["footerBackdrop"], tint), (JObject)_face["footerBackdrop"], "footer-backdrop")));
                 views.Add((4, Place(Backdrop(_face["actionFrame"], tint), (JObject)_face["actionFrame"], "action-frame")));
                 views.Add((7, Band(card, faceRecord, typeName, tint)));
-                var rail = Rail(faceRecord, fallbackTags, tint);
+                var rail = Rail(card, tint);
                 if (rail != null) views.Add((7, rail));
                 _slot = new Label { pickingMode = PickingMode.Ignore, name = "published-card-slot" };
                 _slot.AddToClassList("published-card-slot"); _slot.style.display = DisplayStyle.None;
                 views.Add((9, _slot));
-                RegisterCallback<AttachToPanelEvent>(_ => Slot());
             }
             // Stable: equal planes keep their authored order (illustratedCard.js z-index planes).
             foreach (var entry in views.Select((v, i) => (v.Z, i, v.View)).OrderBy(v => v.Z).ThenBy(v => v.i)) Add(entry.View);
@@ -230,13 +237,11 @@ namespace AshenSpire.Presentation
             => type == "attack" ? "attack" : type == "power" ? "power" : type == "status" || type == "curse" ? "status" : "skill";
 
         // Right-edge rail: up to five engraved marks, each with an optional count chip.
-        private VisualElement Rail(JObject record, IEnumerable<(string Id, string Label)> fallback, Color tint)
+        private VisualElement Rail(JObject card, Color tint)
         {
             var style = (JObject)_face["tagRail"];
             var symbols = _reference["tagSymbols"] as JObject;
-            var rows = record?["tags"] is JArray authored
-                ? authored.OfType<JObject>().Select(t => ((string)t["id"], (string)t["label"], (int?)t["count"]))
-                : (fallback ?? Enumerable.Empty<(string Id, string Label)>()).Select(t => (t.Id, t.Label, (int?)null));
+            var rows = OriginalCardRailTags.For(card, id => symbols?[id] != null).Select(m => (m.Id, m.Label, m.Count));
             _rail = new VisualElement(); _rail.AddToClassList("published-card-rail"); _rail.pickingMode = PickingMode.Ignore;
             _rail.style.position = Position.Absolute; _rail.style.flexDirection = FlexDirection.Column; _rail.style.alignItems = Align.FlexEnd;
             var width = (float)_document["width"]; var height = (float)_document["height"];
@@ -277,8 +282,7 @@ namespace AshenSpire.Presentation
         private void Slot()
         {
             if (_slot == null) return;
-            var host = parent; var rail = host?.parent;
-            var index = rail != null && rail.ClassListContains("original-hand-cards") ? rail.IndexOf(host) : -1;
+            var index = _slotIndex ?? -1;
             _slot.text = index >= 0 && index < 9 ? (index + 1).ToString() : "";
             _slot.style.display = _slot.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
         }

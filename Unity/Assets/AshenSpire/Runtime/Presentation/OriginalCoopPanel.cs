@@ -207,7 +207,7 @@ namespace AshenSpire.Presentation
                 var id = (string)row["instance"]["instanceId"];
                 hand.Add(new OriginalCardView(_catalog, (JObject)row["card"], (JObject)row["cost"], Body, _selected == id,
                     () => { _selected = id == _selected ? null : id; Render(); }, "coop-card-" + id,
-                    inspect: () => { _selected = id; Render(); InspectHandCard(); }, drop: (p, f) => DropCard(id, p, f), aim: (p, f) => AimDrag(id, p, f)));
+                    inspect: () => { _selected = id; Render(); InspectHandCard(); }, drop: (p, f) => DropCard(id, p, f), aim: (p, f) => AimDrag(id, p, f)) { HandSlot = hand.contentContainer.childCount });
             }
             _body.Add(hand);
             _dragPreviewKey = null;

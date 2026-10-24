@@ -44,6 +44,9 @@ namespace AshenSpire.Presentation
         private static JObject _glyphFonts;
         private static readonly Dictionary<string, Font> GlyphFontCache = new Dictionary<string, Font>(StringComparer.Ordinal);
         public string FullText { get; }
+        private readonly OriginalIllustratedCardFace _face;
+        /// <summary>The card's logical hand position (0-based) for its quick-play key badge; set by hand builders only.</summary>
+        public int? HandSlot { get => _face?.SlotIndex; set { if (_face != null) _face.SlotIndex = value; } }
         public Label Art { get; }
         internal Func<OriginalCardView> Ghost { get; }
         private bool _suppressClick;
@@ -141,7 +144,8 @@ namespace AshenSpire.Presentation
             // (the Oct 4 owner reference) remains only as the fallback when that reference is absent.
             var faceRules = OriginalCardText.Describe(card, catalog, includeRatingBreakdown: false);
             var face = OriginalIllustratedCardFace.Create(OriginalIllustratedCardFace.Reference1815, card, cost, title, faceRules, typeName,
-                BaseRules(card, catalog), ids.Select(id => (id, metadata.Tags.TryGetValue(id, out var row) ? (string)row["label"] ?? id : id)), shortage != null);
+                BaseRules(card, catalog), shortage != null);
+            _face = face;
             VisualElement illustrated = face;
             if (face == null) illustrated = new OwnerCardFace(card,cost,title,faceRules,typeName);
             Clear(); AddToClassList(face != null ? "illustrated-card" : "owner-card"); Add(illustrated);

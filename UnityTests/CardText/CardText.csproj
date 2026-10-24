@@ -3,6 +3,7 @@
   <ItemGroup>
     <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/*.cs" />
     <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Original/*.cs" />
+    <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Presentation/OriginalCardRailTags.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 </Project>

@@ -191,7 +191,7 @@ namespace AshenSpire.Presentation
                     inspect: () => { _selected = id; InspectHandCard(); }, drop: (p, f) => DropCard(id, p, f), aim: (p, f) => AimDrag(id, p, f));
                 var index = hand.contentContainer.childCount;
                 tile.style.rotate = new Rotate(new Angle((index - (_game.Hand.Count - 1) / 2f) * 3, AngleUnit.Degree));
-                hand.Add(tile);
+                tile.HandSlot = index; hand.Add(tile);
             }
             _root.Add(hand);
             _dragPreviewKey = null;

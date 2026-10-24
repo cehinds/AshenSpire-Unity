@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain;
 using AshenSpire.Domain.Original;
+using AshenSpire.Presentation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -102,6 +103,34 @@ Check(StatusExplainer.CardTags(shipped, untagged).Count == 0, "explicit empty ca
 untagged["cardTags"] = new JArray("noSuchTag");
 Check(StatusExplainer.CardTags(shipped, untagged).Count == 0, "an unknown tag id is skipped like the card face");
 Console.WriteLine("Card tag blurbs: " + taggedCards + " cards, " + tagLines + " lines");
+
+// The illustrated face's tag rail (OriginalCardRailTags) comes from the resolved card: its marks
+// and counts are the rules text's own numbers, and only ids with 1815 symbol art can show.
+var railReference = JObject.Parse(File.ReadAllText(Path.Combine(root, "Unity/Assets/AshenSpire/Resources/Original/illustrated-reference-1815.json")));
+var railSymbols = (JObject)railReference["tagSymbols"]!;
+Func<string, bool> hasSymbol = id => railSymbols[id] != null;
+string Rail(JObject card) => string.Join(",", OriginalCardRailTags.For(card, hasSymbol).Select(m => m.Id + (m.Count == null ? "" : "#" + m.Count)));
+var shippedDefend = (JObject)shippedJson["cards"]!.First(c => (string)c["id"]! == "defend");
+var shippedStrike = (JObject)shippedJson["cards"]!.First(c => (string)c["id"]! == "strike");
+var defendBlock = (int)shippedDefend["effects"]![0]!["amount"]!;
+Check(Rail(shippedDefend) == "category:skill,effect:block#" + defendBlock, "rail: defend shows Skill and its resolved Block " + defendBlock + " (" + Rail(shippedDefend) + ")");
+Check(OriginalCardText.Describe(shippedDefend, shipped, includeRatingBreakdown: false).Contains(defendBlock + " Block"), "rail: defend's Block count is the number its rules text prints");
+Check(Rail(shippedStrike) == "camp:physical", "rail: strike shows only Physical, no reference-only Precision (" + Rail(shippedStrike) + ")");
+var boostedDefend = (JObject)shippedDefend.DeepClone(); boostedDefend["effects"]![0]!["attributeBonus"] = 3;
+Check(Rail(boostedDefend) == "category:skill,effect:block#" + (defendBlock + 3) && OriginalCardText.Describe(boostedDefend, shipped, includeRatingBreakdown: false).Contains((defendBlock + 3) + " Block"),
+    "rail: a folded attribute bonus raises the Block count exactly as the rules text does");
+var railCards = 0;
+foreach (var card in shippedJson["cards"]!.OfType<JObject>())
+{
+    var frozenCard = card.DeepClone();
+    var marks = OriginalCardRailTags.For(card, hasSymbol);
+    Check(JToken.DeepEquals(card, frozenCard) && marks.Count <= 5 && marks.All(m => hasSymbol(m.Id)) && marks.Select(m => m.Id).Distinct().Count() == marks.Count, card["id"] + " rail: read-only, at most five known symbols");
+    var text = OriginalCardText.Describe(card, shipped, includeRatingBreakdown: false);
+    foreach (var mark in marks.Where(m => m.Count != null))
+        Check(System.Text.RegularExpressions.Regex.IsMatch(text, @"(?<!\d)" + mark.Count + @"(?!\d)"), card["id"] + " rail: " + mark.Id + " count " + mark.Count + " appears in its rules text");
+    if (marks.Count > 0) railCards++;
+}
+Console.WriteLine("Card tag rails: " + railCards + " cards");
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);
