@@ -169,11 +169,11 @@ namespace AshenSpire.Presentation
             var active = (string)Scene["phase"] == "player" && alive && (bool?)seat["connected"] == true;
             var mayPlay = active && (bool?)seat["ended"] != true;
             var acts = (int?)_balance["endless"]?["actsPerCycle"] ?? 3;
-            var stage = OriginalCombatLayout.Field(((int)_view["actNumber"] - 1) % acts + 1);
+            var stage = OriginalCombatLayout.Field(((int)_view["actNumber"] - 1) % acts + 1, (string)Run["runId"] + "/" + _view["cursorId"]);
             Stage = stage;
             var figure = new OriginalPlayerFigure(_ui); PlayerImage = figure;
             figure.Configure((string)Run["classId"], Run["customization"] as JObject, OriginalPlayerFigure.ActiveArmour(Run["loadout"] as JObject));
-            figure.UseOwnerBattleArt((string)Run["classId"]);
+            if (!figure.UseJsBattleArt((string)Run["classId"])) figure.UseOwnerBattleArt((string)Run["classId"]);
             stage.Add(OriginalCombatLayout.Player(figure, Body, ArmedAt(Id, true) ? () => PickCombatTarget(Id, true) : (Action)null, "coop-self-target"));
             var enemies = (Scene["enemies"] as JArray ?? new JArray()).OfType<JObject>().Where(e => (bool?)e["alive"] == true).ToArray();
             var handRows = (Local["hand"] as JArray ?? new JArray()).OfType<JObject>().ToArray();
@@ -195,6 +195,8 @@ namespace AshenSpire.Presentation
                 OriginalCombatLayout.SetTargetAvailable(target, !friendly); stage.Add(target);
             }
             _body.Add(stage);
+            _body.Q("combat-hud-band")?.BringToFront(); // the HUD band paints over the battlefield, under the hand
+            _body.Q(className: "original-combat-party")?.BringToFront();
             _combatTools = OriginalCombatLayout.Utilities("coop-combat-tools", _report);
             foreach (var id in handRows.SelectMany(r => (r["targets"]?["legalIds"] as JArray ?? new JArray()).Values<string>()).Where(id => id != Id).Distinct())
             {

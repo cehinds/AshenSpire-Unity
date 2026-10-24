@@ -1,0 +1,2327 @@
+{
+  "reference": "cehinds/AshenSpire dev 0029e160 (build 0.7.1.1815)",
+  "artPack": "hd-assets-v23/high",
+  "tool": "tools/import-js1815-combat-art.mjs",
+  "assets": [
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/ashRevenant-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/ashRevenant/attack-02.webp",
+          "sha256": "2f5455eb5c2740e68b154122cf01e6acf1b22c0d335e019da74b05fd3edc7e22"
+        }
+      ],
+      "size": [
+        295,
+        384
+      ],
+      "outputSha256": "70743e285b2824abaf3665ec07b880086406025d9ff0cab89d318502d002b608",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/ashRevenant-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/ashRevenant/idle.webp",
+          "sha256": "fbe4f52c5f2e5f9a7f25afc4c56b4b1d97cffbc0729e5b457d30eeb271f0f116"
+        }
+      ],
+      "size": [
+        255,
+        379
+      ],
+      "outputSha256": "a161894b684fc4551688202cdbf102c4517793c9f4e5851e5057912a53f66964",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/blightedValkyrie-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/blightedValkyrie/attack-02.webp",
+          "sha256": "cf296e2f9325acd1a5f32be02328fdac96e163c3ffc8602826c78b072262cd5a"
+        }
+      ],
+      "size": [
+        293,
+        286
+      ],
+      "outputSha256": "1a5166d03e354db08576f72245cc797f919d8e2589c69570be1c3ccf57d5348f",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/blightedValkyrie-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/blightedValkyrie/idle.webp",
+          "sha256": "62b499c366130a734494db0cab53c9dd1f0f6ac6d4f1977c5cd81528f8cf67e3"
+        }
+      ],
+      "size": [
+        262,
+        311
+      ],
+      "outputSha256": "b3e63916cf936f49fa6f59745b2c257cf96856be196a6c9883ad947b138b0e27",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/blightHound-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/blightHound/attack-02.webp",
+          "sha256": "8198192ff3e3e647b3540edb2e41350d3cb8f923458b22a7134d63491020ed05"
+        }
+      ],
+      "size": [
+        328,
+        382
+      ],
+      "outputSha256": "262a8f6173ab08d87fe60926caecc56cf74d52d752b9b3c83aba28d224ed884e",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/blightHound-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/blightHound/idle.webp",
+          "sha256": "763ab2f3d02b11c0309015bcfcf961ed191b87c26e5b8d5858e1abb346d2a3cf"
+        }
+      ],
+      "size": [
+        302,
+        364
+      ],
+      "outputSha256": "f06ab2afccd173bae9dd29ca5b52087488e15369382994daecfb39e6ef802cc8",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/charredColossus-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/charredColossus/attack-02.webp",
+          "sha256": "5663d9bdd68957a3a7bd85bbdabe798def5793717b135745e89c3b3ec6342f23"
+        }
+      ],
+      "size": [
+        271,
+        301
+      ],
+      "outputSha256": "1aeb994ca796fce7340592ff31f34faea1a9b70be30465669b4323402b79b544",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/charredColossus-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/charredColossus/idle.webp",
+          "sha256": "eb6ea879cfc18ed88a65184577f29448c0a3821a3b4e4a2dac2af3871fefe5a0"
+        }
+      ],
+      "size": [
+        244,
+        290
+      ],
+      "outputSha256": "64c35f750f39ffa48340f5fbcc073aa5e23393082fad3ef271456f8523229203",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtDuelist-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtDuelist/attack-02.webp",
+          "sha256": "053f40f458c08bfc2eeb4cb6f6caedb841c94d84cfc0c94e18014aac88e03f64"
+        }
+      ],
+      "size": [
+        321,
+        342
+      ],
+      "outputSha256": "50405febeba00bf56fc04c798770fb406d2809b80efa5e73cfdeaba8527418cc",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtDuelist-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtDuelist/idle.webp",
+          "sha256": "cca067cef355186164665362231d6800da57a363b83d82c6fc16c9fe245e22d3"
+        }
+      ],
+      "size": [
+        318,
+        363
+      ],
+      "outputSha256": "9218cbc29ea1760dd77f076cfd20a1ef1b68384d22f5c41181ed75c1a142363b",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtMarionette-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtMarionette/attack-02.webp",
+          "sha256": "7c6b174d4d252f104b7f29bb56a9107571773300b84d117882ddd2fe1ac32448"
+        }
+      ],
+      "size": [
+        206,
+        384
+      ],
+      "outputSha256": "385429c7d9fcfa110cbace047625e0d184e396786becbad3202b3b164577d501",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtMarionette-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtMarionette/idle.webp",
+          "sha256": "9860c1190834207b10ebf35392602099132042b9dd686bc9362843cdf2363e8a"
+        }
+      ],
+      "size": [
+        194,
+        384
+      ],
+      "outputSha256": "09dd0563e0bd22ccf8012015d7d3508ecfffe927093433d9420e69cc525f51b8",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtSurgeon-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtSurgeon/attack-02.webp",
+          "sha256": "4ff740a5f95e089159ea2365bad1918b2cf887b8d1d92f352c56542e13e9ca16"
+        }
+      ],
+      "size": [
+        325,
+        323
+      ],
+      "outputSha256": "f48c8a6543b33c0ede168a041635a76704caadd473fb56c3584880d584c1c2f0",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/courtSurgeon-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/courtSurgeon/idle.webp",
+          "sha256": "745d32e11ad7bcaed187a8fa1f39513d10dfbc1bbd023264707e3f493457b0ad"
+        }
+      ],
+      "size": [
+        246,
+        360
+      ],
+      "outputSha256": "2ad4310a65f30b84644564b80d0dcc5a1442e377d776b010088e10b8a043bbac",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/emberStarvedPilgrim-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/emberStarvedPilgrim/attack-02.webp",
+          "sha256": "b5b07b8c3b25a2a2ff5b0a2122488e5c2218acd99630fc09d41526b322a2c943"
+        }
+      ],
+      "size": [
+        267,
+        340
+      ],
+      "outputSha256": "4863bf5fcf37411d4b90da27484daff47e474d2b0d708df970c8de1775007840",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/emberStarvedPilgrim-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/emberStarvedPilgrim/idle.webp",
+          "sha256": "21943969437460942edb94c11e72e9be7015af30b6efe81c02958cde2ca4c565"
+        }
+      ],
+      "size": [
+        207,
+        361
+      ],
+      "outputSha256": "3a52e9cd9ffc899aee74eef5b92a6372dc55fe1add08225a3be870524d6be2d8",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/fellWarden-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/fellWarden/attack-02.webp",
+          "sha256": "0988a918f271f62dab84d7e6b54a0da5f30315ca4e3ff9df57da9c5603df191c"
+        }
+      ],
+      "size": [
+        284,
+        379
+      ],
+      "outputSha256": "827569974df68aa1f3053d5b876f82d40ab663b25312cdcd12f7d8e3047d7e9b",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/fellWarden-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/fellWarden/idle.webp",
+          "sha256": "a4cfd109bd88552a4776eacfed438f73814396f87c3128864f5f4c9769d2b5de"
+        }
+      ],
+      "size": [
+        317,
+        300
+      ],
+      "outputSha256": "768ae5eda98941a4a878365efa1226f47d07e2bef82cc4f9933d21ce19285c9f",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/gildedKnight-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/gildedKnight/attack-02.webp",
+          "sha256": "09e2fe39029b5988400690d84029bf3a4317941c8c2f7bc7730b8b93694b8917"
+        }
+      ],
+      "size": [
+        335,
+        384
+      ],
+      "outputSha256": "87837c1d108cf8de2f236f49a24990c8dfca5f1277b6aabdfb79aaf17024d45f",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/gildedKnight-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/gildedKnight/idle.webp",
+          "sha256": "2750e7d76dd4315de768e1f1f2f4f24c45acc61b0df742757cc6d96be24e9082"
+        }
+      ],
+      "size": [
+        301,
+        344
+      ],
+      "outputSha256": "dbc7b2fae70a46ef59d887a4d582baaedcb63531f520581d5addfb72ea7abf40",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/graveWisp-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/graveWisp/attack-02.webp",
+          "sha256": "c32ac09169db611143fe60036fa8615d3f2e4e4c38effe8f6223bf24e0ead3b4"
+        }
+      ],
+      "size": [
+        314,
+        367
+      ],
+      "outputSha256": "c179d447bfac6dc90c343d089d1186d6751ce745779627f4d7e1f453727e18f1",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/graveWisp-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/graveWisp/idle.webp",
+          "sha256": "e619c7a29dae398b821d85120f6d0d9e6c8c25d4d1dea73825dca2a6aae0bb74"
+        }
+      ],
+      "size": [
+        279,
+        349
+      ],
+      "outputSha256": "f466b45acf1a5e6c2870c413fb9835441fbd198656ea77a42ad10774fc29f9d5",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/huskBrute-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/huskBrute/attack-02.webp",
+          "sha256": "3ee453182bd46cbc703d081cb62cc93556baafd3aab368272d6ba69a63f8016f"
+        }
+      ],
+      "size": [
+        314,
+        299
+      ],
+      "outputSha256": "189f09249d0efb446c478a84c64282a0942cd5ea0c6c9d4d4cde4b21e86d05c8",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/huskBrute-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/huskBrute/idle.webp",
+          "sha256": "385cbc13493e06029b7bf4385934f3258dc8a057c1dd0c78c0d5ef350eb100a2"
+        }
+      ],
+      "size": [
+        297,
+        295
+      ],
+      "outputSha256": "c3564de338bfc7681ff69e8f4d8c68fa97c25f1bc534a0652ac7057d249923f1",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/livingArmor-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/livingArmor/attack-02.webp",
+          "sha256": "e6eeb1a84555f95976c2e7fcc07c9a06973a6627bec45937b32490b4e4e2a832"
+        }
+      ],
+      "size": [
+        339,
+        375
+      ],
+      "outputSha256": "900901a3b1c896a0a4165b617aef2353176189ecf70b6ab554c27cb99f65a293",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/livingArmor-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/livingArmor/idle.webp",
+          "sha256": "4af2cb78e8dacf81c1abd5c3b1575503727451987a522c65c6525faf80ed1657"
+        }
+      ],
+      "size": [
+        300,
+        366
+      ],
+      "outputSha256": "0f5841cfa27254552d3a5f39af94daef194034d7b4297eb331d0dca5cfbd89f2",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/stitchedHound-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/stitchedHound/attack-02.webp",
+          "sha256": "f14a686fa10deda403e3e349e93d98aca4ad246468791bcf4e9ba30893e2ae0c"
+        }
+      ],
+      "size": [
+        343,
+        384
+      ],
+      "outputSha256": "68f3d856b413082a1aeb4b4b2fdd238ca8a05db9f78413c0d59302152759d786",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/stitchedHound-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/stitchedHound/idle.webp",
+          "sha256": "12fc21c34a884469beb277cbef41be92e4ef2132cb1668c91c97cf26ac7b0d42"
+        }
+      ],
+      "size": [
+        329,
+        343
+      ],
+      "outputSha256": "ea354a3f57760ddeca565dc49f2f91721ff9746edae0637ac64e09deed3e7f73",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/stitchedKing-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/stitchedKing/attack-02.webp",
+          "sha256": "950b0293d70c127fcf95500653abf669941dc8ea9aa33e27d3d6182d238528d2"
+        }
+      ],
+      "size": [
+        257,
+        384
+      ],
+      "outputSha256": "05d6e796e96d81dd09c5b140e899ca09cd65f4ad0b86ae89bc0cdca04394c182",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/stitchedKing-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/stitchedKing/idle.webp",
+          "sha256": "0349f9ab38eeb5b6293e96184b7e63642a948d973a630d3a871221c77f271bf2"
+        }
+      ],
+      "size": [
+        237,
+        325
+      ],
+      "outputSha256": "1896a7581d53db6968ffed05932d42bcd4d2b3b8810f640f275de1da0cff1996",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/valkyrieShade-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/valkyrieShade/attack-02.webp",
+          "sha256": "2547aedb213aded4e8710fa16403bbab34b8ecc15cb9a0a7eb51ca7a24b1c3d4"
+        }
+      ],
+      "size": [
+        282,
+        260
+      ],
+      "outputSha256": "83e21b0623c6709f9a900f37770caf50fce1c51a53971f8f88ea8ff2a1904e38",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/valkyrieShade-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/valkyrieShade/idle.webp",
+          "sha256": "57ac694ce4bf08b796ee3fc0d950a0e316ebc788ee49e5ebf12e85600620910e"
+        }
+      ],
+      "size": [
+        248,
+        338
+      ],
+      "outputSha256": "017f985e8793236e23e0e1db09b7bf974c55a1ab73d66ae086ae67aa2ec93694",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wanderingSoldier-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wanderingSoldier/attack-02.webp",
+          "sha256": "d4db48874517fe297871ea07b577934d2bb09ee2d3d668f7c99aa6b9ae4de79f"
+        }
+      ],
+      "size": [
+        230,
+        357
+      ],
+      "outputSha256": "56f8a3acfa2cb7adf218a47c5817463223704921df23ea744628fbd5665de631",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wanderingSoldier-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wanderingSoldier/idle.webp",
+          "sha256": "76c84adb8e26abe9a7dc02e185a1164f103659411ff28383cebe4eb5df9c299e"
+        }
+      ],
+      "size": [
+        235,
+        332
+      ],
+      "outputSha256": "30f8db8b19b9319eb3ca2ce06a16ec5d86654768ea3b404f4510ea29552dba93",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wyrmAspirant-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wyrmAspirant/attack-02.webp",
+          "sha256": "4f6cd548126eb6a6d585564ab240f844748b93629acaac62721332eed5cd1e3b"
+        }
+      ],
+      "size": [
+        327,
+        349
+      ],
+      "outputSha256": "ee606a90cf7e0b93c40f0f7a13f03f174dee327713aac960b414f0be993661f7",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wyrmAspirant-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wyrmAspirant/idle.webp",
+          "sha256": "5891a8cad37a5adda7e647252b9ac56c1db5338988ac1950a6bf2d3e910e99c8"
+        }
+      ],
+      "size": [
+        286,
+        384
+      ],
+      "outputSha256": "25c710520d255f02d865714069fc9169d069d3df6bea5e55bb36a7876d843c9b",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wyrmLord-attack",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wyrmLord/attack-02.webp",
+          "sha256": "b3eab315293476f21e12c04736548fd8436263e0a1a844290a35a49cf9ad3dba"
+        }
+      ],
+      "size": [
+        328,
+        365
+      ],
+      "outputSha256": "4ecd64489223c42006df2da6d70d8522e656593ed353d5b05cdea69dbdb2c8ed",
+      "note": "expansion attack-02, trimmed, at most 384px"
+    },
+    {
+      "kind": "enemies",
+      "resource": "Art/js1815/combat/enemies/wyrmLord-idle",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/enemy-poses/expansion/wyrmLord/idle.webp",
+          "sha256": "0350fcf2752b305c7d9fd846e5e22b30b296aa4fd773947373545930d8f776c5"
+        }
+      ],
+      "size": [
+        308,
+        374
+      ],
+      "outputSha256": "91c9ff2495d870fb5b7bf227d57ca5d85be38fa83ddc948acb5f7083ca9718da",
+      "note": "expansion idle, trimmed, at most 384px"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/button-armoury",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui-components/armoury.webp",
+          "sha256": "8e5f109f7160e6612f0a919246338c3c3f28c15141c11856d077305b72627b23"
+        }
+      ],
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "0fbde0a207404e868d4d2c9dc3e3078f13974223520ea9787d33e4de21ee8f23",
+      "note": "shared run HUD icon button"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/button-menu",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui-components/menu.webp",
+          "sha256": "35227850e0bff4ccc7629b25f3346221c4171aeed47e626a5c4a6ef8d2027cd4"
+        }
+      ],
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "d667da26392228cb79402c6dd1c3b450dd78723a4abfc19b800a6c831c6b8db7",
+      "note": "shared run HUD icon button"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/connector",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/footer/connector.webp",
+          "sha256": "009d2e1db6fe72306b2c13c96b833271ab2a8130026b22d53149120e6bc9fa4f"
+        }
+      ],
+      "size": [
+        512,
+        47
+      ],
+      "outputSha256": "80e078f1f5badefa7e569bc793577f784b125d0befcbdd48e068122e0fd972a6",
+      "note": "footerArt.js footerAssets"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/draw",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/footer/draw.webp",
+          "sha256": "58552257cdbf38503bde765b6ebb496d79c8c7a995fdb196d5204151f07fff1e"
+        }
+      ],
+      "size": [
+        455,
+        512
+      ],
+      "outputSha256": "183f026a25ea44ea9f28be7f406ebfd85cd153d8d3eb4fc460de9b423c78a3dd",
+      "note": "footerArt.js footerAssets"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/orb-diamond",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/stamina-orb/diamond.webp",
+          "sha256": "c4c7cc1d09447032890692b5542949d92f9d71720db52de4d43f01e53ab9be81"
+        }
+      ],
+      "size": [
+        181,
+        256
+      ],
+      "outputSha256": "66088515cf3e8ea0ef85b44bd63a254ee53aa77bf79feec2f854845da329cd46",
+      "note": "stamina orb layer"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/orb-frame",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/stamina-orb/frame.webp",
+          "sha256": "e51c2b0b21e6c4583daf5bd512c01fc53b9a196adda6e175a80098dc26f6a2b2"
+        }
+      ],
+      "size": [
+        256,
+        253
+      ],
+      "outputSha256": "21b8ea27fab3511c33fe7d4f93f660a0cf9cd6578c246742b5a8bb350786464b",
+      "note": "stamina orb layer"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/orb-orb",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/stamina-orb/orb.webp",
+          "sha256": "1d94d1b86fa88f624deba92b3a612ebda0b52cd3423a79275314e1052d465389"
+        }
+      ],
+      "size": [
+        256,
+        255
+      ],
+      "outputSha256": "0148a5ba8a68a6c4f47fd637c1f032546cf1134bf8247d5567251f1662a3898d",
+      "note": "stamina orb layer"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/orb-sigil",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/stamina-orb/sigil.webp",
+          "sha256": "192fa0160d14cdfd2253994aee9ed3126009609a2509b1dc056c21e62c65d75d"
+        }
+      ],
+      "size": [
+        225,
+        256
+      ],
+      "outputSha256": "9bd73b152b9be485145cdbc5ebc5066dd065da8c80017e1a568495376e23cd7a",
+      "note": "stamina orb layer"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/orb-spent",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/stamina-orb/spent.webp",
+          "sha256": "bcd2254399d537cf8792b8b7fd2b92af49512899bd899cfbecc8b4ce7045c24e"
+        }
+      ],
+      "size": [
+        174,
+        256
+      ],
+      "outputSha256": "1f1ea545f984a7215b48dc8014b93b5246f4b3824cf762b08661c6ff3c06ea81",
+      "note": "stamina orb layer"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/plate",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/footer/plate.webp",
+          "sha256": "226d9f5fb60bf6cad2c5733f1444c17d8933fd8dad6f2fa5b0d9e50d17c5a44d"
+        }
+      ],
+      "size": [
+        768,
+        178
+      ],
+      "outputSha256": "7409439d4672c4fc20acd30e2c91e702dc657435699742f372afe745254aeb3a",
+      "note": "footerArt.js footerAssets"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/potions",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/footer/potions.webp",
+          "sha256": "2012afa28781d590dbdb5d4dedc4ead9d8f78e0c1b1350128ed733ce99e38463"
+        }
+      ],
+      "size": [
+        512,
+        239
+      ],
+      "outputSha256": "589f3b2a66db93fb10ff9cdf430752ccfb83f27387fee58173a0fa87111df704",
+      "note": "footerArt.js footerAssets"
+    },
+    {
+      "kind": "footer",
+      "resource": "Art/js1815/combat/footer/spent-cards",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/ui/footer/spent-cards.webp",
+          "sha256": "8335a5d85885c35b05c73a43125766c6e0912a895f53a158ae35845b66b395de"
+        }
+      ],
+      "size": [
+        446,
+        512
+      ],
+      "outputSha256": "79e3123aa8876f65f2c7be09ce56da157e292b25762a5e5bee75be0a8cf15a4d",
+      "note": "footerArt.js footerAssets"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-attack",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "f6a7593e649e437faadb4625ba6ff8b1e064180384c6a411dc5e5d74ccc53406",
+      "note": "ACTION_SIGILS.attack (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-buff",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "899e3221cd0c2e05283809b60f95339200f6e0b345e34c52510ccda925635fba",
+      "note": "ACTION_SIGILS.power (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-cast",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "3e90a8c0425d350f84b0bc99c084f67961dd04d69ad5b3bf24d9e4b80672d4fa",
+      "note": "ACTION_SIGILS.spell (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-counter",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b69084f5883108b9b4f4ece3be5813f7b5a7f34d904e58d85408fb416aa7d1ca",
+      "note": "ACTION_SIGILS.counter (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-defend",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "3f523b01772b949ce2477495531307300d28a5b5186e540ff929c6df5851f204",
+      "note": "ACTION_SIGILS.defend (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-prepare",
+      "sources": [
+        {
+          "path": "src/ui/components/intentIcon.js",
+          "sha256": "da51beeb5339d25598f129431d84059ee7e555485a6b8b9ce843bb99751c8457"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "fdcd16b3d77bb6756618a424dfe665327c49e9af93e1550edeff67900331c9fb",
+      "note": "INTENT_ICON_SHAPES.prepare (hourglass), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-smash",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "54e1ce590203a39229d5800cd6c01ba6f5ae81091b6cb07541b8342b281a9b5c",
+      "note": "ACTION_SIGILS.smash (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/intent-sweep",
+      "sources": [
+        {
+          "path": "src/content/combatSigils.js",
+          "sha256": "94d0288c877a54ed194d48bbe5eddde099dd5a4e3e3004427e3aafce93eb6262"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a428f19ada801dcc58ed308b5831d2ca407da65820d0d28b0427fa19a45025f4",
+      "note": "ACTION_SIGILS.sweep (intentIcon.js), white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-bleed",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/bleed.svg",
+          "sha256": "a3100a87944413abe6f349fd48d0202a0c0fe4b4e037c91214856eed3765e076"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "73fee901fc06093f0fa595352c168c8ec37fb8c44b5fa9e0bbeedbafa26e9f62",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-block",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/block.svg",
+          "sha256": "767f36eaf939de1ca78035a76234392a7f57ba73ef3f3e752856594153847a2c"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "152d2a52a5ce1d2f538881a395b1225b1173758802e284b8e2038d4fa9ddd7ca",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-burn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/burn.svg",
+          "sha256": "67353bc7d4eea1b056c36aa31ccb97ecbf7ded11e311da18915503661c9baea3"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "ac30e3c2fbdfe6750fee8a2414728eb64d68f8fffd6f12185533c099f0a37cdf",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-cinders",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/cinders.svg",
+          "sha256": "48f314012098e4521619477b91a7426c049554c43b6a46cdb663ba48a76ca988"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "8f33cef9c1807341da2c8a5b4f891d301b536489c996e6180a816ebf78eb8ecb",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-dexterity",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/dexterity.svg",
+          "sha256": "9ca48c7d9ecca8ce4f19ed4c599e4eb6b24d90e906e0cc2d944b494840e4973d"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "1aca4eac42ea17d028cbd710e34c872f5214ef5a06a4e23db75477eac9757b70",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-frail",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/frail.svg",
+          "sha256": "d81bb419d932db486d3f07dfe4c5c82de5d29f858e8c1ca66c116126cc1c3c21"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "86243d2573e25df0648810ec216df202edaec8166a3f823a3ed6738458153515",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-frost",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/frost.svg",
+          "sha256": "da642a0b5628d4bc3664805c862a1dac7c255e8e289a422168d6e7b52a3b1e35"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "00d09b84d19da7317721f892944d6805b7dbcea362f491b2d4b9aa63b678cd81",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-health",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/health.svg",
+          "sha256": "b54e961a7e345cc1d1d0dd4d77123ba03ca8b809a6881de18c3caf380e97aac4"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "e53b99c26abc18014ae5987a2848d0d3c08bc3ca416fff34e18d36710c6fa00d",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-insanity",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/insanity.svg",
+          "sha256": "990ecccba7bf7cb12bdf38ffa1fe1f39972e19d2bf2039bbaf4fedc517504142"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "85a32c14ccebb38a0d0f42b41fa17ee53e365b54af0188774534046c1e2d34d5",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-madness",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/madness.svg",
+          "sha256": "646ecd17bbc9b1d652df4516bbd63d367552c127ab99f2d64e8a89e58cdfcdac"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "60d51f7d4b8d4ed122fd79dedaae8bce032640c9a80930a5a49176583b58cbd9",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-mana",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/mana.svg",
+          "sha256": "93cb98e2a9781df669d4721a48d6ff6ee073303bb55c20bf341760255b1e7c19"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b375367c4e30716c05f1433ea05e5cec40f0f5bd755f3a17b1d32a19b265df41",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-poise",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/poise.svg",
+          "sha256": "64e23f18906d20d319bc38fa08ca431c281e75409d007d07bb7ae09ca88608fb"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a9b9fbfd4ed3b21a045a0a9d8f84c5df02c33a61baf5ca10fa0b580ed5da78f5",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-regen",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/regen.svg",
+          "sha256": "0594d16a9914d42e890cedc3060e43eca968058371c9e6ddc0aa6be7e4f537b5"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b6ed57c5f18b7c8fc766760a76cdf98e1dcb43b7dd5360c4d23f9d45a2e66c7a",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-staggered",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/staggered.svg",
+          "sha256": "0dfecb502f809b95f87153e3bde4b22da1c1d3d7acec8001820cb6a7811d25fe"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "83e0c8a0e52077ecf411b4d12bdd6603bb70f0658cbbe008ec1de411286412ab",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-stamina",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/stamina.svg",
+          "sha256": "b0968eda700d314d957fee539b3b6c2cdde1fe38d3cf7be710a09824767b6520"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "497ec305cb4cb9f2654182b959c31ae903f6644c5cc56f58f4d7d002f52bb71b",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-strength",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/strength.svg",
+          "sha256": "f771336312ae349adf6c8eb7b1fd87277a49abb96c56153a8f905b9987fc7253"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "13606cda4a271349475149dbc9d2d4b0b341138ada6ae22366347cf196c95ad2",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-unknown",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/unknown.svg",
+          "sha256": "cc9d5bba660d504797a5fa67acfec401b778b9450d51118cb5d84f2c6568e9a9"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "0f01d5f135b0177b1c58c9c40e30bc9d5bf2209e101f691eff51688dc6c1ff48",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-vulnerable",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/vulnerable.svg",
+          "sha256": "74d685574fdf3c4738f92e8aa67172dd32a4618114639a37cf176ae53cda3463"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "5ef088405d19f6fe40f630ad73008a8f2e5e27f96060edca4d6a26cd11217cb1",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "icons",
+      "resource": "Art/js1815/combat/icons/status-weak",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/weak.svg",
+          "sha256": "07aa2d3f15f5aca26a26832794b00178b8b1590ceec5447de74c435bb9915015"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "c42ba7cdd0ef493337c309f524c956d9877fc94b4a4387ad280cadeaf385cdb6",
+      "note": "player-polish engraved icon, white"
+    },
+    {
+      "kind": "player",
+      "resource": "Art/js1815/combat/player/herald-ready",
+      "sources": [
+        {
+          "path": "assets-display/alternative/card-herald-ready.webp",
+          "sha256": "bff8a93491651ce5f103871170e7e85245eaae6665e01eed6f4024af132e4e29"
+        }
+      ],
+      "size": [
+        133,
+        155
+      ],
+      "outputSha256": "b826dbdc9db1f20392c2632a474d2cb08f41474997356d10231d5810322942e0",
+      "note": "class-cards ready pose, trimmed to alpha"
+    },
+    {
+      "kind": "player",
+      "resource": "Art/js1815/combat/player/reaver-ready",
+      "sources": [
+        {
+          "path": "assets-display/alternative/card-reaver-ready.webp",
+          "sha256": "2bacbe2b5f1ee3fc418a0f6754fefd6d50e8db861b3e1fb764c103c18de88e17"
+        }
+      ],
+      "size": [
+        124,
+        135
+      ],
+      "outputSha256": "6817df4fb485065b112aa8555ea15bf8886f95fc4f32f8d7c35102b674e2efef",
+      "note": "class-cards ready pose, trimmed to alpha"
+    },
+    {
+      "kind": "player",
+      "resource": "Art/js1815/combat/player/rogue-ready",
+      "sources": [
+        {
+          "path": "assets-display/alternative/card-rogue-ready.webp",
+          "sha256": "689dd8d9f6f4b938a55d99ecfca450bdb73bf43df76cf8120a89ac41c8ed3b00"
+        }
+      ],
+      "size": [
+        137,
+        166
+      ],
+      "outputSha256": "38a76f52ef2d0febfe7ed1d567918030a3e836afeb864344c0c7aea896d37b42",
+      "note": "class-cards ready pose, trimmed to alpha"
+    },
+    {
+      "kind": "player",
+      "resource": "Art/js1815/combat/player/starseer-ready",
+      "sources": [
+        {
+          "path": "assets-display/alternative/card-starseer-ready.webp",
+          "sha256": "33f34a784254ca1494d793c3d9c806f63f96620ae002359d82ac1246c3c7972c"
+        }
+      ],
+      "size": [
+        103,
+        160
+      ],
+      "outputSha256": "a162d7f5f8ffda1db0b32c1222fd2faee0e65aa00d04a192a31a28d760b388fd",
+      "note": "class-cards ready pose, trimmed to alpha"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/ancestralHorn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/ancestralHorn.webp",
+          "sha256": "988ead21d095ebaa9dd163b15c7df342996cdaabf18bb366bd016de8fdb30ca6"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b9ead5b51be45e2e16c8f0fcbf73d9d54209223956182850b72ce57a55f74009",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/ashOfRemembrance",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/ashOfRemembrance.webp",
+          "sha256": "7b1bdfbca951a0d5636dfabb0cde5a0cd755ba3127a70ce76416dfdb63eaabb2"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "095be5c752806c42f03e5640b4df47f68592250b81da3e2fc4ae5b44940c224f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/azureSigil",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/azureSigil.webp",
+          "sha256": "ae672ecde6cb58e727b78c2672d2684aa3f99fcb38f79a3cfc51e079567faa95"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "4cd719a8ba84bfc9fa3ab780d5985ecb5be6cbb3334afd9c963a82bc7dac18de",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/blessedDew",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/blessedDew.webp",
+          "sha256": "ee21657d125ac4002666feb37ea73da18047ffb913a5b7a02e42aeec1c636ae5"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "11227216bcd5d0beaf9429fc45883d5f618fab0f17bd24d9ff4c090013502e8f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/blightTouchedIdol",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/blightTouchedIdol.webp",
+          "sha256": "c69d5bed78f2898c2c97e479edf46c71a2b7c9e9d016bd5f0ca3d40dea8f274d"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "2e3018451726ea3ccbd6bdc1c9512c64d30a3d21d51c925ffd8cfd197cfeeda3",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/bloodiedTalisman",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/bloodiedTalisman.webp",
+          "sha256": "8258b0bf540d50c3678f341d72e084399d46ca08c011d50ababd574c419524f9"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "ab08565134e607d3ff7920b32172c39332d3ca97f0658aa12ed54148b1e547f8",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/bloodstainedChalice",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/bloodstainedChalice.webp",
+          "sha256": "84fc116c7802baf25b533f657c218f358d14e64dfa0fd7cc4e0c3417b05d77bd"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "982384b7166ad7ac1c4ed3d83b6d060f74f6c84719a3f44c9d9cccc7546c4599",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/carrionMorsel",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/carrionMorsel.webp",
+          "sha256": "0ad2a5b198eff95d32a729951f5ef52afb2ecf302d8e6ad3b3ec16cb5319fa2b"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "790fd120bd5a03e4827a58a6b5c57818342538c86fffa66fc98712554eb0a93c",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/carrionTalon",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/carrionTalon.webp",
+          "sha256": "48450c2aa09f572f37c28fcbf31e66fdf3fadcc3222ea1e03ee891585aa021bd"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "5b77e6c5c061bfad981c963382d18e65bb43a7d0c17c13c94c7e04df30fa3731",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/cinderOfTheFallen",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/cinderOfTheFallen.webp",
+          "sha256": "06765ecb856ddd71d56132aa3d280e0eb73d033a8bd0b036dd3ab911fb78f554"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "623c7169e0289c3008ec7f790a36f84bea3500e107da8eb4d46d5ce07211488a",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/cinderPouch",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/cinderPouch.webp",
+          "sha256": "8fb87f1383f8ba12ed35c2740cef2970f012e0d80dbb165b9b5e5ace1ebee75f"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "12ecadbcf3e8252889e7822aa21b025084e333d8e61b14eb85f02dfc4c7dd50a",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/crackedLantern",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/crackedLantern.webp",
+          "sha256": "6228e82667c983d9c7c33de21be90a8718bb7052a8752a5bbf3082e5acfaf335"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "7a8b050914040fd9e954de6ec2b6a56e1261285d395c7dde91484b2882d49441",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/crackedTear",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/crackedTear.webp",
+          "sha256": "c7d85bb631baadc999a770e138546064e29d2b6390bcd75de57a521ad50d3514"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "c5b5f426f4b8a34937d8c609bad76537dd007b16fbf91965122c5f53b17a13bc",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/crimsonCovenant",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/crimsonCovenant.webp",
+          "sha256": "4ed179e264e8a5fc0c6f5cae4bba088df04b8d4df850a9777ba7347f8c1d0195"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "00fd62c071559e59fc3d7ccdf0a170802f30b3440564bda9f219ca25a191f18f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/crownOfStitches",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/crownOfStitches.webp",
+          "sha256": "f6941b95e15a78b8bc92e3be4fe419f751d61aeb3414da5a8ef1280d8c0d8fe0"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "2e2ae32c168cf3e3e0aefcf12d14e23d4482f35f97b440df2be097674f01c6e0",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/curedHide",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/curedHide.webp",
+          "sha256": "adbb02dfe4c90dbf38e11c996c72a5bbbd3104c040cae50a50e3b37252ec98f8"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "cf231a73843a577df49b7f3d2ab7ec7f70d19901a071f12650c1ad0127756e00",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/cutpursesCoin",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/cutpursesCoin.webp",
+          "sha256": "d887fb81174a11a93df995110743e61ffc0180826a00195c9df69ddf5c9ae8c0"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "556b9358e16fdb0f2e7956d217b06e2a49842e5284fb0c210b10af7ca3eb865c",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/emberFragment",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/emberFragment.webp",
+          "sha256": "83b85a65ca337e96b06816119413c0ddbfd23cad5d0cdcc156e895a7777499b3"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a93290653478f5f8b7ab09f103040f83ee637a3d25cf56658d417c4a829d7c3a",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/emberIdol",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/emberIdol.webp",
+          "sha256": "a6fc2b7eefe25be738d7da9d2a1fee36a34e0ac1e920890c03656c66c4c64f71"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "3754b855f69b2f0faf9c88d658e76f3be423146c9c5deb758e3f95d5a2559d47",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/emberwickCharm",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/emberwickCharm.webp",
+          "sha256": "712d97a3994cf85001972ebf1513e58100786fd185431707a47f486f00ef9f20"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a3edfd1618ba5c2dcb5c6a24643fcf992e8f0362ec350e99df4c97bdae6418ca",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/fellWardenBrand",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/fellWardenBrand.webp",
+          "sha256": "4be332140303d3c55fb427536b6e30eb974ff15078f716380d32247d4e284e68"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "e44bfba45284d2e08aee9a4e6a66afd806e991214c599ea55e92797d0f2ea1d3",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/feralEye",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/feralEye.webp",
+          "sha256": "8de99ae92140f300c16ebc93f9c5a1813e653a466c53e20f4ffc93ad8e4fa0bf"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "d14e8e24db9838f98d8da03f414bc5c5fc6a0d7633932b593ff7f850792e42df",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/flayersCenser",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/flayersCenser.webp",
+          "sha256": "04ae507caeed723569319e5063bb2ede824e3a562e3e32265f10c555b7405e16"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "ed17d2985cf234a145f4bf0dbfaedd0eb18507138e1763997ffe02eed3259205",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/forsakenMedallion",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/forsakenMedallion.webp",
+          "sha256": "951d0f04bc9e1b452d8f8669a420126ac7d447562b2f6666a88a2c1365214980"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "e4d5a0c3cc4c59b7d1fb95edda81234832b22ff0052587a6676fa16a8c174e56",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/forsakenWarflag",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/forsakenWarflag.webp",
+          "sha256": "aa818027be0ae8345c7433e20f4199f3ae958a8fbd84a55c76baefbf02c990d5"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "27d761e496c8e3a3a6967fe4eb075703aac0ddab212ebdb22f6ff63ed144c683",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/gildedTear",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/gildedTear.webp",
+          "sha256": "b459a058af21958cb53a8e2dc219002330ec793086d5d6c8fcc8d7987c29f1df"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "37f4b322c4a493c8d5a5021aac14e2ab38e9013e087b9f824156b66047d5711c",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/goldboughSapling",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/goldboughSapling.webp",
+          "sha256": "769d5dbd886cc06bb9f0daa6fc0d7f52bfcc91f2d8f52f08ae7ec1de8aadc3ca"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "893f10bb7776d291deff52417912f1b08a8ec6cbccbd52d39543f42d0a15cdfe",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/goldenSprout",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/goldenSprout.webp",
+          "sha256": "d4ddab08afecd0d140efebbfc4d275519b669b5d22a66f84470ea0ea603516dc"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "fb8aa35b5a44c2725b6572fef1fbf12f3938e4ccd324ea72ebf22231e5d60bd3",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/goldFigurine",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/goldFigurine.webp",
+          "sha256": "f60c59b18146bb80118b88dbc234620b2f55f9d2ba8c6c9468be4d3e061d069d"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "8c6abe54edccb9cb3ffab7fff1a4e179571ec4803c2537b2e51e39a1ec78327e",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/goldleafCharm",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/goldleafCharm.webp",
+          "sha256": "ace290ce1a19c8ecbb3543eb3d481a203d821121960f9a77a3fd5b6568b7402b"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "599b3859d37d8b2b508d65f169be2dc06ba82d93121b2fc81bc68f675fa10741",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/gravetendersBell",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/gravetendersBell.webp",
+          "sha256": "461bb8701769a0eae4be62312f32fcddf8941be49cb8d4665721a9b0f325b00a"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "53ddde8f26b84eade65f2e42eab875472c06025d926ee42df49e4110e3ec91e5",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/hollowedHorn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/hollowedHorn.webp",
+          "sha256": "d8c4f53621d094573cf5b83e1dc9ce46af1385b35835a587e3e91a15a2f96820"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a16b27b3afac1f41d8250e1065fdeb78af0416f3ae8d04847d1850fac136fecc",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/howlingStandard",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/howlingStandard.webp",
+          "sha256": "ec502b2b6992b6449b80287928bbb74edef4938d73d07ab3bfd4a108a3803b67"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "22b9afa543abe9a9acff7715a1ca5a319340baede042d8828bcee36d3f4a8136",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/ivoryComb",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/ivoryComb.webp",
+          "sha256": "317c43e14b055940b979999654655d2ba53d5fc0f1653b4cbe9af8750db2c2c7"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "6d6148d1f242b6987689c35ce7c59cbe9267edaa2a09d7f1d9b6d3b55205768d",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/kindlingCharm",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/kindlingCharm.webp",
+          "sha256": "6d340d001f1d79144447049de8208f25ea53e756229f26b8b3245d2b1d650d32"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "93ba6eb916a202a60282a1acddb5acf286c02f24d1aba7cc568807d2bcfa4a97",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/moonlitVial",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/moonlitVial.webp",
+          "sha256": "aa38524ad3fe7673f347d49902ba5276af51b6c65e8fb0550ae9d40c60fd5586"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "8e741734eee72b0fb99fdb29259c1bfc8017b4d6e0c7a769d2cafe078e539434",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/pearlOfSagacity",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/pearlOfSagacity.webp",
+          "sha256": "6a365e7e2662a9f162b4abcb99eaf486734a979c38f063d0aab6db42e8f84f37"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "ea5abf68f76ea1744ef4ef86b3668d83efdc22aa9ac8a9ed2cba12c056a3de95",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/radiantAegis",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/radiantAegis.webp",
+          "sha256": "5b355c4d521969b637e085d8ea3bb9b5b70c8add068a9017f37aabfd98e92a52"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "9b95229c4cbe9ea2924db84eb8ea8e7879ee6277114833d29eece196e80762fd",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/sacrificialKnife",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/sacrificialKnife.webp",
+          "sha256": "6382a568c7d7f84f59095144bf814dbd8df72f96ce1c5604495a29444ffa3d62"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "df062f1c3a6ba5ab0cd95415175cd97e79eb831200e240d6c48d2cf9d1cbab62",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/saltedRelic",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/saltedRelic.webp",
+          "sha256": "a8096a4d495b94d131ede56305339338415379329e22b80c612f43420195111e"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a3d55f665a0209e424a95e241a5bd45b28d37efc6412376156064b0cd02f699f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/sealstoneKey",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/sealstoneKey.webp",
+          "sha256": "9bae295da03e1cbfedcc9cd05eb9a36c9fe27a18bc090f1e2c928a21158e2f62"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "879b41b8f521e4e43248e642f3d74ac205535c25c7b7d55ed9695bb6d6762325",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/sentinelsOath",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/sentinelsOath.webp",
+          "sha256": "3f96d73ccf4d635e363fd84d33d1c5b62f8da3fab9c73cae1756fea7382c3313"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b26dda7c64d67d60e05c237a7e720a6917bc1462089741735c24aab0dec3c9c8",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/starstoneShard",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/starstoneShard.webp",
+          "sha256": "46dca74b4a3de0c216c55474315df60e29a2f78a837bbc6573d3d3aa54e98130"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "858f4c67b238b34897cd6d3624a75e24a0cb2ec788eebf4f445b744ea6d0573f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/titansCinder",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/titansCinder.webp",
+          "sha256": "63c9937bf79553562e3b0b8d38e5268257b2b3134ee9256308c8720955e24d21"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "068613d7bd65697265632877940118aee0988b565fe46f34b1eef3fb596cca29",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/travelersWhetstone",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/travelersWhetstone.webp",
+          "sha256": "a9b674b4bbc7a3e1ad62e1da15c8cee63370eb359597a3c42033541e6c144382"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "f1c61ddc1cb392b3854bf7bd9f2e81358872ff12bb3fd70a0a856f187f948768",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/twinnedArmor",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/twinnedArmor.webp",
+          "sha256": "b94af66373623e7ca5bde09e466b411190494b87d9e7a9aa6b2746c52e6fb736"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "f8158d4d88a16755b3972a5e5fb0608f1b448d5f004d88327543e5e649a5b428",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/vigilantHalo",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/vigilantHalo.webp",
+          "sha256": "bac88022d1df7514120a279965bff352529255a50313d2afc5269d61c963b31c"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "b05eca71b1ebac8552b41126b52b0d690ee46ef4ecb8ac96d74f424bbb4ae88e",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/vowOfVengeance",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/vowOfVengeance.webp",
+          "sha256": "a6508c6c2155c58ea9bba2b8becddf1df589bf4fb8a992daacb6b1190bb7ea34"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "17607c15cd6edc7a7b9b9b50e1893b2d55149b87eccf75db70793b3f5ee49b4e",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/wardenHorn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/wardenHorn.webp",
+          "sha256": "c6224dc9c51bfb7b82058524532faf9f0f6b7268d8c869c162a020f90206d8b4"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "fee8afd524a513fd0f8148b30967c5feee775f517c064d2633ac257782d595e3",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/wardensLantern",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/wardensLantern.webp",
+          "sha256": "2311b8c52203c45aa2c9cfebb3fe7f63604ba87fe3c95a86d5a75f69e05970b6"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "216c3314cd0a6a48667f3286d07324c2c18f9dfd9259394d6b99ee7036ee4523",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/warhorn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/warhorn.webp",
+          "sha256": "c15646286562148791a254721328b7cebc449157538234c9a545473b15846532"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "0c76eeab1b4acb1ff3507f6985ee902a4fdf2ece513582d055eaf9772509b640",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/watchmansBadge",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/watchmansBadge.webp",
+          "sha256": "020835201e60aeb151487226d28e09ccd460973f2785b63917a5647bffb7aa5d"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "a5517792ace015429be161264d053ec521e624cc558a6dc4bb4c151481af74b8",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/whetstoneFragment",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/whetstoneFragment.webp",
+          "sha256": "c3a02c111c8aeec7feb58721c32e38e11970c9ae4086beebaba94d21abc16168"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "864a19d15356dc9be0639a7798700bd626a783cb96da6ecea6403c0e6cf9a41b",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/wrathCoil",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/wrathCoil.webp",
+          "sha256": "1a3bd82bad7c854aafb1ae6c75796940e9aa87ea1721eb250a5b1c134caabb11"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "929920480e0076b7f3347958d2a242665ec39c0661565dd05d5bf01ff7880fbd",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "relics",
+      "resource": "Art/js1815/combat/relics/wyrmHeart",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/relics/wyrmHeart.webp",
+          "sha256": "ab6e9c5ebf22bb5c0c044c89b62fac64fe610d299f9361e0eb2f1b5dac9de4f7"
+        }
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "outputSha256": "7c9d267b600eb209d9594b09ebaa9be47032f1fb9b069b00137e0560d4fda39f",
+      "note": "relic art at HUD size"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/cinder-reach-1",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-far.webp",
+          "sha256": "8b899aada66806d6d04ed27e420a6ba991a2e5e22a9e1b52dc3f0409b1186823"
+        },
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-1-landmark.webp",
+          "sha256": "e7d125fa5e50ff0789503580481a2440ec9c0a551c69d03fa7e81d2edab815dc"
+        },
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-ground.webp",
+          "sha256": "f5c050ed636f4d00a0deb05d2db491c5cf20c4016d7d75650f855b6df2d88bdc"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "e58d26b5aa4df08ebe6fcb29524a78e99229e0428cfc714c9f1fd42514614183",
+      "note": "Basalt Stair: cinder-reach-far + cinder-reach-1-landmark + cinder-reach-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/cinder-reach-3",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-far.webp",
+          "sha256": "8b899aada66806d6d04ed27e420a6ba991a2e5e22a9e1b52dc3f0409b1186823"
+        },
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-3-landmark.webp",
+          "sha256": "39be9a44713cb6458b295a88d7a4632429e04a267d7d2b3295f49d9c79664c20"
+        },
+        {
+          "path": "assets-display/alternative/scene-cinder-reach-ground.webp",
+          "sha256": "f5c050ed636f4d00a0deb05d2db491c5cf20c4016d7d75650f855b6df2d88bdc"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "d4aefe604b991ef6f2e8cf18d136170f96bfbcdda360d74901fdbec05fe3bc51",
+      "note": "Caldera Rim: cinder-reach-far + cinder-reach-3-landmark + cinder-reach-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/hollow-weald-1",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-far.webp",
+          "sha256": "564f6173526e15d9d71fc5fe553170f98581a66a369f7233ff521f47bd359506"
+        },
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-1-landmark.webp",
+          "sha256": "1e9e301b52d4bc5e4e0d93b3d75919749f80123b985186dcadaa30e3904b945e"
+        },
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-ground.webp",
+          "sha256": "195096c8cf8e50e1cd236cd947671496dcc89d2c324487a6058d55912b36f095"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "94e49db203682c9fea046135877329c6e8c99afd8ff20f3a4ff624881a09c4e5",
+      "note": "Lanternwood Crossing: hollow-weald-far + hollow-weald-1-landmark + hollow-weald-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/hollow-weald-3",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-far.webp",
+          "sha256": "564f6173526e15d9d71fc5fe553170f98581a66a369f7233ff521f47bd359506"
+        },
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-3-landmark.webp",
+          "sha256": "0ae65c0b60e1f9163c18cc24d077339576921bd577a3b980375b1fb6e46b3699"
+        },
+        {
+          "path": "assets-display/alternative/scene-hollow-weald-ground.webp",
+          "sha256": "195096c8cf8e50e1cd236cd947671496dcc89d2c324487a6058d55912b36f095"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "907d236e32c4789afffd20b6537781689e60f617619a0ed6b39ac49582544db6",
+      "note": "Roots of the Elder: hollow-weald-far + hollow-weald-3-landmark + hollow-weald-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/pale-marches-1",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-pale-marches-far.webp",
+          "sha256": "e3fe17952d6c830cc87603d888d649f13f0de5e7783a87fd11d38aaac9e1e867"
+        },
+        {
+          "path": "assets-display/alternative/scene-pale-marches-1-landmark.webp",
+          "sha256": "aca8a3b6e68cd2f13ae428f4feb6aef7a8c8243b75377799de000992f683d2d4"
+        },
+        {
+          "path": "assets-display/alternative/scene-pale-marches-ground.webp",
+          "sha256": "203d1e54c339e32551c32bad5999708fa7449f081d5d0b79f2356299863e4cd9"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "5daf5008d3878c4f46946a8a282c103f9dccbc88a23059dc6702e41b9e387927",
+      "note": "Frostgate Pass: pale-marches-far + pale-marches-1-landmark + pale-marches-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    },
+    {
+      "kind": "scenes",
+      "resource": "Art/js1815/combat/scenes/pale-marches-3",
+      "sources": [
+        {
+          "path": "assets-display/alternative/scene-pale-marches-far.webp",
+          "sha256": "e3fe17952d6c830cc87603d888d649f13f0de5e7783a87fd11d38aaac9e1e867"
+        },
+        {
+          "path": "assets-display/alternative/scene-pale-marches-3-landmark.webp",
+          "sha256": "d9d16a53bbc1af03ea982905259580803fb23f9c985b19aeb27d5620e2aa4bde"
+        },
+        {
+          "path": "assets-display/alternative/scene-pale-marches-ground.webp",
+          "sha256": "203d1e54c339e32551c32bad5999708fa7449f081d5d0b79f2356299863e4cd9"
+        }
+      ],
+      "size": [
+        1280,
+        853
+      ],
+      "outputSha256": "bcf0d281a4ac8d9a79684f0f917966f738b19a58fe3cbc65d10a567356f5028a",
+      "note": "Monastery of Silence: pale-marches-far + pale-marches-3-landmark + pale-marches-ground composited at the desktop device geometry (1536x1024), then 1280 wide; ground anchor 0.82"
+    }
+  ]
+}

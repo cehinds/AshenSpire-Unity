@@ -26,6 +26,11 @@ namespace AshenSpire.Presentation
         private static StyleSheet _sheet;
         private static JObject _glyphFonts;
         private static readonly Dictionary<string, Font> Fonts = new Dictionary<string, Font>(StringComparer.Ordinal);
+        // Intent kind → the JS intent sigil (intentIcon.js): block reads as defend, debuff as cast.
+        private static readonly Dictionary<string, string> IntentArt = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["attack"] = "icons/intent-attack", ["block"] = "icons/intent-defend", ["buff"] = "icons/intent-buff", ["debuff"] = "icons/intent-cast",
+        };
 
         /// <summary>Co-op uses the host's per-seat preview; older companions explicitly show base damage.</summary>
         public static EnemyTelegraph FromSnapshot(JObject enemy, JObject hero, JObject balance)
@@ -61,11 +66,23 @@ namespace AshenSpire.Presentation
             foreach (var cls in intent.CssClasses.Split(' ')) if (cls.Length > 0) badge.AddToClassList("telegraph-" + cls);
             badge.AddToClassList("telegraph-severity-" + intent.Severity.ToString().ToLowerInvariant());
             badge.EnableInClassList("telegraph-pending", intent.Pending);
-            if (intent.Kind != "unknown") badge.Add(GlyphLabel(intent.Icon.Glyph, "telegraph-intent-glyph"));
+            // JS 1815 read: the number (big serif, tone colour) with a "Total … HP" line under it,
+            // then the engraved intent icon (Art/js1815/combat/icons); the glyph is the fallback.
+            var art = IntentArt.TryGetValue(intent.Kind, out var path) ? OriginalCombatLayout.Art(path) : null;
+            if (art == null && intent.Kind != "unknown") badge.Add(GlyphLabel(intent.Icon.Glyph, "telegraph-intent-glyph"));
             var value = intent.ValueText.EndsWith(" ⌛", StringComparison.Ordinal) ? intent.ValueText.Substring(0, intent.ValueText.Length - 2) : intent.ValueText;
             if (value.Length == 0) value = OriginalCardText.Humanize(intent.Kind);
-            if (value.Length > 0) badge.Add(Text(value, "telegraph-intent-value"));
-            if (value.Length != intent.ValueText.Length) badge.Add(GlyphLabel("⌛", "telegraph-intent-delay"));
+            var read = new VisualElement { pickingMode = PickingMode.Ignore }; read.AddToClassList("telegraph-intent-read");
+            if (value.Length > 0) read.Add(Text(value, "telegraph-intent-value"));
+            if (intent.Kind == "attack" && intent.TotalDamage != null) read.Add(Text("Total " + intent.TotalDamage + " HP", "telegraph-intent-total"));
+            if (read.childCount > 0) badge.Add(read);
+            if (art != null) { var icon = new Image { image = art, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; icon.AddToClassList("telegraph-intent-icon"); badge.Add(icon); }
+            if (value.Length != intent.ValueText.Length)
+            {
+                var hourglass = OriginalCombatLayout.Art("icons/intent-prepare");
+                if (hourglass != null) { var delay = new Image { image = hourglass, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; delay.AddToClassList("telegraph-intent-delay-icon"); badge.Add(delay); }
+                else badge.Add(GlyphLabel("⌛", "telegraph-intent-delay"));
+            }
             Tooltip(badge, intent.TooltipText);
             return badge;
         }

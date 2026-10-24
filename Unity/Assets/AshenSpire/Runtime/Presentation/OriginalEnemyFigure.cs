@@ -2,6 +2,8 @@
 // WIRING: OriginalRunPanel and OriginalCoopPanel create this image for the target.
 // MODIFY: enemy IDs and Resources paths in GameContent/Unity/Original/enemy-art.json;
 // place replacement PNGs in Resources/Art/Enemies/Painted and run content import.
+// LOOK: the JS 1815 expansion sprites (Art/js1815/combat/enemies/<id>-idle|-attack, trimmed)
+// win when present; an enemy without one keeps its owner/painted art at the same small scale.
 // The build validates every enemy mapping. No combat rules or saved state live here.
 using System;
 using Newtonsoft.Json.Linq;
@@ -15,8 +17,8 @@ namespace AshenSpire.Presentation
         private readonly CombatActorImage _art = new CombatActorImage { scaleMode = ScaleMode.StretchToFill, pickingMode = PickingMode.Ignore };
         private readonly Texture2D _sourceTexture;
         private readonly JArray _bounds;
-        public static OriginalEnemyFigure Create(string enemyId) => new OriginalEnemyFigure(enemyId);
-        private OriginalEnemyFigure(string enemyId)
+        public static OriginalEnemyFigure Create(string enemyId, bool attacking = false) => new OriginalEnemyFigure(enemyId, attacking);
+        private OriginalEnemyFigure(string enemyId, bool attacking)
         {
             if (_paths == null) _paths = (JObject)JObject.Parse(Resources.Load<TextAsset>("Original/enemy-art").text)["enemies"];
             var row = _paths[enemyId] as JObject;
@@ -24,15 +26,17 @@ namespace AshenSpire.Presentation
             if (string.IsNullOrEmpty(resource)) throw new InvalidOperationException("Missing painted enemy mapping: " + enemyId);
             var texture = Resources.Load<Texture2D>(resource);
             if (texture == null) throw new InvalidOperationException("Missing painted enemy texture: " + resource);
-            var ownerArt = Resources.Load<Texture2D>("Art/OwnerAppearance/" + enemyId);
-            if (enemyId == "wanderingSoldier") ownerArt = Resources.Load<Texture2D>("Art/CombatRefresh/wanderingSoldier-hilt-v2") ?? ownerArt;
-            if (ownerArt != null) { texture = ownerArt; _bounds = new JArray(0,0,1,1); }
+            var jsArt = (attacking ? OriginalCombatLayout.Art("enemies/" + enemyId + "-attack") : null) ?? OriginalCombatLayout.Art("enemies/" + enemyId + "-idle");
+            var ownerArt = jsArt != null ? null : Resources.Load<Texture2D>("Art/OwnerAppearance/" + enemyId);
+            if (jsArt == null && enemyId == "wanderingSoldier") ownerArt = Resources.Load<Texture2D>("Art/CombatRefresh/wanderingSoldier-hilt-v2") ?? ownerArt;
+            if (jsArt != null) { texture = jsArt; resource = OriginalCombatLayout.ArtRoot + "enemies/" + jsArt.name; _bounds = new JArray(0,0,1,1); }
+            else if (ownerArt != null) { texture = ownerArt; _bounds = new JArray(0,0,1,1); }
             else _bounds = (JArray)row["bounds"];
             name = "enemy-art-" + enemyId; pickingMode = PickingMode.Ignore;
             AddToClassList("fighter"); style.overflow = Overflow.Hidden;
             _art.image = texture; _art.style.position = Position.Absolute; Add(_art);
             _sourceTexture = texture;
-            if (ownerArt != null) _art.Configure(enemyId);
+            if (jsArt == null && ownerArt != null) _art.Configure(enemyId);
             RegisterCallback<GeometryChangedEvent>(_ => Place());
             var diagnostics = Debug.isDebugBuild || (Uri.TryCreate(UnityEngine.Application.absoluteURL, UriKind.Absolute, out var uri) && (uri.IsLoopback || uri.AbsolutePath.Contains("/dev/")));
             if (diagnostics) Debug.Log("ASHENSPIRE_ENEMY_ART " + new JObject { ["enemyId"] = enemyId, ["resource"] = resource, ["width"] = texture.width, ["height"] = texture.height }.ToString(Newtonsoft.Json.Formatting.None));
