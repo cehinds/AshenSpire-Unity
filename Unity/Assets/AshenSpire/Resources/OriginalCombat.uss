@@ -195,3 +195,5 @@
 .app .combat-screen.owner-mobile #native-end-turn { font-size: 16px; white-space: normal; padding: 0 6px 12px 6px; }
 .combat-screen.owner-mobile .original-combat-actions { width: 120px; }
 .combat-screen.owner-mobile .original-utility-rail { width: 60%; right: 4px; }
+/* Real mana when the pool exceeds the seven decorative pips (CombatChrome). */
+.js-orb-mana { position: absolute; left: 0; right: 0; bottom: -16px; -unity-text-align: middle-center; font-size: 11px; color: #9fc3e8; -unity-font-style: bold; white-space: nowrap; }

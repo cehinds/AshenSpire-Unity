@@ -36,10 +36,14 @@ namespace AshenSpire.Presentation
             orb.Add(OriginalCombatLayout.Icon("footer/orb-orb", "js-orb-gem"));
             orb.Add(OriginalCombatLayout.Label(player["stamina"] + "", "js-orb-value"));
             orb.Add(OriginalCombatLayout.Label("SP", "js-orb-caption"));
-            var maxMana = Mathf.Clamp((int?)player["maxMana"] ?? 0, 0, 7); var mana = (int?)player["mana"] ?? 0;
+            var fullMana = (int?)player["maxMana"] ?? 0; var maxMana = Mathf.Clamp(fullMana, 0, 7); var mana = (int?)player["mana"] ?? 0;
+            // The arc holds seven decorative pips. A larger pool lights them in proportion and prints the real
+            // current/maximum beside the orb, since solo combat shows no other mana number (tooltips do not render).
+            var litPips = fullMana > maxMana ? Mathf.CeilToInt(mana * maxMana / (float)fullMana) : mana;
+            if (fullMana > maxMana) orb.Add(OriginalCombatLayout.Label("MP " + mana + "/" + fullMana, "js-orb-mana"));
             for (var pip = 0; pip < maxMana; pip++)
             {
-                var gem = OriginalCombatLayout.Icon(pip < mana ? "footer/orb-diamond" : "footer/orb-spent", "js-orb-pip");
+                var gem = OriginalCombatLayout.Icon(pip < litPips ? "footer/orb-diamond" : "footer/orb-spent", "js-orb-pip");
                 // Centred over the top of the ring and fanning around it (radius ~2.8 pip widths, ~2 pip heights).
                 var angle = (pip - (maxMana - 1) / 2f) * 24f;
                 gem.style.rotate = new Rotate(new Angle(angle, AngleUnit.Degree));

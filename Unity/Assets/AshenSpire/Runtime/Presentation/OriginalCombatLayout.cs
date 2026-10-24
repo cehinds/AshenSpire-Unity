@@ -165,9 +165,17 @@ namespace AshenSpire.Presentation
                 var top = Math.Min(0, height * horizon - h * SceneHorizon);
                 scene.style.left = (width - w) / 2; scene.style.top = top; scene.style.width = w; scene.style.height = h;
             }
+            // Short portrait fields: the hand rail (drawn in front of the field) would cover the board's lower row,
+            // hiding the player and its Guard/status read. Then every combatant stands on one floor line between
+            // the HUD band and the hand: the player on the left third, the enemies across the rest.
+            var handRail = field.parent?.Q(className: "original-hand-rail");
+            var handTop = handRail != null && handRail.layout.height > 0 ? handRail.worldBound.yMin - field.worldBound.yMin : float.MaxValue;
+            var mobileBoard = FloorGrid.Board(width, height);
+            var compact = mobile && mobileBoard.y + mobileBoard.height / 3 * 2.5f > handTop - 4;
+            var compactFeet = handTop - 6; var compactHeight = Math.Max(24, compactFeet - HudBand - OverheadHeight - 4);
             var grid = field.Q<FloorGrid>();
             grid?.Configure(mobile);
-            if (grid != null) grid.style.display = GridVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (grid != null) grid.style.display = GridVisible && !compact ? DisplayStyle.Flex : DisplayStyle.None;
             var actors = field.Children().Where(e => e.ClassListContains("original-fighter-slot")).ToArray();
             var enemies = actors.Where(e => e.ClassListContains("original-enemy-target")).ToArray();
             var players = actors.Where(e => e.ClassListContains("original-player-slot")).ToArray();
@@ -179,7 +187,13 @@ namespace AshenSpire.Presentation
                 var count = player ? players.Length : enemies.Length;
                 var hound = actor.ClassListContains("owner-hound"); var boss = actor.ClassListContains("owner-colossus");
                 float center, feet, actorHeight;
-                if (mobile)
+                if (compact)
+                {
+                    center = player ? width * (count == 1 ? .17f : .06f + .22f * (index + .5f) / count) : width * (.36f + .60f * (index + .5f) / count);
+                    feet = compactFeet;
+                    actorHeight = Math.Min(height * (player ? .12f : boss ? .16f : hound ? .105f : .115f), compactHeight);
+                }
+                else if (mobile)
                 {
                     // Portrait: the 3x3 tile board. Enemies stand at the back of the top row, the player on the left lower down.
                     var board = FloorGrid.Board(width, height);
@@ -199,7 +213,7 @@ namespace AshenSpire.Presentation
                 }
                 var aspect = player ? actor.Q<OriginalPlayerFigure>()?.OwnerAspect ?? .7f : actor.Q<OriginalEnemyFigure>()?.ArtAspect ?? 1f;
                 var actorWidth = actorHeight * aspect;
-                var spacing = player ? (mobile ? width * .40f : width * .22f) : width * (mobile ? (crowd > 2 ? .9f / crowd : .40f) : crowd > 1 ? .30f / (crowd - 1) * .95f : .26f);
+                var spacing = compact ? width * (player ? .28f : .58f / Math.Max(1, crowd)) : player ? (mobile ? width * .40f : width * .22f) : width * (mobile ? (crowd > 2 ? .9f / crowd : .40f) : crowd > 1 ? .30f / (crowd - 1) * .95f : .26f);
                 var maximumWidth = Math.Min(spacing, mobile ? width * .40f : width * .22f);
                 if (actorWidth > maximumWidth) { actorHeight *= maximumWidth / actorWidth; actorWidth = maximumWidth; }
                 // Both layouts: the opaque HUD band sits over the field top, so enemy intents must start below it.
