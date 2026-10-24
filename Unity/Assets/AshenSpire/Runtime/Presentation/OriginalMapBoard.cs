@@ -189,6 +189,8 @@ namespace AshenSpire.Presentation
                 button.AddToClassList("map-node"); button.EnableInClassList("available", legal); button.EnableInClassList("visited", node.Visited); button.EnableInClassList("current", node.Current); button.EnableInClassList("revealed", node.Revealed); button.EnableInClassList("shrine-lane", node.ShrineLane);
                 button.AddToClassList("room-" + (node.ShownType ?? "event"));
                 button.style.left = (float)bounds.X0; button.style.top = (float)bounds.Y0; button.style.width = (float)bounds.Width; button.style.height = (float)bounds.Height;
+                // Glyph inset: 22% of this node's own size. USS percentage padding would resolve against the map content width instead.
+                var inset = (float)Math.Min(bounds.Width, bounds.Height) * .22f; button.style.paddingLeft = inset; button.style.paddingRight = inset; button.style.paddingTop = inset; button.style.paddingBottom = inset;
                 // JS medallions: a pulsing gold halo ring around each reachable room.
                 if (legal) { var halo = new VisualElement { pickingMode = PickingMode.Ignore }; halo.AddToClassList("map-node-halo"); button.Add(halo); }
                 // JS glyphs are parchment on the dark medallion; rooms out of reach stay muted.
