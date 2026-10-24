@@ -177,3 +177,8 @@
     margin: 0 6px 6px 0; padding: 3px 8px; border-width: 1px; border-color: #c9a227; border-radius: 3px;
     color: #c9a227; font-size: 13px; background-color: rgba(0,0,0,0);
 }
+/* Rules too long even at the readable floor (OriginalCardRulesFit step 4): JS .card-rules-inspect-cue.
+   Hidden on the inspection face, whose details print the complete resolved rules. */
+.published-card-face .published-card-inspect-cue { display: none; margin: 0; padding: 0; color: #654923; -unity-font-style: bold; -unity-text-align: lower-center; text-shadow: 0 1px 0 #f0dfba; }
+.published-card-face .published-card-inspect-cue--shown { display: flex; }
+.inspection-card .published-card-face .published-card-inspect-cue--shown { display: none; }

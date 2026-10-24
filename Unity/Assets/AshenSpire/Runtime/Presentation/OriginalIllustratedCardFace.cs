@@ -35,7 +35,10 @@ namespace AshenSpire.Presentation
         private readonly List<(VisualElement Element, float Size, float Pad)> _marks = new List<(VisualElement, float, float)>();
         private readonly List<Label> _counts = new List<Label>();
         private VisualElement _band, _rail;
-        private Label _bandLabel, _slot;
+        private Label _bandLabel, _slot, _rules, _inspectCue;
+        private string _rulesSource, _baseRules;
+        /// <summary>The escalation step the rules needed at the current size (OriginalCardRulesFit).</summary>
+        public OriginalCardRulesFit.Step RulesStep { get; private set; } = OriginalCardRulesFit.Step.FaceLines;
         private float _lastWidth = -1;
 
         /// <summary>The 898 face (kept for comparison and older callers).</summary>
@@ -135,11 +138,7 @@ namespace AshenSpire.Presentation
                         : binding == "mana" ? (string)cost["mana"] : (string)layer["text"] ?? "";
                     var label = new Label(copy) { tooltip = binding == "rules" ? rules : copy, enableRichText = false };
                     label.AddToClassList("published-card-text"); label.AddToClassList("published-card-text-" + (binding ?? layerId));
-                    if (binding == "rules" && _face != null)
-                    {
-                        var marked = Highlight(copy, baseRules == null ? null : FaceLines(baseRules));
-                        if (marked != null) { label.enableRichText = true; label.text = marked; }
-                    }
+                    if (binding == "rules" && _face != null) { _rules = label; _rulesSource = rules; _baseRules = baseRules; }
                     label.style.whiteSpace = (int?)layer["maxLines"] == 1 ? WhiteSpace.NoWrap : WhiteSpace.Normal;
                     label.style.overflow = Overflow.Hidden;
                     label.style.marginLeft = label.style.marginRight = label.style.marginTop = label.style.marginBottom = 0;
@@ -285,14 +284,7 @@ namespace AshenSpire.Presentation
         }
 
         // The JS face shows short face lines: one clause per line, no "Deal", no full stops.
-        internal static string FaceLines(string rules)
-        {
-            if (string.IsNullOrWhiteSpace(rules)) return "";
-            var lines = Regex.Split(rules.Trim(), @"(?<=[.!?])\s+")
-                .Select(s => Regex.Replace(s.Trim().TrimEnd('.'), @"^Deal (?=\d)", ""))
-                .Where(s => s.Length > 0);
-            return string.Join("\n", lines);
-        }
+        internal static string FaceLines(string rules) => OriginalCardRulesFit.FaceLines(rules);
 
         // Numbers that rose read green and bold, numbers that fell red (.ic-text .val.up/.down).
         internal static string Highlight(string text, string baseText, string up = "#205e2b", string down = "#8d2424")
@@ -352,6 +344,7 @@ namespace AshenSpire.Presentation
             }
             foreach (var text in _texts)
             {
+                if (text.Label == _rules) { FitRules(text.Layer, scale); continue; }
                 var maximum = ((float?)text.Layer["maxFontSize"] ?? (float?)text.Layer["fontSize"] ?? 20) * scale;
                 var minimum = ((float?)text.Layer["minFontSize"] ?? (float?)text.Layer["fontSize"] ?? 20) * scale;
                 var size = maximum;
@@ -368,6 +361,44 @@ namespace AshenSpire.Presentation
                 }
             }
         }
+        // Rules are never silently clipped: face lines, then running prose, then below the
+        // document minimum to a readable floor; past that the face shows an "Inspect card" cue
+        // and card inspection prints the complete resolved rules (OriginalCardRulesFit).
+        private void FitRules(JObject layer, float scale)
+        {
+            var label = _rules;
+            var maximum = ((float?)layer["maxFontSize"] ?? (float?)layer["fontSize"] ?? 20) * scale;
+            var minimum = ((float?)layer["minFontSize"] ?? (float?)layer["fontSize"] ?? 20) * scale;
+            label.enableRichText = false;
+            var plan = OriginalCardRulesFit.Choose(_rulesSource, (float)layer["w"] * scale, (float)layer["h"] * scale, maximum, minimum,
+                OriginalCardRulesFit.FloorFontSize * scale, (copy, size, width) =>
+                {
+                    label.style.fontSize = size;
+                    return label.MeasureTextSize(copy, width, MeasureMode.AtMost, 0, MeasureMode.Undefined).y;
+                });
+            RulesStep = plan.Step;
+            label.style.fontSize = plan.Size; label.text = plan.Text;
+            if (_baseRules != null)
+            {
+                var baseLines = OriginalCardRulesFit.FaceLines(_baseRules);
+                var marked = Highlight(plan.Text, plan.Step == OriginalCardRulesFit.Step.FaceLines ? baseLines : OriginalCardRulesFit.Joined(baseLines));
+                if (marked != null) { label.enableRichText = true; label.text = marked; }
+            }
+            label.EnableInClassList("published-card-rules-overflow", plan.Clipped);
+            if (plan.Clipped && _inspectCue == null)
+            {
+                _inspectCue = new Label("Inspect card") { pickingMode = PickingMode.Ignore, name = "published-card-inspect-cue" };
+                _inspectCue.AddToClassList("published-card-text"); _inspectCue.AddToClassList("published-card-inspect-cue");
+                Add(Place(_inspectCue, new JObject { ["x"] = layer["x"], ["y"] = (float)layer["y"] + (float)layer["h"] - 14, ["w"] = layer["w"], ["h"] = 14 }, "inspect-cue"));
+            }
+            if (_inspectCue != null)
+            {
+                // Shown by USS only outside inspection, whose details print the complete rules.
+                _inspectCue.EnableInClassList("published-card-inspect-cue--shown", plan.Clipped);
+                _inspectCue.style.fontSize = Mathf.Clamp(15.5f * scale, 8, 12);
+            }
+        }
+
         // UI Toolkit has no CSS clip-path. Draw the same convex authored card
         // polygon as a textured mesh, intersected with the artwork's fitted box.
         private sealed class ClippedArtwork : VisualElement

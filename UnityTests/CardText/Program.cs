@@ -151,6 +151,34 @@ Check(OriginalCardRailTags.TypeLabel(shieldBash, cardTypes).ToUpperInvariant() =
     "footer: Shield Bash reads ATTACK with the attack sigil, not the reference's COUNTER");
 Check(OriginalCardRailTags.FooterSigil("curse", hasSigil) == "status" && OriginalCardRailTags.FooterSigil("noSuchType", hasSigil) == "skill", "footer: types without a mark use the generic family sigil");
 Console.WriteLine("Card footers: " + footers + " cards");
+// Rules are never silently clipped (OriginalCardRulesFit): every shipped card's resolved face
+// rules must fit its 1815 parchment at some step, measured conservatively from the bundled
+// rules font (OwnerCormorant, the face's -unity-font). Step 4 relies on card inspection's
+// details, which print the complete rules; those cards are listed.
+var rulesFont = new FontMetrics(Path.Combine(root, "Unity/Assets/AshenSpire/Resources/Fonts/OwnerCormorant.ttf"));
+var rulesLayer = (JObject)railReference["documents"]!["template"]!["layers"]!.First(l => (string?)l["bind"] == "rules")!;
+float rw = (float)rulesLayer["w"]!, rh = (float)rulesLayer["h"]!, rmax = (float)rulesLayer["maxFontSize"]!, rmin = (float)rulesLayer["minFontSize"]!;
+var fitSteps = new SortedDictionary<int, List<string>>();
+foreach (var card in shippedJson["cards"]!.OfType<JObject>())
+{
+    var faceRules = OriginalCardText.Describe(card, shipped, includeRatingBreakdown: false);
+    var plan = OriginalCardRulesFit.Choose(faceRules, rw, rh, rmax, rmin, OriginalCardRulesFit.FloorFontSize, rulesFont.Height);
+    var step = (int)plan.Step;
+    if (!fitSteps.TryGetValue(step, out var ids)) fitSteps[step] = ids = new List<string>();
+    ids.Add((string)card["id"]!);
+    if (plan.Clipped)
+        Check(OriginalCardText.Describe(card, shipped).Contains(faceRules.TrimEnd('.')), card["id"] + " rules: too long for the face, so inspection details print them in full");
+    else
+        Check(rulesFont.Height(plan.Text, plan.Size, rw) <= rh + .5f && plan.Size >= OriginalCardRulesFit.FloorFontSize, card["id"] + " rules: fit at step " + step + " size " + plan.Size.ToString("0.#"));
+    // Nothing is dropped by any step: the shown text keeps every clause's words.
+    foreach (var clause in OriginalCardRulesFit.FaceLines(faceRules).Split('\n'))
+        Check(plan.Text.Contains(clause), card["id"] + " rules: clause '" + clause + "' is kept");
+}
+Check(fitSteps.Values.Sum(v => v.Count) == shippedJson["cards"]!.Count(), "rules: every shipped card resolves to a fit step");
+var defendPlan = OriginalCardRulesFit.Choose("Gain 5 Block.", rw, rh, rmax, rmin, OriginalCardRulesFit.FloorFontSize, rulesFont.Height);
+Check(defendPlan.Step == OriginalCardRulesFit.Step.FaceLines && defendPlan.Size == rmax, "rules: a short card keeps the JS face lines at full size");
+foreach (var (step, ids) in fitSteps)
+    Console.WriteLine("Rules fit step " + step + " (" + (OriginalCardRulesFit.Step)step + "): " + ids.Count + " cards" + (step >= 2 ? " — " + string.Join(", ", ids) : ""));
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);
