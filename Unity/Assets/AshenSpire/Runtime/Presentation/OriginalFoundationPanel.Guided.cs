@@ -46,7 +46,8 @@ namespace AshenSpire.Presentation
                 tab.AddToClassList("creation-rail-item"); tab.EnableInClassList("selected", index == railStep);
                 tab.SetEnabled(index <= 1 || _creation.CanBegin); rail.Add(tab);
             }
-            var body = new VisualElement(); body.AddToClassList("creation-step"); main.Add(body); _target = body;
+            // The step scrolls inside the bounded sheet, so a long step never pushes the footer away.
+            var body = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden }; body.AddToClassList("creation-step"); main.Add(body); _target = body;
             Label(Steps[_step], "heading");
             string Item(string hand) { var id = (string)preview["loadout"]["sets"][hand][0]; return string.IsNullOrEmpty(id) ? "Empty hand" : (string)_catalog.Record("equipment.armaments", id)["name"]; }
             if (_step == 0)

@@ -26,7 +26,10 @@ namespace AshenSpire.Presentation
             var start = Entry("native-new", "Begin the climb", begin); start.AddToClassList("title-new"); menu.Add(start);
             if (history != null) menu.Add(Entry("native-history", "Run history", history));
             menu.Add(Entry("native-profile", "Compendium", collection));
-            menu.Add(Entry("settings", "Settings", settings));
+            var settingsEntry = Entry("settings", "Settings", settings); menu.Add(settingsEntry);
+            // JS title: SETTINGS carries the engraved gold gear.
+            var gear = Resources.Load<Texture2D>("Art/js1815/ui/icon-settings");
+            if (gear != null) { var icon = new Image { image = gear, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; icon.AddToClassList("title-entry-icon"); settingsEntry.Add(icon); }
             menu.Add(Entry("native-coop", "Forsaken together", cooperative));
             Add(Ornament());
             var more = Entry("title-extras", "More", extras); more.AddToClassList("title-more"); Add(more);

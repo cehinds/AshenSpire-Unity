@@ -97,6 +97,7 @@
 .app .original-menu-entry.title-primary { min-height: 62px; font-size: 18px; letter-spacing: 1.5px; color: var(--ash-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); margin: 0 0 8px; }
 .app .original-menu-entry.title-primary:disabled { color: var(--ash-muted); }
 .app .original-menu-entry.title-quick { margin-bottom: 6px; }
+.title-entry-icon { position: absolute; width: 22px; height: 22px; left: 50%; top: 50%; translate: -76px -11px; }
 .app .original-menu-entry.title-more { -unity-font: resource("Fonts/Inter-Regular"); background-image: none; min-height: 36px; font-size: 11px; letter-spacing: 1.8px; color: var(--ash-ink-dim); margin-top: 0; }
 .app .original-menu-entry.title-more:hover, .app .original-menu-entry.title-more:focus { color: var(--ash-gold); }
 .title-menu-grid { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }

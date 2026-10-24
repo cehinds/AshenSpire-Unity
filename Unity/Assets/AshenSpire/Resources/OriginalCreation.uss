@@ -65,7 +65,7 @@
 .app .creation-rail-item.button:disabled { color: var(--ash-muted); opacity: 0.6; }
 .creation-step { flex-grow: 1; flex-shrink: 1; min-height: 0; min-width: 0; padding: 12px 16px; }
 .creation-wide .creation-step { padding: 16px 22px; }
-.creation-step > .heading { font-size: 18px; margin: 0 0 10px; }
+.creation-step .heading { font-size: 18px; margin: 0 0 10px; }
 .creation-step .lead { font-size: 15px; white-space: normal; margin: 8px 0; }
 .creation-step .caption { font-size: 13px; white-space: normal; }
 /* Class rows (JS .as-option.class-pick.cz-class): folio frame, figure, green name, copy. */

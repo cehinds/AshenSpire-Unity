@@ -22,7 +22,7 @@
 /* Focused inspection keeps the fixed-ratio face centered and readable. */
 .app .original-card.card.owner-card.guided-card { align-self: center; }
 .app .creation-wide .original-card.card.owner-card.guided-card { width: 260px; min-width: 260px; max-width: 260px; }
-.creation-card-preview .creation-step > .caption { -unity-text-align: middle-center; }
+.creation-card-preview .creation-step .caption { -unity-text-align: middle-center; }
 .combat-reframed .original-hand-rail { height: 350px; max-height: 44%; }
 /* Combat play / end-turn keep their earlier owner action plates until the combat pass restyles them. */
 .app #native-end-turn { background-image: resource("Art/PlayerComponents/action-ready"); -unity-slice-left: 36; -unity-slice-right: 36; -unity-slice-top: 36; -unity-slice-bottom: 36; -unity-slice-scale: 0.5px; color: #fff0cb; background-color: rgba(0,0,0,0); border-width: 0; border-radius: 0; }
