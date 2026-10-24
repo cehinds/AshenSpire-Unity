@@ -15,7 +15,11 @@ namespace AshenSpire.Presentation
         {
             var body = new VisualElement(); body.AddToClassList("original-card-inspection");
             var face = new OriginalCardView(catalog, card, cost, player, false, null, "card-inspection-face");
-            face.pickingMode = PickingMode.Ignore; face.focusable = false; face.AddToClassList("inspection-card"); body.Add(face);
+            face.pickingMode = PickingMode.Ignore; face.focusable = false; face.AddToClassList("inspection-card");
+            // JS 05-card-zoom: the large face centred on the folio, gold-outlined chips
+            // under it, then the readable explanation (rarity, cost, rules, tag blurbs).
+            var stage = new VisualElement(); stage.AddToClassList("original-card-inspection-stage"); stage.Add(face); body.Add(stage);
+            var chips = new VisualElement(); chips.AddToClassList("original-card-inspection-chips"); body.Add(chips);
             var details = new VisualElement(); details.AddToClassList("original-card-details"); body.Add(details);
             Add(details, OriginalCardText.Humanize((string)card["rarity"] ?? "common") + " · " + OriginalCardText.Humanize((string)card["type"]), "stat");
             Add(details, OriginalCardCostText.Describe(cost), "stat");
@@ -27,9 +31,11 @@ namespace AshenSpire.Presentation
             foreach (var id in ids.Distinct(StringComparer.Ordinal))
             {
                 if (!tags.TryGetValue(id, out var tag)) continue;
+                Add(chips, (string)tag["label"] ?? id, "original-card-chip");
                 Add(details, (string)tag["label"] ?? id, "stat");
                 Add(details, (string)tag["blurb"] ?? "", "caption");
             }
+            Add(chips, OriginalCardText.Humanize((string)card["type"]), "original-card-chip");
             return body;
         }
 

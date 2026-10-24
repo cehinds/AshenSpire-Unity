@@ -5,7 +5,6 @@
 .original-card.card.html-card { padding: 0; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); min-height: 237px; }
 .original-card.card.html-card:hover { background-color: rgba(0,0,0,0); }
 .original-card.card.html-card.selected { border-width: 2px; border-color: #85bd75; background-color: rgba(45,82,44,0.2); }
-.published-card-face { position: relative; width: 100%; height: 237px; min-height: 0; flex-shrink: 0; overflow: visible; }
 .original-card.card.owner-card { padding: 4px; border-width: 1px; border-radius: 4px; border-color: #a68b59; background-color: #201b15; min-height: 237px; }
 .original-card.card.owner-card:hover { border-color: #ead197; background-color: #29231b; }
 .original-card.card.owner-card.selected { border-width: 2px; border-color: #f0d184; background-color: #332b22; }
@@ -116,12 +115,12 @@
 .original-card-grid { flex-direction: row; flex-wrap: wrap; align-items: stretch; }
 .original-card-offer { width: 190px; margin: 0 12px 12px 0; }
 .original-card-offer > .button { white-space: normal; }
-.original-card-inspection { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+.original-card-inspection { flex-direction: column; align-items: center; }
 .original-card.inspection-card { width: 230px; min-width: 230px; padding: 24px 12px 14px; }
 .inspection-card .original-card-name { font-size: 19px; }
 .inspection-card .original-card-art { height: 82px; font-size: 44px; }
 .inspection-card .original-card-description { font-size: 17px; }
-.original-card-details { flex-grow: 1; flex-shrink: 1; min-width: 200px; margin: 12px; }
+.original-card-details { flex-grow: 0; flex-shrink: 1; align-self: stretch; min-width: 200px; margin: 4px 12px 12px; }
 .original-card-browser-tools { flex-direction: row; flex-wrap: wrap; margin: 8px 0; }
 .original-card-browser-tools > * { min-width: 140px; flex-grow: 1; margin: 4px; }
 .original-card-grid > .original-card { min-height: 310px; }
@@ -132,3 +131,49 @@
 .original-card-browser-tools .unity-text-input { background-color: #1d261e; color: #f0e7d5; }
 .original-card-browser-tools .unity-base-popup-field__text { color: #f0e7d5; }
 .original-card.card.card-dragging { opacity: 0.55; border-color: #fff0bd; }
+
+/* JS build-1815 illustrated card (OriginalIllustratedCardFace; JS styles/illustrated-cards.css).
+   The face is image layers on a 360x540 template; the host button draws no box of its own.
+   Typefaces live here: JS uses Georgia. The closest bundled serif is OwnerCormorant; swap
+   the -unity-font below (one place) when a Georgia-like face is bundled. */
+.published-card-face { position: relative; width: 100%; height: 237px; min-height: 0; flex-shrink: 0; overflow: visible; }
+.original-card.card.illustrated-card { padding: 0; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); min-height: 0; }
+.original-card.card.illustrated-card:hover,
+.original-card.card.illustrated-card:focus,
+.original-card.card.illustrated-card.selected { border-width: 0; background-color: rgba(0,0,0,0); }
+/* Unaffordable dims the painted layers (brightness .65) instead of fading the card. */
+.original-card.card.illustrated-card.unaffordable { opacity: 1; }
+.published-card-face .published-card-text { -unity-font: resource("Fonts/OwnerCormorant"); }
+.published-card-face--898 .published-card-text { -unity-font: resource("Fonts/Cinzel-Regular"); }
+.published-card-face .published-card-text-name { -unity-text-outline-width: 1px; -unity-text-outline-color: #100b06; text-shadow: 0 1px 3px #000000; }
+.published-card-face .published-card-text-stamina,
+.published-card-face .published-card-text-mana,
+.published-card-face .published-card-text-action { -unity-text-outline-width: 1px; -unity-text-outline-color: #101508; text-shadow: 0 1px 2px #000000; }
+.published-card-face .published-card-type { -unity-font-style: bold; white-space: nowrap; margin: 0; padding: 0; -unity-text-align: middle-center; text-shadow: 0 1px 1px #080604; }
+.published-card-face .published-card-tag-count {
+    position: absolute; margin: 0; padding: 0 1px; border-width: 1px; border-color: #e8bd78;
+    background-color: #16110e; color: #fff0cc; -unity-font-style: bold; -unity-text-align: middle-center;
+}
+/* Hover/focus: a warm rim (JS drop-shadow #c49b56). Selected: green, blue inside the combat hand. */
+.published-card-face .published-card-glow {
+    display: none; position: absolute; left: 4%; right: 4%; top: 2.5%; bottom: 2.5%;
+    border-width: 1px; border-color: #c49b56; border-radius: 10px;
+}
+.original-card.illustrated-card:hover .published-card-glow,
+.original-card.illustrated-card:focus .published-card-glow { display: flex; }
+.original-card.illustrated-card.selected .published-card-glow { display: flex; border-width: 2px; border-color: #59bd75; }
+.original-hand-cards .original-card.illustrated-card.selected .published-card-glow { border-color: #4f8fff; }
+/* The hand's quick-play key (kit.css .as-keycap.float) on the card's top edge. */
+.published-card-face .published-card-slot {
+    position: absolute; top: -13px; left: 50%; translate: -50% 0; min-width: 20px; height: 18px;
+    margin: 0; padding: 0 4px; border-width: 1px; border-color: #4a4034; border-radius: 3px;
+    background-color: #0d0b08; color: #e8dcc0; font-size: 11px; -unity-font-style: bold; -unity-text-align: middle-center;
+}
+/* Card zoom (JS 05-card-zoom): a ~300px face on the folio, room for the pennant, chips below. */
+.original-card-inspection-stage { align-self: stretch; align-items: center; padding: 32px 24px 8px 32px; }
+.original-card.card.illustrated-card.inspection-card { width: 300px; min-width: 0; max-width: 100%; margin: 0; padding: 0; }
+.original-card-inspection-chips { align-self: stretch; flex-direction: row; flex-wrap: wrap; margin: 4px 12px 8px; }
+.original-card-chip {
+    margin: 0 6px 6px 0; padding: 3px 8px; border-width: 1px; border-color: #c9a227; border-radius: 3px;
+    color: #c9a227; font-size: 13px; background-color: rgba(0,0,0,0);
+}

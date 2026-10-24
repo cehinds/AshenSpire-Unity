@@ -137,12 +137,15 @@ namespace AshenSpire.Presentation
                 (shortage == null ? "" : " " + shortage) +
                 (tagLines.Count == 0 ? "" : "\n" + string.Join("\n", tagLines));
             tooltip = FullText;
-            var illustrated = new OwnerCardFace(card,cost,title,OriginalCardText.Describe(card,catalog,includeRatingBreakdown:false),typeName);
-            if (illustrated != null)
-            {
-                Clear(); AddToClassList("owner-card"); Add(illustrated);
-                if (shortage != null) Add(Text(shortage,"card-shortage","original-card-shortage"));
-            }
+            // FACE: the JS build-1815 illustrated card (OriginalIllustratedCardFace). OwnerCardFace
+            // (the Oct 4 owner reference) remains only as the fallback when that reference is absent.
+            var faceRules = OriginalCardText.Describe(card, catalog, includeRatingBreakdown: false);
+            var face = OriginalIllustratedCardFace.Create(OriginalIllustratedCardFace.Reference1815, card, cost, title, faceRules, typeName,
+                BaseRules(card, catalog), ids.Select(id => (id, metadata.Tags.TryGetValue(id, out var row) ? (string)row["label"] ?? id : id)), shortage != null);
+            VisualElement illustrated = face;
+            if (face == null) illustrated = new OwnerCardFace(card,cost,title,faceRules,typeName);
+            Clear(); AddToClassList(face != null ? "illustrated-card" : "owner-card"); Add(illustrated);
+            if (shortage != null) Add(Text(shortage,"card-shortage","original-card-shortage"));
             // card.hover lift/scale, only inside a hand rail. The lift is drawn by an unnamed,
             // unpickable copy in FeelDriver's overlay, so this control never moves or reorders.
             Ghost = () => { var copy = new OriginalCardView(catalog, card, cost, player, selected, null, "", glyphFont); copy.Art.text = Art.text; copy.Art.style.unityFont = Art.style.unityFont; return copy; };
@@ -199,6 +202,17 @@ namespace AshenSpire.Presentation
             RegisterCallback<DetachFromPanelEvent>(_ => Cancel());
             RegisterCallback<FocusOutEvent>(_ => { if (!dragging) Cancel(); });
             RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Escape && dragging) { Suppress(); Cancel(); e.StopImmediatePropagation(); } }, TrickleDown.TrickleDown);
+        }
+
+        // The same face text without folded attribute bonuses, so the face can mark
+        // the numbers those bonuses raised (JS .ic-text .val.up). Presentation only.
+        private static string BaseRules(JObject card, OriginalContentCatalog catalog)
+        {
+            if (!(card["effects"] is JArray effects) || !effects.OfType<JObject>().Any(e => e["attributeBonus"] != null)) return null;
+            var plain = (JObject)card.DeepClone();
+            foreach (var effect in ((JArray)plain["effects"]).OfType<JObject>()) effect.Remove("attributeBonus");
+            try { return OriginalCardText.Describe(plain, catalog, includeRatingBreakdown: false); }
+            catch (Exception) { return null; }
         }
 
         private static void ApplyGlyphFont(Label label, string glyph)

@@ -1,0 +1,2397 @@
+{
+ "referenceBuild": 1815,
+ "sourceRepository": "cehinds/AshenSpire",
+ "sourceCommit": "0029e160b93243eb437e809cbb0df7ef8824aa14",
+ "sourceDigest": "86d6b73880",
+ "artCache": ".art-cache/hd-assets-v23",
+ "sourceLayoutSha256": "f60586f5293af957ac8b7c1c2f89fd424443c574223efebe30230477a42b0cab",
+ "assets": [
+  {
+   "key": "03b7fd243acf1e45b272",
+   "source": "assets/card-components/95887e9c269a4996cf95.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/95887e9c269a4996cf95.webp",
+   "sourceSha256": "a60070e1cfbedf623ddbc53ac0bf18299d2d3af5207554ce1062d72d287e589b",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/03b7fd243acf1e45b272",
+   "trim": [
+    268,
+    71,
+    497,
+    1402
+   ],
+   "size": [
+    363,
+    1024
+   ],
+   "bytes": 771122,
+   "outputSha256": "7c82857cb62a4b3afbf46d39fe32962c8d763e50ec0111f92403c80ab5d30662",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "2b61a7f0b1728e7584ce",
+   "source": "assets/card-components/1fe4ba7f330c67fca0a6.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/1fe4ba7f330c67fca0a6.webp",
+   "sourceSha256": "53952607084d07847d1492abcd71215ee946ee31393ba312f10b7716170cf673",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/2b61a7f0b1728e7584ce",
+   "trim": [
+    69,
+    102,
+    887,
+    1327
+   ],
+   "size": [
+    684,
+    1024
+   ],
+   "bytes": 322002,
+   "outputSha256": "830579f92109828ff5f8cc78f401a922ad274e895a943a9ceb3b81cfaec36259",
+   "conversion": "interior-cut+downscaled"
+  },
+  {
+   "key": "406eb1f69ce5ebb702a9",
+   "source": "assets/card-components/3b925ecf740669106927.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/3b925ecf740669106927.webp",
+   "sourceSha256": "d92a94ad92a652c9b5d6fc5fe16bf0eea9152d9d241bd328cf59bf1f6297f2ca",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/406eb1f69ce5ebb702a9",
+   "trim": [
+    25,
+    71,
+    1209,
+    1183
+   ],
+   "size": [
+    1024,
+    1002
+   ],
+   "bytes": 685273,
+   "outputSha256": "69db9bf0c293a04dff13dbc2c6f99e4013623d08d069d6dbfd8268b70505f8fc",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "4db0b44acfc07e9c9834",
+   "source": "assets/card-components/f31ac0a1985194c9aa76.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/f31ac0a1985194c9aa76.webp",
+   "sourceSha256": "6abe2d461710fb35a19676408c27b9e38a1f38c589f3bf23ec73e70648ff06de",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/4db0b44acfc07e9c9834",
+   "trim": [
+    78,
+    2,
+    1152,
+    1226
+   ],
+   "size": [
+    962,
+    1024
+   ],
+   "bytes": 1185266,
+   "outputSha256": "971c9059cb386753622a45b53c1b763f58167871877fd7e6812726941795de0e",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "6de2ffb75f96f5a368a7",
+   "source": "assets/card-components/1fe4ba7f330c67fca0a6.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/1fe4ba7f330c67fca0a6.webp",
+   "sourceSha256": "53952607084d07847d1492abcd71215ee946ee31393ba312f10b7716170cf673",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/6de2ffb75f96f5a368a7",
+   "trim": [
+    69,
+    102,
+    887,
+    1327
+   ],
+   "size": [
+    684,
+    1024
+   ],
+   "bytes": 1441556,
+   "outputSha256": "9f7b96a490058c6fb2815f3758fecfef0bd58d18678165901b177705b1c15a1a",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "90e7bf4a4b9e49a52b0b",
+   "source": "assets/card-components/36cda4cba048ed38b0c9.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/36cda4cba048ed38b0c9.webp",
+   "sourceSha256": "b387531a254dc1c23298789f47420dcff640261ea6da4bfff3715cb5eef60af3",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/90e7bf4a4b9e49a52b0b",
+   "trim": [
+    73,
+    21,
+    1137,
+    1161
+   ],
+   "size": [
+    1003,
+    1024
+   ],
+   "bytes": 625523,
+   "outputSha256": "c7ba7bca2871e9e7b40311f0387fbd6150fcf4119903addeaad08fe34916224a",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "art-00926959ac083e89",
+   "source": "assets-display/card-cutouts/O.background.1.png",
+   "sourcePath": "rendered/art-00926959ac083e89.png",
+   "sourceSha256": "1a0600645de52e3271c68f11bd9f2e97e0bd7830bcd02c81f45f8dbc88e66960",
+   "renderedHtmlSha256": "4f94bd17062e048320eaaa6e3ad183e392ab1179f59527d1e5cf2e9e82bdf249",
+   "resource": "Art/js1815/cards/art-00926959ac083e89",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 111137,
+   "outputSha256": "51755ceb62d1fce2687db4d14771a9ba35d51e6176964584206521b481853457",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-00c86762355f5c63",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-00c86762355f5c63.png",
+   "sourceSha256": "3bb2bdd27ff3aa86c081b6d611e9a2bdbd3ee80f25d32c458eb5c9467732b51f",
+   "renderedHtmlSha256": "befc69f18c079bd11137392f476da54095a10c4dab8e33f2fe0c950e081f0773",
+   "resource": "Art/js1815/cards/art-00c86762355f5c63",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 170498,
+   "outputSha256": "d0c7e39f3c7d42d71f4c1d573b474b797e9dfc6636766da51f4f156859f73c57",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-014f76011690526a",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-014f76011690526a.png",
+   "sourceSha256": "8d3f635215973b6aba1c5c34526ba3fb84b6284d65a9e009256dd21b6921d5af",
+   "renderedHtmlSha256": "4cf6ba11d72482ae217785c6859648c5ae09f22232b5790a47105f6b1a6758be",
+   "resource": "Art/js1815/cards/art-014f76011690526a",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169198,
+   "outputSha256": "0fb23044b0cdd46eca9d8bb9f34c63c84e806b37143cc8e72e58ba8e6b7c81b0",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-01b9a427f592b1ff",
+   "source": "assets-display/card-cutouts/O.background.1.png",
+   "sourcePath": "rendered/art-01b9a427f592b1ff.png",
+   "sourceSha256": "cf56b257f4b5e4dc7a6e40f5fa4724a5745c7bfe600e412c7c209005c0d906e0",
+   "renderedHtmlSha256": "65aa1873f7069431ecc0a723ebf5fd9560bb0def0f1e9494998c6f4ca5f6ea1a",
+   "resource": "Art/js1815/cards/art-01b9a427f592b1ff",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 110045,
+   "outputSha256": "b2289ea5b14534766be913dcdbbcee8171a3df2925351131dcc1e56b51460637",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-038e0af7857353b6",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-038e0af7857353b6.png",
+   "sourceSha256": "6dbf8fe9e838dd9b2cef3af9cc1cde46be12250bdadaa615d2cea4002697ab1a",
+   "renderedHtmlSha256": "ef78a518df8dd11d0b637a6380373a97c2e836a5904f654a81c44874e402c995",
+   "resource": "Art/js1815/cards/art-038e0af7857353b6",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166052,
+   "outputSha256": "25bd328fcbc8fb15df19394c7b76d82eacbdc1a36c74ee86c70a3592522f828c",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-0863db31c7be822b",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-0863db31c7be822b.png",
+   "sourceSha256": "aeee82512a176ea6ce487d6417fce34a71518236c3123b91d582b84671f56069",
+   "renderedHtmlSha256": "4d9160acf783c02d8a2f078f79efacc35af1c6c3a3b4f8d670a22e1d5a489a04",
+   "resource": "Art/js1815/cards/art-0863db31c7be822b",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 130559,
+   "outputSha256": "d504661b2aab08f054291c06b300fdbc56b2ceb4655c516ab2d7e566c429264a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-0947b413e1b89241",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-0947b413e1b89241.png",
+   "sourceSha256": "b0b20c2252ef3509dd5c67bbf1c7280e0bfcd875d1ce0bd6d471f4bec17de85b",
+   "renderedHtmlSha256": "4931a4c2890545b2caf16f4ac1aa98350b5b6bde868a35f700bc2dd345474ad7",
+   "resource": "Art/js1815/cards/art-0947b413e1b89241",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 157139,
+   "outputSha256": "b8543aa4501788aa12c48bab96fa4b8bf86714586b4add88f7f1d067b7b8f45b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-09b7a89732a580e4",
+   "source": "assets/cards/extended/card-sanguinePactCard-512.webp",
+   "sourcePath": "rendered/art-09b7a89732a580e4.png",
+   "sourceSha256": "d262e112feeb49ff39d6e4e8a71ad11525cdead199fb496b29631dafa7fc0392",
+   "renderedHtmlSha256": "3461612e94470c0fd6bf90d4f22db39a7a68c38efdce1f348fafc713735b0c0a",
+   "resource": "Art/js1815/cards/art-09b7a89732a580e4",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 232540,
+   "outputSha256": "4f7dc8b1ab0045e082eec6dda5fad56d41809fca53db24170eae20d1bbd6a011",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-0bc7ac90f0ae88e9",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-0bc7ac90f0ae88e9.png",
+   "sourceSha256": "4c085b0930d3fbb2b1d3e8619faba6bf4112a28a196840b076603b616cce3645",
+   "renderedHtmlSha256": "c08ef2229c2eac107b0bf175fa7a2e3979676107bb7c43e4af5a4fe3336908f4",
+   "resource": "Art/js1815/cards/art-0bc7ac90f0ae88e9",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 123909,
+   "outputSha256": "6d8425bec5a6ac66080b30e7b2560c5766cc61a4d7151f81c5c92523c772b245",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-0d01206ea9cf98c0",
+   "source": "assets/cards/library/magical-counter-05-512.webp",
+   "sourcePath": "rendered/art-0d01206ea9cf98c0.png",
+   "sourceSha256": "65fdc7947440497e59b5e8baeb6c3e78c1ca7181e01f570e6ca84617a8a020db",
+   "renderedHtmlSha256": "46873d2025dd3444f31bdb6e137a982e8aec5fb6fbada502358b5e645a6bfab6",
+   "resource": "Art/js1815/cards/art-0d01206ea9cf98c0",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 179775,
+   "outputSha256": "47104a88a1674a8ad8c6d143e223038728ad254fe7256a0dda908767a8ca527f",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-106e99a1bf6e0ebd",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-106e99a1bf6e0ebd.png",
+   "sourceSha256": "23bc31a29d0da59bd826723c4ac83b4aa78e6a2aebc2a836e2f61b1366aef404",
+   "renderedHtmlSha256": "ec32a46b16ae02b85d9e69e464e0ed6174f812938b23d5f8b6a1905e5eb06d05",
+   "resource": "Art/js1815/cards/art-106e99a1bf6e0ebd",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 157594,
+   "outputSha256": "057d38c9372693894748a817063ee0048e8bb52cf8747339d5dd1f35e3c3e022",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-12b5a6f1d794ba36",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-12b5a6f1d794ba36.png",
+   "sourceSha256": "67071f3474ebd73e6180b2473db63e6c63870cf31c7dd4ff81fcb4120d8b0db8",
+   "renderedHtmlSha256": "4a6a7790ad1998617e780dbd40f3d24a2f1afa870f1c8857835d6216295014a5",
+   "resource": "Art/js1815/cards/art-12b5a6f1d794ba36",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 157180,
+   "outputSha256": "959200953ecc848c44ae339ccd857348060a2040e9701fd826bbb62d33debe2e",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-130a0d82220618e3",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-130a0d82220618e3.png",
+   "sourceSha256": "479015cda13c618a00602adb8a62a73aee71aa389da2d81a3815f36a910ec842",
+   "renderedHtmlSha256": "a0cb75306637b7c478e708d9e4a1371c2897f7b627a726b72678d220d7ffd7ed",
+   "resource": "Art/js1815/cards/art-130a0d82220618e3",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167520,
+   "outputSha256": "fd0594769dc3285ed5e2bf3873bebfd18168a5710e33c4e200bdf73d3e648831",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-1425800cfe4ae127",
+   "source": "assets/cards/library/physical-evade-04-512.webp",
+   "sourcePath": "rendered/art-1425800cfe4ae127.png",
+   "sourceSha256": "4f2a4635103160183ea643d042d595296811e17f05c155e6ab2371c2394d55e6",
+   "renderedHtmlSha256": "6e976b9cb5a2ca196aa3a30080c4c276476a342c39a5e5a1e9db2d8af66a306f",
+   "resource": "Art/js1815/cards/art-1425800cfe4ae127",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 138399,
+   "outputSha256": "9c7b9058c9524bd17e7174bc5b28ba1a121f530ba58861c506513b97764e10d0",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-16f345d124c14f6e",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-16f345d124c14f6e.png",
+   "sourceSha256": "6dbf8fe9e838dd9b2cef3af9cc1cde46be12250bdadaa615d2cea4002697ab1a",
+   "renderedHtmlSha256": "f3a181a0ab084340c361d8c32196cb795e1297df5683c7213b22d7e140c1d5f3",
+   "resource": "Art/js1815/cards/art-16f345d124c14f6e",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166052,
+   "outputSha256": "25bd328fcbc8fb15df19394c7b76d82eacbdc1a36c74ee86c70a3592522f828c",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-239cf97af8ec3981",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-239cf97af8ec3981.png",
+   "sourceSha256": "816a445cb55da9e106d9ecc01b1dfaf7e3c528a6df5d225bcfee82287bb0a9e7",
+   "renderedHtmlSha256": "ccf77ca0b8365514a23b25ff07c6e9758992206cf5e043bcef71f4decc4f68ae",
+   "resource": "Art/js1815/cards/art-239cf97af8ec3981",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166180,
+   "outputSha256": "6d6000402b36914b72b409cdd4b420579e3738d60dc23d8495d5a81f78cec26a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-265f70a419b0e8e3",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-265f70a419b0e8e3.png",
+   "sourceSha256": "368354a9b7b597f65d1ac559bcd1ad25ab66726bc1283d6b213fbbad019701b1",
+   "renderedHtmlSha256": "e451991dcaa984496d5748b08728cfb11933aeb5ebca48248a0e5fb1d48e0907",
+   "resource": "Art/js1815/cards/art-265f70a419b0e8e3",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 106721,
+   "outputSha256": "d55ec1d4576619288c435f5453ce2740eb50f2137d4aa5873dca82a3d517c8c3",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-26a5069a09b9833d",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-26a5069a09b9833d.png",
+   "sourceSha256": "bf1a9916b3e7a186d762e09638838a802f5cbec33dd46cde20836b117cd8585e",
+   "renderedHtmlSha256": "7b2fab56dad0d84aa82d19fba6d58cd9fe08df21043445c0a69b2991b79f94ce",
+   "resource": "Art/js1815/cards/art-26a5069a09b9833d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169265,
+   "outputSha256": "0ea3f4b7477be99f0fcf59e1ba7901d19ce40b4647834f802280e737661819c5",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-27fea421661c71d3",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-27fea421661c71d3.png",
+   "sourceSha256": "dfc445fd38b42ef780216f0b5a486363798243879618475955ab820a6cc061c4",
+   "renderedHtmlSha256": "e15836725cb8eeb1ea6341449c0e50fc64e502a906a0f6cb15741e0988c09a88",
+   "resource": "Art/js1815/cards/art-27fea421661c71d3",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 164114,
+   "outputSha256": "a70d66f4bffd15c33eae00ebf3d3ab7667d2c11960b927251ec98ed65277737a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-2803374cde060953",
+   "source": "assets/cards/extended/card-wound-512.webp",
+   "sourcePath": "rendered/art-2803374cde060953.png",
+   "sourceSha256": "95bcc2449984aee2d1d8ca3d8c0d024533501527cafeac0214e5992ec09051c0",
+   "renderedHtmlSha256": "f469d3adf7d51e501976b57fdd0f8abce0e0640ff7a7cc173a957613990f2b46",
+   "resource": "Art/js1815/cards/art-2803374cde060953",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 238898,
+   "outputSha256": "45b3771dba5c312de02315478fbb4d9de3f8f0fa4d43d3ad482e00270ecdbef8",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-288aacc32f037a77",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-288aacc32f037a77.png",
+   "sourceSha256": "f1c9ca0240e4ffeb9805a5f7922181e220088bef95fff8f350b04ebc4344ed9a",
+   "renderedHtmlSha256": "cce2770df390de946a87c23483123b4f062b84f75660444db55a2a49f4ddb579",
+   "resource": "Art/js1815/cards/art-288aacc32f037a77",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166975,
+   "outputSha256": "6b5fe589a090bd8050588cc9813bcf1554f49b20f79d959969200d3f292b052d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-28973f95b43dec2d",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-28973f95b43dec2d.png",
+   "sourceSha256": "4710a2a3fbee0b94d62521e6fa2ac3f6acdc3826d2b351152d6bb6aec2222f5a",
+   "renderedHtmlSha256": "825cf1816a734eaedc22b19b0f5d5ec79ca9f7b2b718bd94e23e2f894153a641",
+   "resource": "Art/js1815/cards/art-28973f95b43dec2d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 102583,
+   "outputSha256": "7d28461cfa733624d2d633e01f0627e8cf9bf2ced69a90619433aec267f3f866",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-2f4a0ed9f06043f6",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-2f4a0ed9f06043f6.png",
+   "sourceSha256": "5e32f2b4e0a080b905c9f9eac04abf3da2e4005a428de840df2591c6112295fd",
+   "renderedHtmlSha256": "2460eed20b27e09cfa412cb069ddde37676c06b8329fd987b79e34d970511e8b",
+   "resource": "Art/js1815/cards/art-2f4a0ed9f06043f6",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 160483,
+   "outputSha256": "39082c406b455950a509cd943af8b3f027853cec882f00e8aaa910c9bc42015e",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-2f577f263c943294",
+   "source": "assets/cards/library/physical-evade-01-512.webp",
+   "sourcePath": "rendered/art-2f577f263c943294.png",
+   "sourceSha256": "79ee4af54e8d8c35a03d8f8e4ef56262333869d47669559dce42885d41c60341",
+   "renderedHtmlSha256": "462ef2117a38808e8fe045dabe3323c7b9d111d118d6dd190ff975234fcdcc16",
+   "resource": "Art/js1815/cards/art-2f577f263c943294",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 128185,
+   "outputSha256": "e0c4ff4c99cddf1024ba6b58e6af98282f83b72b5755bab2b30ca66adbb35fd5",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-30b7dbf9f0372a85",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-30b7dbf9f0372a85.png",
+   "sourceSha256": "479015cda13c618a00602adb8a62a73aee71aa389da2d81a3815f36a910ec842",
+   "renderedHtmlSha256": "4a8376e2968d6811189113d65e336b74ae72b8442c9b7340bb45510f9c1ea857",
+   "resource": "Art/js1815/cards/art-30b7dbf9f0372a85",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167520,
+   "outputSha256": "fd0594769dc3285ed5e2bf3873bebfd18168a5710e33c4e200bdf73d3e648831",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-331de656925f08a1",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-331de656925f08a1.png",
+   "sourceSha256": "8f089ab31af827ce383bc28f16258a05f27909de631fe40dcb07fed0049a36aa",
+   "renderedHtmlSha256": "d03105f8f562586533b7fb57499b6b4fab60b6d90babc4eb82e7679d49fd7ebe",
+   "resource": "Art/js1815/cards/art-331de656925f08a1",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169841,
+   "outputSha256": "fcdd0c14b2a157a48283dcc7fb0f639f00f1d3e0cf64189782585fb099922765",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-34589aa20103fefb",
+   "source": "assets/cards/extended/card-rallyingBanner-512.webp",
+   "sourcePath": "rendered/art-34589aa20103fefb.png",
+   "sourceSha256": "f98bf1e3ec2b81957ee3650fe2b16d1c10aea45b01776eb7498b60a6d23a92d2",
+   "renderedHtmlSha256": "b15147a1e07a5821cb4821bf90075f616bd263f2f138926731e8af2b5808ef35",
+   "resource": "Art/js1815/cards/art-34589aa20103fefb",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 248800,
+   "outputSha256": "6fb58f7af82616158f30b4ca8f82207700ecefc5f2e3d4ed986aabb77395a593",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-36b92a9ad81fe071",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-36b92a9ad81fe071.png",
+   "sourceSha256": "f57363463a3f23bf5b95d41d5739ceb0fc7bb1792613ec85efa94063d2acbedb",
+   "renderedHtmlSha256": "7377e950ff9261277fee43d7a804471dfddb36d15256f5e48f1e6547c4ca4616",
+   "resource": "Art/js1815/cards/art-36b92a9ad81fe071",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 162974,
+   "outputSha256": "780d280296ca47c920a06491e08338ffa094d865282e909452aec223963c396c",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-37582a060ce2a015",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-37582a060ce2a015.png",
+   "sourceSha256": "59eb437f0bdafeac59772f6825fb0e7d95f54f097918f1c18495dbffe5a418c3",
+   "renderedHtmlSha256": "b8c90035d3b00efbe391c66b43c33274704bfe275b6a474a020c588c312d489e",
+   "resource": "Art/js1815/cards/art-37582a060ce2a015",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 153210,
+   "outputSha256": "50b7a58bd84bddb95a8df4398da6c0b7ce7539494c4fed10bb0ac92622082c92",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-3829818cd965d693",
+   "source": "assets/cards/library/physical-evade-05-512.webp",
+   "sourcePath": "rendered/art-3829818cd965d693.png",
+   "sourceSha256": "59f4330451269b7da5e253a9911c153449678bdf2c0adcaa6e7c33d44ade7b01",
+   "renderedHtmlSha256": "47be22596bd3885a3a9249349539fa93f0fddd7a4f2c7c06d59080c744c74451",
+   "resource": "Art/js1815/cards/art-3829818cd965d693",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 137963,
+   "outputSha256": "c43a6f808d689ca3de8e59549aa66dfc4f37739e12a99741c27d83da2c59afb2",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-384a95d706a12773",
+   "source": "assets-display/card-cutouts/O.background.1.png",
+   "sourcePath": "rendered/art-384a95d706a12773.png",
+   "sourceSha256": "886f9626e8c172850a5acef76d2feed1c1236b79febd2ea5440fdd43e9693e66",
+   "renderedHtmlSha256": "7e160938555a51590b39931e5f14097522946d01b10220a12dde64594888dccb",
+   "resource": "Art/js1815/cards/art-384a95d706a12773",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 110884,
+   "outputSha256": "05b58062caa152f1a1cf4af92418afa96d0de89fce7b5580c08f07d12c500566",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-38e3cf80c9b8fc39",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-38e3cf80c9b8fc39.png",
+   "sourceSha256": "d8ade8ddb0f44448582cf4c278f9ddd27556dcfb8dfaba974b9e070da18e30c5",
+   "renderedHtmlSha256": "e6b420b8bb705d36ccc80f92fae5866e9d5ea8df6de5673ade6d40893f700cd4",
+   "resource": "Art/js1815/cards/art-38e3cf80c9b8fc39",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169058,
+   "outputSha256": "7d0514ac47f737a172f842ad7a4fb172922fc22577fa02ee7713cd59d820d6b5",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-38e7f81f64167167",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-38e7f81f64167167.png",
+   "sourceSha256": "01fa3a9d8a000278c13e2147fa1f940989989e59f5d47239c38d6226810ad466",
+   "renderedHtmlSha256": "40e014606862afd8a8ca7a66e288dad72d4ade312a76408d0662ac40954884f8",
+   "resource": "Art/js1815/cards/art-38e7f81f64167167",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 102385,
+   "outputSha256": "f9c0149838e7706f3375cb16aec4063839d32cb794ae1af08641969823cc46a1",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-39191daf8ce66628",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-39191daf8ce66628.png",
+   "sourceSha256": "f49986b63c012ffc0056e340ae41ec6ae232fddf402b1413510cf3a01a1a65f3",
+   "renderedHtmlSha256": "05a32969a4f290ed11dfe41a023c49f417d1394f81e339bf83d94ab107e043d2",
+   "resource": "Art/js1815/cards/art-39191daf8ce66628",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 171340,
+   "outputSha256": "f472bc7ca11e278349f6bdb8a17fa19012b56a647cbc8f87ccd7dd80bed49d06",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-3bc12974eab6bcb8",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-3bc12974eab6bcb8.png",
+   "sourceSha256": "0aa9c99c95bd74f2da15ad2689f8d10039015c2f6cb51125751808c6f7dea81a",
+   "renderedHtmlSha256": "78f66672b2388b72de91b032cc6d66b7c37b5e7256f124b4f9a803e4f8c1f9f5",
+   "resource": "Art/js1815/cards/art-3bc12974eab6bcb8",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 163576,
+   "outputSha256": "44636c110b74c4b81282f09c1670ba153f3d075cdbae8143dc2cd37f8ce2ebbf",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-4071adc279c2481a",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-4071adc279c2481a.png",
+   "sourceSha256": "002eadc6a2a77df2329ee839cfaa1914a5b95c8698fecf2fd0e0058a5d51076b",
+   "renderedHtmlSha256": "3f5619f1ae96a40be89a6fe991f59942e85b98205c623eabd00613fbc7a8b18c",
+   "resource": "Art/js1815/cards/art-4071adc279c2481a",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 154976,
+   "outputSha256": "59b6705282b55f56384bba12f1fbdc58a0cc5589848f55b3e3570bb4ee91f9a6",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-4d43168149ffc076",
+   "source": "assets/cards/extended/card-disorient-512.webp",
+   "sourcePath": "rendered/art-4d43168149ffc076.png",
+   "sourceSha256": "3064fd58536337fb46c2085845ecefd5b64e0d441d29a3f621615a8411c2290e",
+   "renderedHtmlSha256": "58eafb5c9203e9936a2718003f14fb027721461c79ef313613de8955ca14fb09",
+   "resource": "Art/js1815/cards/art-4d43168149ffc076",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 261153,
+   "outputSha256": "3ab4f1a9d891dcc7c500be5b0c6cfafff8d1a24a541b925d6692699523293b14",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-4d772e4b0bc8b2c1",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-4d772e4b0bc8b2c1.png",
+   "sourceSha256": "d0722a3bbe72ddc0d170e410a7ba04419c7d01e65f8a37d41c5d4e4ec54481ac",
+   "renderedHtmlSha256": "397454a5ea8fb80b265e2be77733747712ac8a913d408a543dd1e6c8bf3fd454",
+   "resource": "Art/js1815/cards/art-4d772e4b0bc8b2c1",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 151253,
+   "outputSha256": "a292a397bc6ee5118b51c3b66e1371c9cd647f69e32bf3c594ec446856f87fc4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-52b48bce2e80ffcb",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-52b48bce2e80ffcb.png",
+   "sourceSha256": "4f83b2948fcd372533941f668d4208783d05be58619f2cafef1cf2c8e9ae0c27",
+   "renderedHtmlSha256": "323ac186633c3e1c2bd3da627984dda583f611426ea5f320043d2020cc585519",
+   "resource": "Art/js1815/cards/art-52b48bce2e80ffcb",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 159085,
+   "outputSha256": "942474539c7145fd0d4b801fa1bcf1a7f1f3da860bc7be6b1c8fe5099c5d2152",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-52c3fd086f292e94",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-52c3fd086f292e94.png",
+   "sourceSha256": "db799feeb794f459d7b85da05299b078ea628d1e86ea8b1bf9479754a7274bee",
+   "renderedHtmlSha256": "d75ebe3d4031e10013efc48353626e655b8101bf533bc0e7f363db259e405920",
+   "resource": "Art/js1815/cards/art-52c3fd086f292e94",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166332,
+   "outputSha256": "3d94416ee13886bb886cbb2c8f26363985dafbb3f08269c2fc14961500cd9499",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-533a2e6fea95b0c8",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-533a2e6fea95b0c8.png",
+   "sourceSha256": "58d81dbbd60c47a2e6c2fe82e6c1cc289a07d6e1111ce0b396218808e26819a4",
+   "renderedHtmlSha256": "1389017d7e6d25334ba3554b5744d7ba9ea1303cfa13334cc0e7531062a58bb4",
+   "resource": "Art/js1815/cards/art-533a2e6fea95b0c8",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 157280,
+   "outputSha256": "e06877c72f61df379db1ec73f73e212630741531d5648ccd909a8c0dae236f60",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-5481efd15075ac58",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-5481efd15075ac58.png",
+   "sourceSha256": "d7893655e837f1d48aa4be7251012ceed252559b13e9abdfc3083f01eed2b169",
+   "renderedHtmlSha256": "613d9285f073903f4ef9c48ff3076deec956c735a9a1f2b22b8bd1d0acb6718b",
+   "resource": "Art/js1815/cards/art-5481efd15075ac58",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 171388,
+   "outputSha256": "b257f4c5b2958e82ea3e8fe7748d34f0f21783d7406d908bf3595f831ab62535",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-551c113c05a2ca1b",
+   "source": "assets/cards/extended/card-hemorrhage-512.webp",
+   "sourcePath": "rendered/art-551c113c05a2ca1b.png",
+   "sourceSha256": "187d2c7b2bd8d8a9c49afec8d79d326ffe02b66f7a72a64f354e43e3b07fbc68",
+   "renderedHtmlSha256": "2ff473499e3ad9dbc4f34f0b2a3ea4feaf0d49090e1b7e4f0ceff5a0017bda09",
+   "resource": "Art/js1815/cards/art-551c113c05a2ca1b",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 225817,
+   "outputSha256": "7a99aae4b5643673a4692eb778b7d8fddca9a81ffd19a995dff9c5820ea32f34",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-5e5258f5b4b6e4c7",
+   "source": "assets/cards/extended/card-warriorsVow-512.webp",
+   "sourcePath": "rendered/art-5e5258f5b4b6e4c7.png",
+   "sourceSha256": "55ff06d2c7dda486272c248572159827e4753a3eef2514149e14f84ee356de24",
+   "renderedHtmlSha256": "bd1c1459301854172728f1e07a172eaf468357416de9e1b235d952d68a725088",
+   "resource": "Art/js1815/cards/art-5e5258f5b4b6e4c7",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 234084,
+   "outputSha256": "4fef59c66e4a51efff27ab0331dff236e6de3fa391c774d60014e0712ab4e6e4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-60ee41fc8b021e13",
+   "source": "assets/cards/extended/card-honedEdge-512.webp",
+   "sourcePath": "rendered/art-60ee41fc8b021e13.png",
+   "sourceSha256": "7dc9fb89fd1521e97daef3d46a7307d4bb021aa767e68090a9543960f9681f02",
+   "renderedHtmlSha256": "0f9443799460bdafe5d6d27350bc9a2e1c9a534de763a1759109319085bc1dff",
+   "resource": "Art/js1815/cards/art-60ee41fc8b021e13",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 236318,
+   "outputSha256": "a2ad23d0f80379353bd21ca97b247c96a4324e5cc1879ab8da25961ce1ff5506",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-62082a0c0789aa97",
+   "source": "assets/cards/extended/card-enfeeble-512.webp",
+   "sourcePath": "rendered/art-62082a0c0789aa97.png",
+   "sourceSha256": "94a106fb7c3c97f96c82466de015c3b3514e8bec1f2d174c66ae55a5a6e9d78e",
+   "renderedHtmlSha256": "aab3a20e36a6c394fd9dd5b4aad8e5b451108f6558824df73e7dfae8e36531d3",
+   "resource": "Art/js1815/cards/art-62082a0c0789aa97",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 254544,
+   "outputSha256": "1e83a421559e40d01b3f0cb2b46a7377bb5277fb6070df3e8d6678b20b2e70a5",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-622b1c6c57d0d462",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-622b1c6c57d0d462.png",
+   "sourceSha256": "6dbf8fe9e838dd9b2cef3af9cc1cde46be12250bdadaa615d2cea4002697ab1a",
+   "renderedHtmlSha256": "676134ad52fd729635efd81e4160aaf2558c11c1152f880200c8de3ef1aae386",
+   "resource": "Art/js1815/cards/art-622b1c6c57d0d462",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166052,
+   "outputSha256": "25bd328fcbc8fb15df19394c7b76d82eacbdc1a36c74ee86c70a3592522f828c",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-63c3a4249d382deb",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-63c3a4249d382deb.png",
+   "sourceSha256": "4c085b0930d3fbb2b1d3e8619faba6bf4112a28a196840b076603b616cce3645",
+   "renderedHtmlSha256": "29b7ef136d2a0139440c28d22add124b143567d410a2c6a9b34fcaeed467665f",
+   "resource": "Art/js1815/cards/art-63c3a4249d382deb",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 123909,
+   "outputSha256": "6d8425bec5a6ac66080b30e7b2560c5766cc61a4d7151f81c5c92523c772b245",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-6425abcf4d0a1ee4",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-6425abcf4d0a1ee4.png",
+   "sourceSha256": "f9fc4530d831dc49440a3e142a0ca81677beb740929db878ed9d02f40b8344bd",
+   "renderedHtmlSha256": "cb0966ef3c39eb865164b831fb707178cba2accfff5c5d4142c80695e7621fb6",
+   "resource": "Art/js1815/cards/art-6425abcf4d0a1ee4",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 103191,
+   "outputSha256": "18d91141c4b1e1cae8cdc0834edde5eb98c53a150bfb1ea7aff4ca25c095ac31",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-67b3f4e55f5649e3",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-67b3f4e55f5649e3.png",
+   "sourceSha256": "8822407fae36c491b9d2db0a0ece13a593c3fd767aa8cac838d50c41c67b4020",
+   "renderedHtmlSha256": "7cf7434c94c90aabcb73d4127518b537c5fc265f877fe0183b88d66180440f99",
+   "resource": "Art/js1815/cards/art-67b3f4e55f5649e3",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169085,
+   "outputSha256": "65972291d66d1038d66000119bb2a5a25d1f21158c51d456a5a3eaf4e7651ff2",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-70445d094f3b9a14",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-70445d094f3b9a14.png",
+   "sourceSha256": "c7a3fe7f44003de41e50ab698f74604ef86c6697346d11876783a6dc1887919f",
+   "renderedHtmlSha256": "f6ad509e453627dbce9770fb83b5a1c68fb5fe66372bba547804080e8ec47427",
+   "resource": "Art/js1815/cards/art-70445d094f3b9a14",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 164130,
+   "outputSha256": "3bc22ee2eda1fe9fee5cd175d6b9a91974872e8dbd68d54f98606392ce207d96",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-70bf366f40d7415c",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-70bf366f40d7415c.png",
+   "sourceSha256": "7daeb40ac47c06bb100116689dd5d457a54afa9adbcaf5ceaf4a422d34f63fd3",
+   "renderedHtmlSha256": "e68d9bc6e3cde04c4859efd4c413b803e47cc3851f21f56e4be2ab2d9c6dec2c",
+   "resource": "Art/js1815/cards/art-70bf366f40d7415c",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167674,
+   "outputSha256": "dc3317317684b8ad2d9a2245b4fbcad19aaf9e15974efd66bfd5b532c4295415",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-72c58cd5df2b52f9",
+   "source": "assets/cards/extended/card-rallyingStandard-512.webp",
+   "sourcePath": "rendered/art-72c58cd5df2b52f9.png",
+   "sourceSha256": "eb8acf77cb0617ee0ff8134ac02a47e1a7e8c2947624a36a690bef5c6b556458",
+   "renderedHtmlSha256": "8478f9d452344cde90ea0fa5b3dd1c6d22b0b241d7148d8f09939d49b5abc0a7",
+   "resource": "Art/js1815/cards/art-72c58cd5df2b52f9",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 235178,
+   "outputSha256": "8701fee077f9d680e2114c3dd3a45e9faf7e674499228a6e53faf557974cca1e",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-73d85004d13293f7",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-73d85004d13293f7.png",
+   "sourceSha256": "d0722a3bbe72ddc0d170e410a7ba04419c7d01e65f8a37d41c5d4e4ec54481ac",
+   "renderedHtmlSha256": "9b284744a8f20426e59b3e5ce8ccbc18bd5339c043e2cec5e003c2cebde3c893",
+   "resource": "Art/js1815/cards/art-73d85004d13293f7",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 151253,
+   "outputSha256": "a292a397bc6ee5118b51c3b66e1371c9cd647f69e32bf3c594ec446856f87fc4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-73f239efdfbdbb91",
+   "source": "assets/cards/extended/card-deadlyTempoCard-512.webp",
+   "sourcePath": "rendered/art-73f239efdfbdbb91.png",
+   "sourceSha256": "145431f0bffbd6d286f6f696c826391d82fb8ec50cb6a016c2ba9869c9e0fd40",
+   "renderedHtmlSha256": "dc948285ed82ffd4b84813497272ac5cb9faa9c0e4361f82a34522d1d4abe40b",
+   "resource": "Art/js1815/cards/art-73f239efdfbdbb91",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 236481,
+   "outputSha256": "662d564b59a13a0d254cd7410dcd3f91e2f7b0da0ef10114b1b44c5d76a5ad03",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-74eddabed7eaa6ec",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-74eddabed7eaa6ec.png",
+   "sourceSha256": "969f8774edab97a66059594f771810ec5d2ce5af886dc3a1c649a13c105a8133",
+   "renderedHtmlSha256": "9dffbab1c25a61e59c203eb92c147721163a8a159d80f93fb2189186d854f9f4",
+   "resource": "Art/js1815/cards/art-74eddabed7eaa6ec",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 160037,
+   "outputSha256": "3dfc49b5ee49815b7cf28552c03cda24ce89dd28e7e85312266e7fa262438eec",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-77914532547e464d",
+   "source": "assets/cards/extended/card-blindingSand-512.webp",
+   "sourcePath": "rendered/art-77914532547e464d.png",
+   "sourceSha256": "81c0ad3daa0d424b468b08ae661e305fd7ed4a3843acb0dfd5d1b78caa45aa1d",
+   "renderedHtmlSha256": "913a819c95723653e96bf909199e20785e4f4597b195cbbd6c7bdf11a972cc34",
+   "resource": "Art/js1815/cards/art-77914532547e464d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 254257,
+   "outputSha256": "17f8cf793ae455dcd79b35dd795c2d3ace0817d88a30597a27494069b7f55a09",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-799243a39e5af2ed",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-799243a39e5af2ed.png",
+   "sourceSha256": "4c085b0930d3fbb2b1d3e8619faba6bf4112a28a196840b076603b616cce3645",
+   "renderedHtmlSha256": "397737f03d42a763d2e54b7289c3d86f6a293ff8d755db72dc897bc37bc137b2",
+   "resource": "Art/js1815/cards/art-799243a39e5af2ed",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 123909,
+   "outputSha256": "6d8425bec5a6ac66080b30e7b2560c5766cc61a4d7151f81c5c92523c772b245",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-79a6f56861ef617d",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-79a6f56861ef617d.png",
+   "sourceSha256": "11c8f0d8082d2db5822e36487693c6803c29cf3d7c2bdfae2e11cab61edb4551",
+   "renderedHtmlSha256": "48754e1bdda7a1433e82cb68541c3a12df5411caf5f92908ae09c0af76f82f87",
+   "resource": "Art/js1815/cards/art-79a6f56861ef617d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 131450,
+   "outputSha256": "37de44860b6faa25185a5260b3d944126b21371928fc968665836e6a4813a33a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-7c248a781bf6589d",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-7c248a781bf6589d.png",
+   "sourceSha256": "479015cda13c618a00602adb8a62a73aee71aa389da2d81a3815f36a910ec842",
+   "renderedHtmlSha256": "5a4f95e1654a94060622d90bbb061f72def0cd82f0b2c2b81ecfd510b7912078",
+   "resource": "Art/js1815/cards/art-7c248a781bf6589d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167520,
+   "outputSha256": "fd0594769dc3285ed5e2bf3873bebfd18168a5710e33c4e200bdf73d3e648831",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-7eb1b36488f2e18d",
+   "source": "assets/cards/extended/card-hamstring-512.webp",
+   "sourcePath": "rendered/art-7eb1b36488f2e18d.png",
+   "sourceSha256": "c56f02675235249cc26998b21e4f82df27bcde3a773e1f431a6d16b531839040",
+   "renderedHtmlSha256": "0e93b1dcf0b1f3e6ed05f096c488f45dd265726d11bafd933538522a1f24651a",
+   "resource": "Art/js1815/cards/art-7eb1b36488f2e18d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 256399,
+   "outputSha256": "0669111670bb20cac9e3ccf9ad4e656735a4eebabb94ffa64b77770a2386d107",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-7eb33d46da2adb4d",
+   "source": "assets/cards/library/physical-evade-03-512.webp",
+   "sourcePath": "rendered/art-7eb33d46da2adb4d.png",
+   "sourceSha256": "039f941469266613a8d3131d876efd84b942c25f371bc2eec92a37fa3399577d",
+   "renderedHtmlSha256": "6db507f1d40bd9f92cf1a931917874dfde0385f5d3eeca757ad31dadceac6461",
+   "resource": "Art/js1815/cards/art-7eb33d46da2adb4d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 141351,
+   "outputSha256": "764928b1f0e1f038d679bb7df6d890103ed57cfa820e7fba425e309a3629aac2",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-8430488e749be4d6",
+   "source": "assets/cards/library/physical-evade-03-512.webp",
+   "sourcePath": "rendered/art-8430488e749be4d6.png",
+   "sourceSha256": "3e389bc2924370a168c61a4e461d57115aa06a4b1496f40c1f7b339c118f8a40",
+   "renderedHtmlSha256": "2416ef7c19a6456c88628035441b39be18610ef7685cfcb6a092c0da663dd6e3",
+   "resource": "Art/js1815/cards/art-8430488e749be4d6",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 146208,
+   "outputSha256": "ba01fc67d5f0a22db523a699df37fbeef85800d84936facd9a3dc9d420d52546",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-8533f716836f896d",
+   "source": "assets/cards/extended/card-venomcoat-512.webp",
+   "sourcePath": "rendered/art-8533f716836f896d.png",
+   "sourceSha256": "185dd3f4107a177372df14dccb1288cb84047878188c1162b23e86ca1b633f36",
+   "renderedHtmlSha256": "166c11edefb1a7bfacdb4ef52c8b646be66d0392c8009fda11efc647b7862277",
+   "resource": "Art/js1815/cards/art-8533f716836f896d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 235036,
+   "outputSha256": "e6c32ce91efac69475a5f91851d7b9439001ba5e08652225e2f676efe7510cbf",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-8565964bf3e70976",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-8565964bf3e70976.png",
+   "sourceSha256": "4aa9c89b3affa1b72e747ad79c712e984e340ec0476a202d561fe7378927229f",
+   "renderedHtmlSha256": "b8dcf95a4c01894fe5ad79b66e9aead4e24dbff256094351cf15be44f2a11911",
+   "resource": "Art/js1815/cards/art-8565964bf3e70976",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 161320,
+   "outputSha256": "2ad85268a901b6cdae1828d8350883148a76395d72d53af2ef5e4eb2fce44d63",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-903ebc0ffc09958f",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-903ebc0ffc09958f.png",
+   "sourceSha256": "8d3f635215973b6aba1c5c34526ba3fb84b6284d65a9e009256dd21b6921d5af",
+   "renderedHtmlSha256": "4845c41be414fd75a0678d89d75107796be4e812dedd5559a8cb0b772a19414a",
+   "resource": "Art/js1815/cards/art-903ebc0ffc09958f",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169198,
+   "outputSha256": "0fb23044b0cdd46eca9d8bb9f34c63c84e806b37143cc8e72e58ba8e6b7c81b0",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-948e6209742c3c72",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-948e6209742c3c72.png",
+   "sourceSha256": "1131ddc560efeadb414d881840601af1d403feb897cb2eec6b32a55e342065c4",
+   "renderedHtmlSha256": "e8171796abe1d79cd56e54b89bae4db385a5216108f60c94fb3900f2341709b7",
+   "resource": "Art/js1815/cards/art-948e6209742c3c72",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 161405,
+   "outputSha256": "e5d2c8ccc7779b565c1419bbe1ad9ab07ed42badabd449e4f58f7311274fed1b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-95e76b6beb925470",
+   "source": "assets-display/card-cutouts/background.4.png",
+   "sourcePath": "rendered/art-95e76b6beb925470.png",
+   "sourceSha256": "8235edf3281f82a8665913a15c4561bdcca8fe9825ab78fb329bc35141262bd1",
+   "renderedHtmlSha256": "3931dedbd135f3daa8aa06d9ab5638a642bb2274a6caf9e37d768ed1e6d30342",
+   "resource": "Art/js1815/cards/art-95e76b6beb925470",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 136758,
+   "outputSha256": "ac12c3f1d8284cb98d3c1d1c4018737a2682d5104d78e0edeb4e7468a5e86b4d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-9ea6aac8877bd15a",
+   "source": "assets/cards/extended/card-envenomCard-512.webp",
+   "sourcePath": "rendered/art-9ea6aac8877bd15a.png",
+   "sourceSha256": "44a89b8618744ae0d8db57f46277dbdb46e9ca5e77ce7b15a16bf0b9e0f1e550",
+   "renderedHtmlSha256": "2e59020aa5cf357090b764e9667afaa5b178e695897c2edbd045ca9bd892659d",
+   "resource": "Art/js1815/cards/art-9ea6aac8877bd15a",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 233619,
+   "outputSha256": "f955158d11626c09526521fc068f245d4c7c6c554cfb0f7b9b4ff05230742650",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-a0b9d29edd13d2df",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-a0b9d29edd13d2df.png",
+   "sourceSha256": "479015cda13c618a00602adb8a62a73aee71aa389da2d81a3815f36a910ec842",
+   "renderedHtmlSha256": "d0959352ab44688b9d1e6142f5a00b3d48869f6ca5e012a75b6559f2af05e841",
+   "resource": "Art/js1815/cards/art-a0b9d29edd13d2df",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167520,
+   "outputSha256": "fd0594769dc3285ed5e2bf3873bebfd18168a5710e33c4e200bdf73d3e648831",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-a358d8bd12f14083",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-a358d8bd12f14083.png",
+   "sourceSha256": "f1c9ca0240e4ffeb9805a5f7922181e220088bef95fff8f350b04ebc4344ed9a",
+   "renderedHtmlSha256": "1e7058597aa42dfc5313aa85f994d3bd5be9392965a247927ae22019dd4d3710",
+   "resource": "Art/js1815/cards/art-a358d8bd12f14083",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166975,
+   "outputSha256": "6b5fe589a090bd8050588cc9813bcf1554f49b20f79d959969200d3f292b052d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-a5557b85ef1e6d42",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-a5557b85ef1e6d42.png",
+   "sourceSha256": "d2774328397499dc6944dd41cba3496f620b0d20f079e2674a6b31ee87bfb7f1",
+   "renderedHtmlSha256": "84ade0576688274b3c4dce5ab7bee0c9a487294e7f805e805453890649cc7a6c",
+   "resource": "Art/js1815/cards/art-a5557b85ef1e6d42",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 123213,
+   "outputSha256": "e580293f259822e32e3ceadf45968410ff7776beda6f4fd45aa3fa98111212c9",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-b321bf50b526fb35",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-b321bf50b526fb35.png",
+   "sourceSha256": "4710a2a3fbee0b94d62521e6fa2ac3f6acdc3826d2b351152d6bb6aec2222f5a",
+   "renderedHtmlSha256": "52e692098bf2d6c8107474a547e6672d99f44c983875d73b66af2b9a2b7da046",
+   "resource": "Art/js1815/cards/art-b321bf50b526fb35",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 102583,
+   "outputSha256": "7d28461cfa733624d2d633e01f0627e8cf9bf2ced69a90619433aec267f3f866",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-b6f227d3452210c1",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-b6f227d3452210c1.png",
+   "sourceSha256": "c1d09bbc8790f562c4fe6395e5d96f2eb4dec266bc98937d8ef552b63859e24d",
+   "renderedHtmlSha256": "75b9116b7833cd260a56f54d8c29c2b7aec53a8f98c3acf7ee7893e560b7fe9a",
+   "resource": "Art/js1815/cards/art-b6f227d3452210c1",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 165752,
+   "outputSha256": "af9b059f7636ec4419207bb19eda609ca8e772f37b2a441601ad2ca092b82716",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-b7ee2d9add77cb48",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-b7ee2d9add77cb48.png",
+   "sourceSha256": "edbcab4e38bc42df6d546a62493aa8e13c26235b0468a3df839bc96e192807d8",
+   "renderedHtmlSha256": "2fa76ac83201592a418da3fe7e642667c5e15f6c9094d34ba4097625e6e6cd17",
+   "resource": "Art/js1815/cards/art-b7ee2d9add77cb48",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 103137,
+   "outputSha256": "a51fb51cbe1e02ecb0c5be16560fdf1dec7d3aa7ffe0801c4b262012e0023a94",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-ba738074182625bb",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-ba738074182625bb.png",
+   "sourceSha256": "1bcbccead8dbef3d3daa9a26950ec401410f8b348aef42e6ee5a272c15d5c211",
+   "renderedHtmlSha256": "3ad9f31eb1d5ba02d770a6a42b9970804d80cd40c8e6e62b3924880b126fabc0",
+   "resource": "Art/js1815/cards/art-ba738074182625bb",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 168075,
+   "outputSha256": "a6b94a44323ddb02b980b1ea8a14bcffcad05ade6dabb118f56621c09a0a718d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-bce8c8b21dd00c36",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-bce8c8b21dd00c36.png",
+   "sourceSha256": "9b65345ad71a1fc1cf3947d7cf29137f92dc825e9124db138c7a81e7b22394ed",
+   "renderedHtmlSha256": "51a2d90c654326d046a0e698b50f6124e86eeafd8708df31e78f710ec09c25ae",
+   "resource": "Art/js1815/cards/art-bce8c8b21dd00c36",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 161937,
+   "outputSha256": "940f129e86e004e422cc5998add59f0ca39740e172b5c9f91d033c8973b4e6dc",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-cc839d43cd2202c2",
+   "source": "assets-display/card-cutouts/O.background.0.png",
+   "sourcePath": "rendered/art-cc839d43cd2202c2.png",
+   "sourceSha256": "da8c12eb30483341d7d9e6c084ae4af2b488e7949591a47ad0a564b12bff4bff",
+   "renderedHtmlSha256": "1827b16c1980ad5a950a7f1291998e4fcdd9b5f2d36b14b912a3946b0380c721",
+   "resource": "Art/js1815/cards/art-cc839d43cd2202c2",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 101644,
+   "outputSha256": "87ba55fdb39b1597a5439da6ddee05cbda9bd1f54fe68d49dd13be1743db15c6",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-ccf9087b4c82efdf",
+   "source": "assets/cards/extended/card-slimed-512.webp",
+   "sourcePath": "rendered/art-ccf9087b4c82efdf.png",
+   "sourceSha256": "e0adf960f55a0442241e3249034bf2b6a0d5ff4c42c69649be13f5524ddb61bc",
+   "renderedHtmlSha256": "445b7000e7617234e9f6c0aa3565b792c48d7ffd98a48653b5592bbb1a559a16",
+   "resource": "Art/js1815/cards/art-ccf9087b4c82efdf",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 249362,
+   "outputSha256": "cae2c6eee80b06b3186002e4f5f0329f577fcf8c63530c4e16592bc6bb6b0bda",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-d52de6fe3cdf6ae4",
+   "source": "assets/cards/extended/card-goreblood-512.webp",
+   "sourcePath": "rendered/art-d52de6fe3cdf6ae4.png",
+   "sourceSha256": "2c173892970afb9b31768088a68efc59e8c7b2ba460c0ac963f6b25fd9c81737",
+   "renderedHtmlSha256": "876a3f2034b963b150ca056067b5b2a114eb8531d07f72b48aae7c573593a0e3",
+   "resource": "Art/js1815/cards/art-d52de6fe3cdf6ae4",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 240352,
+   "outputSha256": "981445a9f9027dfb15acb527097638ffa6a1af153ca8ee40bbeeeb6a9bd14d90",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-d649bce6a0fbaa1d",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-d649bce6a0fbaa1d.png",
+   "sourceSha256": "f1c9ca0240e4ffeb9805a5f7922181e220088bef95fff8f350b04ebc4344ed9a",
+   "renderedHtmlSha256": "bd60f53541faa83638b117313f5686b4eb63690866a9ef1f3c24346dc3e80d3f",
+   "resource": "Art/js1815/cards/art-d649bce6a0fbaa1d",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166975,
+   "outputSha256": "6b5fe589a090bd8050588cc9813bcf1554f49b20f79d959969200d3f292b052d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-d930e64249ab58b2",
+   "source": "assets/cards/extended/card-afterimageCard-512.webp",
+   "sourcePath": "rendered/art-d930e64249ab58b2.png",
+   "sourceSha256": "2b4c74544fefed02ca14e27b7ba5ba51ef8b2308cc2a8c0fae5b85fee9703054",
+   "renderedHtmlSha256": "7c99d9ea0f4f6d82d97149a818da6f8174f65de012b412e292199f98452b477c",
+   "resource": "Art/js1815/cards/art-d930e64249ab58b2",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 248955,
+   "outputSha256": "945de9ef25595311784dbd7d782eb48fffd6428dc7b7b806f7eb8ef8aa15d010",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-dc8521fe8e0c9895",
+   "source": "assets/cards/extended/card-setupRogue-512.webp",
+   "sourcePath": "rendered/art-dc8521fe8e0c9895.png",
+   "sourceSha256": "52b194e22b93f41da4c16a16d45ccf57f3165522480e5187961a815b1d710550",
+   "renderedHtmlSha256": "76d20be16cdbb36a56ea461f461169d483a0fb5fff4fdc63c8c6adc93319f2c2",
+   "resource": "Art/js1815/cards/art-dc8521fe8e0c9895",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 229987,
+   "outputSha256": "0a5276bc6dc4ea08c7cd51972b05ccb42507177c896679b431b6654564050512",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-de2041f966c8415c",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-de2041f966c8415c.png",
+   "sourceSha256": "3fbb560d243e7bb4b3c4a459179d212b8073a846c80b8bec1592c2612723311a",
+   "renderedHtmlSha256": "c36118f0727c511113cc82036a53264da269f2c1835b539caef58adbb2673124",
+   "resource": "Art/js1815/cards/art-de2041f966c8415c",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 159187,
+   "outputSha256": "20ebde9cda056e868240f6129a702cece4518acd0d963e3c7c97d895614bb9b7",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e1870834cd14a128",
+   "source": "assets-display/card-cutouts/background.4.png",
+   "sourcePath": "rendered/art-e1870834cd14a128.png",
+   "sourceSha256": "8f870f70e344ed9534c6e207835cc79cd069d47fb3b5e71d770fd2ed5f503f8b",
+   "renderedHtmlSha256": "2cb6cc4a008b0b5b0c093b60ef39d9bc6705cbad42a1e14d5636f1a646ee0ac2",
+   "resource": "Art/js1815/cards/art-e1870834cd14a128",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 135249,
+   "outputSha256": "9dbad774912e14b40794a9450fa8d4cdcf0b40b55739426e0b74851c8ccd4363",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e1cd24875160a4f4",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-e1cd24875160a4f4.png",
+   "sourceSha256": "6fe83f508b569a162489b87cf0ce4260ed33326365e947b5b9630258ca221062",
+   "renderedHtmlSha256": "98451b36ebc9d2fe7f639b165437d3e2110be88ae235ea4f0d06d7000192e111",
+   "resource": "Art/js1815/cards/art-e1cd24875160a4f4",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 163434,
+   "outputSha256": "b08bcf369768c55f26e4ecbd7d294a341af57ca12ff4adccacb9c1422dae5317",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e2901b55aebc2cd3",
+   "source": "assets/cards/extended/card-opportunistCard-512.webp",
+   "sourcePath": "rendered/art-e2901b55aebc2cd3.png",
+   "sourceSha256": "fca3b3cfc39052e5780ad37f9f316bb88447c1d587e17781b2dab977031e5ccb",
+   "renderedHtmlSha256": "56e3c81a63d0681218188657028ca557d469231d68c6ccb1a938fd6b5808293c",
+   "resource": "Art/js1815/cards/art-e2901b55aebc2cd3",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 243977,
+   "outputSha256": "cfb96cb19aaf2b6218e2a27bf3fb7cf843d30e9787b933f9520803e8f73cd835",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e49913707a542521",
+   "source": "assets/cards/library/physical-evade-02-512.webp",
+   "sourcePath": "rendered/art-e49913707a542521.png",
+   "sourceSha256": "417dd1412f1c230db9743cf332bf6894be292c4fbdef70ebc84b1803af623fc7",
+   "renderedHtmlSha256": "48c93c76c70c5cc4978a58cd991d8bd6493e95c79d0b4d59e738edb5d969015d",
+   "resource": "Art/js1815/cards/art-e49913707a542521",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 142458,
+   "outputSha256": "dc19b44916562680db903db017e38c4ef32267ca7b7a28e14a5ec70759da356b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e683ca767e415278",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-e683ca767e415278.png",
+   "sourceSha256": "f1c9ca0240e4ffeb9805a5f7922181e220088bef95fff8f350b04ebc4344ed9a",
+   "renderedHtmlSha256": "03654ed4be63a9a5c50359b35327fb3bd4d2d8e62d0a7bfff295c7c838166cda",
+   "resource": "Art/js1815/cards/art-e683ca767e415278",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 166975,
+   "outputSha256": "6b5fe589a090bd8050588cc9813bcf1554f49b20f79d959969200d3f292b052d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-e9426a595ca1b843",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-e9426a595ca1b843.png",
+   "sourceSha256": "dd9caef08c8a053aa332139cab15c1c1c7b2c822a8a8d88abdf2b0b4dd4210a5",
+   "renderedHtmlSha256": "38eef44d57ca58edeae834b485d4c6e4d0b7c8f6a65925cd9afc77371f23a42c",
+   "resource": "Art/js1815/cards/art-e9426a595ca1b843",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 124698,
+   "outputSha256": "dafbdc5392543c1bd86e7c6a33d520dddc1961d0ba3c25f4aa0badf5a358b7ee",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-eab6119def65b047",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-eab6119def65b047.png",
+   "sourceSha256": "7634e402dcafbfc55b9288b005a204c5bbfcc718c81f7b90b7137658de89f79b",
+   "renderedHtmlSha256": "c68bde935c5df004574bb3a49d680e34f9a35d55bf360d0d680914dc09877acc",
+   "resource": "Art/js1815/cards/art-eab6119def65b047",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 170836,
+   "outputSha256": "2ce4e6ae3883c57793f53778a60640666b972cf6cf8a90a605c569f2e45d6a46",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-ec78a61818af9b92",
+   "source": "assets-display/card-cutouts/O.background.4.png",
+   "sourcePath": "rendered/art-ec78a61818af9b92.png",
+   "sourceSha256": "d024068517e22d347493c187cdbcfb292e22d5816793b4f13b6cac7cbecf332f",
+   "renderedHtmlSha256": "10313d3334afe75c4543ae73b02541cc866aae63857a5a91a5ad70077ac361c9",
+   "resource": "Art/js1815/cards/art-ec78a61818af9b92",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 122198,
+   "outputSha256": "8b961abd77b94f7210fd58a31c69282111fe5e174bd74ab99001161b395fdb13",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-ecc06e853ea2e49e",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-ecc06e853ea2e49e.png",
+   "sourceSha256": "e025ef747d43f1b51c920eb23117f95b4980ea077bc813c390afcba365bac709",
+   "renderedHtmlSha256": "115efbee750eebbc1e9fd770e6e5417b77cfdc0a6360ab802982299bed0a8d26",
+   "resource": "Art/js1815/cards/art-ecc06e853ea2e49e",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 167860,
+   "outputSha256": "ab931ecd911c23421e7702f33b23afcfd6ec9ff9ddbcfb8f1898409e5cc8be96",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-f1f01bd9c11c8974",
+   "source": "assets/cards/extended/card-dazed-512.webp",
+   "sourcePath": "rendered/art-f1f01bd9c11c8974.png",
+   "sourceSha256": "e15d51ec6f4337bbdaf1f68108121ba880820565e29a4148c30069d515c7c9d8",
+   "renderedHtmlSha256": "3e43a5ecbc5f415a433c7605c0249473ab259a379c156e8a8f599263b44e3b13",
+   "resource": "Art/js1815/cards/art-f1f01bd9c11c8974",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 232767,
+   "outputSha256": "9139a507ccd8cd6aa0b5f32f904706f893ca54deb03d9b01e0159468c9ce84a4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-f24309c5da59c9cb",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-f24309c5da59c9cb.png",
+   "sourceSha256": "304e8401a00784ff9be1d106bc7a958e4d44d89cffd6c9acf788199528e9aab9",
+   "renderedHtmlSha256": "4de56c7c085fefa3028665f18ae4837a9246cf1524fd7ba8cae6faa32f85c742",
+   "resource": "Art/js1815/cards/art-f24309c5da59c9cb",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 159260,
+   "outputSha256": "c0fcb62b64a8fe22299267e28176b95fc23ff5c3aa71bfb6d9a99fd78dd4c7b2",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-f6242a1c78147328",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-f6242a1c78147328.png",
+   "sourceSha256": "1bd15680c267ac8c4f5760118787256455afa0ad7a8c4c06646400c6a707ca7e",
+   "renderedHtmlSha256": "3326d34fd45fb6365e7cf772a3de2041e9fe9e75866f0a17fda5167b954c1636",
+   "resource": "Art/js1815/cards/art-f6242a1c78147328",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 161099,
+   "outputSha256": "5211b039df2c009b76243062ae3a55f15d222182c740c463d6416e8b11468b26",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-fa2739eb21f5bf0b",
+   "source": "assets/cards/extended/card-guilt-512.webp",
+   "sourcePath": "rendered/art-fa2739eb21f5bf0b.png",
+   "sourceSha256": "26c840df8bca3ddee0830af959b1df0bee6458ca4a7b3437ebdd9bec39ce2c6e",
+   "renderedHtmlSha256": "9fcdb6889ea22eb96bd668f8500d7419496e3546c6e55e9340adf00997a41070",
+   "resource": "Art/js1815/cards/art-fa2739eb21f5bf0b",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 237854,
+   "outputSha256": "d134f3a57bdd0796c5c9febc3dc45b652f15418e8ed9caf30819fc83c73bc4fc",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-fcdf2d602ef0fd03",
+   "source": "assets/cards/extended/card-bloodletterRogue-512.webp",
+   "sourcePath": "rendered/art-fcdf2d602ef0fd03.png",
+   "sourceSha256": "b860a5476eeb578283ef8e4c57731f916df4e128eebc6a56d952f391eb81c9a9",
+   "renderedHtmlSha256": "e1aa9c942d1f8d69cae45a3d09179c3da0daf75754d277204e8283d7dedffa19",
+   "resource": "Art/js1815/cards/art-fcdf2d602ef0fd03",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 244008,
+   "outputSha256": "dda2a1b755accc016d35e4b366a9d361da0d57d6ddef0b2968bd2f37f8d4a4cb",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-fd2b5cbe8cc25e33",
+   "source": "assets-display/card-cutouts/background.6.png",
+   "sourcePath": "rendered/art-fd2b5cbe8cc25e33.png",
+   "sourceSha256": "69b6d9ddd654e173260133183b1dfefad53f03cfe9210c740e676c6352764f57",
+   "renderedHtmlSha256": "30dd462dc26e6f03a0a4ef710f6590089ee364ce4397070acf8154bead1f44b4",
+   "resource": "Art/js1815/cards/art-fd2b5cbe8cc25e33",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 169692,
+   "outputSha256": "e04594c5335963cf7ffb27a7796f8b6e1c691b29a571deff5d3de16a0d8f4244",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "art-fdad716d60c4921b",
+   "source": "assets-display/card-cutouts/background.5.png",
+   "sourcePath": "rendered/art-fdad716d60c4921b.png",
+   "sourceSha256": "c1ef097618e0b40036e6fc641041383faa149e2b07c36ea0d8bbfc620739d09a",
+   "renderedHtmlSha256": "6fee616a52b9996c719f2a5777cbdbbafd4d44a8ebabc5cfe5d3e37147bd03d1",
+   "resource": "Art/js1815/cards/art-fdad716d60c4921b",
+   "trim": null,
+   "size": [
+    340,
+    304
+   ],
+   "bytes": 162669,
+   "outputSha256": "09e06fad5afd4aec3383bc50bd089cd9bd4cbef008cbb18cb3c30375a87b8363",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "eec2cd553b52ee0b6849",
+   "source": "assets/card-components/0949257201425783d7c8.webp",
+   "sourcePath": ".art-cache/hd-assets-v23/high/assets/card-components/0949257201425783d7c8.webp",
+   "sourceSha256": "aa39ccff684701177b1bf90fef520eecdc3ff0da158c4d90c79b09b801976e99",
+   "renderedHtmlSha256": null,
+   "resource": "Art/js1815/cards/eec2cd553b52ee0b6849",
+   "trim": [
+    36,
+    208,
+    1703,
+    474
+   ],
+   "size": [
+    1024,
+    285
+   ],
+   "bytes": 568429,
+   "outputSha256": "804abce61490d35ef3d3b76034bf0226c9a48b4a60ce2866db059cf0b33031f4",
+   "conversion": "rgba-preserved+downscaled"
+  },
+  {
+   "key": "fade-15968f08bc5f4624",
+   "source": "styles/illustrated-cards.css .card-title-fade",
+   "sourcePath": "rendered/fade-15968f08bc5f4624.png",
+   "sourceSha256": "ef16d96983ddee7761e4c25f8535599f04a79424daf27f16601e65c39c71677d",
+   "renderedHtmlSha256": "d4ca613374e9921e43681cb38267bc157ce13c436301c6b696d9aa2e8b8c342a",
+   "resource": "Art/js1815/cards/fade-15968f08bc5f4624",
+   "trim": null,
+   "size": [
+    634,
+    238
+   ],
+   "bytes": 4773,
+   "outputSha256": "8de7b73e366957ec4032401029716e6cb8f5f70804f0c09b1e7fe359c624f3a6",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "fade-3c330426851f2900",
+   "source": "styles/illustrated-cards.css .card-footer-backdrop",
+   "sourcePath": "rendered/fade-3c330426851f2900.png",
+   "sourceSha256": "191b102bcbceda30eac9aac43231915f668c889fd3efe9905aa7a4308b4f9004",
+   "renderedHtmlSha256": "88d74f4783a5fed01aac2da8ede6c48d524c50f4eae05c64e109f0d75622823a",
+   "resource": "Art/js1815/cards/fade-3c330426851f2900",
+   "trim": null,
+   "size": [
+    634,
+    124
+   ],
+   "bytes": 2511,
+   "outputSha256": "979e3190f7b09bddfbdaac750ba264443bcafa8229f5ad6e1d919981d2790841",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "frame-c652abf913999000",
+   "source": "src/ui/components/illustratedCard.js actionBaseFrame",
+   "sourcePath": "rendered/frame-c652abf913999000.png",
+   "sourceSha256": "c83ded22560170451142f3db557e5769e86d92f179fe1ae7569edc0bcf68e5be",
+   "renderedHtmlSha256": "67e76e8e0f2aafb078305ab8c7c304b4d16f037a83b68dbb24f9f147fbc490c9",
+   "resource": "Art/js1815/cards/frame-c652abf913999000",
+   "trim": null,
+   "size": [
+    900,
+    218
+   ],
+   "bytes": 15877,
+   "outputSha256": "0bd77be4fd8e6939fad01afddd4e91a59144f8ae77b10bf8496392f87c138cd8",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-0435b4ee36f7419d",
+   "source": "svg",
+   "sourcePath": "rendered/mark-0435b4ee36f7419d.png",
+   "sourceSha256": "6b48039b437e026aff361cc264155cfe87b65427dc65b04d9a0b93e8a48b3284",
+   "renderedHtmlSha256": "41e92a723f8d4871704830a089e635c0c6f4d38e2fc15acad2d52fb2cffeca82",
+   "resource": "Art/js1815/cards/mark-0435b4ee36f7419d",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 7265,
+   "outputSha256": "932f6a4477bf117b75e2c52e3d8fab8ee18f15516e7a25c059cb8411e7437295",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-085edb838db9019c",
+   "source": "svg",
+   "sourcePath": "rendered/mark-085edb838db9019c.png",
+   "sourceSha256": "7918843f50479eaae9707af040a07053d78dd57f9ae7216f90dcc75aba9e3848",
+   "renderedHtmlSha256": "92451414afda6c21ca7fcf836641089670b0a5b88961a35730c5446903bfc27e",
+   "resource": "Art/js1815/cards/mark-085edb838db9019c",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6784,
+   "outputSha256": "acc88316c499b8e455140c659a0adaf6def77f7c2ffcc05c2ccf8fa98d15cd48",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-145a35293735d53c",
+   "source": "svg",
+   "sourcePath": "rendered/mark-145a35293735d53c.png",
+   "sourceSha256": "5c5f9e1b4e3ff5fb3ec07e71a550f5faf1f9b1cf5aebedd41e57cc316d6b1b09",
+   "renderedHtmlSha256": "ab4cbc3b4c0fe6220bca9ac07980714c6dd7c942d4ef45cfcd245b499f8a0fdc",
+   "resource": "Art/js1815/cards/mark-145a35293735d53c",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5837,
+   "outputSha256": "c22e3c19feb7c48bbe0b0803068b45f013797d992990db23d2b4b9378c4d2e2e",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-2426a1f7a0fa1463",
+   "source": "svg",
+   "sourcePath": "rendered/mark-2426a1f7a0fa1463.png",
+   "sourceSha256": "065242a0a9f9485feda6892a5b92d261176b4184139f741aa0a264c92b7e17c9",
+   "renderedHtmlSha256": "d774c3ac17f6479e605ce161eb7140bb68f589b588a551bde0eccda613e76745",
+   "resource": "Art/js1815/cards/mark-2426a1f7a0fa1463",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6070,
+   "outputSha256": "25bd567f201316e41b01f38e0544905614cecd8492bb8947c7ed34973977c1c0",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-38be790dc3c7e278",
+   "source": "svg",
+   "sourcePath": "rendered/mark-38be790dc3c7e278.png",
+   "sourceSha256": "4e7fb74c683160179fcf958700e518d4dbe4101f97cf9a7b041eb7fa87217a95",
+   "renderedHtmlSha256": "6935ed4d7b7add2cf85a4337191ec1dc669cc60528a3db980a8ece14917388c9",
+   "resource": "Art/js1815/cards/mark-38be790dc3c7e278",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 4839,
+   "outputSha256": "3320091a9c9907a0c9d4089c77336ce73ff1423fa81dd52b2a41055231cdfdd9",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-422f2838b7c1d8e5",
+   "source": "svg",
+   "sourcePath": "rendered/mark-422f2838b7c1d8e5.png",
+   "sourceSha256": "3dbd7775af06ac526a04fd98a973315fd2836dcf9c57b41bc3e2f83f3be5f34b",
+   "renderedHtmlSha256": "eaeed6ec7f24dda0f7deb22169722e38b77e1b685f49253fa5d9dcda7633386e",
+   "resource": "Art/js1815/cards/mark-422f2838b7c1d8e5",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5755,
+   "outputSha256": "388dfdcc67c476d78850466a96a1fe3c4857db9c7706d3d0db2dcb3319d8b2e4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-4bd6f1d7b25229fc",
+   "source": "svg",
+   "sourcePath": "rendered/mark-4bd6f1d7b25229fc.png",
+   "sourceSha256": "d48baf8797e77efedfe73d6cc0928ca8b1d0401453360e2f991f326611231849",
+   "renderedHtmlSha256": "f8bdbd667cca76c9862a44bfff962f1b83d271b136add418902c9d11c6f412f2",
+   "resource": "Art/js1815/cards/mark-4bd6f1d7b25229fc",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 7775,
+   "outputSha256": "443ef725b37c69e2db317708fcfcddd33881075b99fb5c4ba39b19b533bab953",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-4f6865a5807420de",
+   "source": "svg",
+   "sourcePath": "rendered/mark-4f6865a5807420de.png",
+   "sourceSha256": "390b5459946496d4c0139da6683cbf3769407a0d711af5c23b49a94d5ed0a1a6",
+   "renderedHtmlSha256": "0a03237367a5169726092e7a44321c53453b24bcb6f8b51aab3315bd23e26c4c",
+   "resource": "Art/js1815/cards/mark-4f6865a5807420de",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 7494,
+   "outputSha256": "73a6dd8c5340d3150af6523aa5392e8930b59e0f04aaab2e87a4ab0304439f62",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-5eb1bbb91e213415",
+   "source": "svg",
+   "sourcePath": "rendered/mark-5eb1bbb91e213415.png",
+   "sourceSha256": "b0837ab0c5ae5c07def0f4f380ea510ea28fa11efd13c7e47ad73473899236d3",
+   "renderedHtmlSha256": "5f90d1b6baa1c2659adbac7e89f0d85bce19185572a6a85cd762db3f78af0ac5",
+   "resource": "Art/js1815/cards/mark-5eb1bbb91e213415",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6777,
+   "outputSha256": "ee7560f6eec8e5f68e5278fc40d6f9b5723009928bfdbd9958f74e32d998887d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-61c1e9521dceaafb",
+   "source": "svg",
+   "sourcePath": "rendered/mark-61c1e9521dceaafb.png",
+   "sourceSha256": "c88c0c360f50443bd176cef71d29fa7d8e7f216b1b03e52fb8d55b78edc92a4c",
+   "renderedHtmlSha256": "5885b64a6e4e1084c3180e9ee5da26082a25718082e5caf5db81d41723d6f177",
+   "resource": "Art/js1815/cards/mark-61c1e9521dceaafb",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 11221,
+   "outputSha256": "f1f2619e76955a8fd47b952900b07d5b4e6c9e5c22fcb7da5d6df61f1db9b3fa",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-621e6f898d1dab32",
+   "source": "svg",
+   "sourcePath": "rendered/mark-621e6f898d1dab32.png",
+   "sourceSha256": "e6d38cb00485afe473b2f143c6b1a1894378ac9c3c44cd4bef54f8605c7172dc",
+   "renderedHtmlSha256": "83cd68d986eaac504f1bd4b522aa2a5d32d271c02cf2a288967caee02ce0f5b7",
+   "resource": "Art/js1815/cards/mark-621e6f898d1dab32",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 7566,
+   "outputSha256": "91686a65ac244ee6c4f034302b71351fde9458ed2dcdc821924889cd1c6f8e96",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-6d41b984500e4766",
+   "source": "svg",
+   "sourcePath": "rendered/mark-6d41b984500e4766.png",
+   "sourceSha256": "4e2ed3c711721d21d9a0d7024667aec38b9b435e129d377687b54f067bfaa4eb",
+   "renderedHtmlSha256": "f6ecf66ce4c87983581639a010bbff3ad9dee84c231762398f9ea63724ac16cf",
+   "resource": "Art/js1815/cards/mark-6d41b984500e4766",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 10445,
+   "outputSha256": "a4a1f49cc967fbc681b8e86e1c267c0e42d134e90f63fb8f7e4ad19288960fb4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-73592450048b4d42",
+   "source": "svg",
+   "sourcePath": "rendered/mark-73592450048b4d42.png",
+   "sourceSha256": "6f7534acfa88c5b3d02c937d06269801adc0d0b298fa33034ab6b615ddc724e7",
+   "renderedHtmlSha256": "82180b890c7833ed2b76ba4e43bdd4f609b118db51d63da066b5dc8b92ff9f82",
+   "resource": "Art/js1815/cards/mark-73592450048b4d42",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 7443,
+   "outputSha256": "d3243edac93cd6895ac46ed4b6c2c6fcd73988a40272e930f1ba8b2472c2731c",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-755df301719395ac",
+   "source": "svg",
+   "sourcePath": "rendered/mark-755df301719395ac.png",
+   "sourceSha256": "8043078de29cdeed239a4e8f6c8e9c0e17296658ac81e4a5b0add545297717de",
+   "renderedHtmlSha256": "1afcdd4bfd15c45f403ce96f8c72bc0baa1cf5be6e55bbb25a094930e50e3774",
+   "resource": "Art/js1815/cards/mark-755df301719395ac",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5877,
+   "outputSha256": "26d9188cf3dfc39d44aa6e743529597f7edde923a4bae587611244e94443742b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-7e78fa07ca0f2171",
+   "source": "svg",
+   "sourcePath": "rendered/mark-7e78fa07ca0f2171.png",
+   "sourceSha256": "dfae6487f0e407ad529f8b2c5d53808e3e22a39677c1d29393a76bb6e3090c40",
+   "renderedHtmlSha256": "5a71bf0e262cdcbdce0b95c7e004ea2018be2b53b9b5ff19156d3160a9acf037",
+   "resource": "Art/js1815/cards/mark-7e78fa07ca0f2171",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 7435,
+   "outputSha256": "13e71897b249e9ba9c0da13cc2278c5d7fe5abd46e34f6d38939c85cd92a389a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-7f4ec970bcceb5c2",
+   "source": "svg",
+   "sourcePath": "rendered/mark-7f4ec970bcceb5c2.png",
+   "sourceSha256": "f4f9a98c57ab25345626af3b3610212d23a1ba0c14100fa091b6532a5c5ea54d",
+   "renderedHtmlSha256": "59ba64c6c1553ebdcb726f152b8a90bd2861f952479a46b88cdea5f8e9243f4e",
+   "resource": "Art/js1815/cards/mark-7f4ec970bcceb5c2",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6941,
+   "outputSha256": "f18f22ee6a03aa61be0d5350bb953fb599f73f20687df3322e7e41e0e0d58910",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-83bf7f21a3af8adf",
+   "source": "svg",
+   "sourcePath": "rendered/mark-83bf7f21a3af8adf.png",
+   "sourceSha256": "9560a6ff96a48886b7660f707e4fc64a7a4b96b3b48c9e2bb917aec2712b6c1a",
+   "renderedHtmlSha256": "b0776978bed2239cfca14822714b31cab6da036042956bf357b6a9905ec350f6",
+   "resource": "Art/js1815/cards/mark-83bf7f21a3af8adf",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5969,
+   "outputSha256": "30d843b48428769283a3e005a4fa45c95947e82a6d1c8ce15938ed835f647472",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-85fc58512696d766",
+   "source": "svg",
+   "sourcePath": "rendered/mark-85fc58512696d766.png",
+   "sourceSha256": "53dc0ae5b4a474679d2b70eb4daf08f38a48f21bccfdf8e92db5f16cc6e513ba",
+   "renderedHtmlSha256": "19f7b50eff843074b006c3d2576d95ff82503f1593d2e034b0958291fdbe771e",
+   "resource": "Art/js1815/cards/mark-85fc58512696d766",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 8547,
+   "outputSha256": "b4e13c6238e8be9cd8aa5e11db8c695f8d44d8f7f2279707c13f9aff42c57bad",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-8a4be9703208159f",
+   "source": "svg",
+   "sourcePath": "rendered/mark-8a4be9703208159f.png",
+   "sourceSha256": "bc3ab966c0535d58f045a8e3daff76fa783c60c7a59a74e1d9db70311b9c7f83",
+   "renderedHtmlSha256": "e3f93f1b07bb96403bd5495615bfa124a92b7f184f6ae6c2c1bd28af4273d955",
+   "resource": "Art/js1815/cards/mark-8a4be9703208159f",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6068,
+   "outputSha256": "75a80db513e68b0cfdd310569b2694c69e3e0a2f50932db4ddcaab0e751cb7f2",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-8d5b1a9a1802b79e",
+   "source": "svg",
+   "sourcePath": "rendered/mark-8d5b1a9a1802b79e.png",
+   "sourceSha256": "5343759c5f2b58038a7b502d0c526b80611d034e794c9026a4842eccd7eea0d7",
+   "renderedHtmlSha256": "b334b32c3ea0cdcc276bf541d2078a5510089bed8fcb86b7cafe9f4cc5e85a1b",
+   "resource": "Art/js1815/cards/mark-8d5b1a9a1802b79e",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6272,
+   "outputSha256": "90b9f53efab5edf005e441c1a6e1333ab8369bc639cb1dd9b558f7253547168a",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-8e99100c5988d2e4",
+   "source": "svg",
+   "sourcePath": "rendered/mark-8e99100c5988d2e4.png",
+   "sourceSha256": "20a1eebcb9a1e659b7736db38ba75da2942ce926c7f2e9e3e6fd95eb5f4f15f6",
+   "renderedHtmlSha256": "041ab38973c0b51a9e05cc92c8a6fbf06321812da5c2502f97659fe82a1a6746",
+   "resource": "Art/js1815/cards/mark-8e99100c5988d2e4",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 6961,
+   "outputSha256": "2c4037153b01c033f37385897ee2d536b75a0a02651aa383c3f550afaef9e732",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-920865e627438602",
+   "source": "svg",
+   "sourcePath": "rendered/mark-920865e627438602.png",
+   "sourceSha256": "166502dbeb76ac7814bcfccfea6125a275e414ede9eb2bac1274fe1abc86d6b5",
+   "renderedHtmlSha256": "10672a787a23acdc1dde708688b76d85bd14c23bbc2f803b6a209368be2f6741",
+   "resource": "Art/js1815/cards/mark-920865e627438602",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5986,
+   "outputSha256": "c485587b25ec6dac432b6ce1b00a95dbcbf0e2b19b2e52d83fda96d161b66e35",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-a0e30e4aa1876871",
+   "source": "svg",
+   "sourcePath": "rendered/mark-a0e30e4aa1876871.png",
+   "sourceSha256": "505f1802bd66d53a5b1433e80bdc2809262796d6d2b92333435f51b996da5018",
+   "renderedHtmlSha256": "ccf3fba02aeb2d5f0836784992d7d473fbca8f4dd61f6f4aeda61f58c374016e",
+   "resource": "Art/js1815/cards/mark-a0e30e4aa1876871",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 9111,
+   "outputSha256": "0705b59e17222825665633825a4bac2d05149a70f2e5a339a7c97aff41fa13a5",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-a75c540ef2156e3d",
+   "source": "svg",
+   "sourcePath": "rendered/mark-a75c540ef2156e3d.png",
+   "sourceSha256": "1307679a7afdde39243480530a560e23a0b3bcdc364ec4b65c962853a929481d",
+   "renderedHtmlSha256": "12150252c765feb1014ed1774f07c5350e0e297d9fdae3d9084b406ae992a5f9",
+   "resource": "Art/js1815/cards/mark-a75c540ef2156e3d",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6578,
+   "outputSha256": "22aaaf5fccef292cde4d5f878d2bbf9385649fb0d09fe67b7fcb2d990add1b6e",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ad648fbab181fc68",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ad648fbab181fc68.png",
+   "sourceSha256": "bdfed9d1ac73899b05a9356da01678428b4031bd64ef5e471bbe89bc12f2da68",
+   "renderedHtmlSha256": "e5ff769f55cbd049b1ea03e7edd7348e55f352983a136d2b8a4f5e7fc9cc9855",
+   "resource": "Art/js1815/cards/mark-ad648fbab181fc68",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6889,
+   "outputSha256": "27e0a17cb7f46d2720ae82e79534eaf6e3307585c0ef4653e81eec61717a0a44",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-b20452a01894f774",
+   "source": "svg",
+   "sourcePath": "rendered/mark-b20452a01894f774.png",
+   "sourceSha256": "3182cc84b2cc7bac77bde1c78d0223aa39d59f2671f57318351039345aafe695",
+   "renderedHtmlSha256": "426b2400d85ab296b80e09cc0b2756f41e6e3f6e38331c381cbf26c8a03cf418",
+   "resource": "Art/js1815/cards/mark-b20452a01894f774",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5895,
+   "outputSha256": "34c35f5de939dfdde2e40472341cba5ba07b4b7a059cfad40da581620cf7e95d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ba53e14a30f2abfd",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ba53e14a30f2abfd.png",
+   "sourceSha256": "206162b83dd85b46544ce6e9c699f39ad1a0d2b8b991615ccc21b48f4548fa57",
+   "renderedHtmlSha256": "9b266446f1eae93d893c697dc971dce5163945526f72ecd0c00c405902662d8f",
+   "resource": "Art/js1815/cards/mark-ba53e14a30f2abfd",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6271,
+   "outputSha256": "474b7fd0c25ee6612c40648f99f3569c246eb6c40e037a9d418d24cc4b913b5d",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ca6a95f4b8c80841",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ca6a95f4b8c80841.png",
+   "sourceSha256": "77513dd5bfc7732cceb9f293f8fe4a84141d062031bbf16133ddd6b4b82c69d4",
+   "renderedHtmlSha256": "0a06bfa2d6d5dc8f831d00e010bd2b3aa7376f73505b41842dc940f2e540cd56",
+   "resource": "Art/js1815/cards/mark-ca6a95f4b8c80841",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5387,
+   "outputSha256": "b16c335565064550f067f4af5c4484451246fb6f6abe520642911a4e56e067a6",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-cc8b720d2a4d798a",
+   "source": "svg",
+   "sourcePath": "rendered/mark-cc8b720d2a4d798a.png",
+   "sourceSha256": "2338b61093f9bf62fbdeb37c7ee6dc370351b870d8ace99587cc8622d5bf618c",
+   "renderedHtmlSha256": "07c0c6df23de28c3d0ea0d33822b2d1cebc8c39fba1710f83d554e891a74c298",
+   "resource": "Art/js1815/cards/mark-cc8b720d2a4d798a",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 5889,
+   "outputSha256": "67bb98766651790c0e6180fb915bb391b80fd8f34d165e963f61a885a6d37508",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ced8401f3f2fed3a",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ced8401f3f2fed3a.png",
+   "sourceSha256": "3f2198210464c3af651ee7c8d0e39e0a1ecf108a0b7ffec7cd66ac42b1cb6dab",
+   "renderedHtmlSha256": "b0a747fc3dba1972c4b4c2f919db19a74862a92d5221181007f678d38d125284",
+   "resource": "Art/js1815/cards/mark-ced8401f3f2fed3a",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 7546,
+   "outputSha256": "c871e5810b80b7c6e738835cb6dfc3dfcd8642aec6d283cea63ef9b499aae706",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-dc3442c9ca1d09aa",
+   "source": "svg",
+   "sourcePath": "rendered/mark-dc3442c9ca1d09aa.png",
+   "sourceSha256": "ba94c30d8b1aad8e965d518c587cfaa4e8941f9c1d2028826b2dfbf4b1de61ba",
+   "renderedHtmlSha256": "1c42548cecfae817893cc5594ea9667c8e2b1fb396732e57b556d2cd240b9905",
+   "resource": "Art/js1815/cards/mark-dc3442c9ca1d09aa",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 9179,
+   "outputSha256": "0d5d2816b6f135a1a09e8dab46173d5198ee2d5f96042009114819427856ca02",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-e0d0efb5a491c957",
+   "source": "svg",
+   "sourcePath": "rendered/mark-e0d0efb5a491c957.png",
+   "sourceSha256": "c14fd774087ae730ebea400b6b22ac9e4222fac2bc9cf056d66a8bc2879fb9ba",
+   "renderedHtmlSha256": "3aba3a7e056adf08c615d7945c31e5e10a949de3f611eaaa15b40faaa37f9604",
+   "resource": "Art/js1815/cards/mark-e0d0efb5a491c957",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6172,
+   "outputSha256": "2d9bfa43c3df83e2502274a01cdcd88a729d5612d0a41bd22c7ebde465fbf162",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-e9985a7247ed53d5",
+   "source": "svg",
+   "sourcePath": "rendered/mark-e9985a7247ed53d5.png",
+   "sourceSha256": "f64cf748d901ae6cf8f0792a6f8263e3f390165fc785dfdbe4760c7c3ea195da",
+   "renderedHtmlSha256": "89ea6ffac7371e483bbb6ba201466e9fca17f7758e9d656dca5c32bac44920c8",
+   "resource": "Art/js1815/cards/mark-e9985a7247ed53d5",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 8052,
+   "outputSha256": "929b7cf173f3059d8cd8941d806df0a4e11bb611fe0adad7ef32951138811ee6",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-edbdf1f7033cec21",
+   "source": "svg",
+   "sourcePath": "rendered/mark-edbdf1f7033cec21.png",
+   "sourceSha256": "9dfbb96dc32ba62e8730ea71ddc32125bf4eda30180372b98878cd051201432b",
+   "renderedHtmlSha256": "a2deb9665477b32a32d041be289853293bbc1c37f9cd146778c51cb8a5a3ae4f",
+   "resource": "Art/js1815/cards/mark-edbdf1f7033cec21",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 13438,
+   "outputSha256": "686976809491a57855f94cf4980172027f8cd7f8f0b768d6c2c9ecbb3b8bd73f",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-fc55eaebd3db406f",
+   "source": "svg",
+   "sourcePath": "rendered/mark-fc55eaebd3db406f.png",
+   "sourceSha256": "deddb51c59fd216ed10680f00d51bfbabb0e6ee495cd5cb21dd90c31e98075ae",
+   "renderedHtmlSha256": "f41668c857a19375133d5e67906ed35c1bbdfbfc54a092d2c10f302a4f3ab932",
+   "resource": "Art/js1815/cards/mark-fc55eaebd3db406f",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 6325,
+   "outputSha256": "8603739ae3da5dbf5c727d5f3ed6c64af38ecb5622d86890d977a0d47b115e2b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ff2f9c5f9afdeb1e",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ff2f9c5f9afdeb1e.png",
+   "sourceSha256": "b2c52bf8adc8e48e546e06674606edc139df1f166405ed53bf80872d18b5a46f",
+   "renderedHtmlSha256": "051302ed37610584dd4d27effd919db1d184c8dc714b847542d7a28934c0ab37",
+   "resource": "Art/js1815/cards/mark-ff2f9c5f9afdeb1e",
+   "trim": null,
+   "size": [
+    145,
+    145
+   ],
+   "bytes": 10335,
+   "outputSha256": "536e093bd6f24df443bd0e4ae801bb6be3e72c4b6eb284ac2e9a70e758499e5b",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "mark-ffb037d07750b01c",
+   "source": "svg",
+   "sourcePath": "rendered/mark-ffb037d07750b01c.png",
+   "sourceSha256": "fcec399bd965194dc006e7fa672c4882536b82fce18d717145922d00408183f6",
+   "renderedHtmlSha256": "8a0feabb368d7f270e885cb359008bddf64c2f7a4aad8392982ee089c8b39113",
+   "resource": "Art/js1815/cards/mark-ffb037d07750b01c",
+   "trim": null,
+   "size": [
+    113,
+    113
+   ],
+   "bytes": 8571,
+   "outputSha256": "d5e2782d329998a44a335a6e0d65bc11a99c770a9a30e9bc807dfa2905b764af",
+   "conversion": "chromium-rendered"
+  }
+ ]
+}
