@@ -1,7 +1,8 @@
 // OriginalTitlePanel.cs — the reference game's wordmark, ornaments and menu rhythm.
 // WIRING: CampaignView supplies existing callbacks; this view owns no game state.
-// MODIFY: OriginalTheme.uss controls spacing/colour; Fonts/Cinzel-Regular supplies
-// the reference CSS display family. Keep functional routes in CampaignView.
+// MODIFY: OriginalTheme.uss controls spacing/colour and the JS build 1815 look (gold serif
+// wordmark, framed menu bars, green NEW GAME, ornate dividers from Art/js1815/ui).
+// Keep functional routes in CampaignView.
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,7 +15,7 @@ namespace AshenSpire.Presentation
         {
             AddToClassList("original-title");
             var wordmark = new Label("ASHENEDSPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
-            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .09f, 22, 58));
+            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .1f, 22, 48));
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
             var menu = new VisualElement(); menu.AddToClassList("title-menu-grid"); Add(menu);
@@ -25,7 +26,10 @@ namespace AshenSpire.Presentation
             var start = Entry("native-new", "Begin the climb", begin); start.AddToClassList("title-new"); menu.Add(start);
             if (history != null) menu.Add(Entry("native-history", "Run history", history));
             menu.Add(Entry("native-profile", "Compendium", collection));
-            menu.Add(Entry("settings", "Settings", settings));
+            var settingsEntry = Entry("settings", "Settings", settings); menu.Add(settingsEntry);
+            // JS title: SETTINGS carries the engraved gold gear.
+            var gear = Resources.Load<Texture2D>("Art/js1815/ui/icon-settings");
+            if (gear != null) { var icon = new Image { image = gear, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; icon.AddToClassList("title-entry-icon"); settingsEntry.Add(icon); }
             menu.Add(Entry("native-coop", "Forsaken together", cooperative));
             Add(Ornament());
             var more = Entry("title-extras", "More", extras); more.AddToClassList("title-more"); Add(more);

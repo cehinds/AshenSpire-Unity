@@ -155,6 +155,7 @@ namespace AshenSpire.Presentation
         public void Title(CampaignDefinition content, bool canResume, string notice = null)
         {
             Shell("", ""); _body.Clear(); _body.AddToClassList("title-screen");
+            PlayerComponentArt.Scene(_root, "title-hall"); // JS title: the candle-lit tower hall.
             _scroll.contentContainer.style.flexGrow = 1;
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
@@ -234,6 +235,9 @@ namespace AshenSpire.Presentation
         public string Native(AshenSpire.Domain.Original.OriginalGameSession game, FeedbackDefinition feedback)
         {
             Shell("ASHENEDSPIRE", "THE ORIGINAL CLIMB", "solo:" + game.Phase + ":" + game.ActNumber);
+            // Screen composition hook for OriginalTheme.uss (rest/merchant panels at the right,
+            // spoils as a centred folio, the event as a dialogue box under its stage).
+            _body.AddToClassList("run-phase-" + game.Phase.ToString().ToLowerInvariant());
             var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke(), PlayerSettings);
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
             EnemyDeaths(game.LastEvents);
@@ -501,7 +505,7 @@ namespace AshenSpire.Presentation
         }
         private void Settings(Action back)
         {
-            Shell("MAKE IT YOURS", "Changes save on this device.");
+            Shell("MAKE IT YOURS · CHANGES SAVE ON THIS DEVICE", "Settings"); // JS 09: eyebrow, then the gold "Settings" title.
             var motion = new Toggle("Reduced motion") { value = _reducedMotion };
             var fast = new Toggle("Quick animations") { value = _fast };
             motion.name = "reduced-motion";

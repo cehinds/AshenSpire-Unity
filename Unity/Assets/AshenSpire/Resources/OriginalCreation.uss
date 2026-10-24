@@ -1,67 +1,102 @@
-/* OriginalCreation.uss — creator composition from the pinned original HTML.
-   Warm color/type tokens come from OriginalTheme.uss. This sheet only shapes
-   the creator; all sections default open and every original control ID remains.
+/* OriginalCreation.uss — creator composition. Look: the JS build 1815 creator (customize.js,
+   styles/player-polish.css): a full-screen sheet with a gold rule inset over the spire vista,
+   "Create character" in gold serif, a step rail at the left (a tab row on a phone), framed class
+   rows (figure, green name, description, stat strip) and a Back / green Next footer.
+   Warm color/type tokens come from OriginalTheme.uss. Every original control ID remains.
    The parent applies a 44-CSS-pixel target floor. Do not fix heights on copy. */
 .body.original-creation { max-width: 1320px; padding: 14px 18px 24px; }
-.original-creation > .heading { font-size: 27px; color: var(--ash-gold); margin: 2px 0 8px; }
+.original-creation > .heading { font-size: 24px; color: var(--ash-gold); margin: 2px 0 8px; }
 .original-creation > .caption { margin: 3px 0 8px; }
 .original-creation > #foundation-back { align-self: flex-start; min-width: 110px; margin: 2px 0 12px; }
-.creation-section { margin: 5px 0; padding: 0; border-width: 1px; border-color: var(--ash-edge); border-radius: 6px; background-color: var(--ash-panel); }
-.creation-section > .unity-foldout__toggle { margin: 0; padding: 9px 12px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); color: var(--ash-gold); -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 17px; }
+.creation-section { margin: 5px 0; padding: 0; border-width: 1px; border-color: var(--ash-edge); border-radius: 3px; background-color: var(--ash-panel); }
+.creation-section > .unity-foldout__toggle { margin: 0; padding: 9px 12px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); color: var(--ash-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 17px; }
 .creation-section > .unity-foldout__content { margin-left: 0; padding: 12px; }
 .creation-workspace { flex-direction: column; align-items: stretch; }
-.creation-class-preview { padding: 12px; border-width: 1px; border-color: var(--ash-edge); border-radius: 5px; background-color: var(--ash-panel); }
-.creation-class-choices { margin-top: 12px; padding: 12px; border-width: 1px; border-color: var(--ash-edge); border-radius: 5px; }
+.creation-class-preview { padding: 12px; border-width: 1px; border-color: var(--ash-edge); border-radius: 3px; background-color: var(--ash-panel); }
+.creation-class-choices { margin-top: 12px; padding: 12px; border-width: 1px; border-color: var(--ash-edge); border-radius: 3px; }
 .creation-wide .creation-workspace { flex-direction: row; }
 .creation-wide .creation-class-preview { width: 33%; flex-shrink: 0; margin-right: 24px; }
 .creation-wide .creation-class-choices { flex-grow: 1; flex-shrink: 1; margin-top: 0; min-width: 0; }
-.creation-eyebrow { font-size: 10px; letter-spacing: 2px; color: #a89571; margin: 6px 0; }
-.creation-class-name { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; font-size: 25px; color: #fdf6e6; padding-bottom: 10px; margin-bottom: 10px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
-.creation-portrait-frame { width: 172px; height: 214px; align-self: center; margin: 4px 0 12px; padding: 8px; background-color: var(--ash-inset); border-width: 1px; border-color: #85714f; border-radius: 5px; }
+.creation-eyebrow { font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); margin: 6px 0; }
+.creation-class-name { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 24px; color: var(--ash-ink); padding-bottom: 10px; margin-bottom: 10px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
+.creation-portrait-frame { width: 172px; height: 214px; align-self: center; margin: 4px 0 12px; padding: 8px; background-color: var(--ash-inset); border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; }
 .creation-portrait { width: 100%; height: 100%; }
 .creation-class-preview #native-preview-appearance { align-self: center; margin: 3px 0 8px; }
-.creation-resources { flex-direction: row; flex-wrap: wrap; margin: 4px 0 8px; }
-.creation-resource { color: #fdf6e6; font-size: 12px; -unity-font-style: bold; margin: 3px 12px 3px 0; white-space: nowrap; }
-.creation-relic { padding: 10px; border-width: 1px; border-color: #85714f; border-radius: 5px; background-color: var(--ash-inset); }
+.creation-resources { flex-direction: row; flex-wrap: wrap; margin: 4px 0 6px; }
+.creation-resource { color: var(--ash-ink); font-size: 12px; -unity-font: resource("Fonts/Inter-SemiBold"); margin: 2px 12px 2px 0; white-space: nowrap; }
+.creation-relic { padding: 10px; border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; background-color: var(--ash-inset); }
 .creation-relic .node-title { color: var(--ash-gold); font-size: 17px; margin: 0 0 4px; }
 .creation-relic .caption { white-space: normal; color: var(--ash-muted); margin: 0; }
-.creation-class-option.button { padding: 12px 16px; margin: 5px 0; min-width: 0; white-space: normal; align-items: stretch; border-radius: 6px; }
-.creation-class-option.primary { border-color: var(--ash-gold); background-color: #303426; }
-.creation-option-name { -unity-font: resource("Fonts/Cinzel-Regular"); -unity-font-style: bold; color: var(--ash-gold); font-size: 19px; margin-bottom: 5px; }
-.creation-option-description { white-space: normal; color: var(--ash-muted); font-size: 13px; margin: 0; }
+.creation-class-option.button { padding: 12px 16px; margin: 5px 0; min-width: 0; white-space: normal; align-items: stretch; border-radius: 3px; }
+.creation-class-option.primary { border-color: var(--ash-gold); background-color: #2e251b; }
+.creation-option-name { -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-select); font-size: 18px; margin-bottom: 5px; }
+.creation-option-description { white-space: normal; color: var(--ash-ink); font-size: 14px; margin: 0; }
 .creation-unspent { font-size: 14px; color: var(--ash-gold); -unity-font-style: bold; margin: 6px 0; }
 .creation-attributes { margin: 8px 0; }
-.creation-attribute { flex-direction: row; align-items: center; padding: 8px; margin: 3px 0; border-width: 1px; border-color: var(--ash-edge); border-radius: 5px; min-width: 0; }
+.creation-attribute { flex-direction: row; align-items: center; padding: 8px; margin: 3px 0; border-width: 1px; border-color: var(--ash-edge); border-radius: 3px; min-width: 0; }
 .creation-attribute-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-right: 6px; }
-.creation-attribute-name { font-size: 13px; -unity-font-style: bold; color: #fdf6e6; }
-.creation-attribute-benefit { font-size: 11px; color: #b9a47c; white-space: normal; margin-top: 3px; }
+.creation-attribute-name { font-size: 13px; -unity-font-style: bold; color: var(--ash-ink); }
+.creation-attribute-benefit { font-size: 11px; color: var(--ash-ink-dim); white-space: normal; margin-top: 3px; }
 .creation-attribute-controls { flex-direction: row; align-items: center; flex-shrink: 0; }
 .creation-adjust.button { width: 48px; min-width: 48px; padding: 0; margin: 0; font-size: 17px; }
-.creation-attribute-value { width: 28px; -unity-text-align: middle-center; font-size: 16px; color: #e8dcc0; }
+.creation-attribute-value { width: 28px; -unity-text-align: middle-center; font-size: 16px; color: var(--ash-ink); -unity-font: resource("Fonts/Inter-SemiBold"); }
 .original-creation .foundation-choices > .button { width: auto; min-width: 100px; flex-grow: 1; margin: 3px; padding: 6px; }
 .original-creation .foundation-field { margin: 6px 0; }
 .original-creation > #native-begin { margin: 12px 0; padding: 12px; }
 .creation-weapon-cards { flex-direction: row; flex-wrap: wrap; align-items: flex-start; padding-top: 8px; }
 .creation-preview-card.original-card.card { width: 170px; min-width: 170px; max-width: 170px; flex-basis: 170px; flex-grow: 0; }
-.creation-card-count { font-size: 10px; color: #a89571; margin: 8px 0 0; -unity-text-align: middle-center; white-space: normal; }
+.creation-card-count { font-size: 10px; color: var(--ash-muted); margin: 8px 0 0; -unity-text-align: middle-center; white-space: normal; }
 
-/* Guided creation: bounded screen, stable footer, one decision at a time. */
-.body.creation-guided { max-width: 920px; padding: 16px 20px; overflow: hidden; }
-.creation-guided > .heading { font-size: 26px; margin-bottom: 12px; flex-shrink: 0; }
-.creation-step { flex-grow: 1; flex-shrink: 1; min-height: 0; }
-.creation-step .lead { font-size: 18px; white-space: normal; margin: 10px 0; }
+/* ---- Guided creation (JS 02c-02e): bounded sheet, header, rail, step, footer ------------------ */
+.body.creation-guided { max-width: none; width: 100%; margin: 0; padding: 0; overflow: hidden; border-width: 1px; border-color: var(--ash-gold); background-color: rgba(13,11,8,0.95); }
+.ui-wide .body.creation-guided { margin: 0 26px; width: auto; align-self: stretch; }
+.creation-header { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; flex-shrink: 0; min-height: 56px; padding: 8px 16px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
+.creation-title { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 20px; letter-spacing: 1px; color: var(--ash-gold); margin: 0; }
+.creation-header > .creation-eyebrow { margin: 0; }
+.creation-main { flex-grow: 1; flex-shrink: 1; min-height: 0; flex-direction: column; }
+.creation-wide .creation-main { flex-direction: row; }
+/* The step rail: JS .as-railitem.cz-tab — neutral tabs; the active one has green text, a green
+   border and a 2px green underline. A phone shows it as one tab row under the header. */
+.creation-rail { flex-direction: row; flex-shrink: 0; padding: 6px 8px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
+.creation-wide .creation-rail { flex-direction: column; width: 188px; padding: 14px 12px; border-bottom-width: 0; border-right-width: 1px; border-right-color: var(--ash-edge); }
+.app .creation-rail-item.button { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 2px; padding: 6px 4px; font-size: 12px; -unity-text-align: middle-center; color: var(--ash-ink-dim); background-color: var(--ash-panel); border-color: var(--ash-edge-soft); }
+.app .creation-wide .creation-rail-item.button { flex-grow: 0; flex-basis: auto; margin: 0 0 8px; padding: 10px 12px; font-size: 15px; -unity-text-align: middle-left; }
+.app .creation-rail-item.button.selected { color: var(--ash-select); border-color: var(--ash-select); border-bottom-width: 2px; background-color: rgba(201,162,39,0.08); }
+.app .creation-rail-item.button:disabled { color: var(--ash-muted); opacity: 0.6; }
+.creation-step { flex-grow: 1; flex-shrink: 1; min-height: 0; min-width: 0; padding: 12px 16px; }
+.creation-wide .creation-step { padding: 16px 22px; }
+.creation-step .heading { font-size: 18px; margin: 0 0 10px; }
+.creation-step .lead { font-size: 15px; white-space: normal; margin: 8px 0; }
 .creation-step .caption { font-size: 13px; white-space: normal; }
-.creation-class-grid { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; }
-.creation-class-grid > .button { width: 48%; margin: 3px 1%; min-width: 0; }
+/* Class rows (JS .as-option.class-pick.cz-class): folio frame, figure, green name, copy. */
+.creation-class-grid { flex-direction: column; flex-shrink: 0; padding: 0; }
+.app .creation-class-row.button { flex-direction: row; align-items: center; min-height: 96px; margin: 0 0 10px; padding: 10px 16px 10px 10px; -unity-text-align: middle-left; background-color: rgba(0,0,0,0); border-width: 0;
+    background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px; }
+.app .creation-class-row.button:hover, .app .creation-class-row.button:focus { -unity-background-image-tint-color: #fff2d4; }
+.app .creation-class-row.button.selected { border-width: 1px; border-color: rgba(201,162,39,0.6); -unity-background-image-tint-color: #ffffff; }
+.creation-row-figure { width: 86px; height: 120px; flex-shrink: 0; margin: 0 16px 0 6px; }
+.creation-row-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.creation-row-name { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 17px; color: var(--ash-select); margin: 0 0 4px; }
+.creation-row-description { font-size: 14px; color: var(--ash-ink); white-space: normal; margin: 0 0 6px; }
+.creation-row-relic { font-size: 14px; color: var(--ash-ink); border-bottom-width: 1px; border-bottom-color: var(--ash-gold); align-self: flex-start; margin: 4px 0 0; white-space: normal; }
+.creation-class-row .creation-resource { font-size: 14px; margin: 0 14px 0 0; }
 .guided-portrait { height: 180px; min-height: 100px; flex-shrink: 1; width: 100%; margin: 10px 0; }
-.guided-attribute { flex-direction: row; align-items: center; min-height: 52px; margin: 4px 0; padding: 4px 8px; background-color: #211e16; }
+.guided-stage-figure { display: none; }
+.guided-attribute { flex-direction: row; align-items: center; min-height: 52px; margin: 4px 0; padding: 4px 12px; }
 .guided-attribute > .button { width: 48px; min-width: 48px; margin: 0; padding: 0; }
-.guided-footer { flex-shrink: 0; padding-top: 12px; border-top-width: 1px; border-top-color: #a58c5d; }
+/* Footer: Back at the left, Begin and the green Next at the right. */
+.guided-footer { flex-shrink: 0; padding: 10px 14px; border-top-width: 1px; border-top-color: var(--ash-edge-soft); background-color: rgba(36,29,21,0.96); }
 .guided-navigation { flex-direction: row; flex-shrink: 0; }
 .guided-navigation > .button { flex-grow: 1; flex-basis: 0; min-width: 0; }
-.guided-footer > .button { margin-top: 6px; }
+.guided-footer > .guided-navigation { flex-wrap: wrap; align-items: center; }
+.guided-footer > .guided-navigation > .button { flex-grow: 0; flex-basis: auto; min-width: 120px; margin: 3px 0 3px 8px; padding: 9px 18px; }
+.guided-footer > .guided-navigation > #native-creation-back { margin-left: 0; }
+.guided-spacer { flex-grow: 1; }
+.app .guided-footer #native-creation-next { background-color: var(--ash-go-fill); border-color: var(--ash-go-edge); color: var(--ash-go-ink); -unity-font: resource("Fonts/Inter-SemiBold"); }
+.app .guided-footer #native-creation-next:disabled { background-color: #1c2a20; border-color: #3e5a46; color: #9fb4a3; }
+.app .guided-footer .button.primary.creation-begin-early { background-color: var(--ash-panel); border-color: var(--ash-edge-soft); color: var(--ash-ink); -unity-font: resource("Fonts/Inter-Regular"); }
 .creation-guided .foundation-field { flex-direction: column; margin: 8px 0; flex-shrink: 0; }
-.creation-guided .unity-base-field__label { margin: 0 0 5px; min-width: 0; }
+.creation-guided .unity-base-field__label { margin: 0 0 5px; min-width: 0; color: var(--ash-muted); font-size: 11px; letter-spacing: 1px; }
 .creation-guided .unity-base-field__input { min-height: 40px; }
 .guided-card.original-card.card { width: 200px; min-width: 200px; max-width: 200px; flex-grow: 0; align-self: center; margin: 20px 0 12px; }
 .guided-custom { flex-grow: 1; min-height: 0; }

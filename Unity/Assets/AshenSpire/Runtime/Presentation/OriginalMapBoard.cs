@@ -63,22 +63,26 @@ namespace AshenSpire.Presentation
             _glow = preferences["shrineGlow"]?.Type != JTokenType.Boolean || (bool)preferences["shrineGlow"];
             if (Preference("identity") == identity) _saved = OriginalMapViewport.Snapshot.FromJson(preferences["camera"]);
             name = _prefix + "-map"; AddToClassList("map-board");
+            // JS build 1815 composition: act strip (ENTRANCE → BOSS) over the parchment field,
+            // and a dock of map tools in the flow under the field, never over a node.
+            Add(ActStrip());
+            var dock = new VisualElement(); dock.AddToClassList("map-dock");
             var toolbar = Row(); toolbar.AddToClassList("map-secondary-tools"); toolbar.style.display = DisplayStyle.None;
             Control(toolbar, "zoom-out", "-", () => Zoom(-1)).tooltip = "Zoom out";
             _fit = Control(toolbar, "fit", "Fit", () => { _setting = "Fit"; Place(true); });
             Control(toolbar, "zoom-in", "+", () => Zoom(1)).tooltip = "Zoom in";
             Control(toolbar, "recenter", "Recenter", () => { _setting = "Fit"; Place(true); });
-            var options = Row(); Add(options);
+            var options = Row(); options.AddToClassList("map-primary-tools");
             Control(options, "view-options", "Map options", () => { toolbar.style.display = toolbar.style.display == DisplayStyle.None ? DisplayStyle.Flex : DisplayStyle.None; });
             Control(options, "routes", "Choose route", Routes);
             Control(options, "legend", "Key", Legend);
-            Add(toolbar);
             var extra = toolbar;
             if (scope == "solo") _modeButton = Control(extra, "mode", ModeLabel, () => { _mode = _mode == "fog" ? "path" : "fog"; _modeButton.text = ModeLabel; Place(true); });
             _glowButton = Control(extra, "glow", GlowLabel, () => { _glow = !_glow; _glowButton.text = GlowLabel; Place(); });
             _viewport.name = _prefix + "-map-viewport"; _viewport.AddToClassList("map-viewport"); _viewport.focusable = true;
             _content.AddToClassList("map-content"); _viewport.Add(_content); Add(_viewport);
             _overlay.AddToClassList("map-overlay"); _overlay.style.display = DisplayStyle.None; _viewport.Add(_overlay);
+            dock.Add(toolbar); dock.Add(options); Add(dock);
             _hint.AddToClassList("map-hint"); Add(_hint); _detail.AddToClassList("map-detail"); Add(_detail);
             _detail.text = "Tap a lit route to climb. Drag to explore the map.";
             _viewport.RegisterCallback<GeometryChangedEvent>(_ => Place());
@@ -111,6 +115,35 @@ namespace AshenSpire.Presentation
             return b.X0 >= -.5 && b.X1 <= _viewport.contentRect.width + .5 && b.Y0 - _scroll >= -.5 && b.Y1 - _scroll <= _viewport.contentRect.height + .5;
         });
         private static VisualElement Row() { var row = new VisualElement(); row.AddToClassList("map-tools"); return row; }
+        // JS ACT_NAMES (src/ui/uiContent.js, build 1815). Presentation copy only.
+        private static readonly string[] ActNames = { "ACT I — THE FALLOW MARCHES", "ACT II — THE STITCHED COURT", "ACT III — THE ASHEN CROWN" };
+        // The JS act strip: act name, then ENTRANCE, a rule with one ring per floor
+        // (filled up to the floor you stand on), an arrow and BOSS. Read-only.
+        private VisualElement ActStrip()
+        {
+            var strip = new VisualElement { name = _prefix + "-map-act-strip", pickingMode = PickingMode.Ignore }; strip.AddToClassList("map-act-strip");
+            var title = new Label(_act >= 1 && _act <= ActNames.Length ? ActNames[_act - 1] : "ACT " + _act) { pickingMode = PickingMode.Ignore }; title.AddToClassList("map-act-name"); strip.Add(title);
+            var rail = new VisualElement { pickingMode = PickingMode.Ignore }; rail.AddToClassList("map-act-rail"); strip.Add(rail);
+            var entrance = new Label("ENTRANCE") { pickingMode = PickingMode.Ignore }; entrance.AddToClassList("map-act-end"); rail.Add(entrance);
+            var floors = Math.Max(1, (int?)_map["floors"] ?? 1);
+            var here = _current != null && _map["nodes"]?[_current]?["floor"] != null ? (int)_map["nodes"][_current]["floor"] : -1;
+            var track = new VisualElement { pickingMode = PickingMode.Ignore }; track.AddToClassList("map-act-track"); rail.Add(track);
+            track.generateVisualContent += context =>
+            {
+                var w = track.contentRect.width; var h = track.contentRect.height; if (w < 8 || h < 4) return;
+                var p = context.painter2D; var y = h / 2; var r = Math.Min(8f, h / 2 - 1); var count = Math.Min(floors, 12);
+                p.lineWidth = 1; p.strokeColor = new Color(.52f,.44f,.31f);
+                p.BeginPath(); p.MoveTo(new Vector2(0, y)); p.LineTo(new Vector2(w - 2, y)); p.LineTo(new Vector2(w - 8, y - 4)); p.MoveTo(new Vector2(w - 2, y)); p.LineTo(new Vector2(w - 8, y + 4)); p.Stroke();
+                for (var i = 0; i < count; i++)
+                {
+                    var x = (i + 1) * (w - 12) / (count + 1); var reached = here >= 0 && i <= here * count / floors;
+                    p.fillColor = reached ? new Color(.79f,.64f,.15f) : new Color(.09f,.075f,.06f); p.strokeColor = reached ? new Color(.99f,.96f,.90f) : new Color(.66f,.58f,.44f);
+                    p.BeginPath(); p.Arc(new Vector2(x, y), r, new Angle(0, AngleUnit.Degree), new Angle(360, AngleUnit.Degree)); p.ClosePath(); p.Fill(); p.Stroke();
+                }
+            };
+            var boss = new Label("BOSS") { pickingMode = PickingMode.Ignore }; boss.AddToClassList("map-act-end"); boss.AddToClassList("map-act-boss"); rail.Add(boss);
+            return strip;
+        }
         private Button Control(VisualElement parent, string id, string text, Action action)
         {
             var button = new Button(action) { name = _prefix + "-map-" + id, text = text };
@@ -138,6 +171,13 @@ namespace AshenSpire.Presentation
             _scroll = _camera.ScrollTop; _saved = _camera.CaptureScroll(_scroll);
             _fit.text = _setting == "Fit" ? "Fit" : _setting + "%";
             _content.Clear(); _content.style.width = width; _content.style.height = (float)_camera.ContentHeight;
+            // The act's painted world floats on the parchment under the routes (JS map-terrain).
+            var island = Resources.Load<Texture2D>("Art/js1815/ui/map-island-act" + Mathf.Clamp(_act, 1, 3));
+            if (island != null)
+            {
+                var terrain = new Image { image = island, scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
+                terrain.AddToClassList("map-terrain"); _content.Add(terrain);
+            }
             var lines = new VisualElement { pickingMode = PickingMode.Ignore }; lines.AddToClassList("map-lines");
             lines.generateVisualContent += DrawEdges; _content.Add(lines);
             foreach (var node in _knowledge.Nodes)
@@ -147,9 +187,12 @@ namespace AshenSpire.Presentation
                 var state = node.Current ? "Current" : node.Visited ? "Visited" : legal ? "Available" : "Not connected";
                 var button = new Button(() => Choose(id)) { name = _prefix + "-route-" + id, tooltip = (string)row["name"] + " · " + state + "\n" + row["description"] };
                 button.AddToClassList("map-node"); button.EnableInClassList("available", legal); button.EnableInClassList("visited", node.Visited); button.EnableInClassList("current", node.Current); button.EnableInClassList("revealed", node.Revealed); button.EnableInClassList("shrine-lane", node.ShrineLane);
+                button.AddToClassList("room-" + (node.ShownType ?? "event"));
                 button.style.left = (float)bounds.X0; button.style.top = (float)bounds.Y0; button.style.width = (float)bounds.Width; button.style.height = (float)bounds.Height;
-                ColorUtility.TryParseHtmlString((string)row["color"], out var color);
-                var icon = new MapIcon((string)row["icon"], node.Current ? new Color(.92f,.83f,.64f) : color); button.Add(icon);
+                // JS medallions: a pulsing gold halo ring around each reachable room.
+                if (legal) { var halo = new VisualElement { pickingMode = PickingMode.Ignore }; halo.AddToClassList("map-node-halo"); button.Add(halo); }
+                // JS glyphs are parchment on the dark medallion; rooms out of reach stay muted.
+                var icon = new MapIcon((string)row["icon"], node.Current || legal ? new Color(.99f,.96f,.90f) : new Color(.66f,.58f,.44f)); button.Add(icon);
                 button.SetEnabled(legal); _content.Add(button);
                 if (legal || node.Current || node.Revealed || _votes.ContainsKey(id))
                 {
@@ -170,14 +213,18 @@ namespace AshenSpire.Presentation
         private void DrawEdges(MeshGenerationContext context)
         {
             if (_camera == null || _knowledge == null) return;
-            var painter = context.painter2D;
-            foreach (var edge in _knowledge.Edges)
-            {
-                var a = _camera.NodeCenter(edge.From, false); var b = _camera.NodeCenter(edge.To, false);
-                painter.lineWidth = edge.Traveled ? 3 : edge.ShrineLane ? 2.5f : 1.5f;
-                painter.strokeColor = edge.Traveled ? new Color(.83f,.64f,.35f) : edge.ShrineLane ? new Color(.39f,.70f,.69f,.8f) : new Color(.47f,.44f,.40f,.55f);
-                painter.BeginPath(); painter.MoveTo(new Vector2((float)a.X,(float)a.Y)); painter.LineTo(new Vector2((float)b.X,(float)b.Y)); painter.Stroke();
-            }
+            var painter = context.painter2D; painter.lineCap = LineCap.Round;
+            // JS map.css over terrain: a dark #29251a outline under a light route
+            // (#c9b987), gold-cream when traveled (#ead090), bright on the shrine lane (#ffe39a).
+            for (var pass = 0; pass < 2; pass++)
+                foreach (var edge in _knowledge.Edges)
+                {
+                    var a = _camera.NodeCenter(edge.From, false); var b = _camera.NodeCenter(edge.To, false);
+                    var width = edge.Traveled ? 3.5f : edge.ShrineLane ? 3.5f : 3f;
+                    painter.lineWidth = pass == 0 ? width + 3 : width;
+                    painter.strokeColor = pass == 0 ? new Color(.16f,.15f,.10f,.95f) : edge.Traveled ? new Color(.92f,.82f,.56f) : edge.ShrineLane ? new Color(1f,.89f,.60f) : new Color(.79f,.73f,.53f);
+                    painter.BeginPath(); painter.MoveTo(new Vector2((float)a.X,(float)a.Y)); painter.LineTo(new Vector2((float)b.X,(float)b.Y)); painter.Stroke();
+                }
         }
         /// <summary>Gamepad right stick (GamepadNavigator): scrolls by panel pixels, positive = down. False while
         /// an overlay (Routes, Key) covers the map or before the camera exists, so the pad scrolls that instead.</summary>

@@ -28,8 +28,19 @@ namespace AshenSpire.Presentation
             item.Add(new Label(title) { pickingMode = PickingMode.Ignore });
             return item;
         }
+        // JS build 1815 paintings (Art/js1815/ui/scene-*) replace the earlier owner scenes by key;
+        // a key with no JS painting keeps its Art/PlayerComponents scene. The event room, which the
+        // run panel paints as the spire vista, takes the JS grave dialogue stage.
+        private static Texture2D Painting(string key, bool portrait)
+        {
+            var js = key == "spoils" || key == "aftermath" ? "spire-vista" : key;
+            return Resources.Load<Texture2D>("Art/js1815/ui/scene-" + js + (portrait ? "-mobile" : "-desktop"))
+                ?? Resources.Load<Texture2D>("Art/js1815/ui/scene-" + js)
+                ?? Resources.Load<Texture2D>("Art/PlayerComponents/" + key + (portrait ? "-mobile" : "-desktop"));
+        }
         internal static void Scene(VisualElement surface, string key)
         {
+            if (key == "spire-vista" && surface.ClassListContains("run-phase-event")) key = "grave-dialogue";
             var host = surface.ClassListContains("app") ? surface : surface.GetFirstAncestorOfType<ScrollView>()?.parent;
             if (host == null) return;
             var previous = host.Q<Image>("player-component-scene");
@@ -37,19 +48,19 @@ namespace AshenSpire.Presentation
             previous?.RemoveFromHierarchy();
             host.Q("player-component-veil")?.RemoveFromHierarchy();
             var image = new Image { name = "player-component-scene", userData = key, scaleMode = ScaleMode.ScaleAndCrop, pickingMode = PickingMode.Ignore };
-            image.AddToClassList("player-component-scene");
+            image.AddToClassList("player-component-scene"); image.AddToClassList("scene-" + key);
             bool? portrait = null;
             void Fit()
             {
                 var next = host.contentRect.width < host.contentRect.height;
                 if (portrait == next) return;
                 portrait = next;
-                image.image = Resources.Load<Texture2D>("Art/PlayerComponents/" + key + (next ? "-mobile" : "-desktop"));
+                image.image = Painting(key, next);
             }
             image.RegisterCallback<GeometryChangedEvent>(_ => Fit());
             host.Insert(0, image);
             var veil = new VisualElement { name = "player-component-veil", pickingMode = PickingMode.Ignore };
-            veil.AddToClassList("player-component-veil"); host.Insert(1, veil);
+            veil.AddToClassList("player-component-veil"); veil.AddToClassList("scene-" + key); host.Insert(1, veil);
             Fit();
         }
     }

@@ -1,9 +1,10 @@
-/* Local presentation preferences. Never changes costs, targets or saves. */
-.app.high-contrast { background-color: rgb(12, 12, 14); color: rgb(255, 250, 237); }
-.high-contrast .panel, .high-contrast .settings-section, .high-contrast .original-card { background-color: rgb(20, 20, 24); }
+/* Local presentation preferences. Never changes costs, targets or saves.
+   High contrast keeps the JS build 1815 roles (green go, gold accents) at stronger values. */
+.app.high-contrast { background-color: rgb(8, 7, 5); color: rgb(255, 255, 255); }
+.high-contrast .panel, .high-contrast .settings-section, .high-contrast .original-card { background-color: rgb(16, 13, 10); }
 .high-contrast .caption, .high-contrast .stat, .high-contrast .lead, .high-contrast .original-fighter-caption { color: rgb(244, 237, 219); }
-.high-contrast Button { border-color: rgb(225, 212, 177); color: rgb(255, 250, 237); }
-.high-contrast Button.primary { background-color: rgb(229, 208, 157); color: rgb(20, 20, 24); }
+.high-contrast Button { border-color: rgb(225, 212, 177); color: rgb(255, 255, 255); }
+.high-contrast Button.primary { background-color: rgb(37, 92, 57); border-color: rgb(159, 220, 174); color: rgb(255, 255, 255); }
 .high-contrast Button:disabled { color: rgb(180, 178, 172); }
 Button:focus, Toggle:focus, DropdownField:focus { border-color: rgb(255, 239, 183); border-width: 3px; }
 .accent-ember .primary, .accent-ember .selected { border-color: rgb(235, 137, 103); }

@@ -39,3 +39,22 @@ NotoEmoji. Preserve exact authored strings as keys. Fail the coverage check if
 any string is uncovered. Runtime keeps unfamiliar text verbatim; the coverage
 map must be updated to guarantee its font choice. Cmap coverage alone does not
 prove Unity renders each glyph; compiled screenshots remain a separate check.
+
+## JS build 1815 type pair (shell visual pass)
+
+The HTML game declares `--font-display: 'Cinzel', Georgia, 'Times New Roman', serif`
+and `--font-body: Inter, 'Segoe UI', system-ui, sans-serif` but ships no
+`@font-face` for either, so its display headings render in the platform serif
+(Georgia on Windows, a Times metric clone elsewhere) and its body in Inter.
+OriginalTheme.uss matches that pair:
+
+- Liberation Serif Regular and Bold (display headings, the wordmark): the Times
+  New Roman metric-compatible serif. Unmodified files from Debian
+  `fonts-liberation` 1:2.1.5-3 (upstream https://github.com/liberationfonts).
+  License: LiberationSerif-OFL.txt (SIL OFL 1.1; "Liberation" is a Reserved
+  Font Name, so the files are not renamed or modified).
+- Inter Regular and SemiBold (body and controls). Unmodified OpenType (CFF)
+  files from Debian `fonts-inter` 4.0+ds-1 (upstream https://github.com/rsms/inter).
+  License: Inter-OFL.txt (SIL OFL 1.1).
+
+Hashes are in checksums.json. Cinzel stays bundled for older styles.
