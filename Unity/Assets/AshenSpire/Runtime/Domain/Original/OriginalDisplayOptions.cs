@@ -28,10 +28,10 @@ namespace AshenSpire.Domain.Original
         /// S–XL "asks for a fixed size and gets as much of it as fits".</summary>
         public const double MinLayoutWidth = 430, MinLayoutHeight = 600;
 
-        /// <summary>Accent → the --ash-gold token. Gold keeps the Unity theme's own gold (#d6b475) so the
-        /// default look is unchanged; the other four are the HTML balance.ui.accents hex values.</summary>
+        /// <summary>Accent → the --ash-gold token. All five are the HTML balance.ui.accents hex values; gold
+        /// (#c9a227, the JS --gold) is also the theme's own --ash-gold since the JS build 1815 visual pass.</summary>
         public static readonly IReadOnlyDictionary<string, string> AccentColors = new Dictionary<string, string>(StringComparer.Ordinal)
-        { ["gold"] = "#d6b475", ["crimson"] = "#c1453a", ["frost"] = "#7fa8c9", ["verdant"] = "#8bae54", ["violet"] = "#a06cc8" };
+        { ["gold"] = "#c9a227", ["crimson"] = "#c1453a", ["frost"] = "#7fa8c9", ["verdant"] = "#8bae54", ["violet"] = "#a06cc8" };
 
         /// <summary>HTML balance.ui.cardMotifStrength: the wash opacity. Accent mode draws its sigil at × 1.3.</summary>
         public static readonly IReadOnlyDictionary<string, double> MotifStrengths = new Dictionary<string, double>(StringComparer.Ordinal)

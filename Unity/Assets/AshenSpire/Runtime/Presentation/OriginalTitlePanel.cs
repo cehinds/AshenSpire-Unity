@@ -1,7 +1,8 @@
 // OriginalTitlePanel.cs — the reference game's wordmark, ornaments and menu rhythm.
 // WIRING: CampaignView supplies existing callbacks; this view owns no game state.
-// MODIFY: OriginalTheme.uss controls spacing/colour; Fonts/Cinzel-Regular supplies
-// the reference CSS display family. Keep functional routes in CampaignView.
+// MODIFY: OriginalTheme.uss controls spacing/colour and the JS build 1815 look (gold serif
+// wordmark, framed menu bars, green NEW GAME, ornate dividers from Art/js1815/ui).
+// Keep functional routes in CampaignView.
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,7 +15,7 @@ namespace AshenSpire.Presentation
         {
             AddToClassList("original-title");
             var wordmark = new Label("ASHENEDSPIRE"); wordmark.AddToClassList("original-wordmark"); Add(wordmark);
-            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .09f, 22, 58));
+            RegisterCallback<GeometryChangedEvent>(_ => wordmark.style.fontSize = Mathf.Clamp(contentRect.width * .1f, 22, 48));
             var subtitle = new Label("A ROGUELIKE DECKBUILDER"); subtitle.AddToClassList("original-subtitle"); Add(subtitle);
             Add(Ornament());
             var menu = new VisualElement(); menu.AddToClassList("title-menu-grid"); Add(menu);

@@ -12,6 +12,7 @@ namespace AshenSpire.Presentation
         private int _step, _previewCard;
         private bool _shapeValid = true;
         private static readonly string[] Steps = { "Choose your class", "Choose your attributes", "Choose your equipment", "Choose your relic", "Ready to climb", "Your weapon cards", "Optional customization" };
+        private static readonly string[] StepTabs = { "Class", "Attributes", "Equipment", "Relic", "Review" };
         private void GuidedCreation()
         {
             _root.Clear(); _root.AddToClassList("original-creation"); _root.AddToClassList("creation-guided");
@@ -22,8 +23,6 @@ namespace AshenSpire.Presentation
             var outer = _root.GetFirstAncestorOfType<ScrollView>();
             if (outer != null) { outer.contentContainer.style.height = Length.Percent(100); outer.scrollOffset = Vector2.zero; }
             _target = _root;
-            Label(_step < 5 ? "PREPARE YOUR FORSAKEN · " + (_step + 1) + " / 5" : "PREPARE YOUR FORSAKEN · OPTIONAL", "creation-eyebrow");
-            Label(Steps[_step], "heading");
             var options = new OriginalStartingOptions(_catalog);
             var kits = options.AvailableKits(_creation.ClassId, _profileMeta);
             if (!kits.Any(x => (string)x["id"] == _kit && (bool?)x["available"] == true))
@@ -31,23 +30,43 @@ namespace AshenSpire.Presentation
             var preview = _builder.Preview(_creation, _kit, _profileMeta, _starting);
             var hero = _catalog.Record("classes", _creation.ClassId);
             var relic = _catalog.Record("relics", (string)preview["relicId"]);
-            var stageFigure = new OriginalPlayerFigure(_setup); stageFigure.UseOwnerBattleArt(_creation.ClassId); stageFigure.AddToClassList("guided-stage-figure"); _root.Add(stageFigure);
-            var body = new VisualElement(); body.AddToClassList("creation-step"); _root.Add(body); _target = body;
-            string Item(string hand) { var id = (string)preview["loadout"]["sets"][hand][0]; return string.IsNullOrEmpty(id) ? "Empty hand" : (string)_catalog.Record("equipment.armaments", id)["name"]; }
             void Go(int step) { _step = step; Creation(); }
+            // JS build 1815 creator: a header ("Create character"), a step rail at the left
+            // (a tab row on a phone), the step itself, and a Back / Next footer.
+            var header = new VisualElement(); header.AddToClassList("creation-header"); _root.Add(header); _target = header;
+            Label("Create character", "creation-title");
+            Label(_step < 5 ? "PREPARE YOUR FORSAKEN · " + (_step + 1) + " / 5" : "PREPARE YOUR FORSAKEN · OPTIONAL", "creation-eyebrow");
+            var main = new VisualElement(); main.AddToClassList("creation-main"); _root.Add(main);
+            var rail = new VisualElement(); rail.AddToClassList("creation-rail"); main.Add(rail);
+            var railStep = _step == 5 ? 2 : _step == 6 ? 4 : _step;
+            for (var index = 0; index < StepTabs.Length; index++)
+            {
+                var step = index;
+                var tab = MakeButton("native-creation-step-" + index, index == 0 ? StepTabs[0] + " · " + hero["name"] : StepTabs[index], () => Go(step));
+                tab.AddToClassList("creation-rail-item"); tab.EnableInClassList("selected", index == railStep);
+                tab.SetEnabled(index <= 1 || _creation.CanBegin); rail.Add(tab);
+            }
+            var body = new VisualElement(); body.AddToClassList("creation-step"); main.Add(body); _target = body;
+            Label(Steps[_step], "heading");
+            string Item(string hand) { var id = (string)preview["loadout"]["sets"][hand][0]; return string.IsNullOrEmpty(id) ? "Empty hand" : (string)_catalog.Record("equipment.armaments", id)["name"]; }
             if (_step == 0)
             {
+                // One framed row per class: figure, name, description; the chosen row adds its
+                // stat strip, starting arms and relic (JS .as-option.class-pick.cz-class).
                 var choices = new VisualElement(); choices.AddToClassList("creation-class-grid"); body.Add(choices);
                 foreach (var record in _catalog.Table("classes"))
                 {
-                    var id = (string)record["id"];
-                    var choice = MakeButton("foundation-class-" + id, (string)record["name"], () => { if (_creation.ClassId != id) { _creation.Select(id, _creation.ModeId); _starting.RemoveAll(); _kit = null; } Creation(); });
-                    if (id == _creation.ClassId) choice.AddToClassList("primary"); choices.Add(choice);
+                    var id = (string)record["id"]; var chosen = id == _creation.ClassId;
+                    var choice = MakeButton("foundation-class-" + id, "", () => { if (_creation.ClassId != id) { _creation.Select(id, _creation.ModeId); _starting.RemoveAll(); _kit = null; } Creation(); });
+                    choice.AddToClassList("creation-class-row"); choice.EnableInClassList("selected", chosen); choice.tooltip = (string)record["name"];
+                    var figure = new OriginalPlayerFigure(_setup); figure.UseOwnerBattleArt(id); figure.pickingMode = PickingMode.Ignore; figure.AddToClassList("creation-row-figure"); choice.Add(figure);
+                    var copy = new VisualElement { pickingMode = PickingMode.Ignore }; copy.AddToClassList("creation-row-copy"); choice.Add(copy);
+                    var name = new Label((string)record["name"]) { pickingMode = PickingMode.Ignore }; name.AddToClassList("creation-row-name"); copy.Add(name);
+                    var description = new Label((string)record["description"]) { pickingMode = PickingMode.Ignore }; description.AddToClassList("creation-row-description"); copy.Add(description);
+                    if (!chosen) continue;
+                    ResourceStrip(copy, (JObject)preview["resources"]);
+                    var kit = new Label(Item("rightHand") + " · " + Item("leftHand") + " · " + relic["name"]) { pickingMode = PickingMode.Ignore }; kit.AddToClassList("creation-row-relic"); copy.Add(kit);
                 }
-                var portrait = new OriginalPlayerFigure(_setup); portrait.UseOwnerBattleArt(_creation.ClassId); portrait.AddToClassList("guided-portrait"); body.Add(portrait);
-                Label((string)hero["description"], "lead");
-                ResourceStrip(body, (JObject)preview["resources"]);
-                Label(Item("rightHand") + " · " + Item("leftHand") + "\n" + relic["name"], "caption");
             }
             else if (_step == 1)
             {
@@ -121,7 +140,9 @@ namespace AshenSpire.Presentation
             var footer = new VisualElement(); footer.AddToClassList("guided-footer"); _root.Add(footer);
             var navigation = new VisualElement(); navigation.AddToClassList("guided-navigation"); footer.Add(navigation);
             navigation.Add(MakeButton("native-creation-back",_step==0?"Back to title":"Back",()=> { if (_step==0) _back(); else Go(_step==5?2:_step==6?4:_step-1); }));
-            if (_step<4) { var next=MakeButton("native-creation-next","Next · " + new[] { "Attributes","Equipment","Relic","Ready" }[_step],()=>Go(_step+1)); next.SetEnabled(_step!=1 || _creation.CanBegin); navigation.Add(next); }
+            // JS footer: Back at the left, the green Next at the right; Begin (available from
+            // any step, as before) sits beside Next and turns green on Review.
+            var spacer = new VisualElement { pickingMode = PickingMode.Ignore }; spacer.AddToClassList("guided-spacer"); navigation.Add(spacer);
             var begin=MakeButton("native-begin","Begin the climb",()=>
             {
                 if (!_shapeValid) return;
@@ -129,7 +150,8 @@ namespace AshenSpire.Presentation
                 foreach(var property in _setup.Properties()) player[property.Name]=property.Value.DeepClone();
                 _start(player,RandomStreams.ParseSeed(_seed));
             });
-            begin.AddToClassList("primary"); begin.SetEnabled((bool)preview["canBegin"] && _shapeValid); footer.Add(begin);
+            begin.AddToClassList("primary"); begin.EnableInClassList("creation-begin-early", _step < 4); begin.SetEnabled((bool)preview["canBegin"] && _shapeValid); navigation.Add(begin);
+            if (_step<4) { var next=MakeButton("native-creation-next","Next · " + new[] { "Attributes","Equipment","Relic","Ready" }[_step],()=>Go(_step+1)); next.AddToClassList("creation-next"); next.SetEnabled(_step!=1 || _creation.CanBegin); navigation.Add(next); }
             _report();
         }
     }

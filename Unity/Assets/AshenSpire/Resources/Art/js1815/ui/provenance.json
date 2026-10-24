@@ -1,0 +1,820 @@
+{
+  "reference": "cehinds/AshenSpire dev 0029e160 (build 0.7.1.1815)",
+  "pack": "hd-assets-v23/high",
+  "tool": "tools/import-js1815-ui-art.mjs",
+  "assets": [
+    {
+      "resource": "Art/js1815/ui/panel-frame",
+      "size": [
+        720,
+        480
+      ],
+      "outputSha256": "69678e6a4c0bdc4c2abfcf60fa32def21615de4986e7168541e040944e2518e9",
+      "note": "Brass folio frame alone, 2x. Nine-slice 48 px at -unity-slice-scale 0.25px (CSS border-image 24 / 12px).",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/panel-frame.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/panel-frame.svg",
+          "sha256": "9918718c3af71c7ecac023208f395b0da1bd4ef254c18d80fedb968351219355"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/panel-folio",
+      "size": [
+        720,
+        480
+      ],
+      "outputSha256": "81aaf4ef4ba61e917ee86f949ac820817a2bd9ab3658cef942d65d79fa2f6b38",
+      "note": "Frame over soot leather under a 91% #0d0b08 veil (player-polish.css panel fill), 2x.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/panel-frame.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/panel-frame.svg",
+          "sha256": "9918718c3af71c7ecac023208f395b0da1bd4ef254c18d80fedb968351219355"
+        },
+        {
+          "path": "assets/player-polish/materials/soot-leather-material.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/materials/soot-leather-material.webp",
+          "sha256": "4dfb0e033040b8d06817ecb62c779053b58b1e0fc5f27fd1f988ca7fe0ee884f"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/button-neutral",
+      "size": [
+        560,
+        112
+      ],
+      "outputSha256": "7eba2a23b8443c957532181be572701de04a0f6dbf30824434b1cdb838958406",
+      "note": "Title menu entry (.tm-entry), 2x.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/button-neutral.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/button-neutral.svg",
+          "sha256": "dd2843840aae1b5db7adb84c68cf4f160b2ac26095d63acc3612729fc8541452"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/button-primary",
+      "size": [
+        560,
+        112
+      ],
+      "outputSha256": "ac1567b3ad24709d3e1373ad3789da39745a34f9eb69de1ef30234e653dfc9d2",
+      "note": "Title NEW GAME (.slot-new): ready frame on the measured #2a513b fill, 2x.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/button-primary-ready.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/button-primary-ready.svg",
+          "sha256": "771a03dad0ede80882dc0793c8f84ec2e36559076f86d1a660cfea1cd4a8ea50"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/button-primary-focus",
+      "size": [
+        560,
+        112
+      ],
+      "outputSha256": "e4e3b2311bae08de3f92e173112e779a68e3cfafe031418bea9535247e0e2674",
+      "note": "Primary hover/focus surface, 2x.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/button-primary-focus.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/button-primary-focus.svg",
+          "sha256": "8fbcead3a88f3095b1e27adae87c16ad1fd4808af411f6aca13c68a76ff75402"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/divider-ornate",
+      "size": [
+        960,
+        40
+      ],
+      "outputSha256": "7a4fa4fe15ff6acc9efee4c5ba6a7f1f86a9ea2773e4153acbe46d6b97e79973",
+      "note": ".as-ornament divider, 2x.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/components/divider-ornate.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/components/divider-ornate.svg",
+          "sha256": "63270677441b00066d716da11d1610431314640734bd29c64d56359581d1e39c"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/toggle-off",
+      "size": [
+        102,
+        56
+      ],
+      "outputSha256": "b1984559aafbe3e23054d4f33fd27e3fa7b79b79fe86c1accd0a88c6449426e3",
+      "note": "Settings pill toggle, off (drawn from the computed CSS).",
+      "sources": []
+    },
+    {
+      "resource": "Art/js1815/ui/toggle-on",
+      "size": [
+        102,
+        56
+      ],
+      "outputSha256": "58dad6e314692fbf9f864a4fc3e2a12c3b0912ecffdbc6ccda786c20e394d654",
+      "note": "Settings pill toggle, on (drawn from the computed CSS).",
+      "sources": []
+    },
+    {
+      "resource": "Art/js1815/ui/icon-settings",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "601797d365747bfb589cc08b64064864c157456587183ba62468a1e0cca34ff5",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/settings.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/settings.svg",
+          "sha256": "2867fad9be64d30471aa3a9639ed77e9af845df44effce3353b470a4490b823c"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-lock",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "778a679823554d035e238101e0d9955b425fc8e8405e55ba168643f0713bc756",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/lock.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/lock.svg",
+          "sha256": "7e993655d6f57ada13c5d99c29ee7d9087e279bce29526b6ff80c54d921e8ab7"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-close",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "3a435ce654cd68ade784ffa2362e6fd74ea0179bebd7907a65ba34344da2b212",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/close.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/close.svg",
+          "sha256": "3df45d58185be94aced3115fd5895285086cf82be32d6758ac879abd36e81657"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-menu",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "6f381b177a809d230ed73e50535f1e4e3e0ef7ad891b486cd9b03da42d976aa6",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/menu.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/menu.svg",
+          "sha256": "81b33d6c4024594a5a962cee0168d1ced9dc620612703203510d6ffe0753fd0b"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-deck",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "5ee9199dc08e5e855506df804afb098ad6800f2e21d8ee08da47bff2a481bc77",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/deck.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/deck.svg",
+          "sha256": "8097e6fc9c59497d600babb5dacb8a1fbde237ded189d79d8273a435dd1e8ed0"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-equipment",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "db782f5cb8c47fa9e961b73f72f962b6a9d0f2003a01c7b0d50fc502c5af3d93",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/equipment.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/equipment.svg",
+          "sha256": "b852a2ef8fa5840d9e0dacf296b58e13e99aa38b34cd5d389b631b532f9ca6a8"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-inventory",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "06fb625a536ee3144008237338a0cfab0e6554f61ecc80aab3108e4edcbd4719",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/inventory.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/inventory.svg",
+          "sha256": "76d42bf7b92195c2d8237848086b6f0f360b13b087edc1e6803b74d1c837b2f8"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-profile",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "0238a7f49fbe411f0f7d7f7fef8132c32c56954d2f6474db23f7db1120c2e32a",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/profile.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/profile.svg",
+          "sha256": "061583ae5381cd71d8d9e448024fa570bbd33ff129eb568e049320f8e650e2d2"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-rest",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "0acf5663e9004df4569f491ec2929545ed80c24611c108325907ed03ca3c1b5a",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/rest.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/rest.svg",
+          "sha256": "15e13a26a5d7e43c3e62506cd5f99dbedb8c689eeb9e3287eb88b315a2cf2306"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-merchant",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "f9920d0fd8f605b3c7aa794a1f0e85a70722532bb8e8ee0e3bcc83be5e33bd43",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/merchant.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/merchant.svg",
+          "sha256": "c014da552cd70a67ad7f6373925bbc9004a51d74d781cdbb6d9716a67aa40d27"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-reward",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "be7a372478cfccbd07c65b2c2ee854c5668fd32601434337bef27fcfb28ebae2",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/reward.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/reward.svg",
+          "sha256": "daf17536bf46ea04bf040495ce5c2a16be1b0c4209ead640bc7e53e20c0457df"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-smith",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "faa88fe2e3bdbe4ae6257d2074e4db3c86d0158481ebb0dde590cc089ac9dfa8",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/smith.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/smith.svg",
+          "sha256": "d843940055f18f1dbf81e0cbd346d1d6b63bfe1ca99a85e47177f88725a33a20"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-health",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "cd9367711cadfbd3a93283ab781691c10af40fc80bdd7bb224f9e27133743a00",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/health.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/health.svg",
+          "sha256": "b54e961a7e345cc1d1d0dd4d77123ba03ca8b809a6881de18c3caf380e97aac4"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-mana",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "a7ba4a24c7f67bcbc33a3db106950749b676c732cbc7bdc8b1d9367241c185cc",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/mana.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/mana.svg",
+          "sha256": "93cb98e2a9781df669d4721a48d6ff6ee073303bb55c20bf341760255b1e7c19"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-stamina",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "dc23beb0d53552027b380a6d01848dd873bf95c7d2fb2f0581c0d7d46d8d654e",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/stamina.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/stamina.svg",
+          "sha256": "b0968eda700d314d957fee539b3b6c2cdde1fe38d3cf7be710a09824767b6520"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-cinders",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "ae6b65560c6064eb8c135ec6e4f4af0646942930c8fdb7517c9a189236d0516f",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/cinders.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/cinders.svg",
+          "sha256": "48f314012098e4521619477b91a7426c049554c43b6a46cdb663ba48a76ca988"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-flask-health",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "3782390031811199cd43ec4811835382f92595b034b040317f8ae143aa4e9e2a",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/flask-health.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/flask-health.svg",
+          "sha256": "c8e9c6507f96a7aac81ff88e4fbe8499085a6d546169b1fe99b8d4ccf4471edb"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-flask-mana",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "4992e2db2c9a481163be245677e7f4b31020ed47f209a0c5914f88d2ee3afdeb",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/flask-mana.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/flask-mana.svg",
+          "sha256": "e568411548f6dc1f0e232448e76b1e7af84e3c06a4055501d3bb23e79cc16fce"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-map",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "942890b8653b507905faead958f0066e92666a9ea0e533a3cb24596017f2c604",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/map.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/map.svg",
+          "sha256": "364d73489c2f81b2761c73ed00540a141595a1e519d3d0c0353a0c3013ddb450"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-next",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "bfcafbbe6552244ffc6a90e320cd2a62de3c04b95748af4551c79b0b7da9f24e",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/next.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/next.svg",
+          "sha256": "4384b903876d02027b4d99c95189f1f8b0066563c7adb396de3df3496aa6914c"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-back",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "cd92f6964438fcb9435aa51af4fc287f527b79814187acaacd0e8d67e38ef6f6",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/back.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/back.svg",
+          "sha256": "3de92c8b5e74ece9ac0f14ac73f1e8a4a140f5f268223598f7073d27824fe102"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-history",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "f0c734626d8ddf657e6380fc98fd2d3bf4d2362768f4187e787bcdce3cb2e2a5",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/history.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/history.svg",
+          "sha256": "c4e5917a02fbce8d9c94df1e42eb586fac1d573e2018bf275dbd4e5221cdc4f2"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-save",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "56f89915d373a60847fdcb358ebc644a0de4a49f1e5bb215a39aafc4da789d56",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/save.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/save.svg",
+          "sha256": "bc14e30fdf69caf8f43566d642d589d996c520b0371ab35f141159885ac2db98"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-coop",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "a106511200b9e97d41903131098127ab2d77f3df3c7415ee242056e81ed05c8f",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/coop.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/coop.svg",
+          "sha256": "d45ed9d69b9f3a43e8845af9310ab1720d99840638467c1281294f80e4bbd3a0"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-compendium",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "ea720f9515861be44ec6e06ade4497898164418327577c4339a8183292b353c8",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/compendium.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/compendium.svg",
+          "sha256": "b9a10322d04e3715eca6dc196c76ab4b426cf216ecd708f51cc4d23e43729e66"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-journey",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "3c58d45851681e54cfbac4033e93971eec91ad8e78a97569c530be6a49a4b39a",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/journey.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/journey.svg",
+          "sha256": "b76c2cbc9ca54efd27f67fdf6fc02f22862ba6f4215b0f13bcf55e2b4f2589ca"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-relic",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "3e5c574ae4bbd89f89a11e55a105630f43b5f1b19e78be3a2e34a816a84966a1",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/relic.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/relic.svg",
+          "sha256": "eb389ef4223f6101334e91fd074103645a43fac98bc7a8e1f712ad8cf69fcaa2"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/icon-attack",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "2dfcdb8024b77babddac2b40088f4571af6c791f9766d9a85360ab4d5e01126d",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/attack.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/attack.svg",
+          "sha256": "5a942fe1ad5f512fe01a37b34436c5b2efc6430cc1680d5a8c2516c17aeded84"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-title-hall-desktop",
+      "size": [
+        1586,
+        992
+      ],
+      "outputSha256": "ab1af3a7222634de35cb72e2243c4f600c075464bcc44983f34037fab43fe541",
+      "note": "Title hall composite (desktop).",
+      "sources": [
+        {
+          "path": "assets/bg/tower-city-background-unlit.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-city-background-unlit.webp",
+          "sha256": "dc75dedcd030d7cdad64683c85afdeb65bb7e733c690a4b0c176f0eed638ad17"
+        },
+        {
+          "path": "assets/bg/tower-entrance-hall.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-entrance-hall.webp",
+          "sha256": "e255842fb373887863549ae3019416929682e736af7b4812f48d5f769645b498"
+        },
+        {
+          "path": "assets/bg/tower-door-mask.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-door-mask.svg",
+          "sha256": "79b19545b85b37e55e1e03b479382c5da8dc43e1dd3352ad962d639b3c1a8319"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-title-hall-mobile",
+      "size": [
+        1024,
+        1536
+      ],
+      "outputSha256": "8b50d733a2003bac6bc25429c47c21477fbb0738c08c85ff3f7720c36dbe6ff7",
+      "note": "Title hall composite (phone).",
+      "sources": [
+        {
+          "path": "assets/bg/tower-city-background-unlit.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-city-background-unlit.webp",
+          "sha256": "dc75dedcd030d7cdad64683c85afdeb65bb7e733c690a4b0c176f0eed638ad17"
+        },
+        {
+          "path": "assets/bg/tower-entrance-hall-phone.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-entrance-hall-phone.webp",
+          "sha256": "8c8fd5df193d40015f56e45447b9092cd2f9371abe012ba7e8ae7b371ff0cdc5"
+        },
+        {
+          "path": "assets/bg/tower-door-mask-phone.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/tower-door-mask-phone.svg",
+          "sha256": "a3f013a4b85f4a4a8969f5b08de28ef29346d308b5f0173435c805fd57b783ff"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-spire-vista-desktop",
+      "size": [
+        1672,
+        941
+      ],
+      "outputSha256": "7f46aaa8d57670969fbf5a9ea4706aad077466d001c9e9e95c3e25009c005c60",
+      "note": "Creation, history and end screens (.customize, .gameover).",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/spire-vista-desktop.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/spire-vista-desktop.webp",
+          "sha256": "23d5a0c6024824a7a05287bb40a1b79c22cae0668a0a15f133aa14a01f721938"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-spire-vista-mobile",
+      "size": [
+        941,
+        1672
+      ],
+      "outputSha256": "96b44bccae87f822620002a02018ee2062ff5f04a61ec610bac6a63e559ce65e",
+      "note": "Phone spire vista.",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/spire-vista-mobile.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/spire-vista-mobile.webp",
+          "sha256": "5cb88b129ae6fced67527fcb3edac08a0b54f07af2c227ef27712e4157e9b41f"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-merchant-desktop",
+      "size": [
+        1672,
+        941
+      ],
+      "outputSha256": "717e928b6c3952d40f71ecb45d756c6a212cd9fa1729c4e59f939c96c290188e",
+      "note": "Merchant (.shop-workspace).",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/merchant-desktop.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/merchant-desktop.webp",
+          "sha256": "8523ce8a1182b3ef72b78e0b74d31f22c8d578a56a7cd8973df0911463d18ca1"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-merchant-mobile",
+      "size": [
+        941,
+        1672
+      ],
+      "outputSha256": "76c66fb895ec7f42699624af58c075fce9f8f7bd85a04be48814a74ea8892aec",
+      "note": "Phone merchant.",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/merchant-mobile.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/merchant-mobile.webp",
+          "sha256": "7a36a4d7f72d4593cfe128303e7f55ed0d2f11cbcf61673e315209b8765b7d12"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-forge-desktop",
+      "size": [
+        1672,
+        941
+      ],
+      "outputSha256": "820a66d9191cc7d0276fc40f2c7a0f7ac786b59cede7a14c1f164b55c1c0d76f",
+      "note": "Blacksmith (.blacksmith-workspace).",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/forge-desktop.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/forge-desktop.webp",
+          "sha256": "32c7141230f341e6d17015951524a70247cf66b0a36edb9ff9894063f80d13b3"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-forge-mobile",
+      "size": [
+        941,
+        1672
+      ],
+      "outputSha256": "ae017e0a8d2ee31233e76be73d42bd7d2722eef0b6341e9222049a68e927610b",
+      "note": "Phone blacksmith.",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/forge-mobile.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/forge-mobile.webp",
+          "sha256": "28e9810651b97b6eb853d0da223f32020b1ea4205fabe9f99238dc52b9a51cb1"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-chapel-rest",
+      "size": [
+        1254,
+        1254
+      ],
+      "outputSha256": "fb21b5018efbcce291eaf52642b81d403ae0c0189c7bd8eecd343c0ef1f8f138",
+      "note": "Shrine/rest campfire (.rest-screen).",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/chapel-rest-master.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/chapel-rest-master.webp",
+          "sha256": "2fea1b18bf4e19bf5912335f7475d0ca3f5905a5b029532da65ce675908c0205"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/scene-grave-dialogue",
+      "size": [
+        1254,
+        1254
+      ],
+      "outputSha256": "dd641d198b117647ee56d3245f2d9b4ce569dc6c888a327286108cd10bd91a74",
+      "note": "Event dialogue stage.",
+      "sources": [
+        {
+          "path": "assets/player-polish/scenes/grave-dialogue-master.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/scenes/grave-dialogue-master.webp",
+          "sha256": "4791f9197d30b0b462c4fc5e619fadba34b24b245a8ab181c7d9a7ba3af57f9b"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/material-soot-leather",
+      "size": [
+        512,
+        512
+      ],
+      "outputSha256": "572fcf19ca323d425a51ac837b11aef8428073ba114346f7cce8ebc26924c64d",
+      "note": "Panel material, downscaled.",
+      "sources": [
+        {
+          "path": "assets/player-polish/materials/soot-leather-material.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/materials/soot-leather-material.webp",
+          "sha256": "4dfb0e033040b8d06817ecb62c779053b58b1e0fc5f27fd1f988ca7fe0ee884f"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/map-island-act1",
+      "size": [
+        480,
+        720
+      ],
+      "outputSha256": "e0d774b09f04e1bf9f3d1277884e0be23ffe7945fa5c7e7cd37b79ac590f2cb4",
+      "note": "Act 1 terrain, radial soft edge (.map-vignette).",
+      "sources": [
+        {
+          "path": "assets/environments/the-shattered-gulf-world.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/environments/the-shattered-gulf-world.webp",
+          "sha256": "edc2c5354daa13339b8ee3817a0a5f52f9f7620ae78159ef866840d7199e75f3"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/map-island-act2",
+      "size": [
+        480,
+        720
+      ],
+      "outputSha256": "a99bd337832bdde663d0bb91968c059a45e85935ab8b5a3ba173bdda3ad98e63",
+      "note": "Act 2 terrain, radial soft edge.",
+      "sources": [
+        {
+          "path": "assets/environments/the-fractured-realm-world.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/environments/the-fractured-realm-world.webp",
+          "sha256": "2c2e78b65784aa38d5a1cf6f23e3721782ad05d0b8580fed9e829862f321a48f"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/ui/map-island-act3",
+      "size": [
+        480,
+        720
+      ],
+      "outputSha256": "4c43b54bddf2162d0a6f4f2e25398751b841f4c75e6931da105ea361352b45aa",
+      "note": "Act 3 terrain, radial soft edge.",
+      "sources": [
+        {
+          "path": "assets/environments/the-fivefold-frontier-world.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/environments/the-fivefold-frontier-world.webp",
+          "sha256": "6e11a7798271a82771a8b90ac45b245a5b74d2d523efa6250f832d45148e1712"
+        }
+      ]
+    }
+  ]
+}
