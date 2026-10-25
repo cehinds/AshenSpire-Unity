@@ -1,7 +1,7 @@
 # Published HTML to native Unity migration
 
 > **Superseded 2026-10-25.** The target is now JS Core 2 (`ashen.core@2.0.0`) at
-> `c3049c98`, build 1837, not published test 898 and its Current rules
+> `3a90974b`, build 1854, not published test 898 and its Current rules
 > ([SPEC.md §0](../SPEC.md)). Co-op and the old-rules saves are dropped, so the co-op and
 > schema-20 import items below are withdrawn. The pure functions and oracles listed here
 > (ruleset-7 stat rows, test-898 card costs, combat-XP receipts) were built against the

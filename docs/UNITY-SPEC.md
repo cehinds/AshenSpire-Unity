@@ -3,7 +3,7 @@
 ## Owner decision, 2026-10-25: JS Core 2 is the game
 
 AshenSpire-Unity becomes a full port of the HTML/JS game (`cehinds/AshenSpire`, pinned at
-`dev` `c3049c98`, build 1837) running its **Core 2** profile, `ashen.core@2.0.0`. Rules,
+`dev` `3a90974b`, build 1854) running its **Core 2** profile, `ashen.core@2.0.0`. Rules,
 content, screens and look follow JS. The contract, the pin and its update procedure, the
 imported JS documents and their precedence, old saves, co-op and the port plan are in
 [SPEC.md §0](../SPEC.md#0-unity-port-contract-js-core-2-is-the-game-owner-2026-10-25).
@@ -22,7 +22,7 @@ JS Core 2, JS wins, everywhere.** Recorded rulings:
 | Original-game save import | required for phase 1 (2026-09-28) | retired with the 0.5.5 rules (SPEC §0.6) |
 | Saves from earlier Unity builds | preserved and loadable on their frozen rules | not loaded, not migrated, not deleted; the player is told (SPEC §0.6) |
 | Co-op | native co-op with an authoritative C# LAN companion | removed, with the companion and its packaging (SPEC §0.7) |
-| Parity reference | `b17a7f45` (0.5.5 content); published test 898 for the migration | JS `c3049c98`, build 1837 (SPEC §0.2) |
+| Parity reference | `b17a7f45` (0.5.5 content); published test 898 for the migration | JS `3a90974b`, build 1854 (SPEC §0.2) |
 | Open gaps O-5 (Poise and Ward rows) and O-6 (dodge formula) | flagged for review | closed: Core 2 Poise, Ward (off) and accuracy replace them |
 
 ### Status of the sections below

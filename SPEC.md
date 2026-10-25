@@ -56,8 +56,8 @@ plus the legacy-adapter tables JS SPEC §16 says the Core export still needs
 | Item | Value |
 |---|---|
 | Repository | `https://github.com/cehinds/AshenSpire`, branch `dev` |
-| Commit (the pin) | `c3049c989f698f5d03a7f78954a2a2a5098a7f20` (`c3049c98`) |
-| Build | `0.7.1.1837`, digest `334c5f141a` (JS `buildordinal.json`) |
+| Commit (the pin) | `3a90974b180a6521e2edd6c16c6ee2b1c2f0ffad` (`3a90974b`) |
+| Build | `0.7.1.1854`, digest `4a4af1690b` (JS `buildordinal.json`) |
 | Profile | `ashen.core@2.0.0` |
 | Pinned on | 2026-10-25 |
 
@@ -264,7 +264,7 @@ Implementation follows in phases, one reviewable draft PR each, in this order (f
 PR comes first.
 
 0. **Owner actions:** GameCI secrets (`UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`); the
-   JS pin (§0.2); the 1837 reference capture; the rulings in §0.5–§0.7 (done 2026-10-25).
+   JS pin (§0.2); the 1854 reference capture; the rulings in §0.5–§0.7 (done 2026-10-25).
 1. **Parity harness:** JS capture and DOM-rect dumper; Unity screen captures; side-by-side
    diff reports.
 2. **UI foundation:** two panel scales (§7.2), a screen router with full-viewport layers in
@@ -1172,8 +1172,8 @@ The first chain shipped: **Grave of the Nameless** (step one, ungated) → **The
 ## 6. Map generation
 
 > **Unity port (§0).** Historical: the 0.5.5 map and reward rules. Core 2 routes are
-> `packs/core/routes.json` (three acts of seven pre-boss depths plus a boss, three lanes, fog,
-> rests on depths 3, 5 and 7 with one before the boss, a fight first, about 15% of randomly
+> `packs/core/routes.json` (three acts of nine pre-boss depths, split into up to five branches
+> with one boss per branch, three lanes, fog, rests on depths 3, 6 and 9 with one before the boss, a fight first, about 15% of randomly
 > typed nodes shops), rewards are `packs/core/rewards.json` (groups cards 60 / equipment and
 > relics 10 / potions 30, three offers, take one) and shops are `packs/core/shops.json`.
 

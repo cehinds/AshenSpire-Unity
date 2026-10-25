@@ -1,6 +1,6 @@
 # Faithful Unity rebuild: foundation and parity
 
-> **Superseded 2026-10-25.** The parity target is JS Core 2 at `c3049c98` (build 1837), not
+> **Superseded 2026-10-25.** The parity target is JS Core 2 at `3a90974b` (build 1854), not
 > the original 0.5.5 game ([SPEC.md §0](../SPEC.md)). This file records parity with the old
 > rules and is kept as history.
 
