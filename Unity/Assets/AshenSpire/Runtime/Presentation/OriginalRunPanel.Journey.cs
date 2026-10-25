@@ -41,7 +41,10 @@ namespace AshenSpire.Presentation
         private void JourneyStyles()
         {
             if (_journeySheet == null) _journeySheet = Resources.Load<StyleSheet>("JsJourney");
-            if (_journeySheet != null && !_root.styleSheets.Contains(_journeySheet)) _root.styleSheets.Add(_journeySheet);
+            if (_journeySheet == null) return;
+            // The fixed HUD and quick menu mount under the app root (_actionHost), outside _root, so the sheet goes there too.
+            foreach (var host in new[] { _actionHost, _root })
+                if (host != null && !host.styleSheets.Contains(_journeySheet)) host.styleSheets.Add(_journeySheet);
         }
         private static Texture2D JourneyArt(string name) => Resources.Load<Texture2D>(JourneyArtRoot + name);
         private static Image JourneyPicture(Texture2D texture, string className)
