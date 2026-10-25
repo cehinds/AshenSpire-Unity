@@ -1,0 +1,663 @@
+{
+  "reference": "cehinds/AshenSpire dev 0029e160 (build 0.7.1.1815)",
+  "pack": "hd-assets-v23/high",
+  "tool": "tools/import-js1815-collection-art.mjs",
+  "assets": [
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/ashStaff",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_ashStaff.webp",
+          "sha256": "35f9ecdaeb41f0cee7effe9b5950526efac32d93b9e7ff48fa00120dc7cca267"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "180cdb905846480ddcfb8a7fb746f17ee4b05c1a4d3b07ebae3d5fa0ed1bd4ef",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/battleaxe",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_battleaxe.webp",
+          "sha256": "902a6f2d20ba43cb4736f1cbb6f7a3e4d474f1b80079522ecdd14fb40be94b68"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "4aafecfdf7e1ae43332b3ab863f6370f6712b944d66225b26ef8ed5bc37c18e9",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/blightRod",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_blightRod.webp",
+          "sha256": "51975de98184b30eda76526825588a95731f6d56f7dd088254eb92c58c01892b"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "701df703facd873bbb7b37f5d47085ea0a6829d0c0ffc74bcf1410772d974a7d",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/boneSceptre",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_boneSceptre.webp",
+          "sha256": "a5f6e5134bebe07d51e9540febf2d3f450171b4442f84d0e8c9b0301caff4343"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "4f7cc147a994363e0524dba36a9b3bbebfc9291bfc6dbb61d36ba858ddaa9534",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/buckler",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_buckler.webp",
+          "sha256": "f56bf8e6cb0755f502c0abaf3a4b0ecf37472ff6b8aed49f5a2e65e9a2ed4c64"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "7db243d05857c255aae4381a8bccb74b008c6cc4b22fffb5674c22422bde5f9d",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/dagger",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_dagger.webp",
+          "sha256": "6190dbc9020f06dee68f3f17167ab726d3daf7b2c1f1b03db6513c7949ab1390"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "794a259b43b88bd0ea993828b23658c54920359e57a0516597b583c87514ac26",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/emberlightSceptre",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_emberlightSceptre.webp",
+          "sha256": "63c8f579a40d8c8b48f7e1dfc84623bac018f070664e5a8b454fbe056443e8b7"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "7e2845f1e50916052a00a5555688d9c1e51365bd9475317a0be4e36dd7e04146",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/goldboughBranch",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_goldboughBranch.webp",
+          "sha256": "4a12e7ffa74b591446d2be5eb4e598d2f381b7ee70b9aa5ae17a15baed6f25e3"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "1c509728a6f1dcc9af6f8a15c00e598e9135f53fdc09fbf75b40eeea35587583",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/gorefireBrand",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_gorefireBrand.webp",
+          "sha256": "3aedbb2a25263df43ce2cd683bd4252eac41e30dd63a36e09801efdf5f828651"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "f87ab49fe35368c8baa6628c905142986f67590c370d2757a640078a52657597",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/greatsword",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_greatsword.webp",
+          "sha256": "625d67e4c270db9c79b79576e7138ece11e991af600346974431cf9ccce62b02"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "ac3e9d017b295e0cd19a5a1a99a76199d8fb7dd6fdfce68b478090ffd8a96be4",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/halberd",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_halberd.webp",
+          "sha256": "4184816ba442c96a5a2a66f7fcae52aa248ec0ef5d99fa1e96c3eb8aa2c61096"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "8cd2f40e844d330e8c8851200c21362340576e4ccb96aa87697e2c0076f0ed46",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/katana",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_katana.webp",
+          "sha256": "c34ae03929e85a971f29dadbd399c7675e705f143ea2100edcd8463da0300c77"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "93cb426f7e5465bfeac90c4006865652b2a3ba62adb73a3822b4b24647890bb3",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/kiteShield",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_kiteShield.webp",
+          "sha256": "2d354934ca6ebfa6d4c4b7f140c7aaea25ce2645c126ab7a6bc63182c7eb8f4f"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "fdcec3e02ada0dce4b6c898df324401bcb81cd0227875deac40c45a19bcca533",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/lantern",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_lantern.webp",
+          "sha256": "a070b4f4dd1ba0666136e161ee6fb2bba65332b399e3673528eff8dede720e1e"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "45a918938f827d6dc23be749ecb98dfda958423ea775412f53c698fa91db3107",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/parryDagger",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_parryDagger.webp",
+          "sha256": "949449e075cff313fcda578a25e3157cc6cb4bd83bf0ff93855b969aa669ca4f"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "935b7eea698318a1ed1599e16ca28505bb4f91468561c4aaa0372f262b593d38",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/roundShield",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_roundShield.webp",
+          "sha256": "5d463b688d4c670a4fe7c7c1805e0d1fee6a9056aa4a2014c0df795cfa5b55d4"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "299a808bc6ff39a2a5b06f357e6d88073c250001fd66e60019d21282e2d3c60f",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/shortbow",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_dagger.webp",
+          "sha256": "6190dbc9020f06dee68f3f17167ab726d3daf7b2c1f1b03db6513c7949ab1390"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "794a259b43b88bd0ea993828b23658c54920359e57a0516597b583c87514ac26",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/spikedShield",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_spikedShield.webp",
+          "sha256": "d1ef5d2cfddbb3e5e1b4fe34bb5ba6f467b4c9b83bcecdc27b16f043c1903b8b"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "3e98fbaa3751783ba6c7057fcbf0a4d046286f96ce16ddcf112f9ad9c1ef22d8",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/starstoneStaff",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_starstoneStaff.webp",
+          "sha256": "43bc381bf081e21bbe707131143713a0e656149deaddf6637630df992086badf"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "f36c0f913fc5d30e5fe17c828771c9fae403691e63a4255cc777cb1b0a3cd9b8",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/straightSword",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_straightSword.webp",
+          "sha256": "9320da4360122fcce17f9124755ca8bdeec152831941533f1e709bc5781288b3"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "47850b45aac23026d773a9373726e541066ee7065e4bd6cb8e5166920f2a92a2",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/torch",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_torch.webp",
+          "sha256": "8820f5f6b0ccdc6fe6b669580471446166d5bfa8f9220651e6dc0e63c79cf70a"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "0e471da66d0089d7bf7815ac9acf9edeaec5d1c4a9761003213496a62323749e",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/towerShield",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_towerShield.webp",
+          "sha256": "68fa58f64c7839d9a51b21a3cd41f13b9b3fa94323386a01ff4f0857b3aeb106"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "3e4b581989f1d43e7821228b85cda10a97b02c394db86b86889b0370c648fe21",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/twinblade",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_twinblade.webp",
+          "sha256": "f1a274f35921d3e620c7b642bc8b2254e9de76a7fff185247fe5941a8c41533a"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "9534de16c08d5f585e259c04ba54cacb6ef95f468ed5db3daaab3ffee2c4fa4c",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/warhammer",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_warhammer.webp",
+          "sha256": "af096236c3b2b9c86267657f607b3feb330a047d1ea500c254f7842309d0cc74"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "063de456cb9fc3f31e63848be1ec55cca4d87547f09fbd0b057063dfd38fd0a3",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armaments",
+      "resource": "Art/js1815/collection/armaments/wyrmhornStaff",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/icon_wyrmhornStaff.webp",
+          "sha256": "43971258db9abef9ac857674310fa5b82cbac19e3590b6702cfb4cea0a951206"
+        }
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "outputSha256": "ab21bcced55b1e2fcebdd18ebd3d90cc49a83249beb7d3138cc6025d079046f2",
+      "note": "equipment icon_<artKey>, at most 256px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/herald-default",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_herald_default.webp",
+          "sha256": "cbdb46428bf642411c0b1cd3f195c8bff5f4d25336be195f64621c24ea7cf754"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "952b1d754e0276d5db1e5e7b6783444a9b3699ee680eeb8aded90e88a7fd24ba",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/herald-emberhabit",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_herald_emberhabit.webp",
+          "sha256": "fb1f5e6b9b0d9a6a17ae8b3cc74045074f0c328639d3b5591dcad597a63f4439"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "bd7c304872a55501b755a5dd510876c2ae6525414f3b8bb6ce7cd01215538857",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/herald-ossuary",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_herald_ossuary.webp",
+          "sha256": "d8b00d8269cb976cad984153988972055b9b7efe68ee14119bc2905f128c35d5"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "6f7fc4c6863bebcc41e968c6661a2cf8d018e84dd0bb6fef9c5351731787685f",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/herald-pilgrim",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_herald_pilgrim.webp",
+          "sha256": "e580bac87fe40e2d2ee82b0bc618f410b009c8cc33b5c71563d4b6cd5aeb9e6d"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "7f880355c1b861c43154ed74e0ef52a88b86db1f95d400f508fcd76df02aa484",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/reaver-default",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_reaver_default.webp",
+          "sha256": "a59d4483bf9ec50adc35be2da842fa3fe35049f6389190b4df30274f06fb7474"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "8111dc3a0625c56d9c6431c4a5ecd7efe5e98bc17ff05a8ecee915b1a3752151",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/reaver-oathsworn",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_reaver_oathsworn.webp",
+          "sha256": "aea36b4c4238eb480a2e88ccd3d0800e3682138852f3b863524b04cd10163568"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "0d1397b9ff1015cfb64feeb008ee5a5390130bc13ce7c6dc7f79986dc1f67a01",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/reaver-vigil",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_reaver_vigil.webp",
+          "sha256": "d87fc8043c6fd29c6574b90dbd84787d0d08b569a9bbec42ffc13a11db2667e6"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "b4967eb1aa53c3b4869bc121b18c2edac57ead090ff39dbe3dd49694ebed7ef0",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/reaver-warden",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_reaver_warden.webp",
+          "sha256": "d7d2019efae1201f469f51b98bbb0b587388af7e4b5b128145993437b132e9ac"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "17f56f3bbb49663395150c3a69c3cc348f44d2790c1640fa1b11726babfad902",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/rogue-default",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_rogue_default.webp",
+          "sha256": "aab107c67420459075d0f21efbbcd9aeed217d49f87f696a7d5cafe2b259201b"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "03cd512555f353deb6ee6a386a9e65a283b8b46dc7a72b2a50ea0c636557c02b",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/rogue-duelist",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_rogue_duelist.webp",
+          "sha256": "512a6de8583b03ff88475181401e72e31989d022674718614c1b25955b783b5d"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "93c4c10fab7e8692224a282d505e3aa43b6ac0f44f6723a80cb721a19131bf56",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/rogue-nightveil",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_rogue_nightveil.webp",
+          "sha256": "2b5787d696ac975b8d8ee740783430f67f8dacbb8649f0dddc6e161da67d99b9"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "5e943a848048070e2b062d89f8106f4bed5a2cb9427d2fc1cac8a4eaa7b94d94",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/rogue-shadow",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_rogue_shadow.webp",
+          "sha256": "1c0486fd76330568b889a2080b4ebcf354eecc1ebbc12dcb8888b2f92f50ac17"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "a16d570058bb86d7159eb5196f1e55f5614f865ddc1f410ae82534eb0579a8d2",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/starseer-astral",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_starseer_astral.webp",
+          "sha256": "da0fc5dd5ecdc0cd9abc0c83b25f2eef94c821d8d1c9aa13b57fd96622ca98a5"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "15adbc403c5fa1bb4b70aff86bf3d957536f191ac38cbc2896720cfd552aec69",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/starseer-default",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_starseer_default.webp",
+          "sha256": "a4de84a2f925bce512f92aea40d7faf0671c3540b40d595f67e82ef3fd7ede5e"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "b03bd6762d944c6704bb02a3cf3c42c64853dd6f6779df95cecd37240d0f213b",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/starseer-eclipse",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_starseer_eclipse.webp",
+          "sha256": "d6f5121ff89128b13daff19ba1a090159476c7d12040efeeb4fed7efd9895d38"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "d50b70e4e9f592b6e6ef3abafe91bb9861692cefa08d001b322c1375a63542c1",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    },
+    {
+      "kind": "armour",
+      "resource": "Art/js1815/collection/armour/starseer-starlit",
+      "sources": [
+        {
+          "path": ".art-cache/hd-assets-v23/high/assets/equipment/body_starseer_starlit.webp",
+          "sha256": "1029a40b7515d4f1dbaea32bd5c48311b2bc5c4d455572e4b2e3508b21ffe037"
+        }
+      ],
+      "size": [
+        253,
+        320
+      ],
+      "outputSha256": "13740ac521c73fd19be21ef6db634467a0d2a22871970607a2cfe2707eb0b8d1",
+      "note": "equipment body_<class>_<artKey>, at most 320px"
+    }
+  ]
+}

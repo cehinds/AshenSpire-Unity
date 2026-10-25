@@ -1,0 +1,124 @@
+/* JsCollection.uss: the JS 0.7.1.1815 collection modal (07a-07d) and the settings tabs (09a-09c).
+   Attached to the app root after the theme sheets by OriginalRunPanel.Collection.cs (JsCollectionSheet)
+   and CampaignView.PlayerSettings.cs. Uses the --ash-* palette from OriginalTheme.uss only.
+   Selectors start at .app so they outrank the theme's single-screen compositions. */
+
+/* ---- The modal: the run body becomes one wide folio while the collection is open ------------- */
+.app .body.js-collection-host, .app.ui-wide .body.js-collection-host { max-width: 960px; width: 100%; align-self: center; margin: 18px 0; padding: 10px 16px 14px; }
+.app .body.run-phase-event.js-collection-host, .app .body.run-phase-eventresult.js-collection-host { margin-top: 18px; background-color: rgba(13,11,8,0.92); border-color: var(--ash-gold); }
+.js-collection { flex-direction: column; flex-shrink: 0; }
+
+/* Top tabs: Character | Armory, plain text with a green underline when active (JS .cz-tab.on). */
+.js-collection-head { flex-direction: row; align-items: flex-end; padding: 0 2px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge-soft); }
+.app .js-collection-head > .button { min-height: 44px; margin: 0 6px 0 0; padding: 10px 10px 8px; font-size: 14px; color: var(--ash-ink-dim); background-color: rgba(0,0,0,0); border-width: 0; border-bottom-width: 2px; border-bottom-color: rgba(0,0,0,0); border-radius: 0; }
+.app .js-collection-head > .button:hover, .app .js-collection-head > .button:focus { color: var(--ash-ink); border-bottom-color: var(--ash-gold); background-color: rgba(0,0,0,0); }
+.app .js-collection-head > .button.selected { color: var(--ash-select); border-bottom-color: var(--ash-select); background-color: rgba(0,0,0,0); }
+
+/* Left rail (desktop) / wrapping row (narrow): neutral bars, the open pane in selection green. */
+.js-collection-main { flex-direction: column; border-bottom-width: 1px; border-bottom-color: var(--ash-edge-soft); }
+.ui-wide .js-collection-main { flex-direction: row; min-height: 440px; }
+.js-collection-rail { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 10px 0 8px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge-soft); }
+.ui-wide .js-collection-rail { flex-direction: column; flex-wrap: nowrap; width: 156px; padding: 14px 14px 14px 0; border-bottom-width: 0; border-right-width: 1px; border-right-color: var(--ash-edge-soft); }
+.app .js-collection-rail > .js-rail-entry { flex-grow: 1; flex-basis: 40%; min-width: 0; min-height: 44px; margin: 3px; padding: 8px 10px; font-size: 14px; -unity-text-align: middle-left; color: var(--ash-ink-dim); background-color: var(--ash-panel); border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; }
+.app.ui-wide .js-collection-rail > .js-rail-entry { flex-grow: 0; flex-basis: auto; margin: 0 0 6px; }
+.app .js-collection-rail > .js-rail-entry:hover, .app .js-collection-rail > .js-rail-entry:focus { color: var(--ash-ink); border-color: var(--ash-gold); }
+.app .js-collection-rail > .js-rail-entry.selected { color: var(--ash-select); border-color: var(--ash-select); border-width: 2px; background-color: rgba(89,189,117,0.08); }
+
+.js-collection-pane { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 12px 0 14px; }
+.ui-wide .js-collection-pane { padding: 14px 0 14px 14px; }
+.js-collection-foot { padding-top: 12px; }
+.app .js-collection-foot > .button { min-height: 44px; margin: 0; font-size: 14px; -unity-text-align: middle-center; background-image: none; background-color: var(--ash-panel); border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; }
+.app .js-collection > .notice { margin: 8px 0 0; }
+
+/* Pane type: gold serif title, Inter subtitle, tiny tracked eyebrow. */
+.app .js-pane-title { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 18px; letter-spacing: 0.6px; color: var(--ash-gold); margin: 0 0 4px; white-space: normal; }
+.app .js-pane-subtitle { font-size: 13px; color: var(--ash-ink); margin: 0 0 10px; white-space: normal; }
+.app .js-pane-note { font-size: 12px; color: var(--ash-ink-dim); margin: 0 0 6px; white-space: normal; }
+.app .js-pane-eyebrow { font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); margin: 0 0 2px; }
+
+/* Chips: outlined micro labels (EQUIPPED, ACTIVE, kind). */
+.js-chips { flex-direction: row; flex-wrap: wrap; margin-top: 4px; }
+.app .js-chip { font-size: 10px; letter-spacing: 0.8px; color: var(--ash-ink-dim); border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; padding: 2px 6px; margin: 0 4px 0 0; -unity-text-align: middle-center; }
+.app .js-chip.js-chip-on { color: var(--ash-ink); border-color: var(--ash-ink-dim); }
+.app .js-chip.js-chip-go { color: var(--ash-select); border-color: var(--ash-select); }
+
+/* ---- Equipment (07b): framed slot rows at left, the inspected item card at right ------------- */
+.js-equipment { flex-direction: column; }
+.ui-wide .js-equipment { flex-direction: row; align-items: flex-start; }
+.js-equipment-slots { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.js-equipment-inspect { flex-shrink: 0; align-items: center; margin-top: 12px; }
+.ui-wide .js-equipment-inspect { width: 238px; margin: 0 0 0 14px; padding-left: 14px; border-left-width: 1px; border-left-color: var(--ash-edge-soft); }
+.js-slot-row { margin: 0 0 8px; padding: 4px 6px; background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px; }
+.js-slot-row.active { -unity-background-image-tint-color: #fff2d4; }
+.js-slot-head { flex-direction: row; align-items: center; }
+.js-slot-title { flex-direction: row; flex-wrap: wrap; align-items: center; flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0 8px; }
+.app .js-slot-code { font-size: 13px; color: var(--ash-gold); margin: 0 4px 0 0; padding: 0; }
+.app .js-slot-name { -unity-font: resource("Fonts/Inter-SemiBold"); font-size: 15px; color: var(--ash-ink); margin: 0; padding: 0; white-space: normal; }
+.js-slot-locked { flex-direction: row; flex-wrap: wrap; align-items: center; margin: 0 0 8px; padding: 8px 12px; border-width: 1px; border-color: var(--ash-edge); border-radius: 3px; background-color: rgba(23,19,16,0.7); }
+.app .js-slot-locked > .js-slot-code, .app .js-slot-locked > .js-slot-name { color: var(--ash-muted); font-size: 13px; }
+.app .js-slot-locked > .caption { margin: 0 0 0 8px; color: var(--ash-muted); }
+.js-slot-actions { flex-direction: row; flex-wrap: wrap; margin: 4px 0 0; }
+.ui-wide .js-slot-actions { margin-left: 64px; }
+.app .js-slot-actions > .button { min-height: 40px; margin: 4px 6px 0 0; padding: 8px 12px; font-size: 13px; }
+.app .js-slot-row > .caption { margin: 6px 0 0; white-space: normal; }
+.app.ui-wide .js-slot-row > .caption { margin-left: 64px; }
+.js-item-thumb { width: 56px; height: 72px; flex-shrink: 0; padding: 3px; border-width: 1px; border-color: #a58a52; border-radius: 3px; background-color: #171310; }
+.js-item-thumb > Image { flex-grow: 1; }
+
+/* The item card (JS .as-detailcard): title bar, art window, gold band, stat pair, flavour. */
+.js-item-card { width: 210px; padding: 6px; border-width: 1px; border-color: #a58a52; border-radius: 4px; background-color: #171310; }
+.app .js-item-card-title { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 14px; color: var(--ash-ink); padding: 4px 6px; margin: 0; background-color: #241d15; white-space: normal; }
+.js-item-card-art { height: 160px; margin: 4px 0; background-color: #0d0b08; border-width: 1px; border-color: #5c4b32; }
+.js-item-card-art > Image { flex-grow: 1; }
+.app .js-item-card-band { font-size: 10px; letter-spacing: 1px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-gold); -unity-text-align: middle-center; padding: 3px 4px; margin: 0; background-color: #2a2419; border-top-width: 1px; border-bottom-width: 1px; border-color: #5c4b32; }
+.js-item-card-stats { flex-direction: row; justify-content: space-around; padding: 4px 0; border-bottom-width: 1px; border-bottom-color: #3a3226; }
+.js-item-stat { align-items: center; }
+.app .js-item-stat-value { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 15px; color: var(--ash-ink); margin: 0; padding: 0; }
+.app .js-item-stat-label { font-size: 9px; letter-spacing: 0.8px; color: var(--ash-ink-dim); margin: 0; padding: 0; }
+.app .js-item-card-note { font-size: 11px; color: var(--ash-select); margin: 4px 2px 0; }
+.app .js-item-card-flavour { -unity-font: resource("Fonts/LiberationSerif-Regular"); -unity-font-style: italic; font-size: 11px; color: var(--ash-ink-dim); margin: 6px 2px 2px; white-space: normal; }
+
+/* ---- Inventory (07c): framed item rows, details at right ------------------------------------- */
+.js-inventory { flex-direction: column; }
+.ui-wide .js-inventory { flex-direction: row; align-items: flex-start; }
+.js-inventory-list { flex-shrink: 0; }
+.ui-wide .js-inventory-list { width: 300px; margin-right: 14px; }
+.js-inventory-detail { flex-grow: 1; flex-shrink: 1; min-width: 0; align-items: flex-start; margin-top: 10px; }
+.ui-wide .js-inventory-detail { margin-top: 0; padding-left: 14px; min-height: 300px; border-left-width: 1px; border-left-color: var(--ash-edge-soft); }
+.app .js-inventory-list > .js-item-row { flex-direction: row; align-items: center; min-height: 64px; margin: 0 0 8px; padding: 8px 12px; -unity-text-align: middle-left; background-color: rgba(0,0,0,0); border-width: 0; border-radius: 3px;
+    background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px; }
+.app .js-inventory-list > .js-item-row:hover, .app .js-inventory-list > .js-item-row:focus { -unity-background-image-tint-color: #fff2d4; background-color: rgba(201,162,39,0.06); }
+.app .js-inventory-list > .js-item-row.selected { border-width: 1px; border-color: var(--ash-gold); background-color: rgba(201,162,39,0.08); }
+.js-item-row > .js-item-thumb { width: 44px; height: 44px; }
+.js-item-text { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: 12px; }
+.app .js-item-name { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 15px; color: var(--ash-gold); margin: 0; padding: 0; white-space: normal; }
+
+/* ---- Character (07d): the figure on the spire vista, framed summary rows at right ------------ */
+.js-character { flex-direction: column; margin-top: 10px; padding-top: 10px; border-top-width: 1px; border-top-color: var(--ash-edge-soft); }
+.ui-wide .js-character { flex-direction: row; align-items: flex-start; }
+.js-character-painting { height: 260px; flex-shrink: 0; justify-content: flex-end; align-items: center; border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 6px; overflow: hidden;
+    background-image: resource("Art/js1815/ui/scene-spire-vista-desktop"); -unity-background-scale-mode: scale-and-crop; background-color: #17130f; }
+.ui-wide .js-character-painting { width: 290px; height: 300px; }
+.js-character-painting > Image { width: 72%; height: 88%; }
+.js-character-facts { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-top: 10px; }
+.ui-wide .js-character-facts { margin: 0 0 0 12px; }
+.js-fact { margin: 0 0 8px; padding: 9px 14px; background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px; }
+.app .js-fact-title { -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 15px; color: var(--ash-gold); margin: 0 0 4px; padding: 0; }
+.js-fact-line { flex-direction: row; flex-wrap: wrap; }
+.js-fact-pair { flex-direction: row; margin: 0 12px 2px 0; }
+.app .js-fact-label { font-size: 13px; color: var(--ash-ink); margin: 0 4px 0 0; padding: 0; }
+.app .js-fact-value { -unity-font: resource("Fonts/Inter-SemiBold"); font-size: 13px; color: var(--ash-gold); margin: 0; padding: 0; }
+.app .js-fact-text { font-size: 13px; color: var(--ash-ink-dim); margin: 0; padding: 0; white-space: normal; }
+
+/* ---- Settings tabs (09a-09c): General | Accessibility | Advanced, each with its sub-pickers ---- */
+.js-settings-tabs { flex-direction: row; flex-wrap: nowrap; align-items: flex-start; margin: 4px -2px 12px; }
+.settings-tab-group { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 2px; }
+.app .settings-tab-group > .settings-tab { margin: 0; padding: 8px 4px; font-size: 14px; -unity-text-align: middle-center; color: var(--ash-ink-dim); background-color: var(--ash-panel); border-width: 1px; border-color: var(--ash-edge-soft); border-radius: 3px; }
+.app .settings-tab-group > .settings-tab:hover, .app .settings-tab-group > .settings-tab:focus { color: var(--ash-ink); border-color: var(--ash-gold); }
+.app .settings-tab-group > .settings-tab.selected { color: var(--ash-select); border-color: var(--ash-select); border-bottom-width: 3px; background-color: rgba(201,162,39,0.08); }
+.settings-subnav { flex-direction: column; margin-top: 4px; }
+.ui-wide .settings-subnav { flex-direction: row; }
+.app .settings-subnav > .button { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 2px 0; padding: 6px 10px; font-size: 13px; -unity-text-align: middle-left; color: var(--ash-muted); background-color: #201c15; border-width: 1px; border-color: var(--ash-edge); border-radius: 6px; }
+.app.ui-wide .settings-subnav > .button { margin: 0 2px; }
+.app .settings-tab-group.active > .settings-subnav > .button { color: var(--ash-ink); }
+.app .settings-subnav > .button:hover, .app .settings-subnav > .button:focus { color: var(--ash-ink); border-color: var(--ash-gold); }
