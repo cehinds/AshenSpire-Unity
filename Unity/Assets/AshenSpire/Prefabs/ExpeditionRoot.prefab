@@ -69,3 +69,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AshenSpire.Application.RunController
   _panelSettings: {fileID: 11400000, guid: 3075608c25393ad4795a91d95d11bbb8, type: 2}
+  _narrowPanelSettings: {fileID: 11400000, guid: 438678d89329e8a1f9594877165a205a, type: 2}

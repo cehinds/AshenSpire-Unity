@@ -1,0 +1,37 @@
+/* ScreenRouter.uss — the layered full-viewport shell (Runtime/Presentation/ScreenRouter.cs).
+   Values come from Generated/JsTokens.uss (--js-*); tools/unity-ui-tokens.mjs --check refuses raw
+   colours and lengths in this sheet. Layers stack by child order: base, overlay, toast. */
+
+/* The base layer is in flow, so the app root's safe-area padding applies to it; the overlay and
+   toast layers are absolute and ScreenRouter.SetSafeArea insets them by the same amounts. */
+.screen-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: visible; }
+.screen-layer-base { position: relative; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+
+/* One screen fills the viewport; it owns its scrolling (or none, when fixed). */
+.screen { position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: column; overflow: hidden; }
+.screen-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.screen-fixed > .screen-scroll { display: none; }
+.screen-fixed > .body { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+
+/* Overlays fill their layer; toasts sit at the top centre and never take input. */
+.screen-layer-overlay > .screen-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.screen-layer-toast { align-items: center; padding-top: var(--js-touch-min-gap); }
+.screen-toast {
+    max-width: 100%;
+    padding-left: var(--js-touch-min-gap);
+    padding-right: var(--js-touch-min-gap);
+    padding-top: var(--js-touch-min-gap);
+    padding-bottom: var(--js-touch-min-gap);
+    border-radius: var(--js-r-3);
+    background-color: var(--js-panel);
+    color: var(--js-parchment);
+    font-size: var(--js-type-body);
+    white-space: normal;
+}
+
+/* The JS type pair (Resources/Fonts/README.md): display headings in Liberation Serif, body in Inter.
+   Opt-in classes; screens adopt them as they are re-seated on JS layouts. */
+.js-font-display { -unity-font: resource("Fonts/LiberationSerif-Regular"); }
+.js-font-display-bold { -unity-font: resource("Fonts/LiberationSerif-Bold"); }
+.js-font-body { -unity-font: resource("Fonts/Inter-Regular"); }
+.js-font-body-strong { -unity-font: resource("Fonts/Inter-SemiBold"); }

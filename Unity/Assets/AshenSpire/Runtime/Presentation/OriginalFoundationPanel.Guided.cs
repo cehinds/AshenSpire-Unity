@@ -19,8 +19,7 @@ namespace AshenSpire.Presentation
             _root.EnableInClassList("creation-custom-step", _step == 6);
             _root.EnableInClassList("creation-wide", _root.contentRect.width >= 850);
             _root.style.height = Length.Percent(100); _root.style.minHeight = 0; _root.style.flexShrink = 1;
-            var outer = _root.GetFirstAncestorOfType<ScrollView>();
-            if (outer != null) { outer.contentContainer.style.height = Length.Percent(100); outer.scrollOffset = Vector2.zero; }
+            ScreenRouter.SetFixed(_root, true); // guided creation is a fixed screen; its panes scroll inside
             _target = _root;
             Label(_step < 5 ? "PREPARE YOUR FORSAKEN · " + (_step + 1) + " / 5" : "PREPARE YOUR FORSAKEN · OPTIONAL", "creation-eyebrow");
             Label(Steps[_step], "heading");
