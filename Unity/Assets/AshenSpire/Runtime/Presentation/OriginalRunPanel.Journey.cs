@@ -145,7 +145,7 @@ namespace AshenSpire.Presentation
             Row("native-quick-deck", "Deck", Deck, Key("combatDeck"));
             Row("native-quick-equipment", "Equipment", Equipment);
             Rule();
-            Row("native-quick-save", "Save and Quit", _menu, null, true);
+            Row("native-quick-save", "Save and return to title", _menu, null, true);
             // Under the HUD's right edge, in the body's own coordinates (the HUD may sit in the margin).
             var width = Math.Min(310f, Math.Max(200f, hud.layout.width - 16));
             menu.style.width = width;
