@@ -1,0 +1,105 @@
+{
+  "uiScale": {
+    "named": {
+      "s": 0.85,
+      "m": 1,
+      "l": 1.2,
+      "xl": 1.45
+    },
+    "designW": 1200,
+    "designH": 730,
+    "min": 0.62,
+    "max": 1.7,
+    "narrowW": 430,
+    "narrowH": 780,
+    "narrowMax": 520,
+    "shortWideMinH": 340,
+    "gateBelowH": 465,
+    "formFactor": {
+      "widescreenMinAspect": 2,
+      "widescreenAspectMinWidth": 1600,
+      "widescreenMinWidth": 2400,
+      "mobileMaxWidth": 600,
+      "tabletMaxWidth": 1100
+    }
+  },
+  "tapSize": {
+    "def": 44,
+    "sizes": [
+      44,
+      36,
+      30,
+      24
+    ],
+    "missRate": {
+      "24": "1 tap in 7",
+      "44": "1 in 30"
+    }
+  },
+  "accents": {
+    "gold": {
+      "hex": "#c9a227",
+      "rgb": "201, 162, 39"
+    },
+    "crimson": {
+      "hex": "#c1453a",
+      "rgb": "193, 69, 58"
+    },
+    "frost": {
+      "hex": "#7fa8c9",
+      "rgb": "127, 168, 201"
+    },
+    "verdant": {
+      "hex": "#8bae54",
+      "rgb": "139, 174, 84"
+    },
+    "violet": {
+      "hex": "#a06cc8",
+      "rgb": "160, 108, 200"
+    }
+  },
+  "textSize": {
+    "S": "56.25%",
+    "M": "62.5%",
+    "L": "68.75%",
+    "XL": "75%"
+  },
+  "hudPresentation": {
+    "componentBackgroundOpacityPct": 0,
+    "metadataFontPx": 11,
+    "beltItemGapPx": 2,
+    "portraitScale": 0.58,
+    "primaryRowGapPx": 4,
+    "controlGapPx": 0,
+    "resourceRowGapPx": 3,
+    "panelPadPx": 0,
+    "mobilePanelPadPx": 0,
+    "mobileControlGapPx": 1,
+    "mobileOuterPadPx": 4,
+    "mobileRowGapPx": 3,
+    "cindersMaxWidthPct": 30,
+    "metadataMaxWidthPct": 30,
+    "metadataShowTotals": false
+  },
+  "hudQuickSettings": {
+    "places": [
+      "title",
+      "map",
+      "combat"
+    ],
+    "edgeGapPx": 4,
+    "stackGapPx": 0,
+    "cardSizePx": 40,
+    "glyphSizePx": 28,
+    "stateDotPx": 6,
+    "activeTintPct": 14,
+    "showCardBackground": true,
+    "showLabels": false
+  },
+  "combatantStage": {
+    "hudClearanceViewportPct": 3,
+    "actionClearanceViewportPct": 3,
+    "intentGapPx": 6,
+    "centerPct": 50
+  }
+}

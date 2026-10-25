@@ -1,13 +1,15 @@
 // RunController.cs — connects campaign rules, view and local save storage.
 // ATTACH: one instance on ExpeditionRoot in Scenes/Expedition.unity.
-// INSPECTOR: assign PanelSettings; BuildTools creates the initial reference.
+// INSPECTOR: assign the wide and narrow PanelSettings (ExpeditionPanel / ExpeditionPanelNarrow,
+// JS reference sizes 1200x730 and 430x780); BuildTools creates and checks both.
 // LIFECYCLE: OnEnable binds commands/browser visibility; OnDisable removes both.
 // PAUSE: InterruptionState gates an explicit return; CampaignView covers existing UI.
 // Change background behavior in Interrupt/ReturnFromInterruption, not CampaignSession.
 // Android keyboard focus loss is ignored; native pause and Web document hiding save,
 // cancel presentation and suspend audio without changing the player's preferences.
-// Update adjusts viewport scaling only. Web uses CSS canvas height via DisplayViewport;
-// native safe-area padding stays in screen pixels. CampaignSession owns gameplay state.
+// Update adjusts viewport scaling only (RunController.Settings.cs ApplyPanelScale: the JS layout
+// decider in CSS px picks the panel and its zoom). Web uses CSS canvas height via DisplayViewport;
+// native players treat one screen pixel as one CSS px. CampaignSession owns gameplay state.
 // DATA: GameContent/Unity/campaign.json -> Resources/campaign.json via Import Content.
 // NATIVE GAME: Runtime/Domain/Original owns the original climb and frozen rules.
 // Native saves/profile use separate checksummed keys; the earlier campaign is preserved.
@@ -31,7 +33,8 @@ namespace AshenSpire.Application
     [RequireComponent(typeof(UIDocument))]
     public sealed partial class RunController : MonoBehaviour
     {
-        [SerializeField, Tooltip("Shared phone panel settings required by UIDocument.")] private PanelSettings _panelSettings;
+        [SerializeField, Tooltip("Wide panel settings (JS wide layout, 1200x730 reference) required by UIDocument.")] private PanelSettings _panelSettings;
+        [SerializeField, Tooltip("Narrow panel settings (JS narrow layout, 430x780 reference). A copy of the wide one is made when unassigned.")] private PanelSettings _narrowPanelSettings;
         private CampaignDefinition _content; private CampaignSession _session; private CampaignView _view; private CampaignSaveStore _saves;
         private int _screenHeight; private bool _diagnosticsEnabled;
         private int _screenWidth, _displayHeight; private Rect _safeArea;
@@ -40,7 +43,7 @@ namespace AshenSpire.Application
         private AshenSpire.Domain.Original.OriginalContentCatalog _originalContent;
         private OriginalGameSession _originalGame;
         private OriginalProfile _profile;
-        public void Configure(PanelSettings settings) => _panelSettings = settings;
+        public void Configure(PanelSettings settings, PanelSettings narrow = null) { _panelSettings = settings; _narrowPanelSettings = narrow; }
         private void OnEnable()
         {
             try
@@ -49,6 +52,7 @@ namespace AshenSpire.Application
                     throw new InvalidOperationException("Assign ExpeditionRoot PanelSettings.");
                 var document = GetComponent<UIDocument>();
                 document.panelSettings = _panelSettings;
+                PreparePanels(); // RunController.Settings.cs: narrow fallback and the scales to restore on disable
                 var source = Resources.Load<TextAsset>("campaign");
                 if (source == null)
                     throw new InvalidOperationException("Import campaign content using the AshenSpire menu.");
@@ -82,7 +86,7 @@ namespace AshenSpire.Application
                 var gamepad = GetComponent<GamepadDriver>();
                 if (gamepad == null) gamepad = gameObject.AddComponent<GamepadDriver>();
                 gamepad.Navigator = _view.Gamepad;
-                _view.SetDisplayHeight(DisplayViewport.Height);
+                ApplyPanelScale(); // the JS layout decision for the current viewport
                 _view.StartRequested += StartRun;
                 _view.ContinueRequested += Resume;
                 _view.EnterRequested += Enter;
@@ -383,16 +387,7 @@ namespace AshenSpire.Application
             _screenWidth = Screen.width;
             _safeArea = Screen.safeArea;
             _displayHeight = displayHeight;
-            var referenceHeight = ViewportLayout.ReferenceHeight(displayHeight);
-            _panelSettings.referenceResolution = new Vector2Int(430, referenceHeight);
-            _view?.SetDisplayHeight(displayHeight);
-            ApplyPanelScale(); // RunController.Settings.cs: L/XL UI sizes are capped by the screen they fit.
-            var scale = (float)referenceHeight / Math.Max(1, Screen.height);
-            var root = GetComponent<UIDocument>().rootVisualElement;
-            root.style.paddingTop = (Screen.height - _safeArea.yMax) * scale;
-            root.style.paddingBottom = _safeArea.yMin * scale;
-            root.style.paddingLeft = _safeArea.xMin * scale;
-            root.style.paddingRight = (Screen.width - _safeArea.xMax) * scale;
+            ApplyPanelScale(); // RunController.Settings.cs: layout, panel, zoom, UI size and safe area together.
         }
         private void OnDisable()
         {

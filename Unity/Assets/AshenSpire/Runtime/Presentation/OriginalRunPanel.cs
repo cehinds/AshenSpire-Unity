@@ -1,5 +1,5 @@
 // OriginalRunPanel.cs — touch-first views for the native original-game session.
-// WIRING: CampaignView mounts this tree inside its existing safe-area scroll shell.
+// WIRING: CampaignView mounts this tree in a ScreenRouter screen (scrolling, or fixed for map/combat).
 // COMMANDS: delegate to OriginalGameSession; refresh/save are application-owned.
 // MODIFY: labels/layout here; original content and domain components own all rules.
 // COSTS: OriginalCardCostText formats authoritative costs and resource shortages.

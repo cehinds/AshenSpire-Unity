@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.34.0 · build 37 · 2026-10-25
+
+- Port phase 2 UI foundation: JS-equivalent wide/narrow PanelSettings (1200x730 and 430x780, Expand) driven by the ported JS layout decider; layered ScreenRouter (base screen, overlay, toast) replaces the single global ScrollView; generated JS UI tokens (USS + C#) from a committed JS snapshot with a raw-value USS lint; Inter and Liberation Serif fonts.
+
 ## 0.0.33.2 · build 36 · 2026-10-05
 
 - Integrate owner-supplied illustrated screens, engraved controls, and fixed-ratio card faces.

@@ -189,7 +189,7 @@ checks it and that the USS sheets restate the shipped `balance.ui` numbers.
 | Option | What it does now | Where |
 |---|---|---|
 | **Fullscreen** | `Screen.fullScreen` when toggled; a saved *on* is restored at start (not on phones). On Web this needs the click that changes it. | `CampaignView.PlayerSettings.cs` |
-| **UI size** (`Auto`, `S`, `M`, `L`, `XL`) | Scales the whole interface through `PanelSettings.scale`, multiplied with the *Interface size* slider. Factors are the HTML `balance.ui.uiScale.named`: S .85, M 1, L 1.2, XL 1.45; Auto is 1 because the panel already scales with the screen height. As in the HTML game a named size is a ceiling: L and XL grow only while the logical panel stays at least 430 × 600, and never below the slider alone, so on a portrait phone they change nothing. Re-fitted when the window or safe area changes. Root class `ui-size-<size>` is set too (no style reads it). | `RunController.Settings.cs` `ApplyPanelScale` |
+| **UI size** (`Auto`, `S`, `M`, `L`, `XL`) | Exactly the HTML game's rule: a named size is a CAP on the layout zoom (`balance.ui.uiScale.named`: S .85, M 1, L 1.2, XL 1.45), Auto is uncapped. `ViewportLayout.Resolve` (the JS `layoutForCap`, checked against the JS function by `UnityTests/Viewport`) picks wide/narrow and the zoom in CSS px; the *Interface size* slider then multiplies it. So L and XL only differ from Auto where the fitted zoom would exceed them. Re-fitted when the window, canvas or safe area changes. Root class `ui-size-<size>` is set too (no style reads it). | `RunController.Settings.cs` `ApplyPanelScale` |
 | **Accent color** | Replaces the `--ash-gold` token (highlights, focus and hover borders, primary buttons, slider handles, section headings, selected targets) with the HTML accent: crimson `#c1453a`, frost `#7fa8c9`, verdant `#8bae54`, violet `#a06cc8`. *Gold* keeps the Unity theme's own `#d6b475`, so the default look is unchanged. Rarity colours and hard-coded card colours are not accent-driven. | `OriginalTheme.uss` `.app.accent-*` |
 | **Card motif** | Colours class cards with their class's `cardTint` (content `classes[].cardTint`); colorless cards keep the plain frame. *Wash* tints the whole card body; *Accent* puts your accent on the card border, moves rarity to a corner pip and draws a centred class sigil; *Band* draws a 5 px class stripe across the top and an accent rule under the art; *Off* shows none. | `OriginalCardView.cs` (`.original-card-motif`, `.original-card-pip`), `OriginalCards.uss` |
 | **Motif strength** | Opacity of the wash: subtle .06, normal .10, strong .17 (HTML `balance.ui.cardMotifStrength`); the Accent sigil uses × 1.3. Band ignores it. | `OriginalCards.uss` `.motif-strength-*` |
@@ -332,8 +332,10 @@ What each setting does today:
   group): the hit flash and recoil, the heal/guard/poison glow and the actor lunge/step.
   Damage numbers still play.
 - **High contrast:** puts `high-contrast` on the root. Only colour tokens change.
-- **Interface size:** `PanelSettings.scale` = the asset's own scale × `uiScale`. It is
-  restored in `OnDisable`, so the shared asset is never left changed.
+- **Interface size:** the active PanelSettings (wide `ExpeditionPanel`, 1200 × 730, or narrow
+  `ExpeditionPanelNarrow`, 430 × 780; both Scale With Screen Size, Expand) gets
+  `scale = zoom × uiScale / fit`, so one panel px shows as `zoom × uiScale` CSS px. Both assets'
+  scales are restored in `OnDisable`, so the shared assets are never left changed.
 - **Text size:** each text element is scaled from its resolved USS size. Elements that size
   their own text in code (the title wordmark, the appearance name) are left alone. At 100%
   nothing is touched.
