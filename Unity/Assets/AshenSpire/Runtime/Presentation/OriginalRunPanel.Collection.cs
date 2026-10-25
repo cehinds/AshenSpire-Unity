@@ -100,6 +100,8 @@ namespace AshenSpire.Presentation
         /// <summary>JS .as-detailcard item card: title bar, art window, gold type band, stat pair, flavour line.</summary>
         private VisualElement ItemCard(JObject item, string itemRef = null)
         {
+            var level = itemRef == null ? 0 : (int?)_game.RunPlayer["itemUpgradeLevels"]?[itemRef] ?? 0;
+            if (level > 0) try { item = new ItemUpgradeService(_game.Catalog).ResolveItem(itemRef, level); } catch (ArgumentException) { }
             var card = new VisualElement(); card.AddToClassList("js-item-card");
             card.Add(Label((string)item["name"] ?? OriginalCardText.Humanize((string)item["id"]), "js-item-card-title"));
             var art = ItemArt(item, itemRef);
@@ -111,7 +113,6 @@ namespace AshenSpire.Presentation
             void Stat(string key, string label) { if (item[key] == null) return; var cell = Row(stats, "js-item-stat"); cell.Add(Label(item[key].ToString(), "js-item-stat-value")); cell.Add(Label(label, "js-item-stat-label")); }
             Stat("attackRating", "ATTACK"); Stat("defenseRating", "DEFENSE"); Stat("poiseThreshold", "POISE"); Stat("weight", "WEIGHT");
             if (stats.childCount == 0) stats.RemoveFromHierarchy();
-            var level = itemRef == null ? 0 : (int?)_game.RunPlayer["itemUpgradeLevels"]?[itemRef] ?? 0;
             if (level > 0) card.Add(Label("Improved +" + level, "js-item-card-note"));
             var blurb = (string)item["blurb"] ?? (string)item["description"];
             if (!string.IsNullOrEmpty(blurb)) card.Add(Label(blurb, "js-item-card-flavour"));
