@@ -1,0 +1,49 @@
+{
+  "reference": "cehinds/AshenSpire dev 0029e160 (build 0.7.1.1815)",
+  "pack": "hd-assets-v23/high",
+  "tool": "tools/import-js1815-entry-art.mjs",
+  "assets": [
+    {
+      "resource": "Art/js1815/entry/startup-gate-desktop",
+      "size": [
+        1586,
+        992
+      ],
+      "outputSha256": "40fbdb2acece7469a48f6f034daa26e72ff56cca33fada76a2084ca97884d3b5",
+      "note": "Startup gate (01b), landscape: river citadel with the gate washes baked in.",
+      "sources": [
+        {
+          "path": "assets/bg/river-citadel-unlit.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/river-citadel-unlit.webp",
+          "sha256": "6a02c133d9777fd3ce84e860c0593927dabb0bdfbbf95dd6f6116c3df31d4f8e"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/entry/startup-gate-mobile",
+      "size": [
+        640,
+        1138
+      ],
+      "outputSha256": "5ed3b9eb2264d1fa1d1bcfdf4ae92f4218fc7f0015b9cf1bf6b21b14a3164570",
+      "note": "Startup gate (01b), portrait crop of the same composite.",
+      "sources": [
+        {
+          "path": "assets/bg/river-citadel-unlit.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/bg/river-citadel-unlit.webp",
+          "sha256": "6a02c133d9777fd3ce84e860c0593927dabb0bdfbbf95dd6f6116c3df31d4f8e"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/entry/wordmark-backplate",
+      "size": [
+        512,
+        96
+      ],
+      "outputSha256": "9dde846dc97d1c624b41e155b35727e8244ac3b30a9ac806b8dcec72da54cc36",
+      "note": "Wordmark backplate (.startup-wordmark::before), drawn from the CSS.",
+      "sources": []
+    }
+  ]
+}

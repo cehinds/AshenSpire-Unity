@@ -49,6 +49,8 @@ namespace AshenSpire.Presentation
         public bool NativeSaveAvailable { get; set; }
         /// <summary>The climb in memory failed to save; loading a slot would discard it (US-13.3 loadSlot).</summary>
         public bool NativeUnsavedProgress { get; set; }
+        /// <summary>The save the title's Continue resumes (JS 01c preview); null hides the preview.</summary>
+        public Func<OriginalTitlePanel.ContinuePreview> NativeContinuePreview { get; set; }
         public event Action<string, uint> StartRequested;
         public event Action ContinueRequested, EndTurnRequested, PotionRequested, RestRequested, MenuRequested;
         public event Action<int> EnterRequested, CardRequested, RemoveRequested;
@@ -160,7 +162,8 @@ namespace AshenSpire.Presentation
             if (notice != null) _body.Add(Text(notice, "notice"));
             _body.Add(new OriginalTitlePanel(() => NativeRequested?.Invoke(), () => NativeContinueRequested?.Invoke(), NativeSaveAvailable,
                 () => ProfileRequested?.Invoke(), () => CoopRequested?.Invoke(), () => Settings(() => Title(content, canResume)),
-                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), () => NativeQuickStartRequested?.Invoke(), () => NativeHistoryRequested?.Invoke(), NativeUnsavedProgress));
+                () => TitleExtras(content, canResume), () => SlotsRequested?.Invoke(), () => NativeQuickStartRequested?.Invoke(), () => NativeHistoryRequested?.Invoke(), NativeUnsavedProgress,
+                NativeSaveAvailable ? NativeContinuePreview?.Invoke() : null));
             Report();
         }
         // Keep earlier playable checkpoints and developer tools accessible without

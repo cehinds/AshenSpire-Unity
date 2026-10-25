@@ -17,8 +17,10 @@ namespace AshenSpire.Presentation
 {
     public static class OriginalCardRulesFit
     {
-        /// <summary>The readable floor, in 360-wide template units (the 1815 minimum is 22).</summary>
-        public const float FloorFontSize = 15f;
+        /// <summary>The readable floor, in 360-wide template units (the 1815 minimum is 22). Set
+        /// for the face's Liberation Serif, whose x-height (0.459em) is taller than the former
+        /// Cormorant's (0.386em): lower case at 14 here (6.4) is larger than Cormorant's at 15 (5.8).</summary>
+        public const float FloorFontSize = 14f;
         private const int Steps = 8;
 
         public enum Step { FaceLines = 1, Joined = 2, Floor = 3, Overflow = 4 }

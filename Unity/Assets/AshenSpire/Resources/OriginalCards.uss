@@ -134,8 +134,10 @@
 
 /* JS build-1815 illustrated card (OriginalIllustratedCardFace; JS styles/illustrated-cards.css).
    The face is image layers on a 360x540 template; the host button draws no box of its own.
-   Typefaces live here: JS uses Georgia. The closest bundled serif is OwnerCormorant; swap
-   the -unity-font below (one place) when a Georgia-like face is bundled. */
+   Typefaces live here: JS cards name Georgia, which the JS reference captures render as
+   Liberation Serif (a Times metric clone); the face uses the bundled Liberation Serif, and
+   UnityTests/CardText measures the same file (FontMetrics.CardFaceFont). Bold layers (costs,
+   type band, tag counts) use the real Bold file at normal style, never a synthesized bold. */
 .published-card-face { position: relative; width: 100%; height: 237px; min-height: 0; flex-shrink: 0; overflow: visible; }
 .original-card.card.illustrated-card { padding: 0; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); min-height: 0; }
 .original-card.card.illustrated-card:hover,
@@ -143,16 +145,22 @@
 .original-card.card.illustrated-card.selected { border-width: 0; background-color: rgba(0,0,0,0); }
 /* Unaffordable dims the painted layers (brightness .65) instead of fading the card. */
 .original-card.card.illustrated-card.unaffordable { opacity: 1; }
-.published-card-face .published-card-text { -unity-font: resource("Fonts/OwnerCormorant"); }
+.published-card-face .published-card-text { -unity-font: resource("Fonts/LiberationSerif-Regular"); -unity-font-style: normal; }
+.published-card-face .published-card-text--bold,
+.published-card-face .published-card-type,
+.published-card-face .published-card-tag-count { -unity-font: resource("Fonts/LiberationSerif-Bold"); -unity-font-style: normal; }
 .published-card-face--898 .published-card-text { -unity-font: resource("Fonts/Cinzel-Regular"); }
+.published-card-face--898 .published-card-text--bold,
+.published-card-face--898 .published-card-type,
+.published-card-face--898 .published-card-tag-count { -unity-font-style: bold; }
 .published-card-face .published-card-text-name { -unity-text-outline-width: 1px; -unity-text-outline-color: #100b06; text-shadow: 0 1px 3px #000000; }
 .published-card-face .published-card-text-stamina,
 .published-card-face .published-card-text-mana,
 .published-card-face .published-card-text-action { -unity-text-outline-width: 1px; -unity-text-outline-color: #101508; text-shadow: 0 1px 2px #000000; }
-.published-card-face .published-card-type { -unity-font-style: bold; white-space: nowrap; margin: 0; padding: 0; -unity-text-align: middle-center; text-shadow: 0 1px 1px #080604; }
+.published-card-face .published-card-type { white-space: nowrap; margin: 0; padding: 0; -unity-text-align: middle-center; text-shadow: 0 1px 1px #080604; }
 .published-card-face .published-card-tag-count {
     position: absolute; margin: 0; padding: 0 1px; border-width: 1px; border-color: #e8bd78;
-    background-color: #16110e; color: #fff0cc; -unity-font-style: bold; -unity-text-align: middle-center;
+    background-color: #16110e; color: #fff0cc; -unity-text-align: middle-center;
 }
 /* Hover/focus: a warm rim (JS drop-shadow #c49b56). Selected: green, blue inside the combat hand. */
 .published-card-face .published-card-glow {
