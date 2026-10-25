@@ -70,14 +70,15 @@ namespace AshenSpire.Presentation
             // then the engraved intent icon (Art/js1815/combat/icons); the glyph is the fallback.
             var art = IntentArt.TryGetValue(intent.Kind, out var path) ? OriginalCombatLayout.Art(path) : null;
             if (art == null && intent.Kind != "unknown") badge.Add(GlyphLabel(intent.Icon.Glyph, "telegraph-intent-glyph"));
-            var value = intent.ValueText.EndsWith(" ⌛", StringComparison.Ordinal) ? intent.ValueText.Substring(0, intent.ValueText.Length - 2) : intent.ValueText;
+            var delayed = intent.ValueText.EndsWith(" ⌛", StringComparison.Ordinal);
+            var value = delayed ? intent.ValueText.Substring(0, intent.ValueText.Length - 2) : intent.ValueText;
             if (value.Length == 0) value = OriginalCardText.Humanize(intent.Kind);
             var read = new VisualElement { pickingMode = PickingMode.Ignore }; read.AddToClassList("telegraph-intent-read");
             if (value.Length > 0) read.Add(Text(value, "telegraph-intent-value"));
             if (intent.Kind == "attack" && intent.TotalDamage != null) read.Add(Text("Total " + intent.TotalDamage + " HP", "telegraph-intent-total"));
             if (read.childCount > 0) badge.Add(read);
             if (art != null) { var icon = new Image { image = art, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; icon.AddToClassList("telegraph-intent-icon"); badge.Add(icon); }
-            if (value.Length != intent.ValueText.Length)
+            if (delayed)
             {
                 var hourglass = OriginalCombatLayout.Art("icons/intent-prepare");
                 if (hourglass != null) { var delay = new Image { image = hourglass, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore }; delay.AddToClassList("telegraph-intent-delay-icon"); badge.Add(delay); }
