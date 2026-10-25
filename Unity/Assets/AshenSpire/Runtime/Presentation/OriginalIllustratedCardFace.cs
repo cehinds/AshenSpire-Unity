@@ -146,7 +146,9 @@ namespace AshenSpire.Presentation
                     if (ColorUtility.TryParseHtmlString((string)layer["color"], out var color)) label.style.color = color;
                     label.style.unityTextAlign = (string)layer["align"] == "left" ? TextAnchor.MiddleLeft
                         : (string)layer["align"] == "right" ? TextAnchor.MiddleRight : TextAnchor.MiddleCenter;
-                    label.style.unityFontStyleAndWeight = (string)layer["fontWeight"] == "bold" ? FontStyle.Bold : FontStyle.Normal;
+                    // Weight is USS (OriginalCards.uss): the 1815 face draws bold layers with the
+                    // real Liberation Serif Bold file rather than a synthesized bold.
+                    label.EnableInClassList("published-card-text--bold", (string)layer["fontWeight"] == "bold");
                     _texts.Add((label, layer)); view = label; z = 8;
                 }
                 views.Add((z, Place(view, layer, layerId)));

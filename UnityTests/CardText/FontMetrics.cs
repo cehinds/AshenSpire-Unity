@@ -6,6 +6,10 @@ using System.Buffers.Binary;
 
 sealed class FontMetrics
 {
+    /// <summary>The illustrated card face's text font (OriginalCards.uss .published-card-text):
+    /// Liberation Serif, metric-compatible with Times and the bundled stand-in for the JS card's
+    /// Georgia. Change it together with that USS rule.</summary>
+    public const string CardFaceFont = "Unity/Assets/AshenSpire/Resources/Fonts/LiberationSerif-Regular.ttf";
     public const float Slack = 1.12f;
     private readonly Dictionary<int, int> _glyphOf = new();
     private readonly ushort[] _advance;

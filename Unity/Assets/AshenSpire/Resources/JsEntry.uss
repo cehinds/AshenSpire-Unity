@@ -1,0 +1,160 @@
+/* JsEntry.uss — the JS build 1815 entry screens that round 1 left out (scratchpad js-ref 01b, 01c,
+   02c-02e; NOTES.md sections 1 and 2):
+   - the startup gate (OriginalStartupGate, in OriginalTitlePanel.cs);
+   - the title's Continue preview (glyph, CONTINUE, class, facts, arrow);
+   - the creator's header tools (List/Grid, portrait, close), grid tiles and Review documents
+     (OriginalFoundationPanel.Review.cs).
+   Attached from that code with Resources.Load<StyleSheet>("JsEntry"); colours use the --ash-*
+   tokens of OriginalTheme.uss. USS has no gradients: the gate washes and the wordmark backplate
+   are baked into Art/js1815/entry (tools/import-js1815-entry-art.mjs). */
+
+/* ---- Startup gate (01b) ------------------------------------------------------------------- */
+.app .js-startup-gate.unity-button,
+.app .js-startup-gate.unity-button:hover,
+.app .js-startup-gate.unity-button:active,
+.app .js-startup-gate.unity-button:focus {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0; margin: 0; padding: 0;
+    border-width: 0; border-radius: 0; background-color: #100e0b; background-image: none;
+    align-items: center; justify-content: center; flex-direction: column;
+}
+.js-startup-scene { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.js-startup-lockup { align-items: center; width: 100%; max-width: 680px; padding: 0 16px; margin-bottom: 40px; }
+.js-startup-wordmark-plate {
+    padding: 2px 34px; background-image: resource("Art/js1815/entry/wordmark-backplate");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.app .js-startup-wordmark {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); -unity-font-style: normal; font-size: 54px;
+    letter-spacing: 4px; color: #fdf6e6; white-space: nowrap; margin: 0; padding: 0;
+    -unity-text-align: middle-center; text-shadow: 0 0 16px rgba(201,162,39,0.38);
+}
+.app .js-startup-subtitle {
+    margin: 8px 0 0; font-size: 10px; letter-spacing: 2.8px; color: var(--ash-muted);
+    -unity-text-align: middle-center; white-space: nowrap;
+}
+.app .original-ornament.js-startup-ornament { width: 280px; max-width: 80%; margin: 16px 0 0; }
+.app .js-startup-prompt {
+    margin: 32px 0 0; font-size: 11px; letter-spacing: 2px; color: #fdf6e6; opacity: 0.82;
+    -unity-text-align: middle-center; white-space: normal;
+    transition-property: opacity; transition-duration: 1.8s; transition-timing-function: ease-in-out;
+}
+.app .js-startup-prompt.js-startup-prompt--dim { opacity: 0.45; }
+.app .js-startup-stamp {
+    position: absolute; left: 0; right: 0; bottom: 26px; margin: 0;
+    -unity-font: resource("Fonts/NotoSansMono-Regular"); font-size: 11px; color: #fdf6e6;
+    -unity-text-align: middle-center;
+}
+
+/* ---- Title Continue preview (01c): 80px framed row ---------------------------------------- */
+.app .original-menu-entry.title-primary.title-continue-preview {
+    flex-direction: row; align-items: center; min-height: 80px; padding: 10px 18px 10px 14px;
+    -unity-text-align: middle-left; margin: 0 0 8px;
+}
+.title-continue-glyph { width: 26px; height: 26px; flex-shrink: 0; margin-right: 14px; }
+.title-continue-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.app .title-continue-heading {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); -unity-font-style: normal; font-size: 17px;
+    letter-spacing: 1px; color: var(--ash-gold); margin: 0 0 3px; padding: 0; -unity-text-align: middle-left;
+}
+.app .title-continue-name {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); -unity-font-style: normal; font-size: 12px;
+    letter-spacing: 0.6px; color: #ffffff; margin: 0 0 3px; padding: 0; -unity-text-align: middle-left;
+}
+.app .title-continue-facts {
+    -unity-font: resource("Fonts/Inter-Regular"); font-size: 10.5px; letter-spacing: 0.6px;
+    color: var(--ash-ink-dim); margin: 0; padding: 0; -unity-text-align: middle-left; white-space: normal;
+}
+.title-continue-arrow { width: 22px; height: 22px; flex-shrink: 0; margin-left: 12px; }
+
+/* ---- Creator header tools (02c): List/Grid, portrait, close -------------------------------- */
+.js-creation-titles { flex-shrink: 1; min-width: 0; }
+.js-creation-tools { flex-direction: row; align-items: center; flex-shrink: 0; }
+.js-view-toggle {
+    flex-direction: row; margin-right: 18px; border-width: 1px; border-color: var(--ash-edge-soft);
+    border-radius: 4px; overflow: hidden;
+}
+.app .js-view-toggle > .button.js-view-segment {
+    min-width: 54px; margin: 0; padding: 0 12px; border-width: 0; border-radius: 0;
+    background-color: rgba(0,0,0,0); color: var(--ash-ink-dim); font-size: 15px; -unity-text-align: middle-center;
+}
+.app .js-view-toggle > .button.js-view-segment.js-view-segment--first { border-right-width: 1px; border-right-color: var(--ash-edge-soft); }
+.app .js-view-toggle > .button.js-view-segment:hover { color: #ffffff; background-color: #2e251b; }
+.app .js-view-toggle > .button.js-view-segment.js-view-segment--on { color: var(--ash-gold); background-color: rgba(201,162,39,0.10); }
+.app .button.js-creation-portrait {
+    width: 50px; min-width: 50px; margin: 0 8px 0 0; padding: 0; overflow: hidden;
+    border-width: 1px; border-color: var(--ash-gold); border-radius: 25px; background-color: #171310;
+}
+.js-creation-portrait-figure { width: 100%; height: 100%; }
+.app .button.js-creation-icon-button {
+    width: 50px; min-width: 50px; margin: 0; padding: 10px; border-width: 1px;
+    border-color: #e8dcc0; border-radius: 3px; background-color: rgba(13,11,8,0.6);
+}
+
+/* ---- Class grid tiles (02d) --------------------------------------------------------------- */
+.js-class-tiles { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; }
+.app .button.js-class-tile {
+    width: 128px; min-width: 128px; height: 214px; margin: 0 10px 10px 0; padding: 10px 8px;
+    flex-direction: column; align-items: center; justify-content: flex-end;
+    border-width: 0; background-color: rgba(0,0,0,0);
+    background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48;
+    -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px;
+}
+.app .button.js-class-tile:hover, .app .button.js-class-tile:focus { -unity-background-image-tint-color: #fff2d4; }
+.js-class-tile-figure { width: 100%; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.app .js-class-tile-name {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 14px; color: var(--ash-select);
+    margin: 6px 0 0; -unity-text-align: middle-center; white-space: normal;
+}
+
+/* ---- Review (02e): seed row, document tiles, starting deck --------------------------------- */
+.js-review-row {
+    flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; flex-shrink: 0;
+    padding: 4px 0 12px; margin: 0 0 12px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge);
+}
+.js-review-row-copy { flex-grow: 1; flex-shrink: 1; min-width: 180px; margin-right: 12px; }
+.app .js-review-row-title { font-size: 16px; color: var(--ash-ink); margin: 0 0 3px; }
+.app .js-review-row-caption { font-size: 13px; color: var(--ash-muted); margin: 0; white-space: normal; }
+.creation-guided .foundation-field.js-review-seed { width: 240px; margin: 4px 0; flex-shrink: 0; }
+.creation-guided .js-review-seed > .unity-base-field__label { display: none; }
+.creation-guided .js-review-seed > .unity-base-field__input {
+    border-width: 2px; border-color: var(--ash-gold); border-radius: 6px; background-color: #0d0b08;
+    color: var(--ash-ink); font-size: 15px; padding: 4px 10px;
+}
+.js-review-documents { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; margin: 0 0 6px; }
+.js-review-document { width: 150px; margin: 0 14px 12px 0; }
+.app .js-review-micro { font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); margin: 0 0 4px; }
+.js-review-tile {
+    height: 212px; padding: 7px; overflow: hidden; border-width: 1px; border-color: var(--ash-edge-soft);
+    border-radius: 3px; background-color: #1b1611;
+}
+.js-review-tile.js-review-sheet { padding: 9px 10px; border-color: var(--ash-gold); border-radius: 8px; background-color: #241d15; }
+.app .js-review-sheet-class { font-size: 10px; letter-spacing: 1.5px; color: var(--ash-muted); margin: 0 0 3px; }
+.app .js-review-sheet-name {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 18px; color: var(--ash-gold); margin: 0 0 4px;
+    padding-bottom: 5px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge);
+}
+.js-review-grid { flex-direction: row; flex-wrap: wrap; padding: 3px 0; margin: 0 0 3px; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
+.js-review-cell { width: 50%; flex-direction: row; align-items: center; justify-content: space-between; padding-right: 8px; min-height: 17px; }
+.app .js-review-cell-name { font-size: 9px; letter-spacing: 1px; color: var(--ash-muted); margin: 0; }
+.app .js-review-cell-value { -unity-font: resource("Fonts/Inter-SemiBold"); font-size: 13px; color: var(--ash-ink); margin: 0; }
+.app .js-review-item-title {
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 12.5px; color: #f3e8c9; margin: 0; padding: 3px 6px;
+    background-color: #0d0b08; border-width: 1px; border-color: var(--ash-edge); white-space: nowrap; overflow: hidden;
+}
+.js-review-item-art {
+    height: 84px; flex-shrink: 0; margin: 0; padding: 4px; background-color: #0d0b08;
+    border-width: 0 1px 1px 1px; border-color: var(--ash-edge);
+}
+.js-review-item-picture { width: 100%; height: 100%; }
+.js-review-item-art > .guided-item > Image { width: 100%; height: 100%; min-height: 0; }
+.js-review-item-art > .guided-item > Label { display: none; }
+.js-review-item-stats { flex-direction: row; justify-content: space-around; padding: 3px 0; border-bottom-width: 1px; border-bottom-color: var(--ash-edge); }
+.js-review-item-stat { align-items: center; }
+.app .js-review-item-stat-value { -unity-font: resource("Fonts/Inter-SemiBold"); font-size: 11px; color: var(--ash-ink); margin: 0; }
+.app .js-review-item-stat-name { font-size: 7.5px; letter-spacing: 0.8px; color: var(--ash-muted); margin: 0; }
+.app .js-review-item-text { font-size: 11px; color: var(--ash-ink); margin: 4px 0 0; white-space: normal; flex-shrink: 1; overflow: hidden; }
+.app .js-review-item-footer { position: absolute; left: 7px; bottom: 5px; font-size: 7.5px; letter-spacing: 1px; color: var(--ash-gold); margin: 0; }
+.js-review-deck { flex-direction: row; flex-wrap: wrap; align-items: flex-start; flex-shrink: 0; padding-top: 16px; }
+.js-review-deck-card { width: 140px; margin: 0 12px 12px 0; align-items: center; }
+.js-review-deck-card > .creation-preview-card.original-card.card { width: 140px; min-width: 140px; max-width: 140px; flex-basis: 140px; }
+.app .js-review-deck-count { font-size: 11px; color: var(--ash-muted); margin: 4px 0 0; -unity-text-align: middle-center; }

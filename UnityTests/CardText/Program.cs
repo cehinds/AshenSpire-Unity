@@ -153,12 +153,14 @@ Check(OriginalCardRailTags.FooterSigil("curse", hasSigil) == "status" && Origina
 Console.WriteLine("Card footers: " + footers + " cards");
 // Rules are never silently clipped (OriginalCardRulesFit): every shipped card's resolved face
 // rules must fit its 1815 parchment at some step, measured conservatively from the bundled
-// rules font (OwnerCormorant, the face's -unity-font). Step 4 relies on card inspection's
-// details, which print the complete rules; those cards are listed.
-var rulesFont = new FontMetrics(Path.Combine(root, "Unity/Assets/AshenSpire/Resources/Fonts/OwnerCormorant.ttf"));
+// rules font (FontMetrics.CardFaceFont: Liberation Serif, the face's -unity-font and the bundled
+// stand-in for the JS card's Georgia). Step 4 would rely on card inspection's details, which
+// print the complete rules; no shipped card may need it.
+var rulesFont = new FontMetrics(Path.Combine(root, FontMetrics.CardFaceFont));
 var rulesLayer = (JObject)railReference["documents"]!["template"]!["layers"]!.First(l => (string?)l["bind"] == "rules")!;
 float rw = (float)rulesLayer["w"]!, rh = (float)rulesLayer["h"]!, rmax = (float)rulesLayer["maxFontSize"]!, rmin = (float)rulesLayer["minFontSize"]!;
 var fitSteps = new SortedDictionary<int, List<string>>();
+var fitReceipt = new JArray();
 foreach (var card in shippedJson["cards"]!.OfType<JObject>())
 {
     var faceRules = OriginalCardText.Describe(card, shipped, includeRatingBreakdown: false);
@@ -166,6 +168,7 @@ foreach (var card in shippedJson["cards"]!.OfType<JObject>())
     var step = (int)plan.Step;
     if (!fitSteps.TryGetValue(step, out var ids)) fitSteps[step] = ids = new List<string>();
     ids.Add((string)card["id"]!);
+    fitReceipt.Add(new JObject { ["id"] = card["id"], ["step"] = step, ["stepName"] = plan.Step.ToString(), ["size"] = Math.Round(plan.Size, 2), ["text"] = plan.Text });
     if (plan.Clipped)
         Check(OriginalCardText.Describe(card, shipped).Contains(faceRules.TrimEnd('.')), card["id"] + " rules: too long for the face, so inspection details print them in full");
     else
@@ -175,6 +178,7 @@ foreach (var card in shippedJson["cards"]!.OfType<JObject>())
         Check(plan.Text.Contains(clause), card["id"] + " rules: clause '" + clause + "' is kept");
 }
 Check(fitSteps.Values.Sum(v => v.Count) == shippedJson["cards"]!.Count(), "rules: every shipped card resolves to a fit step");
+Check(!fitSteps.ContainsKey((int)OriginalCardRulesFit.Step.Overflow), "rules: no shipped card needs step 4 (" + string.Join(", ", fitSteps.GetValueOrDefault((int)OriginalCardRulesFit.Step.Overflow) ?? new List<string>()) + ")");
 var defendPlan = OriginalCardRulesFit.Choose("Gain 5 Block.", rw, rh, rmax, rmin, OriginalCardRulesFit.FloorFontSize, rulesFont.Height);
 Check(defendPlan.Step == OriginalCardRulesFit.Step.FaceLines && defendPlan.Size == rmax, "rules: a short card keeps the JS face lines at full size");
 foreach (var (step, ids) in fitSteps)
@@ -182,6 +186,9 @@ foreach (var (step, ids) in fitSteps)
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);
+// Per-card rules fit receipt (step and template font size), measured with FontMetrics.CardFaceFont.
+File.WriteAllText(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(output))!, "rules-fit.json"),
+    new JObject { ["font"] = FontMetrics.CardFaceFont, ["floor"] = OriginalCardRulesFit.FloorFontSize, ["box"] = new JArray(rw, rh), ["cards"] = fitReceipt }.ToString(Formatting.Indented) + Environment.NewLine);
 Console.WriteLine(result.ToString(Formatting.Indented));
 
 Console.WriteLine($"PASS - {checks}/{checks} checks passed");

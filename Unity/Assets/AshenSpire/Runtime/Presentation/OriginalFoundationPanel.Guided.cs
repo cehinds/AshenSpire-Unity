@@ -33,9 +33,11 @@ namespace AshenSpire.Presentation
             void Go(int step) { _step = step; Creation(); }
             // JS build 1815 creator: a header ("Create character"), a step rail at the left
             // (a tab row on a phone), the step itself, and a Back / Next footer.
-            var header = new VisualElement(); header.AddToClassList("creation-header"); _root.Add(header); _target = header;
+            var header = new VisualElement(); header.AddToClassList("creation-header"); _root.Add(header);
+            var titles = new VisualElement(); titles.AddToClassList("js-creation-titles"); header.Add(titles); _target = titles;
             Label("Create character", "creation-title");
             Label(_step < 5 ? "PREPARE YOUR FORSAKEN · " + (_step + 1) + " / 5" : "PREPARE YOUR FORSAKEN · OPTIONAL", "creation-eyebrow");
+            HeaderTools(header, () => Go(6));
             var main = new VisualElement(); main.AddToClassList("creation-main"); _root.Add(main);
             var rail = new VisualElement(); rail.AddToClassList("creation-rail"); main.Add(rail);
             var railStep = _step == 5 ? 2 : _step == 6 ? 4 : _step;
@@ -54,12 +56,26 @@ namespace AshenSpire.Presentation
             {
                 // One framed row per class: figure, name, description; the chosen row adds its
                 // stat strip, starting arms and relic (JS .as-option.class-pick.cz-class).
+                // Grid (JS 02d): the chosen class stays a wide row on top; the others become
+                // portrait tiles (figure and name) in a wrapping row. Same buttons, same ids.
                 var choices = new VisualElement(); choices.AddToClassList("creation-class-grid"); body.Add(choices);
-                foreach (var record in _catalog.Table("classes"))
+                VisualElement tiles = null;
+                if (_classGrid) { tiles = new VisualElement(); tiles.AddToClassList("js-class-tiles"); body.Add(tiles); }
+                var records = _catalog.Table("classes").OfType<JObject>().ToList();
+                if (_classGrid) records = records.OrderBy(x => (string)x["id"] == _creation.ClassId ? 0 : 1).ToList(); // stable
+                foreach (var record in records)
                 {
                     var id = (string)record["id"]; var chosen = id == _creation.ClassId;
                     var choice = MakeButton("foundation-class-" + id, "", () => { if (_creation.ClassId != id) { _creation.Select(id, _creation.ModeId); _starting.RemoveAll(); _kit = null; } Creation(); });
                     choice.AddToClassList("creation-class-row"); choice.EnableInClassList("selected", chosen); choice.tooltip = (string)record["name"];
+                    if (_classGrid && !chosen)
+                    {
+                        choice.RemoveFromClassList("creation-class-row"); choice.AddToClassList("js-class-tile"); tiles.Add(choice);
+                        var tileFigure = new OriginalPlayerFigure(_setup); tileFigure.UseOwnerBattleArt(id); tileFigure.pickingMode = PickingMode.Ignore; tileFigure.AddToClassList("js-class-tile-figure"); choice.Add(tileFigure);
+                        var tileName = new Label((string)record["name"]) { pickingMode = PickingMode.Ignore }; tileName.AddToClassList("js-class-tile-name"); choice.Add(tileName);
+                        continue;
+                    }
+                    choices.Add(choice); // round 1 built these rows but never attached them
                     var figure = new OriginalPlayerFigure(_setup); figure.UseOwnerBattleArt(id); figure.pickingMode = PickingMode.Ignore; figure.AddToClassList("creation-row-figure"); choice.Add(figure);
                     var copy = new VisualElement { pickingMode = PickingMode.Ignore }; copy.AddToClassList("creation-row-copy"); choice.Add(copy);
                     var name = new Label((string)record["name"]) { pickingMode = PickingMode.Ignore }; name.AddToClassList("creation-row-name"); copy.Add(name);
@@ -114,11 +130,15 @@ namespace AshenSpire.Presentation
             }
             else if (_step == 4)
             {
-                Label((string)hero["name"], "node-title");
-                Label((_creation.ModeId == "leanStandard" ? "Standard" : "Custom attributes") + "\n" + Item("rightHand") + " · " + Item("leftHand") + "\n" + relic["name"], "lead");
-                ResourceStrip(body,(JObject)preview["resources"]);
-                var seed = new TextField("Run seed") { name="native-seed", value=_seed }; seed.AddToClassList("foundation-field"); seed.RegisterValueChangedCallback(e => _seed=e.newValue); body.Add(seed);
+                // JS 02e: a seed row, then the character sheet and equipment as document tiles,
+                // then the starting deck as illustrated cards (OriginalFoundationPanel.Review.cs).
+                var seedRow = new VisualElement(); seedRow.AddToClassList("js-review-row"); body.Add(seedRow);
+                var seedCopy = new VisualElement(); seedCopy.AddToClassList("js-review-row-copy"); seedRow.Add(seedCopy);
+                seedCopy.Add(ReviewText("Seed", "js-review-row-title")); seedCopy.Add(ReviewText("The same seed produces the same climb.", "js-review-row-caption"));
+                var seed = new TextField("Run seed") { name="native-seed", value=_seed }; seed.AddToClassList("foundation-field"); seed.AddToClassList("js-review-seed"); seed.RegisterValueChangedCallback(e => _seed=e.newValue); seedRow.Add(seed);
+                ReviewDocuments(body, preview, hero, relic, Item);
                 Button("native-customize", "Optional appearance and custom climb", () => Go(6));
+                ReviewDeck(body, preview, relic);
             }
             else if (_step == 5)
             {

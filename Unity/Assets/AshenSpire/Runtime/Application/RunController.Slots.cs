@@ -55,6 +55,7 @@ namespace AshenSpire.Application
             }
             catch (Exception error) { Debug.LogWarning("The earlier native save was not moved into slot 1: " + error.Message); }
             _view.SlotsRequested += ShowSaveSlots;
+            _view.NativeContinuePreview = TitleContinuePreview;
             _view.WebImportRequested += ShowWebImport;
         }
         private static bool Loadable(OriginalSaveSlotInfo slot) => slot.State == OriginalSaveSlotState.Ready || slot.State == OriginalSaveSlotState.RecoveredBackup;
@@ -64,6 +65,16 @@ namespace AshenSpire.Application
             .OrderByDescending(s => s.Meta?.LastSavedUtc ?? "", StringComparer.Ordinal).ThenBy(s => s.Slot)
             .Select(s => s.Slot).DefaultIfEmpty(-1).First();
         private void ResumeOriginal() => ResumeSlot(LatestSlot());
+        // Read-only slot metadata for the title's Continue preview (JS 01c); never loads the save.
+        private AshenSpire.Presentation.OriginalTitlePanel.ContinuePreview TitleContinuePreview()
+        {
+            try
+            {
+                var slot = _slotSaves == null ? -1 : LatestSlot(); var meta = slot < 0 ? null : _slotSaves.List()[slot].Meta;
+                return meta == null ? null : new AshenSpire.Presentation.OriginalTitlePanel.ContinuePreview(ClassName(meta.ClassId), meta.Act, meta.Floor, slot);
+            }
+            catch (Exception error) { Debug.LogWarning("The Continue preview could not be read: " + error.Message); return null; }
+        }
         private void ResumeSlot(int slot)
         {
             try

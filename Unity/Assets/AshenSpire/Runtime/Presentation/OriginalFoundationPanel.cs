@@ -36,7 +36,7 @@ namespace AshenSpire.Presentation
         public OriginalFoundationPanel(VisualElement root, OriginalContentCatalog catalog, AttributeProgression progression, JObject mechanics, Action report, Action back, Action<JObject, uint> start = null, JObject profile = null)
         {
             _root = root; _target = root; _catalog = catalog; _report = report; _back = back;
-            foreach (var resource in new[] { "OriginalCards", "OriginalCreation" })
+            foreach (var resource in new[] { "OriginalCards", "OriginalCreation", "JsEntry" })
             {
                 var sheet = Resources.Load<StyleSheet>(resource);
                 if (sheet != null && !_root.styleSheets.Contains(sheet)) _root.styleSheets.Add(sheet);
