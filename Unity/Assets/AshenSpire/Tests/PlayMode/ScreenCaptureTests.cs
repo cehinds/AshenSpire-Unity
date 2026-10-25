@@ -68,6 +68,7 @@ namespace AshenSpire.Tests.PlayMode
                         if (onlyPattern != null && !onlyPattern.IsMatch(id)) continue;
                         var entry = new JObject { ["id"] = id, ["view"] = viewId, ["png"] = viewId + "-" + id + ".png", ["dom"] = null, ["status"] = "ok" };
                         var shot = new Shot(outDir, viewId, id, (int)view["width"], (int)view["height"], (JArray)screen["unity"]["steps"]);
+                        RetireControllers(); // the previous shot's controller saves on disable; let it do so before the reset
                         prefs.ResetForCapture();
                         yield return shot.Run();
                         if (shot.Error != null)
@@ -84,11 +85,19 @@ namespace AshenSpire.Tests.PlayMode
             }
             finally
             {
+                RetireControllers();
                 prefs.Restore();
             }
             Debug.Log("CaptureScreens wrote " + shots.Count(s => (string)s["status"] == "ok") + " of " + shots.Count + " screenshots to " + outDir);
             Assert.That(shots, Is.Not.Empty, "no screen matched the filters");
             Assert.That(failures, Is.Empty, string.Join("\n", failures));
+        }
+
+        /// <summary>Disables every live RunController now, so its OnDisable save lands before the prefs are reset or restored.</summary>
+        private static void RetireControllers()
+        {
+            foreach (var controller in UnityEngine.Object.FindObjectsByType<RunController>(FindObjectsSortMode.None))
+                controller.enabled = false;
         }
 
         private static void WriteManifest(string outDir, JObject screens, JArray shots)
@@ -150,7 +159,9 @@ namespace AshenSpire.Tests.PlayMode
                     }
                     for (var i = 0; i < SettleFrames; i++) yield return null;
                     yield return new WaitForSecondsRealtime(SettleSeconds);
-                    yield return new WaitForEndOfFrame();
+                    // WaitForEndOfFrame never fires in batch mode; the panel renders into its own RenderTexture,
+                    // so one more frame is enough before reading it back.
+                    yield return null;
                     var previous = RenderTexture.active;
                     RenderTexture.active = rt;
                     var texture = new Texture2D(_width, _height, TextureFormat.RGB24, false);

@@ -139,6 +139,9 @@ test('the report pairs captures, marks pending and missing screens, and writes t
   ], schema: 'ashen.parity-screens/1'};
   const ma = newManifest('js', 't', {commit: '0123456789abcdef', buildOrdinal: 1837}, small.views);
   const mb = newManifest('unity', 't', {version: '0.0.28.1', buildNumber: 29}, small.views);
+  const ok = (id) => ({id, view: 'desktop', png: shotFile('desktop', id), dom: domFile('desktop', id), status: 'ok'});
+  for (const id of ['01-title', '02a-newgame-slot', '04-combat']) upsertShot(ma, ok(id), small);
+  upsertShot(mb, ok('01-title'), small);
   writeManifest(a, ma); writeManifest(b, mb);
   const img = gradient(32, 18), changed = gradient(32, 18);
   for (let i = 0; i < 32 * 4; i++) changed.data[i] = 0; // top row black
@@ -166,4 +169,14 @@ test('the report pairs captures, marks pending and missing screens, and writes t
   const self = buildReport({aDir: a, bDir: a, outDir: join(base, 'self'), screens: small, writeImages: false});
   assert.equal(self.rows[0].score, 0);
   assert.equal(self.rows[1].status, 'compared');
+  // A re-run whose capture failed leaves the old PNG on disk; the manifest decides, so it is not compared.
+  writeFileSync(join(b, 'desktop-04-combat.png'), encodePng(img));
+  upsertShot(mb, {id: '04-combat', view: 'desktop', png: null, dom: null, status: 'failed', error: 'timeout'}, small);
+  writeManifest(b, mb);
+  const rerun = buildReport({aDir: a, bDir: b, outDir: join(base, 'rerun'), screens: small, writeImages: false});
+  assert.equal(rerun.rows[2].status, 'failed-b');
+  assert.equal(rerun.summary.failed, 1);
+  // An unlisted file next to a manifest is ignored too; a folder without a manifest uses what is present.
+  writeFileSync(join(b, 'desktop-02a-newgame-slot.png'), encodePng(img));
+  assert.equal(buildReport({aDir: a, bDir: b, outDir: join(base, 'r2'), screens: small, writeImages: false}).rows[1].status, 'pending');
 });

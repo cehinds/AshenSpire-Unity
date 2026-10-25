@@ -22,6 +22,23 @@ import {loadScreens, readManifest, shotFile, domFile, decodePng, encodePng, pixe
 
 const readJson = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null);
 
+/**
+ * Which files of one shot this side may use. With a manifest, only what its current entry lists:
+ * a failed or unlisted shot yields nothing, so stale files from an earlier run are never compared.
+ * Without a manifest (a bare folder of PNGs) every file present counts.
+ */
+function shotFiles(sideInfo, view, id) {
+  const png = join(sideInfo.dir, shotFile(view, id)), dom = join(sideInfo.dir, domFile(view, id));
+  if (!sideInfo.manifest) return {png: existsSync(png) ? png : null, dom: existsSync(dom) ? dom : null, failed: false};
+  const entry = (sideInfo.manifest.shots || []).find((s) => s.view === view && s.id === id);
+  const ok = entry?.status === 'ok';
+  return {
+    png: ok && entry.png && existsSync(join(sideInfo.dir, entry.png)) ? join(sideInfo.dir, entry.png) : null,
+    dom: ok && entry.dom && existsSync(join(sideInfo.dir, entry.dom)) ? join(sideInfo.dir, entry.dom) : null,
+    failed: entry?.status === 'failed',
+  };
+}
+
 /** Describe one capture folder: its manifest (if any) and a display label. */
 function side(dir, fallback) {
   const manifest = readManifest(dir);
@@ -40,12 +57,13 @@ export function buildReport({aDir, bDir, outDir, threshold = 24, screens = loadS
   if (writeImages) mkdirSync(join(outDir, 'pairs'), {recursive: true});
   const rows = [];
   for (const view of screens.views) for (const screen of screens.screens) {
-    const png = shotFile(view.id, screen.id), dom = domFile(view.id, screen.id);
-    const pa = join(aDir, png), pb = join(bDir, png);
+    const png = shotFile(view.id, screen.id);
+    const fa = shotFiles(a, view.id, screen.id), fb = shotFiles(b, view.id, screen.id);
+    const pa = fa.png, pb = fb.png;
     const row = {view: view.id, id: screen.id, png, pending: screen.unity === null ? screen.pending : null};
-    const hasA = existsSync(pa), hasB = existsSync(pb);
+    const hasA = !!pa, hasB = !!pb;
     if (!hasA || !hasB) {
-      row.status = !hasA && !hasB ? 'missing-both' : !hasA ? 'missing-a' : row.pending && usePairs ? 'pending' : 'missing-b';
+      row.status = fa.failed ? 'failed-a' : fb.failed ? 'failed-b' : !hasA && !hasB ? 'missing-both' : !hasA ? 'missing-a' : row.pending && usePairs ? 'pending' : 'missing-b';
       if (hasA) row.a = pa;
       if (hasB) row.b = pb;
       rows.push(row);
@@ -54,7 +72,7 @@ export function buildReport({aDir, bDir, outDir, threshold = 24, screens = loadS
     const ia = decodePng(readFileSync(pa)), ib = decodePng(readFileSync(pb));
     const d = pixelDiff(ia, ib, {threshold});
     Object.assign(row, {status: 'compared', a: pa, b: pb, score: d.score, meanDelta: d.meanDelta, bbox: d.bbox, sizeMismatch: d.sizeMismatch, sizes: [[ia.width, ia.height], [ib.width, ib.height]]});
-    const da = readJson(join(aDir, dom)), db = readJson(join(bDir, dom));
+    const da = fa.dom && readJson(fa.dom), db = fb.dom && readJson(fb.dom);
     if (da && db) {
       const pairs = usePairs ? screen.pairs || {} : null;
       row.rects = rectDeltas(da, db, pairs);
@@ -71,6 +89,7 @@ export function buildReport({aDir, bDir, outDir, threshold = 24, screens = loadS
     compared: compared.length,
     pending: rows.filter((r) => r.status === 'pending').length,
     missing: rows.filter((r) => r.status.startsWith('missing')).length,
+    failed: rows.filter((r) => r.status.startsWith('failed')).length,
     meanScore: compared.length ? compared.reduce((s, r) => s + r.score, 0) / compared.length : null,
     worst: [...compared].sort((x, y) => y.score - x.score).slice(0, 5).map((r) => ({view: r.view, id: r.id, score: r.score})),
   };
@@ -106,7 +125,7 @@ body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:14px/1.45 s
 h1{font-size:20px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;border-bottom:1px solid var(--line)}h3{font-size:14px;margin:0 0 6px}
 .muted{color:var(--muted)}.tag{font-size:11px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
 .score{font-weight:400;color:var(--muted)}.row{padding:12px 0;border-bottom:1px solid var(--line)}
-.compared .tag{color:var(--ok)}.missing-a .tag,.missing-b .tag{color:var(--warn)}
+.compared .tag{color:var(--ok)}.missing-a .tag,.missing-b .tag,.failed-a .tag,.failed-b .tag{color:var(--warn)}
 .imgs{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}.imgs img{max-width:min(48vw,640px);max-height:420px;border:1px solid var(--line)}
 .empty{width:200px;height:120px;display:grid;place-items:center;border:1px dashed var(--line);color:var(--muted)}
 table{border-collapse:collapse;font:12px ui-monospace,monospace;margin-top:6px}td,th{border:1px solid var(--line);padding:2px 6px;text-align:left}.warn{color:var(--warn)}
@@ -114,7 +133,7 @@ table{border-collapse:collapse;font:12px ui-monospace,monospace;margin-top:6px}t
 </style></head><body>
 <h1>Parity report</h1>
 <p>A: <b>${esc(report.a.label)}</b> (${esc(report.a.dir)}) · B: <b>${esc(report.b.label)}</b> (${esc(report.b.dir)}) · threshold ${report.threshold}/255</p>
-<p>${s.compared} compared, ${s.pending} Unity-pending, ${s.missing} missing, of ${s.screens}. Mean differing pixels ${pct(s.meanScore)}.${s.worst.length ? ' Worst: ' + s.worst.map((w) => `<a href="#${esc(w.view + '-' + w.id)}">${esc(w.view + '-' + w.id)}</a> ${pct(w.score)}`).join(', ') : ''}</p>
+<p>${s.compared} compared, ${s.pending} Unity-pending, ${s.missing} missing, ${s.failed} failed capture, of ${s.screens}. Mean differing pixels ${pct(s.meanScore)}.${s.worst.length ? ' Worst: ' + s.worst.map((w) => `<a href="#${esc(w.view + '-' + w.id)}">${esc(w.view + '-' + w.id)}</a> ${pct(w.score)}`).join(', ') : ''}</p>
 ${views.map((v) => `<h2>${esc(v)}</h2>${section(v)}`).join('\n')}
 </body></html>
 `;
