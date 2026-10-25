@@ -28,8 +28,9 @@ namespace AshenSpire.Presentation
         private readonly Action<string> _choose;
         private readonly VisualElement _viewport = new VisualElement(), _content = new VisualElement();
         private readonly VisualElement _overlay = new VisualElement();
-        private readonly Label _hint = new Label(), _detail = new Label();
-        private readonly Button _fit, _modeButton, _glowButton;
+        private readonly Label _hint = new Label(), _detail = new Label(), _bandFloor = new Label(), _bandTitle = new Label();
+        private readonly Button _fit, _modeButton, _glowButton, _enter, _back;
+        private string _selectedId;
         private OriginalMapKnowledge.Projection _knowledge;
         private OriginalMapViewport.Projection _camera;
         private OriginalMapViewport.Snapshot _saved;
@@ -63,6 +64,9 @@ namespace AshenSpire.Presentation
             _glow = preferences["shrineGlow"]?.Type != JTokenType.Boolean || (bool)preferences["shrineGlow"];
             if (Preference("identity") == identity) _saved = OriginalMapViewport.Snapshot.FromJson(preferences["camera"]);
             name = _prefix + "-map"; AddToClassList("map-board");
+            // Detail band and selected-node look (JS 03b) live in JsJourney.uss; the board carries it so
+            // the co-op map gets the same band.
+            var journey = Resources.Load<StyleSheet>("JsJourney"); if (journey != null) styleSheets.Add(journey);
             // JS build 1815 composition: act strip (ENTRANCE → BOSS) over the parchment field,
             // and a dock of map tools in the flow under the field, never over a node.
             Add(ActStrip());
@@ -83,8 +87,19 @@ namespace AshenSpire.Presentation
             _content.AddToClassList("map-content"); _viewport.Add(_content); Add(_viewport);
             _overlay.AddToClassList("map-overlay"); _overlay.style.display = DisplayStyle.None; _viewport.Add(_overlay);
             dock.Add(toolbar); dock.Add(options); Add(dock);
-            _hint.AddToClassList("map-hint"); Add(_hint); _detail.AddToClassList("map-detail"); Add(_detail);
-            _detail.text = "Tap a lit route to climb. Drag to explore the map.";
+            _hint.AddToClassList("map-hint"); Add(_hint);
+            // JS 03b: the node-selected detail band (FLOOR n eyebrow, room name, description, Back and
+            // a green Enter). Hover or focus selects a room; tapping a lit room still enters it at once.
+            // Fixed height, so selecting never resizes the viewport (which would rebuild the nodes).
+            var band = new VisualElement { name = _prefix + "-map-detail" }; band.AddToClassList("map-detail-band");
+            var copy = new VisualElement { pickingMode = PickingMode.Ignore }; copy.AddToClassList("map-detail-copy");
+            _bandFloor.AddToClassList("map-detail-floor"); _bandTitle.AddToClassList("map-detail-title"); _detail.AddToClassList("map-detail");
+            foreach (var label in new[] { _bandFloor, _bandTitle, _detail }) { label.pickingMode = PickingMode.Ignore; copy.Add(label); }
+            band.Add(copy);
+            var decide = new VisualElement(); decide.AddToClassList("map-detail-actions"); band.Add(decide);
+            _back = Control(decide, "back", "Back", () => Select(null)); _back.AddToClassList("map-detail-back");
+            _enter = Control(decide, "enter", "Enter", () => { if (_selectedId != null) Choose(_selectedId); }); _enter.AddToClassList("map-detail-enter"); _enter.AddToClassList("primary");
+            Add(band); Select(null);
             _viewport.RegisterCallback<GeometryChangedEvent>(_ => Place());
             _viewport.RegisterCallback<PointerDownEvent>(Down, TrickleDown.TrickleDown);
             _viewport.RegisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
@@ -186,7 +201,7 @@ namespace AshenSpire.Presentation
                 var bounds = _camera.NodeBounds(id, false);
                 var state = node.Current ? "Current" : node.Visited ? "Visited" : legal ? "Available" : "Not connected";
                 var button = new Button(() => Choose(id)) { name = _prefix + "-route-" + id, tooltip = (string)row["name"] + " · " + state + "\n" + row["description"] };
-                button.AddToClassList("map-node"); button.EnableInClassList("available", legal); button.EnableInClassList("visited", node.Visited); button.EnableInClassList("current", node.Current); button.EnableInClassList("revealed", node.Revealed); button.EnableInClassList("shrine-lane", node.ShrineLane);
+                button.AddToClassList("map-node"); button.EnableInClassList("selected", id == _selectedId); button.EnableInClassList("available", legal); button.EnableInClassList("visited", node.Visited); button.EnableInClassList("current", node.Current); button.EnableInClassList("revealed", node.Revealed); button.EnableInClassList("shrine-lane", node.ShrineLane);
                 button.AddToClassList("room-" + (node.ShownType ?? "event"));
                 button.style.left = (float)bounds.X0; button.style.top = (float)bounds.Y0; button.style.width = (float)bounds.Width; button.style.height = (float)bounds.Height;
                 // Glyph inset: 22% of this node's own size. USS percentage padding would resolve against the map content width instead.
@@ -201,10 +216,31 @@ namespace AshenSpire.Presentation
                     var label = new Label(_votes.TryGetValue(id, out var names) ? string.Join(", ", names) : node.Current ? "YOU" : legal ? (string)row["name"] + " · ENTER" : "REVEALED") { pickingMode = PickingMode.Ignore };
                     label.AddToClassList("map-marker"); label.style.left = (float)bounds.X0 - 24; label.style.top = (float)bounds.Y1 + 2; label.style.width = (float)bounds.Width + 48; _content.Add(label);
                 }
-                button.RegisterCallback<PointerEnterEvent>(_ => _detail.text = (string)row["name"] + " · " + state + ". " + row["description"]);
-                button.RegisterCallback<FocusInEvent>(_ => _detail.text = (string)row["name"] + " · " + state + ". " + row["description"]);
+                button.RegisterCallback<PointerEnterEvent>(_ => Select(id));
+                button.RegisterCallback<FocusInEvent>(_ => Select(id));
             }
             Scroll(_scroll);
+        }
+        // Fills the detail band for one room (null: the resting prompt) and marks its medallion.
+        // Presentation only: entering still goes through Choose and the legal set.
+        private void Select(string id)
+        {
+            var node = id == null ? null : _knowledge?.Nodes.FirstOrDefault(n => n.Id == id);
+            if (node == null) id = null;
+            _selectedId = id;
+            foreach (var child in _content.Children()) if (child.ClassListContains("map-node")) child.EnableInClassList("selected", id != null && child.name == _prefix + "-route-" + id);
+            if (node == null)
+            {
+                _bandFloor.text = "ACT " + _act; _bandTitle.text = "Choose a route";
+                _detail.text = "Tap a lit route to climb. Drag to explore the map.";
+                _enter.text = "Enter"; _enter.SetEnabled(false); _back.SetEnabled(false); return;
+            }
+            var row = Room(node.ShownType); var legal = _legal.Contains(id);
+            var floor = _map["nodes"]?[id]?["floor"];
+            _bandFloor.text = floor == null ? "ACT " + _act : "FLOOR " + floor;
+            _bandTitle.text = (string)row["name"];
+            _detail.text = (node.Current ? "You are here. " : node.Visited ? "Visited. " : legal ? "" : "Not connected. ") + row["description"];
+            _enter.text = "Enter " + row["name"]; _enter.SetEnabled(legal); _back.SetEnabled(true);
         }
         private JObject Room(string type) => (JObject)(_authored["rooms"]?[type ?? "event"] ?? _authored["rooms"]["event"]);
         private void Choose(string id, bool fromOverlay = false)
