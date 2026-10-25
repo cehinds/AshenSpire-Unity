@@ -16,12 +16,327 @@ Numbers in this spec are the **initial balance targets**. They will move during 
 
 ---
 
+## 0. Unity port contract: JS Core 2 is the game (owner, 2026-10-25)
+
+> **Read this section first. It outranks every other section of this document.** Owner
+> decision, 2026-10-25: AshenSpire-Unity becomes a full port of the HTML/JS game
+> (`cehinds/AshenSpire`) running its **Core 2** profile. Rules, content, screens and look
+> follow JS. Where this document or [docs/UNITY-SPEC.md](docs/UNITY-SPEC.md) disagrees with
+> JS Core 2, **JS wins**. Native co-op and saves made under the old 0.5.5 rules are dropped,
+> with no freeze and no migration. This section is a specification, written before the code
+> (AGENTS.md, "the spec wins"); it does not claim that any of it is implemented.
+
+Sections 1–11 below are the web-game specification this repository was seeded from (the
+0.5.5-era rules that the Unity build implements today). They stay in the file because their
+architecture, testing and presentation laws still describe much of the current tree. They are
+**not** a rules contract for the game any more: §0.8 lists the sections that are retired
+outright, and anything elsewhere in §1–§11 that conflicts with §0 loses to §0.
+
+### 0.1 The ruleset
+
+There is **one** ruleset: JS Core 2, the configured profile **`ashen.core@2.0.0`**
+("FixCore rules version 1"). In JS it is selected by `games/ashenspire/game.json`
+(`"core": "ashen.core@2.0.0"`), resolved from `games/ashenspire/bundles/core/bundle.json`
+(`id ashen.core`, `version 2.0.0`), and its content is the `games/ashenspire/packs/core/` pack
+plus the legacy-adapter tables JS SPEC §16 says the Core export still needs
+(`ashen.legacy-adapter@1`: relics, events and potions).
+
+- Every new Unity run uses Core 2. There is no ruleset picker, no "Current"/v2 profile, no
+  archived Core 1 (`ashen.core@1.0.0`, `bundles/core-v1`) and no 0.5.5 profile.
+- JS text that is scoped to another profile (Current/v2, legacy, Core 1, co-op) is **not**
+  imported, even where it sits in the same JS section as Core 2 text.
+- Like JS (§16, §17), each new run snapshots its resolved profile and a hash of the rules it
+  runs, and each new fight stamps `core2ActionRulesVersion: 1` (JS §4.6a). A save whose
+  snapshot does not match the build refuses to load, named, without overwriting the stored
+  save (JS §16). That is the only compatibility rule for Core 2 saves; old-format saves are
+  covered by §0.6.
+
+### 0.2 The pinned JS reference, and how the pin moves
+
+| Item | Value |
+|---|---|
+| Repository | `https://github.com/cehinds/AshenSpire`, branch `dev` |
+| Commit (the pin) | `c3049c989f698f5d03a7f78954a2a2a5098a7f20` (`c3049c98`) |
+| Build | `0.7.1.1837`, digest `334c5f141a` (JS `buildordinal.json`) |
+| Profile | `ashen.core@2.0.0` |
+| Pinned on | 2026-10-25 |
+
+Every JS path and section number in this document means **that file at the pin**. This table
+is the one home of the pin. `UPSTREAM.json` records the 2026-09-05 bootstrap seed
+(`d5c982e7`) and is not the rules pin; the "native parity reference" `b17a7f45` in
+docs/UNITY-SPEC.md and the test-898 reference in
+[docs/Unity-HTML-Parity-Migration.md](docs/Unity-HTML-Parity-Migration.md) are retired.
+
+**Moving the pin** is a docs-only pull request, made before any code that depends on it:
+
+1. Pick a JS `dev` commit that is merged and built. Never pin a branch name, an unmerged JS
+   branch, a dirty tree or "latest".
+2. Confirm `games/ashenspire/game.json` at the new commit still selects `ashen.core@2.0.0`.
+   If JS has moved to another core version (for example `2.1.0` or `3.0.0`), adopting it is an
+   owner decision recorded in this section, not a pin bump.
+3. Update the table above: full 40-character hash, build and digest from JS
+   `buildordinal.json`, and the date.
+4. In the PR description, list what changed between the old and new pin in every document
+   §0.3 imports, from
+   `git -C <js checkout> diff --stat <old>..<new> -- SPEC.md docs/STANCE-COMBAT-RULES.md docs/FIXCORE-DECISIONS.md docs/design docs/combat-reaction-contract.md docs/combat-card-traits-contract.md games/ashenspire content/source/fixCoreMechanics.json content/source/balanceUi.json content/config/ui content/hud-layout`,
+   and say for each change what Unity must do. Say whether existing Core 2 saves stay
+   loadable (same rules hash, or a tested adapter) or will refuse under §0.1.
+5. After the pin PR merges, the content export and the JS oracles (port plan, phase 4) are
+   regenerated at the new commit. The export manifest records the same commit; a manifest
+   whose commit differs from this table is a failing check, once phase 4 builds that check.
+6. Open items in §0.10 are re-checked against the new commit and closed or kept.
+
+### 0.3 Imported JS contracts
+
+These JS documents are normative for Unity, by reference, at the pin. They are not copied
+here: a restated rule is a second copy that drifts.
+
+| Subject | JS source (at the pin) |
+|---|---|
+| Profile selection, run snapshot, no silent migration | `SPEC.md` §16; `games/ashenspire/game.json`; `games/ashenspire/bundles/core/bundle.json` |
+| Core 2 combat (FixCore): Block then Poise absorption, the Staggered stance, Vulnerable ×1.25, Weak −25% AR, status stacking and decay, flooring, Ward off, accuracy (d20 + Precision against a fixed Evasion), Evade, Precision, Perception, Adept discounts, Counters and Spell Counters, Smash against defensive stances, rests, reward weights, auto-combat | `SPEC.md` §17 with its two amendments ("Core clarity, progression and editing amendment (owner, 2026-10-22)" and "Reward inspection and earned-effect feedback (owner, 2026-10-23)"); `docs/FIXCORE-DECISIONS.md` (D1–D16); `docs/design/FixCore-complete.md` (its requirements, defaults, architecture contracts, behaviour and falsification criteria; not its code snippets or method names, §17 ¶2); values in `content/source/fixCoreMechanics.json` |
+| Stance identity, active ratings, entry grants, Defense restoration, matchups, Evade, hit previews, HUD and floater rules | `docs/STANCE-COMBAT-RULES.md` |
+| Owner corrections of 2026-10-20 (Precision, reaction costs, per-hit Counters, combat feedback, progression presentation) | `docs/design/combat-clarity-2026-10-20.md` |
+| Optional engagement, Advance, Throw | `docs/design/RangeAdvance.md` (a normative amendment to §17) |
+| Card action costs | `SPEC.md` §4.3a, as changed for Core 2 by §17 and `docs/STANCE-COMBAT-RULES.md` (same-stance Adept discount) |
+| Enemy SP pool and the Core 2 action policy | `SPEC.md` §4.6a (its Core 2 bullets); `src/model/core2ActionPolicy.js` (`core2ActionRulesVersion` 1) |
+| Reactions | `SPEC.md` §4.10; `docs/combat-reaction-contract.md`; `docs/combat-card-traits-contract.md` |
+| Deck editing, collected cards, Adept copies, gear-granted cards | `SPEC.md` §14.1, its "Core equipment grants (owner ruling, 2026-10-19)" and "Core 2 collection and Adept copies (owner ruling, 2026-10-23)" paragraphs; §17 (editing at will outside combat) |
+| Classes, creation, starter decks, stats, gear, cards, enemies, routes, rests, shops, rewards, class unlocks | `games/ashenspire/packs/core/*.json` (`characters`, `starterDeck`, `stats`, `gear`, `cards`, `cardPools`, `resourceVariants`, `enemyCards`, `enemyRelics`, `routes`, `rests`, `shops`, `rewards`, `classUnlocks`, `provisionalPolicies`); authoring notes in `games/ashenspire/packs/core/guide.md` |
+| Progression (class XP and used-weapon XP only, no character levels) | §17 2026-10-22 amendment; `progression` settings in `bundles/core/bundle.json`; `src/model/gameProfileProgression.js` |
+| Pacing and auto-combat | §17 2026-10-22 amendment; `content/config/ui/presentation/actionPacing.json`; the Combat rows of `src/ui/screens/settings.js`; `src/model/autoCombatPolicy.js` |
+| Screens, layout and look | `SPEC.md` §7 (§7.2 is the 1280×800 reference); `content/source/balanceUi.json` (`uiScale`, `tapSize`, `rewardCollect`); `content/config/ui/**`; `content/hud-layout/*.json`; `games/ashenspire/ui/screens/*.json`; the settings defaults in `src/ui/screens/settings.js` |
+
+A JS section or file not listed is imported only as far as a Core 2 run at the pin actually
+uses it (for example the legacy-adapter relics, events and potions). The phase 4 export
+(§0.9) decides that set from the resolved profile, not from this table.
+
+**What "port" means when JS prose and the JS build differ.** Unity matches the JS build at
+the pin. A contract that JS has written but not yet shipped at the pin (JS marks such text
+"planned" or "does not claim implementation") arrives in Unity through a later pin bump, once
+JS ships it. Until then it is an open item in §0.10, and Unity does not get ahead of JS.
+
+### 0.4 Which JS document wins where they overlap
+
+JS has no single ranking table, but its documents state their own supersessions. Unity
+applies them in this order:
+
+1. **Scope.** Only text that applies to `ashen.core@2.0.0` counts (§0.1).
+2. **Explicit supersession.** Where a JS document says it supersedes another on a subject, it
+   wins on that subject:
+   - JS `SPEC.md` §17 supersedes the earlier combat sections (§4.1–§4.6 and the rest) for
+     Core 2 runs (§17 ¶2).
+   - `docs/design/RangeAdvance.md` amends §17 for range, Advance and Throw (§17 ¶1).
+   - `docs/STANCE-COMBAT-RULES.md` supersedes older stance, Evade, hit-preview and
+     combat-pressure prose (its own first paragraph, and the note at the top of JS `SPEC.md`).
+   - `docs/design/combat-clarity-2026-10-20.md` supersedes earlier rules on Precision,
+     reaction costs, per-hit Counters, combat feedback and progression presentation (note at
+     the top of JS `SPEC.md`).
+   - `docs/FIXCORE-DECISIONS.md` rulings win over the `feature/FixCore` (#2129) assumptions
+     and over `docs/design/FixCore-complete.md` (its header; §17 ¶3, "as amended by").
+3. **Later owner ruling wins.** Otherwise, on the same subject, a later dated owner ruling
+   beats an earlier one. Examples at the pin: §17's 2026-10-22 amendment sets the combat step
+   pause to 500 ms, replacing D11's 1 s and the "pauses 1 s" sentence earlier in §17; §17's
+   2026-10-21 accuracy correction (a fixed Evasion, defender does not roll) replaces D7's
+   "vs AC"; §17's "Perception does not gate the hit-chance display" replaces
+   STANCE-COMBAT-RULES' Perception gate on hit percentages (2026-10-14).
+4. **Data over prose for values.** Numbers, lists and IDs come from the Core 2 data at the
+   pin (`bundles/core/bundle.json`, `packs/core/*.json`, `content/source/fixCoreMechanics.json`,
+   the UI config files in §0.3) and from the JS tests that encode an owner ruling (for
+   example `tests/core-starting-decks.test.mjs`). This follows D2 ("JSON modules/content are
+   the one authority"). Where JS prose states a different value, the data wins and the
+   difference is listed in §0.10 for the owner; Unity does not correct JS.
+5. **Guides last.** `games/ashenspire/packs/core/guide.md`, `games/ashenspire/guide.md` and
+   `docs/ai/json-game-modules/CORE-SPEC.md` were written for Core 1. They explain how the
+   data is authored and lose to everything above.
+6. **Open stays open.** JS items marked "open" or "provisional" (D3's damage-typing question,
+   `packs/core/provisionalPolicies.json`, shop price 10) stay open or provisional in Unity.
+   Unity uses the value the JS build ships at the pin and does not invent one.
+
+### 0.5 Owner rulings: JS wins over Unity decisions (2026-10-25)
+
+Every conflict between docs/UNITY-SPEC.md (and the documents it records decisions in) and
+JS Core 2 is decided for JS. The ones that changed something are recorded with their old
+Unity decision in [docs/UNITY-SPEC.md](docs/UNITY-SPEC.md) §"Owner decision, 2026-10-25";
+in short:
+
+- **Creation:** six attribute points, class primary at 2 and every other attribute 1
+  (Reaver STR, Starseer INT, Rogue DEX, Herald WIS); fixed class loadout; the JS Core 2
+  starter deck for that class (`packs/core/starterDeck.json`); only Reaver selectable at first,
+  then Starseer, Rogue, Herald, one per unique finished run, won or lost
+  (`packs/core/classUnlocks.json`). The 8-point lean scale, its Standard/Assign modes and the
+  0.5.5 kits are gone.
+- **High contrast** is on by default (JS `settings.js` `highContrast` `def: true`).
+- **Pacing:** the JS Combat settings replace Unity's three-step animation speed: combat step
+  pause (default 500 ms, 0–2000), animation step duration (default 390 ms, 50–3000), the
+  `mobile-fast` preset (250 ms / 195 ms), the animation speed choice and the auto-combat speed
+  (default ×1.5) (`actionPacing.json`, `settings.js`).
+- **Rewards:** JS reward collection. Cinders are granted on arrival; every other reward has an
+  Inspect action before it is collected and during confirmation (§17 2026-10-23); the
+  collection setting defaults to `manual` (`balanceUi.json` `rewardCollect`), so Continue takes
+  only what the player chose.
+- **Input:** a single tap or click selects a card and never plays it; one-tap play is an
+  opt-in setting, off by default (§17; `settings.js` `oneTapPlay`).
+
+### 0.6 Old saves are not loaded
+
+Saves made by any Unity build before Core 2 (0.5.5 native runs, the campaign adaptation, co-op
+receipts and the durable profile that goes with them) are **not loaded, not migrated and not
+deleted**. This covers the `AshenSpire.Unity.Original.v1.*`, `AshenSpire.Unity.Campaign.v1.*`,
+`AshenSpire.Unity.Profile.v1.*` and `AshenSpire.Unity.Coop.*` storage keys and the
+`Expedition.v1` saves. Core 2 runs and the Core 2 profile use new storage keys, so the old bytes
+are never read as Core 2 data and never overwritten by it.
+
+What the player sees:
+
+- The title screen offers **Continue** only for a Core 2 run.
+- A save slot that holds only an old-format run shows it as **"From an earlier version — can't
+  be continued"**, with one line of explanation and a **Delete** action. Choosing that slot for
+  a new game asks for the same delete confirmation as overwriting any run. Nothing else about
+  the old run is shown or loaded.
+- The first time a Core 2 build starts on a device that holds any old-format data, one notice
+  says: *"Ashen Spire now plays by its new rules. Runs and progress from earlier versions can't
+  be continued. They stay on this device until you delete them."* It shows once and does not
+  block play.
+- The Core 2 profile starts empty: no run history, and only Reaver unlocked. Unlocks, history
+  and progression earned under 0.5.5 do not carry over.
+- **Settings are preferences, not saves**, and are kept (`AshenSpire.Settings.v1`: audio,
+  key and gamepad bindings, text and UI size, reduced motion and the rest). The fields whose
+  default §0.5 changes (`highContrast`, `rewardCollect`, the animation-speed fields) are reset
+  once to the JS defaults when the settings record is upgraded to the Core 2 schema, because
+  the old record always wrote them and a stored value cannot be told apart from a choice. After
+  that one reset, the player's choice is kept.
+- **Original JS save import** (the 2026-09-28 phase-1 requirement) is retired with the 0.5.5
+  rules: it imported 0.5.5-rules saves. Importing JS Core 2 saves is not offered (§0.10).
+
+### 0.7 Co-op is removed
+
+Native co-op is removed from the game: the title-menu co-op entry ("Forsaken together"), the
+lobby, shared runs, the member-specific views and the co-op paths in combat, rewards and saves. It is not frozen on the
+old rules, and Core 2 has no co-op. (JS also keeps co-op aside: JS SPEC scope row 11 and §11
+call LAN co-op "planned for a later release"; §17 leaves co-op on its own rules, and its
+2026-10-22 amendment says "Co-op remains disabled".)
+Co-op on Core 2 can come back only as a new owner decision and its own SPEC change.
+
+The **LAN companion** goes with it:
+
+- Builds whose new runs use Core 2 do not build, package or publish the companion. The build
+  page and `Published/` stop offering `Companion.zip` and `Companion.build.json`, and
+  `tools/build-unity.ps1 -Target All` builds Web, Windows and Android only.
+- The companion source (`tools/NativeLan/`), its packaging (`tools/NativeLan/Packaging/`), the
+  co-op browser CI job (`tools/native-coop-ci.cjs` in `.github/workflows/unity-pages.yml`) and
+  the Unity co-op runtime (`OriginalCoop*`, `RunController.Coop.cs`, `CampaignView.Coop.cs`,
+  `OriginalCoopPanel*`) are deleted in the PR that switches new runs to Core 2 and removes the
+  0.5.5 runtime (port plan, phase 8). Git history keeps them.
+- Archived builds keep their companion downloads at their exact-commit links
+  (docs/Unity-Archive-Hosting.md); they are history, not a supported product. Player-facing
+  co-op text (docs/PLAYER-GUIDE.md "Co-op basics", README) is removed in that same PR.
+
+### 0.8 Retired sections of this document
+
+Retired means the section no longer describes the game. Its subject is governed by the JS
+source named, through §0.3.
+
+| Section | Was | Now |
+|---|---|---|
+| §1 table and run summary | 0.5.5 web overview | §0; the 1280×800 reference row is updated |
+| §3.12 | web save keys and schemas | §0.1 and §0.6; JS §3.12 and §16 for the Core 2 run snapshot |
+| §4.1 | energy 3, draw 5 | replaced: JS §17 (SP and MP pools; hand 4 + INT) |
+| §4.2 | Vulnerable 1.5, Staggered ×1.5 | replaced: JS §17 |
+| §4.3 | energy costs, X-cost on energy | replaced: JS §4.3, §4.3a, §17 |
+| §4.4 | StS statuses, Poise meter that fills | replaced: JS §17, `fixCoreMechanics.json` `statuses`, `poise`, `staggered` |
+| §4.5 | Bloodflame and Bulwark stances | replaced: `docs/STANCE-COMBAT-RULES.md` |
+| §4.6 | weighted state machine, one intent | replaced: JS §4.6a, §17 |
+| §4.7 | proposed off-deck Weapon Arts | withdrawn: not part of Core 2 |
+| §5.1 | `tuned` 53-point creation, level curve, milestones, Rogue slice | replaced: `packs/core` (§0.5) and §17 progression |
+| §5.2–§5.6 | 0.5.5 cards, enemies, relics, flasks, events | historical; Core 2 content per §0.3 |
+| §6 | 12-floor StS map, rune rewards | historical; `packs/core/routes.json`, `rewards.json`, `shops.json` |
+| §7.1 | web screen flow | the JS Core 2 flow (`games/ashenspire/ui/screens/*.json`); the startup-gate paragraph stays |
+| §7.2 | 1280×720 reference, energy orb | updated in place (§7.2 panel-scale contract) |
+| §7.4 | slow/normal/fast/instant only | updated in place (Core 2 pacing) |
+| §9, §10 | web milestones and forward hooks | historical; the port plan is §0.9 |
+| §11 | multiplayer shipped | updated in place (§0.7) |
+
+### 0.9 Port plan
+
+Implementation follows in phases, one reviewable draft PR each, in this order (from the
+2026-10-25 port audit). Where a phase changes mechanics not already covered by §0.3, a SPEC
+PR comes first.
+
+0. **Owner actions:** GameCI secrets (`UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`); the
+   JS pin (§0.2); the 1837 reference capture; the rulings in §0.5–§0.7 (done 2026-10-25).
+1. **Parity harness:** JS capture and DOM-rect dumper; Unity screen captures; side-by-side
+   diff reports.
+2. **UI foundation:** two panel scales (§7.2), a screen router with full-viewport layers in
+   place of the global scroll view, USS tokens generated from JS UI config.
+3. **This SPEC change.**
+4. **Core 2 content export and oracles:** the resolved profile, Core pack and adapter tables
+   exported with a manifest that records the pin; JS oracles for prices, hit chance, Poise,
+   matchups, Counters and enemy planning.
+5. **Core 2 combat domain** (three PRs): (a) profile snapshot, SP/MP pools, pricing,
+   accuracy, Poise, Staggered, statuses, flooring; (b) stances, matchups, Counters, Sweep,
+   multi-hit contacts, range; (c) enemy SP planning, concealment, Perception.
+6. **Core 2 combat presentation:** SP orb and MP pips, intents, hit-% badges, HUD order,
+   floaters, enemy inspector, hold End Turn.
+7. **Reactions, auto-combat, combat log, pacing controls.**
+8. **Core 2 run layer:** routes, rests, rewards with Inspect, shops, starters and gear. New
+   runs switch to Core 2 in this phase; the same PR removes the 0.5.5 runtime, its save path
+   and co-op (§0.6, §0.7).
+9. **Deck editing and armoury:** collected cards, Adept copies, sideboard, granted cards.
+10. **Progression and unlocks:** class and weapon XP, level notices, class unlock ledger.
+11. **Opening and onboarding:** prologue, first-fight tutorial, Continue row.
+12. **Meta screens:** settings parity, profile archive and history.
+13. **Visual closure and cleanup.**
+14. **Optional, owner-gated:** co-op on Core 2, or JS screens Core 2 does not reach.
+
+Agents cannot run the Unity editor, so every "it looks right" claim needs a CI or owner
+render; the owner merges each phase.
+
+### 0.10 Open items (not resolved from JS at the pin)
+
+1. **Starter decks disagree inside JS.** JS SPEC §16 (written when the bundle was
+   `ashen.core@1.0.0`) and `packs/core/guide.md` give every class 3 Strike, 3 Defend, Counter,
+   Smash, Sweep and its special.
+   `packs/core/starterDeck.json` `classDecks`, enforced by `tests/core-starting-decks.test.mjs`
+   ("Owner ruling 2026-10-19 (Core): exact opening decks per character"), gives per-class
+   decks instead (Reaver: 4 Strike, 4 Defend, Counter, special; Rogue, Starseer and Herald
+   differ again, and the Bone Sceptre adds Mana Surge for Starseer and Herald), and
+   `packs/core/characters.json` `defaultDeck` is a third list. Unity follows `starterDeck.json`
+   and the test (§0.4 rule 4), which is what the JS build plays. The owner may confirm.
+2. **Rest services disagree inside JS.** JS §16 (Core 1) and `packs/core/guide.md` describe
+   Strategize and one service per visit; §17, D10 and `packs/core/rests.json` (`services: smith,
+   levelUp`, `servicesPerVisit: all`, three rests per act with one before the boss) do not.
+   Unity follows §17 and the data.
+3. **Evade on the HUD.** `docs/STANCE-COMBAT-RULES.md` says the Evade pip displays its
+   rating; §17 says pips never show an AC number. Unity matches what the JS build at the pin
+   draws; phase 1 captures it.
+4. **JS screens Core 2 may not reach** (world atlas, quests, legacy dungeons, blacksmith and
+   master screens): whether a Core 2 run reaches them is not traced. Unity ports what a Core 2
+   run at the pin reaches; phase 1 records the routes.
+5. **JS Core 2 save import** into Unity is neither specified by JS nor ruled on. Not offered.
+6. **The one-time settings reset** in §0.6 is this specification's reading of "JS wins" for
+   stored settings; the owner may prefer to keep stored values.
+7. **Logical pixels on high-density screens.** JS lays out in CSS px (device-independent).
+   Phase 2 must map Unity screen pixels to the same logical pixels per platform (browser
+   `devicePixelRatio`, `Screen.dpi` on Android); JS has no rule for this because the browser
+   does it.
+8. **Legacy-adapter content.** JS §16 says the Core export still needs
+   `ashen.legacy-adapter@1` and is not a portable rules package. Which relics, events and
+   potions a Core 2 run reaches, and their behaviour, is settled by the phase 4 export and its
+   oracles, not by this section.
+
+---
+
 ## 1. Product overview
+
+> **Unity port (§0).** This overview describes the web game the repository was seeded from.
+> The Unity game is JS Core 2 (§0.1): classes, run shape and content follow `packs/core`, and
+> persistence follows §0.6.
 
 | | |
 |---|---|
 | Title | **Ashen Spire** (`AshenSpire` — the bundle name; title screen `src/ui/screens/title.js:47`) |
-| Platform | Modern evergreen browsers. 1280×720 is the **layout reference** (§7.2), not a minimum: a narrow layout ships and is selected once by `main.js` writing `data-layout` (§11). |
+| Platform | Modern evergreen browsers. 1280×800 is the **layout reference** (§7.2, as in JS), not a minimum: a narrow layout ships and is selected once by `main.js` writing `data-layout` (§11). The Unity panel-scale contract is in §7.2. |
 | Tech | Vanilla ES-module JS, HTML, CSS. No framework, no build step |
 | Persistence | `localStorage`: three run slots, plus a **durable profile** (settings, unlocks, progress, last 20 results) with a verified-write mirror and a keyed archive drawer the player can open from **Profile on the title screen** (§3.12) |
 | Entry point | `index.html` opened directly or via any static server |
@@ -461,6 +776,12 @@ equipmentChanged(reason,beforeLoadoutSignature,afterLoadoutSignature,changedPosi
 
 ### 3.12 Save format, and the durable profile
 
+> **Unity port (§0).** This subsection describes the web game's storage. Unity Core 2 runs
+> snapshot their profile and rules hash and refuse a mismatched save (§0.1, JS §16); saves
+> from earlier Unity builds are not loaded (§0.6). The durability properties below (versioned
+> both ways, verified write then mirror, never silently empty) remain the bar for Unity's own
+> Core 2 save store.
+
 **Two schemas, one home each — this is the contract, and the values are not restated here.**
 `RUN_SCHEMA_VERSION` lives in `src/model/state.js`; `META_SCHEMA_VERSION` lives in
 `src/engine/save.js`. Neither number appears anywhere else, and a second copy of either is a
@@ -571,347 +892,119 @@ go red is `unknown`, not green.
 
 ---
 
-## 4. Combat rules (Slay-the-Spire-faithful)
+## 4. Combat rules
+
+> **Replaced for the game (2026-10-25).** Combat is JS Core 2 (§0.1), governed by the JS
+> sources in §0.3 and ranked by §0.4: JS `SPEC.md` §17 and its amendments,
+> `docs/STANCE-COMBAT-RULES.md`, `docs/design/combat-clarity-2026-10-20.md`,
+> `docs/design/RangeAdvance.md`, `docs/FIXCORE-DECISIONS.md`, JS §4.3a, §4.6a and §4.10, with
+> values from `content/source/fixCoreMechanics.json`. The 0.5.5 rules this section used to
+> state (energy 3 and draw 5, Vulnerable ×1.5, a Poise meter that fills and skips a turn,
+> Bloodflame and Bulwark stances, one weighted intent a turn) are retired; git history keeps
+> the old text. The pointers below say where each subject now lives. They summarise; they do
+> not restate values, and where a summary and the JS source differ, the JS source wins.
 
 ### 4.1 Turn loop
 
-1. **Combat start:** shuffle deck into draw pile; `Innate` cards go to top. `combatStart` triggers fire.
-2. **Player turn start:** lose all block (unless modified), set energy to 3 (base), draw 5, `playerTurnStart` triggers.
-3. **Player acts:** play any affordable cards, use flasks, inspect piles. Max hand size **10** — excess drawn cards go to discard with a "hand full" toast (StS behavior).
-4. **Player turn end:** `playerTurnEnd` triggers; discard hand except `Retain` cards; `Ethereal` cards in hand exhaust instead. Unspent energy is lost.
-5. **Enemy turn:** each living enemy, in row order, executes its telegraphed intent; enemies lose their block at the start of *their* turn.
-6. New intents are rolled (stream `enemyAI`), display updates, back to 2.
-7. **End:** all enemies dead → victory (rewards); player HP ≤ 0 → death screen.
+Retired: energy 3, draw 5, hand 10. Core 2: each actor pays card costs from a Stamina (SP)
+pool and a Mana (MP) pool (JS §4.3a, §17). The player's pools and hand counts come from the
+Core 2 stats (`packs/core/stats.json`: STR +1 AR, DEX +1 DR, CON +10 HP and +0.5 SP, WIS +1 MP,
+INT +1 draw); the opening hand and the turn draw are 4 + INT (`handBase` 4,
+`gameProfileStatOptions` in JS `src/model/gameProfileRun.js`). Hand size, Retain and turn-end
+handling follow JS §4.1 as it applies to Core 2 runs. Enemies plan and pay from their own live
+SP budget (JS §4.6a). A Staggered actor loses 1 SP (§4.4).
 
-### 4.2 Damage math (order is contractual)
+### 4.2 Damage math
 
-For an attack dealing `base` damage:
+Retired: the StS chain with Vulnerable ×1.5 and Staggered ×1.5. Core 2 (JS §17): the
+attacker's chain (rating, matching stance ×1.25, stance advantage, Vulnerable ×1.25) is floored
+once to the incoming damage; Block absorbs first; while the target has Poise, the hit becomes
+floor(d × 0.75) and Poise loses the absorbed amount ("Poise absorbed N"); Smash against a
+defensive stance and Counter returns have their own §17 rules. Accuracy is a d20 + Precision
+roll against a fixed Evasion, with an exact hit-chance preview (§17). Multi-hit `5 × 3` is
+three independent contacts (§17, 2026-10-22). Every shown and applied value is a whole number,
+rounded down.
 
-```
-dmg = base
-dmg = dmg + attacker.Strength                    // may go below base
-dmg = dmg * (attacker has Weak      ? 0.75 : 1)
-dmg = dmg * (defender has Vulnerable? 1.5  : 1)
-dmg = dmg * (defender is Staggered  ? 1.5  : 1)
-dmg = floor(dmg); if dmg < 0 → 0
-```
-
-(The multipliers/adders come from status `modifiers` (§3.7); the engine consults the status model, not named statuses.) Multi-hit attacks compute per hit. Damage consumes block first; remainder hits HP. `loseHp` (Rot ticks, Bleed bursts, Madness) ignores Strength/Weak/Vulnerable/Stagger *and block*. Block from a card: `base + Dexterity`, `× 0.75` if Frail, floored.
-
-**Card preview numbers in the UI are computed by the same engine function** (`previewDamage(card, source, target)`); no duplicated math in the UI (§3.13).
+The principle this section carried still holds: **card and intent previews come from the same
+calculation that plays the card**, with no second copy of the math in the UI (JS §17;
+`docs/STANCE-COMBAT-RULES.md`, "shared live/preview calculation").
 
 ### 4.3 Card rules
 
-- Types: **Attack, Skill, Power, Curse, Status**. Powers are removed from play when played (not exhausted — they don't hit the exhaust pile). Curses/Statuses are unplayable unless stated.
-- Keywords (exact StS semantics; engine primitives per §3.7): **Exhaust** (removed for the combat after play), **Ethereal** (exhausts if in hand at end of turn), **Innate** (starts on top of draw pile), **Retain** (not discarded at end of turn), **Unplayable**, **X-cost** (consumes all energy; effect scales via `{f:'energySpent'}`).
-- Upgrades: every non-curse card has exactly one authored upgrade (`name+`), a partial override object on the card def (numbers, cost, keywords — a present `keywords` list replaces the base list, so upgrades can remove Exhaust). Ordinary cards retain a permanent per-copy run upgrade. Equipment-sourced basic cards instead resolve that authored upgrade from their source armament's run-owned Smithing tier, so every current and future copy from the same armament changes together.
-- Smithing: a run owns `smithingStones`, an `armamentLevels` map, and idempotent reward claims. The shipped tier cap is 1 and promoting an armament to tier 1 costs 1 Smithing Stone. Elite and boss victories award 1 Stone; normal and treasure reward pools award 0. Legacy equipment-card upgrade flags migrate to the corresponding source armament tier without granting Stones.
-- Empty draw pile + draw needed → discard pile is shuffled (stream `shuffle`) into draw first.
+Retired as written here (energy costs, X-cost on energy). Core 2: card types, keywords and
+upgrades as JS §4.3 applies them to Core 2 runs; prices from JS §4.3a with the Core 2
+same-stance Adept discount, floors and non-stacking rules of JS §17 and
+`docs/STANCE-COMBAT-RULES.md` §1; X-cost cards spend all current SP (§17).
 
 ### 4.4 Status effects
 
-Common (StS layer):
+Retired: the StS status table, the 0.5.5 Elden Ring layer as a contract, and the Poise meter
+that fills, skips a turn and adds +50%. Core 2 (JS §17): status stacks add; natural decay
+removes one stack at the affected owner's turn start, at most once per round; Weak lowers AR by
+25%; Vulnerable raises damage taken by 25%; potency stays fixed while active and added stacks
+extend duration. Poise is a depleting pool with no passive regeneration; a defensive card adds
+its final Block to Poise (capped) and grants that Block. A Poise break puts the target in the
+**Staggered stance** (−1 SP, +1 Vulnerable; further breaks extend duration only). Ward exists
+but is off (`ward.enabled: false`). Values live in `fixCoreMechanics.json` (`statuses`,
+`poise`, `staggered`). Positive grants show `+N Status name` (§17, 2026-10-23).
 
-| Status | On whom | Effect | Decay |
-|---|---|---|---|
-| Strength | any | +N attack damage per hit | permanent |
-| Dexterity | player | +N block from cards | permanent |
-| Weak | any | deal 25% less attack damage | −1 stack at owner's turn end |
-| Vulnerable | any | take 50% more attack damage | −1 stack at owner's turn end |
-| Frail | player | 25% less block from cards | −1 stack at turn end |
+### 4.5 Stances
 
-Elden Ring layer (the thematic differentiator — these must feel distinct):
-
-**Threshold-proc statuses** *(#61, Constantine's direction 2026-08-06 — supersedes the
-earlier Bleed row; every number is a PROVISIONAL table knob in the row itself)*: a proc
-status builds points toward a **constant** threshold; points do not decay. At the
-threshold the target takes percent-of-its-max-HP damage as **its own proc** — its own
-event and damage-record entry, never folded into the triggering hit — then the build-up
-**resets to zero** (overflow dropped; the old carry-and-escalate ×1.5 is gone), and, if
-the target carries a listed creature tag, it gains a short resistance status (strength on
-the resist row, duration in its decay, gate in the proc row). Declared per row:
-`threshold, burstPercent (of target max HP), burstMin/burstMax, poiseDamage (per proc),
-stagger (direct), effects, resistance {status, tags}`. Schema + validator enforce every
-knob (`model/schemas.js`, `model/validate.js`); tag-scoped extra vulnerability composes
-by a declared `stacking` rule (closed enum: additive | multiplicative).
-
-**The numbers are deliberately NOT restated in this spec.** Every knob above is marked
-PROVISIONAL in its own row and is expected to move — Bleed's threshold was picked against the
-sim after this section was first written, and the prose here said `12` while the shipped row
-said `7` until this pass caught it. A restated provisional value is a cache guaranteed to rot;
-§6 already refuses to restate its samples for the same reason. **Read them from the rows:**
-
-```
-node -e "import('./src/content/statuses.js').then(m=>m.statuses.filter(s=>s.proc)\
-  .forEach(s=>console.log(s.id, JSON.stringify(s.proc))))"
-```
-
-| Status | Mechanic |
-|---|---|
-| **Bleed (threshold-proc)** | The build-up the Reaver's kit is written around; fleshy targets (beast/humanoid) gain a bleed-resist status after a burst. Adds Poise damage per proc. |
-| **Frost (threshold-proc)** | Deliberately the smallest burst of the three; the proc leaves **Weak** plus a tag-scoped exposure that raises `starstone`-tagged damage. |
-| **Insanity (threshold-proc)** | The largest burst and the hardest to fill; adds Poise damage **and a direct Stagger** that bypasses the meter, and leaves an exposure on `ritual`/`blight`-tagged damage. **Not** the player-side Madness below — two words, two mechanics, on purpose. |
-| **Crimson Blight** *(`crimsonBlight`; "Scarlet Rot" pre-scrub)* | DoT on enemy: take N `loseHp` at its turn start. Unlike StS Poison, stacks **do not tick down** — instead it has a duration of **3 of its turns**, then expires entirely. Re-applying adds stacks and refreshes duration. Ignores block. |
-| **Burn** *(`burn`)* | The third damage-over-time row, applied by `burn`-tagged effects and by equipment mods (`equipMods.csv`). |
-| ~~Frostbite~~ | **CUT — describes nothing.** No `frostbite` status ships; the frost identity is carried by the **Frost** threshold-proc row above and its `frostExposed` exposure. Falsify: `node -e "import('./src/content/statuses.js').then(m=>console.log(m.statuses.some(s=>s.id==='frostbite')))"` → `false`. |
-| **Madness** | On player (from enemies/curses): at turn start, lose 2 HP per stack but gain 1 energy per stack, then Madness clears. Risk/reward, mostly enemy-inflicted. |
-| **Poise / Stagger** | Every enemy has `poiseMax` (8–40 by enemy). `poiseDamage` fills the meter (shown under HP). When full: enemy becomes **Staggered** — its next turn is skipped (intent replaced by "Staggered"), it takes +50% attack damage until the end of the *player's* next turn, then meter empties and `poiseMax` ×1.25 (rounded up). Poise meter does not decay. |
-
-All of the above — including the whole Elden Ring layer — are data objects in `content/statuses.js` over the generic status model (§3.7); none has engine-side special cases.
-
-### 4.5 Stances (Vagabond mechanic)
-
-At most one stance active. Entering a stance exits the previous (`stanceExited` then `stanceEntered`). Stances are combat-scoped.
-
-- **Bloodflame Stance:** your attacks apply +2 Bleed. On entering: take 2 damage (ignores block).
-- **Bulwark Stance:** whenever you play a Skill, gain 2 Block. On entering: gain 3 Block.
-
-Some cards read "If in [stance]: bonus" (predicate `inStance`). Stance icon shows beside the player's status row.
+Retired: Bloodflame and Bulwark. Core 2 stances are maneuver stances, identified by the pair
+(camp, maneuver), with active ratings (+1 AR offensive, +3 DR defensive, applied to Block and
+damage and shown on the card face), entry grants, Defense restoration, matchups and the
+Staggered stance: `docs/STANCE-COMBAT-RULES.md`, as amended by JS §17 and
+`docs/FIXCORE-DECISIONS.md` (D5 matching stance ×1.25, D13 Staggered).
 
 ### 4.6 Enemy intents
 
-- Every enemy shows next action as icon + number: **Attack (exact total damage, `n×m` for multi-hit — numbers already include its Strength and your Vulnerable, recomputed live)**, Block, Buff, Debuff, Unknown (rare, for one scripted boss move), Staggered.
-- Move selection: per-enemy **weighted state machine** on stream `enemyAI`, with StS-style repeat constraints declared per move (`maxConsecutive: 1|2`).
-- Bosses declare phase triggers (`phases`, §3.6) keyed on HP thresholds.
+Retired: the weighted state machine with one telegraphed intent a turn. Core 2 (JS §4.6a,
+§17): each enemy plans the moves that fit its live SP budget at the start of the player's
+turn; the first is the intent and committed follow-ups show as smaller symbols, `?` while
+concealed; the plan is saved with the fight; multi-hit moves cost at least 2 SP; a Staggered
+enemy plays none of its plan that turn; SP is paid when a move starts executing. Moves come
+from enemy cards (`packs/core/enemyCards.json`). Perception (d20 + WIS against
+DC 5 + target INT + WIS) reveals hidden follow-ups; boss move previews and enemy inspection
+follow the §17 2026-10-22 amendment.
 
-Enemy definition shape (content file):
+### 4.7 Weapon Arts (withdrawn)
 
-```js
-{
-  id: 'wandering_soldier', name: 'Wandering Soldier',
-  hp: [22, 26],            // rolled on stream enemyHP
-  poiseMax: 10,
-  moves: {
-    slash:   { intent: 'attack', damage: 7,  weight: 45, maxConsecutive: 2 },
-    guard:   { intent: 'block',  block: 6,   weight: 30, maxConsecutive: 1 },
-    warcry:  { intent: 'buff',   weight: 25, maxConsecutive: 1,
-               effects: [{ op: 'applyStatus', target: 'self',
-                           status: 'strength', stacks: 2 }] },
-  },
-  firstMove: 'slash',      // optional scripted opener
-}
-```
-
-### 4.7 Weapon Arts — the charged weapon ability *(PROPOSED, not yet approved)*
-
-**Why.** An armament today changes the starting cards (`mods`) and lends its item-owned cards
-(§3.8), then does nothing a player *chooses* in a fight. A Weapon Art gives every weapon one
-active ability that is **off the deck**, **always visible**, and **charged by fighting with that
-weapon** — so the weapon is a decision every combat, and every hit visibly fills something.
-
-**Relation to what exists — the old mount is renamed.** The name "weapon art" currently belongs
-to the item-owned *card* a weapon lends into the deck (the `weaponArt` mount kind, §3.8). That
-card is renamed **Armament Card** so "Weapon Art" means only this off-deck ability. The
-Armament Card keeps every behaviour it has today (deck card, item-owned, extractable/seatable,
-Dodge Roll fallback); only its names change:
-
-| Old | New |
-|---|---|
-| mount kind `weaponArt` (`balance.equipment.cardMounts.kinds`) | `armamentCard` |
-| `equipmentRole: 'weaponArt'` | `equipmentRole: 'armamentCard'` |
-| instance id / mount key prefix `weaponArt:` (`mountKey.weaponArt`) | `armamentCard:` (`mountKey.armamentCard`) |
-| weapon package field `weaponArtDefaults` | `armamentCardDefaults` |
-| weapons column `weaponArtManaCost` | `armamentCardManaCost` |
-| player-facing "Weapon Art" (Armoury, smith, compendium) | "Armament Card" |
-
-**Save migration.** One pure, idempotent step at the load door (§3.12), in run and active-combat
-snapshots alike: rewrite `equipmentRole`, instance-id prefixes and `run.itemMounts` keys from
-the old words to the new. It consumes no RNG, replays nothing, and moves no card between piles.
-A save already on the new words passes through unchanged; a save carrying **both** words for
-one mount is archived fail-closed rather than merged. The Unity port and its parity references
-(`UnityTests/Parity/*`) take the same rename in the same implementation PR.
-
-This Weapon Art is the consumer the `uniqueSkillStaminaCost` column has been waiting for
-(`validate.js` holds it at 0 "until an explicit unique-skill consumer exists"); the column is
-renamed `weaponArtStaminaCost`. A Weapon Art is never a card, never enters a pile, and cannot
-be extracted, seated or removed.
-
-**Entity** — `WeaponArt` (new schema in `model/schemas.js`, registry `weaponArts`,
-authored in `content/source/weaponArts.csv` + effects in `src/content/weaponArts.js`):
-
-| Field | Meaning |
-|---|---|
-| `id, name, icon, textTemplate` | Display; text uses the §3.13 templating so previews use `previewDamage`. |
-| `charge` | Integer meter maximum (shipped range 3–6). |
-| `startCharge` | Charge at `combatStart` (default 0). |
-| `chargeOn` | Triggers (§3.6) whose `do` is the new opcode `gainArtCharge {amount}`. Default authored set: +1 per attack hit dealt by a card this weapon's hand generated (`eventIsAttack` + new predicate `eventCardFromHand {hand: 'self'}`), +2 on `enemyStaggered`. |
-| `targeted` | `enemy` \| none — same targeting rule as cards. |
-| `effects` | Effect DSL (§3.4). Any opcode a card may use. |
-| `upgrade` | Partial override applied at armament Smithing tier ≥ 1 (same shape and rule as card upgrades, §4.3). |
-
-Weapons gain one column, `weaponArt` (id, required for `kind=weapon`, optional for shields).
-`weaponArtStaminaCost` becomes live: the Stamina paid on use, **in addition to** a full meter;
-shipped values stay 0 so the meter is the only gate until the owner tunes it.
-
-**Rules.**
-
-1. **One meter per equipped hand.** Two weapons → two arts, two meters. Unarmed hands have
-   none. A two-handed weapon (`handsRequired: 2`) has one.
-2. **Use** is a new player intent `useWeaponArt(hand, targetId?)`. Legal on the player's turn
-   when that hand's meter is full and Stamina covers `weaponArtStaminaCost`. It costs **no
-   Actions/energy** and each hand's art is limited to **once per turn**
-   (`balance.weaponArt.usesPerTurnPerHand`, default 1). Two armed hands may therefore use
-   both arts in the same turn (owner ruling, 2026-09-25).
-3. **Spend:** meter → 0, then effects enqueue on the action queue (§3.9) like a played card,
-   emitting new event `weaponArtUsed(hand, artId)`. It is **not** `cardPlayed`: card-count
-   predicates (`everyNthCardThisCombat`, `cardsPlayedThisTurn`) do not see it.
-4. **Charge is combat-scoped.** It resets to `startCharge` each combat, caps at `charge`
-   (overflow is lost) and is saved in the combat snapshot, never on the run.
-5. **Swapping** an armament mid-combat (§3.8 swap cost rules) sets the new hand's meter to the
-   new art's `startCharge`; the old meter is lost. A swap never refunds charge.
-6. **Relics/perks** may interact through the same doors: the `gainArtCharge` opcode and the
-   `weaponArtUsed` event. No art-specific engine code (Law 2).
-
-**Shipped M-set (one per shipped weapon; numbers PROVISIONAL, owned by the balance pass):**
-
-| Weapon | Art | Charge | Effect | Upgrade |
-|---|---|---|---|---|
-| Straight Sword | Riposte | 3 | Gain 6 Block. Deal 8. | 9 / 11 |
-| Greatsword | Crushing Arc | 5 | Deal 14 to ALL enemies. 6 Poise damage to ALL. | 18 / 8 |
-| Dagger | Quickstep Cuts | 3 | Deal 3×3. Draw 1. | 4×3 |
-| Shortbow | Pinning Shot | 4 | Deal 10. Apply 2 Weak. | 13 / 2 Weak, 1 Vulnerable |
-| Katana | Unsheathe | 4 | Deal 12. Apply 5 Bleed. | 15 / 7 Bleed |
-| Halberd | Sweeping Guard | 4 | Deal 8 to ALL. Gain 8 Block. | 11 / 11 |
-| Warhammer | Earthshaker | 5 | 16 Poise damage. Deal 6. | 20 Poise / 9 |
-| Twinblade | Whirlwind | 4 | Deal 2×6 split randomly among enemies. | 3×6 |
-| Battleaxe | War Cry | 4 | Gain 2 Strength this combat. | 3 Strength |
-| Buckler (shield) | Parry | 2 | Gain Block equal to the next enemy intent's attack total (max 20). | max 30 |
-| Kite / Tower Shield | Brace | 3 | Gain 12 Block. Retain Block next turn. | 16 |
-
-**UI (§7.2).** One Weapon Art button per armed hand beside the Actions orb: icon, a segmented meter
-(one pip per point of `charge`), and the templated text on hover/long-press. Full meter → the
-button glows and pulses once with a sound; use → a short flourish on the weapon sprite. The
-Armoury shows each weapon's Weapon Art before equip, so the weapon choice reads as an art choice.
-
-**Validation (§3.14).** Refuse by name: weapon with no/dangling `weaponArt`; `charge < 1`;
-`startCharge > charge`; `chargeOn` hook whose `do` contains anything but `gainArtCharge`;
-negative `weaponArtStaminaCost`; any old-word name from the rename table in content; an upgrade naming a field the base does not have.
-
-**Acceptance.**
-- Headless: a Straight Sword combat fills 3 charge from 3 Strike hits, `useWeaponArt` resolves
-  Riposte, meter returns to 0; a second use of the same hand's art that turn is refused,
-  while the other hand's full art is still usable.
-- Two one-handed weapons show and charge two meters independently.
-- A mid-combat swap resets that hand's meter; a save/load mid-combat preserves both meters.
-- No card-count predicate advances when an art is used.
-- A save carrying `weaponArt:` Armament Card instances loads with them renamed, same piles,
-  same RNG counters; loading it twice is identical to loading it once.
-- `tools/runsim.mjs` reports Weapon Art uses per combat per weapon (target: 1–2 in a normal fight).
+The proposed off-deck, charged Weapon Art ability is **withdrawn** (2026-10-25): it is not
+part of JS Core 2, which has no such ability. In Core 2 a "weapon art" is a card, the class
+special, offered through `packs/core/rewards.json` `eligibility.weaponArts`. The proposal's
+text is in git history.
 
 ---
 
 ## 5. Content specification
 
-### 5.1 Classes, creation presets, and levels
+> **Unity port (§0).** Game content is the JS Core 2 content at the pin (§0.3):
+> `games/ashenspire/packs/core/` plus the legacy-adapter tables a Core 2 run uses, exported in
+> port-plan phase 4. §5.1 below is replaced. §5.2–§5.6 are kept as the history of the 0.5.5
+> content and are not a contract for the game.
 
-**New default creation mode.** Add a new stable mode id, `tuned`, and make it the default for
-new runs. Its configurable fixed total is 53 across STR / DEX / CON / WIS / INT; the mode row
-owns its total and allocation bounds. This is a new mode, not a mutation or rename of
-`standard` or `pointbuy`, because saved runs persist the mode id and both older modes must
-continue to validate exactly as authored.
+### 5.1 Classes, creation and progression
 
-The `tuned` opening presets are contractual and each sums to 53:
+Retired: the `tuned` 53-point mode, the 0.5.5 level curve and price ladder, the proposed
+milestone perks, and the Rogue parity slice as written for 0.5.5. Core 2 (JS §16, §17,
+`packs/core`):
 
-| Class | STR / DEX / CON / WIS / INT | Starting HP/Mana flask allocation |
-|---|---|---|
-| Reaver | `13 / 11 / 11 / 8 / 10` | `3 / 1` |
-| Starseer | `11 / 11 / 8 / 13 / 10` | `2 / 2` |
-| Herald | `12 / 11 / 8 / 12 / 10` | `3 / 1` |
-| Rogue | `11 / 13 / 10 / 9 / 10` | `3 / 1` |
-
-The preset is an editor opening position, not a lock: players may redistribute the fixed
-total within the mode's data-authored bounds. Starting derived values come only from the
-formulas in §3.5; classes do not carry a second hidden HP/Actions/hand formula.
-
-**Level curve.** A fresh run starts at displayed level 1. A purchase increments the displayed
-level by one and grants exactly 1 configurable attribute point by default. Price purchase
-`n` (zero-based) as `firstCost + costStep × n`, with `firstCost = 20` and `costStep = 4`
-(retuned from 800 / 200 in #522: the fleet simulator measured the shipped ladder at under one
-level-up per full run against the owner's 10–20 per run; 20 / 4 measures 14.8 — see
-`docs/asks/asks-ledger.md` E13 and `tools/runsim.mjs --level-cost`).
-Therefore five purchases cost `20 + 24 + 28 + 32 + 36 = 140` and produce level 6.
-The starting level, first cost, step, points per level and any maximum are content data; the
-worked level-6 result is a curve receipt, not a second hard-coded total or an implied cap.
-
-**Milestone levels** *(PROPOSED, not yet approved)*. A single attribute point is correct but
-barely felt (`Strike = -6 + STR` makes a point worth +1 damage). Milestones layer a **big,
-chosen reward** on top of the existing curve without changing it: the price, `run.levelUps`
-and `pointsPerLevel` stay exactly as above.
-
-- **When.** `balance.levelUp.milestones` is an authored list of level numbers (shipped
-  `[5, 10, 15]`; displayed level, so the 4th, 9th and 14th purchase). With the measured
-  ~14.8 levels per full run, a winning run sees ~2–3 milestones. Content data; any list of
-  distinct ascending integers > the starting level is legal.
-- **What.** Reaching a milestone level opens a **choose 1 of 3** from the `milestone` relic
-  pool — a new value in `RELIC_POOLS`. A milestone perk *is* a relic: same schema, triggers
-  and passives, same icon row, no new entity. The pool is class-filtered by an optional
-  `classes[]` field; no generic source (elite/boss drop, shop, events) may hand out a
-  `milestone`-pool relic, the same exclusion `quest` has.
-- **Rolls.** The three are rolled on a new RNG stream `milestones` (added to `STREAM_NAMES`),
-  so adding milestones shifts no card, relic or armament roll in an existing seed. The offer is
-  written to `run.pendingMilestone = { level, offer: [id, id, id] }` **before** it is shown:
-  a reload shows the same three and never rerolls. Choosing writes
-  `run.milestones.push({ level, relicId })`, adds the relic through the ordinary relic-gain
-  door and clears the pending offer.
-- **Skipping (owner ruling, 2026-09-25).** The player may skip an offer. A skip writes
-  `run.milestones.push({ level, relicId: null })`, grants nothing, clears the pending offer,
-  and is final: the skipped milestone is never re-offered and its three perks are not
-  carried to the next milestone. The screen shows Skip beside the three perks, never as the
-  default focus, so a stray confirm cannot throw a milestone away.
-- **Buying several levels at once** (`levelUpBudget`) that cross more than one milestone
-  queues one offer per milestone, resolved in level order.
-- **Shipped perk set (PROVISIONAL, 9 perks, 3 per tier):** a perk offered at level 5 is drawn
-  from `tier: 1`, at 10 from `tier: 2`, at 15 from `tier: 3` (new optional relic field
-  `tier`, meaningful only in the `milestone` pool).
-
-  | Tier | Perk | Effect |
-  |---|---|---|
-  | 1 | Second Wind | The first time each combat you fall below 50% HP, gain 10 Block. |
-  | 1 | Honed Edge | Weapon Arts start each combat with 1 charge. |
-  | 1 | Deep Pockets | +1 flask capacity (through the `relic` flask-growth row, §5.5.2). |
-  | 2 | Momentum | Every 4th card you play each turn costs 0. |
-  | 2 | Resonance | When you use a Weapon Art, your other hand's art gains 2 charge. |
-  | 2 | Tempered | +1 Action at the start of each turn if you have no Block. |
-  | 3 | Ascendant | +1 card drawn each turn. |
-  | 3 | Warlord | At combat start, gain 2 Strength. |
-  | 3 | Undying | Once per run, when you would die, heal to 30% instead. |
-
-- **Presentation (§7.4).** Every level-up, milestone or not, shows a before → after strip of
-  the numbers it actually moved, computed by the same engine preview (`previewDamage`,
-  derived-stat readout) — e.g. `Strike 9 → 10 · Max HP 52 → 54`. A milestone adds a
-  full-screen beat (flash, sting, the three perk cards dealt face-down then turned). A
-  **next-milestone** line (`Level 7 · milestone at 10`) sits on the shrine's Level-up fold and
-  in the HUD tooltip so every single point reads as progress toward one.
-- **Co-op.** Each member has their own `levelUps`, pending offer and milestones.
-- **Save.** Run schema gains `milestones[]` and `pendingMilestone` (absent = none; no migration
-  invents history for an existing save). `validateRunShape` refuses a `milestones` entry whose
-  level is not in the authored list, is above the run's level, or is duplicated, and any
-  non-null `relicId` the run does not hold; a `null` `relicId` is a legal skip.
-- **Validation.** Refuse by name: non-ascending/duplicate milestone list; a milestone tier with
-  fewer than 3 eligible perks for any class; a `milestone`-pool relic reachable from any
-  generic pool; a `tier` on a non-milestone relic.
-- **Acceptance.** Buying levels 4→5 yields exactly one pending offer of 3 distinct tier-1
-  perks; save/reload shows the same 3; buying 4→11 in one visit yields two offers, 5 then 10;
-  the 5th level costs exactly what it did before this change; skipping the level-5 offer
-  records `{ level: 5, relicId: null }`, adds no relic, and the level-10 offer still arrives
-  from tier 2 as normal.
-
-**Rogue full parity slice.** Rogue ships as a complete fourth class, not a selectable shell:
-
-- 39 authored Rogue cards, of which exactly 36 are in its ordinary reward pool, all with
-  upgrades and validation-clean player text;
-- one class signature card and one starter relic, both reachable in a new Rogue run;
-- two starting equipment kits and four Rogue outfits/armour sets, including one free baseline
-  of each required kind and the same unlock/discovery rules as the existing classes;
-- five stage/tint class sprites plus the equipment/body/armament art needed for every authored
-  Rogue kit and outfit, with ordinary missing-art refusal/fallback behavior;
-- class presets, flask allocation, rewards, draft/custom-run, history, co-op and compendium
-  participation derived from the registries rather than new Rogue-only branches.
-
-Rogue mechanics should compose the existing effect, formula, trigger, status, equipment and
-resource vocabularies. A new opcode/predicate is allowed only when the approved class identity
-cannot be expressed by those primitives, and then it is a separately specified closed-set
-extension with validation and engine tests—not imperative per-card code.
+- **Classes:** Reaver, Starseer, Rogue and Herald (`packs/core/characters.json`). Only Reaver
+  is selectable at first; each unique finished full run, won or lost, unlocks Starseer, then
+  Rogue, then Herald (`packs/core/classUnlocks.json`; JS `gameProfileRun.js`).
+- **Creation:** six attribute points: every attribute 1, the class primary 2 (Reaver STR,
+  Starseer INT, Rogue DEX, Herald WIS). The loadout is fixed per class (Reaver a greatsword,
+  Starseer and Herald a sceptre, Rogue daggers). Creation is two steps, Class then Review
+  (seed and destination slot).
+- **Starter deck:** ten cards per class, as `packs/core/starterDeck.json` `classDecks` and
+  JS `tests/core-starting-decks.test.mjs` define them, including cards granted by equipped
+  gear (the Bone Sceptre's Mana Surge). See §0.10 item 1 for the JS prose that disagrees.
+- **Progression:** class XP and XP for the weapons actually used, each with a multiplier
+  (default 1); no character levels (`progression.characterLevels: false`); level notices per
+  §17's 2026-10-23 amendment.
+- **Rests:** three per act, one directly before the boss; each heals and offers Smith and
+  Level Up (earned levels only) and closes only through Continue; deck and equipment editing
+  happen at will outside combat, never in it (§17; `packs/core/rests.json`).
 
 ### 5.2 Vagabond card pool — M1 set (24 cards + upgrades)
 
@@ -1078,6 +1171,12 @@ The first chain shipped: **Grave of the Nameless** (step one, ungated) → **The
 
 ## 6. Map generation
 
+> **Unity port (§0).** Historical: the 0.5.5 map and reward rules. Core 2 routes are
+> `packs/core/routes.json` (three acts of seven pre-boss depths plus a boss, three lanes, fog,
+> rests on depths 3, 5 and 7 with one before the boss, a fight first, about 15% of randomly
+> typed nodes shops), rewards are `packs/core/rewards.json` (groups cards 60 / equipment and
+> relics 10 / potions 30, three offers, take one) and shops are `packs/core/shops.json`.
+
 Faithful to StS's published algorithm, simplified where invisible to the player. Algorithm lives in `engine/mapgen.js`; every constant below comes from `content/mapconfig.js`:
 
 - Per act: **`floors` × `columns`** grid (shipped: 12 × 7). The **top floor is always a single Shrine** row and the Boss sits above it — typed by the generator before any rule runs, so the floors a rule can reach are **1..`floors`-1**. That band is called the **rollable band** and it is the denominator for every fraction below.
@@ -1108,6 +1207,11 @@ Rewards after combat: runes (Monster 15–25, Elite 35–50, Boss 75–90) + car
 
 ### 7.1 Screens & flow
 
+> **Unity port (§0).** The flow diagram below is the 0.5.5 web flow. The Unity screen set and
+> flow are JS Core 2's at the pin: startup gate, title, new-game slot, creation (Class, Review),
+> the opening prologue, then the map and its rooms (`games/ashenspire/ui/screens/*.json`; JS
+> §7.1). There is no co-op entry (§0.7). The startup-gate paragraph below still applies.
+
 ```
 Cold Boot ──► Startup Gate ──► Title ──► Class Select (+ seed entry) ──► Map ──► [Combat | Shrine | Shop | Event | Treasure]
                               │                                        ▲              │
@@ -1126,8 +1230,30 @@ and recovery notices outrank the gate. After reveal, focus lands on Title's firs
 slot action, and every later return to Title in that boot bypasses the gate. Reduced-motion mode
 keeps the same state and focus contract without meaningful animation.
 
-### 7.2 Shared run HUD and combat layout (1280×720 reference)
+### 7.2 Shared run HUD and combat layout (1280×800 reference)
 
+- **Unity panel-scale contract (owner, 2026-10-25).** Unity lays out in the same logical units
+  as JS: **1 USS px = 1 CSS px at the JS reference sizes**, so a length taken from JS CSS or
+  JS UI config is written unchanged in USS. One function chooses the layout mode and the panel
+  scale together, as JS `layoutForCap` in `src/main.js` does, with the values in JS
+  `content/source/balanceUi.json` `uiScale`:
+  - **Wide:** design size **1200×730** logical px; scale = min(w / 1200, h / 730), rounded to
+    0.01.
+  - **Narrow:** design size **430×780**; scale = min(w / 430, h / 780), rounded down to 0.01.
+    Narrow is chosen when the viewport is at most `narrowMax` **520** logical px wide. Width
+    alone picks the mode; a height change can change the scale but never the mode.
+  - Both are clamped to 0.62–1.7. The player's UI size (S 0.85, M 1, L 1.2, XL 1.45) is a cap
+    on the same calculation; Auto has no cap. The short-wide composition and the turn-your-phone
+    gate (`shortWideMinH` 340, `gateBelowH` 465) come from the same function.
+  - Worked values: 1280×800 (the reference viewport, as in JS §7.2) gives wide 1.07;
+    1280×720 gives wide 0.99; 390×844 (the phone reference) gives narrow 0.90.
+  - w and h are logical pixels (§0.10 item 7). The tap-size floor (`tapSize`, default 44) is in
+    screen pixels, so it is divided by the scale, as JS `--tap-floor` is (`styles/base.css`).
+  - This replaces the single 430×900, match-height panel (`Unity/Assets/AshenSpire/ExpeditionPanel.asset`),
+    which rendered one USS px at 0.8 screen px on a 1280×720 desktop.
+  - JS screens are fixed-viewport layered scenes (bands from `content/config/ui/scenes/*.json`,
+    slots from `games/ashenspire/ui/screens/*.json`), with modals as overlays; Unity screens
+    follow that structure rather than one scrolling container.
 - **.NET-inspired application and Component Model contract.** Architecture follows Clean
   Architecture with an MVVM-shaped presentation layer. Domain Models own pure game state and rules;
   Application Interfaces define ports; Application Services orchestrate use cases; Infrastructure
@@ -1385,14 +1511,18 @@ keeps the same state and focus contract without meaningful animation.
   MP 20, SP 20. A bar's fill remains `current / maximum`; its visual length compares that
   maximum with the data-owned reference and obeys the shared viewport cap. A character may
   exceed a reference—it lengthens only to the layout cap and never clamps gameplay state.
-- **Enemy row (upper right 60%):** up to 5 enemies; each shows sprite/placeholder, name, HP bar, **Poise meter** (thin amber bar under HP), **Bleed meter** (thin red bar, only when >0), status icon row, and **intent icon + number above the head**.
-- **Player zone (lower left):** stance icon, status row, Block shield badge overlapping HP.
-- **Hand:** bottom center, fanned, max 10; hover raises card ×1.5 with full text.
-- **Energy orb:** bottom left, `n/3`. **End Turn** button bottom right — pulses if energy remains and any card is playable; confirm-free.
-- **Piles:** draw (bottom-left corner, count) / discard (bottom-right, count) / exhaust (small, appears once non-empty). Click opens a scrollable modal grid (draw pile view is order-shuffled for display, like StS).
+- **Combat board (Core 2).** The enemy row, player zone, hand, Stamina orb with its Mana
+  display, End Turn and piles follow JS §7.2's combat-board bullets at the pin. Core 2 adds the
+  fighter HUD order **Evade, Poise, Ward, Block, HP**, hit-% badges and the Hit / Missed /
+  "Poise absorbed N" / `+N Status` floaters (`docs/STANCE-COMBAT-RULES.md`; JS §17), and
+  intents with follow-up symbols (JS §4.6a). The 0.5.5 energy orb (`n/3`), the 10-card hand
+  cap and the Poise meter that fills are retired.
 
 ### 7.3 Input
 
+- **Core 2 card play (JS §17):** a single tap or click on a card selects it and never plays
+  it; play needs a second tap or a target pick. One-tap play is an opt-in setting
+  (`oneTapPlay`), off by default.
 - **Both** targeting modes: (a) drag card onto a target/board, (b) click card → targeting arrow → click target. Esc/right-click cancels. Non-targeted cards: drag anywhere above the hand or click-then-click the board.
 - Full playability with mouse only. Keyboard shortcuts (nice-to-have, M4): 1–9 select card, E end turn.
 - **Controls rebind capture owns its armed keydown.** `rebind-capture-service`
@@ -1413,6 +1543,14 @@ keeps the same state and focus contract without meaningful animation.
 
 ### 7.4 Feedback & animation rules
 
+- **Core 2 pacing (JS §17, 2026-10-22 amendment).** Combat presents action, animation, result,
+  sprite reaction, damage and reset as separate steps. Two persisted controls set the pause
+  between steps (default 500 ms) and the duration of an action or reaction animation step
+  (default 390 ms); the `mobile-fast` preset sets both visibly (250 ms and 195 ms) and manual
+  edits stay possible; the animation-speed choice and reduced motion compose with them;
+  auto-combat runs at ×1.5 by default (`content/config/ui/presentation/actionPacing.json`;
+  the Combat rows of JS `src/ui/screens/settings.js`). Where the bullet below names only the
+  slow/normal/fast/instant speed, these controls also apply.
 - Floating damage/heal/block numbers; brief target flash on hit; ≤4 px screen shake for hits ≥15 damage. **No animation blocks input, and a click always skips to end-state.** At the default animation speed, most effects run ≤300 ms and queued events play out at ≤80 ms intervals — but a few big-moment effects are hardcoded past that bound (heavy hit flash 380 ms, cast glyph 450 ms, Stagger wobble 600 ms) and the Animation speed setting (slow / normal / fast / instant) scales the *pacing* (beat, step, lunge), never those fixed effect durations. The Screen shake, Reduced motion, and Reduce flashes settings each suppress their effect entirely (`src/ui/fx.js`).
 - Bleed burst and Stagger get distinct, slightly bigger effects (they're the theme).
 - "YOU PERISHED" screen: dark fade, gold serif text, then stats card. Victory: "EMBER RESTORED". (Renamed from the pre-scrub strings in `95c3b87` — `docs/IP-SCRUB.md`.)
@@ -1517,6 +1655,8 @@ the standard: all green before a milestone is called done, on whichever runner y
 
 ## 9. Milestones & acceptance criteria
 
+> **Unity port (§0).** Historical: the web game's milestones. The Unity port's phases are §0.9.
+
 ### M1 — Combat vertical slice
 Build: model layer (schemas, registries, formulas, validation), engine core (queue, triggers, status-model interpreter), all statuses/stances as content data, Vagabond + 24-card set, 5 Act-1 encounters + elite + Watchful Omen boss, combat screen with full tooltips/targeting/piles, tests 1–11 + 14–17.
 **Accept when:** `index.html` → class select (Vagabond only) → a fixed 4-fight gauntlet (2 monsters → elite → boss) is winnable and losable with zero console errors; every visible number matches engine math; all listed tests green.
@@ -1537,6 +1677,8 @@ Build: fx pass (floating numbers, shake, transitions), run-history screen, keybo
 
 ## 10. Forward hooks (build the seam now, not the feature)
 
+> **Unity port (§0).** Historical: these hooks describe the 0.5.5 web game, not Core 2.
+
 - **Ascension-style difficulty:** run state carries `modifiers: []` consulted by `balance.js` lookups (enemy HP ×, gold ×, starting curse). v1 always empty.
 - **Act 2/3 signature mechanics needing engine support from M1:** enemy phase-change interrupts (Watchful Omen already exercises this), enemy self-heal on dealing damage (final boss — a status hook on `damageDealt`), enemy applying Bleed to the *player* (player-side meters already exist in the status model; player Bleed threshold 15).
 - **Wondrous Physick crafting** (combine two flasks at shrines): flask effects are already composable data; UI only.
@@ -1548,4 +1690,6 @@ Build: fx pass (floating numbers, shake, transitions), run-history screen, keybo
 
 Still non-goals: accounts, monetization, localization (strings live in content files, so l10n is possible later), a mod loader, Steam-style achievements, and bundled audio asset files (the score and SFX are synthesized at runtime — §7.4; the manifests accept real files).
 
-Three things this list once excluded have since shipped and are no longer non-goals: **multiplayer** (Forsaken Together LAN co-op — `docs/MULTIPLAYER.md`, `src/net/lan.js`, served by the launcher's own Node server; the feature hides itself when no launcher is behind the page, so a `file://`-opened dist stays single-player), a **narrow/mobile layout** (`data-layout`, `balance.ui.uiScale`), and **audio** (§7.4).
+**Unity port (§0.7):** native co-op and its LAN companion are removed; multiplayer is not part of the Unity game unless the owner brings it back with its own SPEC change.
+
+In the web game, three things this list once excluded have since shipped and are no longer non-goals: **multiplayer** (Forsaken Together LAN co-op — `docs/MULTIPLAYER.md`, `src/net/lan.js`, served by the launcher's own Node server; the feature hides itself when no launcher is behind the page, so a `file://`-opened dist stays single-player), a **narrow/mobile layout** (`data-layout`, `balance.ui.uiScale`), and **audio** (§7.4).

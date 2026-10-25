@@ -12,6 +12,15 @@ animations** and **Mute sound**. It is not a second, parallel settings system.
 > (`CampaignView.PlayerSettings.cs`) shows every field. `node tools/unity-runtime-check.mjs`
 > compiles it. Nobody has played it in the Unity editor or a player build yet.
 
+> **Owner decision, 2026-10-25: JS defaults win** ([SPEC.md §0.5–§0.6](../SPEC.md),
+> [UNITY-SPEC.md](UNITY-SPEC.md)). This file still describes the code as it is today. When the
+> settings are ported to Core 2: High contrast defaults **on**; the three-step animation speed is
+> replaced by the JS pacing controls (combat step pause 500 ms, animation step duration 390 ms,
+> `mobile-fast` preset, animation speed choice, auto-combat ×1.5); reward collection follows JS
+> (cinders on arrival, Inspect before collecting, `manual` default); and those fields are reset
+> once to the JS defaults when the record is upgraded. The 2026-10-02 decisions below on these
+> three settings are superseded.
+
 ## Settings, ranges and defaults
 
 The defaults match what the game does today, so switching to this model changes nothing

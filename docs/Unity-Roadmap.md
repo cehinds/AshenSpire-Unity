@@ -114,9 +114,9 @@ is not owner acceptance.
 
 ## Owner decisions (2026-10-02)
 
-- Rewards: by default only cinders are collected automatically; other rewards are taken or skipped by the player.
-- High contrast stays off by default (the HTML game defaults it on).
-- The animation-speed setting keeps three steps (Quick, Normal, Slow).
+- Rewards: by default only cinders are collected automatically; other rewards are taken or skipped by the player. *(Superseded 2026-10-25: JS reward collection, SPEC §0.5.)*
+- High contrast stays off by default (the HTML game defaults it on). *(Superseded 2026-10-25: on by default, SPEC §0.5.)*
+- The animation-speed setting keeps three steps (Quick, Normal, Slow). *(Superseded 2026-10-25: JS pacing controls, SPEC §0.5.)*
 - Gamepad support uses Unity's built-in input (no Input System package).
 - Display options must visibly apply their styles.
 - Original-save import may refuse mid-fight saves and custom map shapes.

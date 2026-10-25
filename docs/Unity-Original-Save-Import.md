@@ -1,5 +1,9 @@
 # Original-game save import
 
+> **Retired 2026-10-25.** This feature imports 0.5.5-rules saves, and the 0.5.5 rules are
+> dropped: saves from earlier builds are not loaded ([SPEC.md §0.6](../SPEC.md)). The record
+> below is kept as history.
+
 Owner decision, 2026-09-28: **implement original-game save import before Phase 1 completion**.
 This is required acceptance under US-0.6 and foundation issue #33, not a waiver.
 
