@@ -1,8 +1,10 @@
 // OriginalRunPanel.Journey.cs — the HTML/JS build 1815 journey details, presentation only.
 // LOOK: the shared run HUD (heart + HP over a proportional 3 px rule, relic coins, CINDERS and the
 // Armoury / Quick-menu icon buttons), the Quick menu dropdown (JS 03c), spoils rows with engraved
-// icons and NEW / TAKEN chips (06, 06b), merchant category tabs and thumbnails (08c), the rest
-// recovery preview (08a) and the event stage figures (08e). Geometry lives in Resources/JsJourney.uss;
+// icons, NEW / TAKEN chips and one description line (06, 06b) in two columns on desktop (reward rows
+// left, PROGRESSION right), merchant category tabs at the panel's foot and thumbnails (08c, 08d), the
+// rest recovery preview (08a) and the event stage figures at the JS size and crop (08e, 08f). Off the
+// map the HUD is fixed to the top of the app (JS shared-run-hud), not the scrolling panel. Geometry lives in Resources/JsJourney.uss;
 // art in Art/js1815/journey (tools/import-js1815-journey-art.mjs) plus the combat relic, figure and
 // footer art Art/js1815/combat already holds.
 // RULES: none. Every decoration reads the session; every control here opens an existing screen or
@@ -20,7 +22,13 @@ namespace AshenSpire.Presentation
     {
         private const string JourneyArtRoot = "Art/js1815/journey/";
         private static StyleSheet _journeySheet;
-        private VisualElement _quickMenu;
+        private VisualElement _quickMenu, _fixedHud;
+        /// <summary>Quick-menu doors CampaignView supplies; a null one hides its row. Settings opens the
+        /// existing settings screen; the toggles flip the saved Fullscreen / Music setting and return the
+        /// new state. Presentation only: each is an existing settings action.</summary>
+        public Action OpenSettings { get; set; }
+        public Func<bool> ToggleFullscreen { get; set; }
+        public Func<bool> ToggleMusic { get; set; }
         // JS eventSpeakers (src/content/generated/eventSpeakers.js + speakers.js, build 1815): who stands
         // on the right of the dialogue stage, and the enemy art that portrays them. Presentation copy.
         private static readonly (string Event, string Name, string Portrait)[] EventSpeakers =
@@ -47,10 +55,11 @@ namespace AshenSpire.Presentation
         // sits in the panel's top margin and is stretched to the scroll width (see PlaceBleedHud).
         private void JourneyHud(JObject player, JObject run)
         {
-            JourneyStyles(); _quickMenu = null;
-            var bleed = _game.Phase != OriginalRunPhase.Map;
+            JourneyStyles(); _quickMenu?.RemoveFromHierarchy(); _quickMenu = null; _fixedHud?.RemoveFromHierarchy(); _fixedHud = null;
+            _root.RemoveFromClassList("js-spoils-split");
+            var host = _game.Phase != OriginalRunPhase.Map ? _actionHost : null;
             var hud = new VisualElement { name = "native-run-hud", pickingMode = PickingMode.Ignore };
-            hud.AddToClassList("js-journey-hud"); hud.AddToClassList(bleed ? "js-hud-bleed" : "js-hud-inflow");
+            hud.AddToClassList("js-journey-hud"); hud.AddToClassList(host != null ? "js-hud-fixed" : "js-hud-inflow");
             hud.tooltip = "Act " + _game.ActNumber + " · MP " + player["mana"] + "/" + player["maxMana"] + " · SP " + player["stamina"] + "/" + player["maxStamina"];
             var hp = new VisualElement { pickingMode = PickingMode.Ignore }; hp.AddToClassList("js-journey-hp");
             hp.Add(OriginalCombatLayout.Icon("icons/status-health", "js-journey-heart"));
@@ -71,30 +80,25 @@ namespace AshenSpire.Presentation
             if (stones > 0) { purse.Add(OriginalCombatLayout.Label("STONES", "js-journey-cinders-label")); purse.Add(OriginalCombatLayout.Label(stones + "", "js-journey-cinders-value")); }
             purse.tooltip = run["cinders"] + " cinders · " + stones + " Smithing Stones";
             hud.Add(purse);
-            _root.Add(hud);
-            if (!bleed) return;
-            // The panel's top margin holds the band; event screens already leave their stage there.
-            var reserve = _game.Phase != OriginalRunPhase.Event && _game.Phase != OriginalRunPhase.EventResult;
-            var body = _root;
-            hud.RegisterCallback<AttachToPanelEvent>(_ => { if (reserve) body.style.marginTop = 108; });
-            hud.RegisterCallback<DetachFromPanelEvent>(_ => { if (reserve) body.style.marginTop = StyleKeyword.Null; });
-            if (reserve && body.panel != null) body.style.marginTop = 108;
-            hud.RegisterCallback<GeometryChangedEvent>(_ => PlaceBleedHud(body, hud));
-            if (!body.ClassListContains("js-hud-bleed-host"))
+            if (host == null) { _root.Add(hud); return; }
+            // Shop, rest, spoils and events: the band is fixed to the top of the app (JS position:fixed),
+            // so the panel scrolls beneath it and the screen-enter slide never moves it. The scroll view
+            // starts under the band, except on events, whose stage is painted behind it. The band lives as
+            // long as this body's content: an anchor in the body takes it away when the body is cleared.
+            host.Add(hud); _fixedHud = hud;
+            var scroll = _root.GetFirstAncestorOfType<ScrollView>();
+            var reserve = scroll != null && _game.Phase != OriginalRunPhase.Event && _game.Phase != OriginalRunPhase.EventResult;
+            if (reserve) scroll.style.marginTop = 100;
+            var anchor = new VisualElement { name = "native-run-hud-anchor", pickingMode = PickingMode.Ignore };
+            anchor.style.position = Position.Absolute; anchor.style.width = 0; anchor.style.height = 0;
+            anchor.RegisterCallback<DetachFromPanelEvent>(_ =>
             {
-                body.AddToClassList("js-hud-bleed-host");
-                body.RegisterCallback<GeometryChangedEvent>(_ => PlaceBleedHud(body, body.Q("native-run-hud")));
-            }
-        }
-        // Stretch the band from the panel's margin to the full scroll width. Layout rects (not world
-        // bounds), so the screen-enter slide never skews it; equal values raise no further events.
-        private static void PlaceBleedHud(VisualElement body, VisualElement hud)
-        {
-            if (hud == null || !hud.ClassListContains("js-hud-bleed") || body.parent == null) return;
-            var width = body.parent.layout.width; if (float.IsNaN(width) || width < 1 || float.IsNaN(body.layout.x)) return;
-            hud.style.left = -body.layout.x - body.resolvedStyle.borderLeftWidth;
-            hud.style.top = -body.layout.y - body.resolvedStyle.borderTopWidth;
-            hud.style.width = width;
+                hud.RemoveFromHierarchy();
+                if (_quickMenu != null && _quickMenu.parent == host) { _quickMenu.RemoveFromHierarchy(); _quickMenu = null; }
+                if (_fixedHud == hud) _fixedHud = null;
+                if (reserve && _fixedHud == null) scroll.style.marginTop = StyleKeyword.Null;
+            });
+            _root.Add(anchor);
         }
         // Row 2: relic coins (Settings → Relics in map header hides them, map-header-relics) and, on the
         // map, the run seed (Settings → Seed in map header, map-header-seed).
@@ -128,7 +132,7 @@ namespace AshenSpire.Presentation
         private void ToggleQuickMenu()
         {
             if (_quickMenu?.parent != null) { _quickMenu.RemoveFromHierarchy(); _quickMenu = null; _report(); return; }
-            var hud = _root.Q("native-run-hud"); if (hud == null) return;
+            var hud = _fixedHud ?? _root.Q("native-run-hud"); if (hud?.parent == null) return;
             var menu = new VisualElement { name = "native-quick-menu-panel" }; menu.AddToClassList("js-quick-menu");
             menu.Add(OriginalCombatLayout.Label("QUICK MENU", "js-quick-eyebrow"));
             void Row(string id, string text, Action command, string hint = null, bool exit = false)
@@ -137,22 +141,37 @@ namespace AshenSpire.Presentation
                 row.AddToClassList("js-quick-row"); row.EnableInClassList("js-quick-exit", exit);
                 if (hint != null) row.Add(OriginalCombatLayout.Label(hint, "js-quick-chip"));
             }
+            // Fullscreen [OFF] / Music [ON]: the menu stays open and the chip follows the new state.
+            void Toggle(string id, string text, Func<bool> flip, bool on)
+            {
+                Label chip = null;
+                var row = Button(id, text, () => { var state = flip(); chip.text = state ? "ON" : "OFF"; chip.EnableInClassList("js-quick-chip-on", state); _report(); }, menu);
+                row.AddToClassList("js-quick-row"); row.AddToClassList("js-quick-toggle");
+                chip = OriginalCombatLayout.Label(on ? "ON" : "OFF", "js-quick-chip"); chip.EnableInClassList("js-quick-chip-on", on); row.Add(chip);
+            }
             void Rule() { var rule = new VisualElement { pickingMode = PickingMode.Ignore }; rule.AddToClassList("js-quick-rule"); menu.Add(rule); }
             var keys = _settings?.KeyBindings ?? OriginalPlayerSettings.DefaultKeyBindings;
             string Key(string action) => keys.TryGetValue(action, out var key) ? OriginalKeyBindings.DisplayKey(key) : null;
+            if (OpenSettings != null) Row("native-quick-settings", "Settings", OpenSettings);
             Row("native-quick-controls", "Controls", JourneyControls);
+            if (ToggleFullscreen != null || ToggleMusic != null)
+            {
+                Rule();
+                if (ToggleFullscreen != null) Toggle("native-quick-fullscreen", "Fullscreen", ToggleFullscreen, Screen.fullScreen);
+                if (ToggleMusic != null) Toggle("native-quick-music", "Music", ToggleMusic, _settings?.MusicEnabled ?? true);
+            }
             Rule();
             Row("native-quick-deck", "Deck", Deck, Key("combatDeck"));
             Row("native-quick-equipment", "Equipment", Equipment);
             Rule();
-            Row("native-quick-save", "Save and Quit", _menu, null, true);
-            // Under the HUD's right edge, in the body's own coordinates (the HUD may sit in the margin).
+            Row("native-quick-save", "Save and return to title", _menu, null, true);
+            // Under the HUD's right edge, in the HUD's own parent (the app when fixed, the body on the map).
             var width = Math.Min(310f, Math.Max(200f, hud.layout.width - 16));
             menu.style.width = width;
             menu.style.left = hud.layout.xMax - width - 8;
             menu.style.top = hud.layout.yMax - 18;
-            _root.Add(menu); menu.BringToFront(); _quickMenu = menu;
-            menu.Q<Button>("native-quick-controls")?.Focus(); _report();
+            hud.parent.Add(menu); menu.BringToFront(); _quickMenu = menu;
+            menu.Q<Button>(OpenSettings != null ? "native-quick-settings" : "native-quick-controls")?.Focus(); _report();
         }
         // The Quick menu's Controls row: the map and screen shortcuts as currently bound. Read-only.
         private void JourneyControls()
@@ -184,8 +203,21 @@ namespace AshenSpire.Presentation
             var table = kind == "armament" ? "equipment.armaments" : kind + "s";
             return (string)_game.Catalog.Record(table, (string)offers?[kind + "Id"])?["name"] ?? OriginalCardText.Humanize(kind);
         }
-        // "VICTORY" head: eyebrow, gold title and the claimed count at the right.
-        private void SpoilsHead()
+        // One line under each reward row (JS .class-pick.reward-kind description): the record's own text,
+        // never a raw {token} template (the JS 08d bug), else its flavour line.
+        private string RewardBlurb(string kind)
+        {
+            var offers = _game.Room["rewards"];
+            if (kind == "cinders") return "Cinders · " + _game.RunPlayer["cinders"] + " carried";
+            if (kind == "card") return "Choose one of " + ((offers?["cardIds"] as JArray)?.Count ?? 0) + ".";
+            var table = kind == "armament" ? "equipment.armaments" : kind + "s";
+            var row = _game.Catalog.Record(table, (string)offers?[kind + "Id"]);
+            foreach (var key in new[] { "description", "text", "textTemplate", "blurb", "flavor" })
+                if ((string)row?[key] is string text && text.Trim().Length > 0 && text.IndexOf('{') < 0) return text.Trim();
+            return null;
+        }
+        // "VICTORY" head: eyebrow, gold title and the claimed count at the right. Claimed rows go to rows.
+        private void SpoilsHead(VisualElement rows)
         {
             JourneyStyles();
             var states = _game.Room["states"];
@@ -203,8 +235,9 @@ namespace AshenSpire.Presentation
                 row.Add(JourneyPicture(RewardIcon(kind), "js-reward-icon"));
                 var copy = new VisualElement { pickingMode = PickingMode.Ignore }; copy.AddToClassList("js-reward-copy");
                 copy.Add(OriginalCombatLayout.Label(RewardTitle(kind), "js-reward-title"));
+                if (RewardBlurb(kind) is string blurb) copy.Add(OriginalCombatLayout.Label(blurb, "js-reward-body"));
                 copy.Add(OriginalCombatLayout.Label(state == "taken" ? "TAKEN" : "SKIPPED", "js-chip"));
-                row.Add(copy); _root.Add(row);
+                row.Add(copy); rows.Add(row);
             }
         }
         // A pending take button as a framed reward row: engraved icon at the left, NEW chip at the right.
@@ -216,9 +249,15 @@ namespace AshenSpire.Presentation
             if (kind == "flask") { var art = JourneyArt("flask-" + (string)_game.Room["rewards"]?["flaskId"]); if (art != null) button.Add(JourneyPicture(art, "js-reward-row-thumb")); }
             if (kind == "relic") { var art = OriginalCombatLayout.Art("relics/" + (string)_game.Room["rewards"]?["relicId"]); if (art != null) button.Add(JourneyPicture(art, "js-reward-row-thumb")); }
             var chip = OriginalCombatLayout.Label("NEW", "js-chip"); chip.AddToClassList("js-chip-new"); button.Add(chip);
+            // One description line under the title; the button's own text (what harnesses read) is unchanged.
+            if (RewardBlurb(kind) is string blurb)
+            {
+                var line = OriginalCombatLayout.Label(blurb, "js-reward-row-desc"); line.pickingMode = PickingMode.Ignore;
+                button.Add(line); button.AddToClassList("js-reward-row-described");
+            }
         }
         // The card choice heading row, and the gold NEW pill above each offered card (06b).
-        private void CardChoiceHead()
+        private void CardChoiceHead(VisualElement parent)
         {
             var row = new VisualElement { pickingMode = PickingMode.Ignore }; row.AddToClassList("js-reward-row"); row.AddToClassList("js-reward-card-head");
             row.Add(JourneyPicture(RewardIcon("card"), "js-reward-icon"));
@@ -227,7 +266,27 @@ namespace AshenSpire.Presentation
             title.Add(OriginalCombatLayout.Label("Card", "js-reward-title")); var chip = OriginalCombatLayout.Label("NEW", "js-chip"); chip.AddToClassList("js-chip-new"); title.Add(chip);
             copy.Add(title);
             copy.Add(OriginalCombatLayout.Label("Choose one of " + ((_game.Room["rewards"]?["cardIds"] as JArray)?.Count ?? 0) + " · tap a face to inspect", "js-reward-body"));
-            row.Add(copy); _root.Add(row);
+            row.Add(copy); parent.Add(row);
+        }
+        // Desktop spoils (06): reward rows at the left, PROGRESSION at the right; a phone stacks them.
+        private VisualElement SpoilsColumn(VisualElement columns, string name, string kind)
+        {
+            var column = new VisualElement { name = name }; column.AddToClassList("js-spoils-col"); column.AddToClassList(kind);
+            columns.Add(column); return column;
+        }
+        // A PROGRESSION row (06): name and level at the left, the xp pill bar, the next level at the right.
+        private static void ProgressRow(VisualElement parent, string name, string level, double xp, double next, string nextLevel, string full)
+        {
+            var row = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = full }; row.AddToClassList("js-progress-row");
+            row.Add(OriginalCombatLayout.Label(name, "js-progress-name"));
+            row.Add(OriginalCombatLayout.Label(level, "js-progress-level"));
+            var track = new VisualElement { pickingMode = PickingMode.Ignore }; track.AddToClassList("js-progress-track");
+            var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("js-progress-fill");
+            fill.style.width = Length.Percent(next > 0 ? Mathf.Clamp01((float)(xp / next)) * 100 : 0); track.Add(fill);
+            track.Add(OriginalCombatLayout.Label(Math.Round(xp) + " / " + Math.Round(next), "js-progress-value"));
+            row.Add(track);
+            row.Add(OriginalCombatLayout.Label(nextLevel, "js-progress-level"));
+            parent.Add(row);
         }
         private static void NewPill(VisualElement grid)
         {
@@ -303,27 +362,24 @@ namespace AshenSpire.Presentation
         }
 
         // ---- Event (JS 08e, 08f): the stage above the dialogue box --------------------------------------
-        // The player at the left ("You", faded as in the JS stage) and the speaker at the right with their
-        // name, standing in the painted band the theme leaves above the dialogue panel.
+        // The player at the left ("You", dimmed as the JS listener) and the speaker at the right. On a wide
+        // screen both stand large, heads near the top, and the dialogue box crops them at the waist; on a
+        // phone they stand whole. Names sit in the JS 20 % slots at the stage's foot, not under the art.
         private void EventStage(string eventId)
         {
             JourneyStyles();
             var stage = new VisualElement { name = "native-event-stage", pickingMode = PickingMode.Ignore }; stage.AddToClassList("js-event-stage");
             var classId = (string)_game.RunPlayer["classId"];
-            var you = new VisualElement { pickingMode = PickingMode.Ignore }; you.AddToClassList("js-event-figure"); you.AddToClassList("js-event-player");
-            var self = OriginalCombatLayout.Art("player/" + classId + "-ready");
-            if (self != null) you.Add(JourneyPicture(self, "js-event-figure-art"));
-            you.Add(OriginalCombatLayout.Label("You", "js-event-name"));
-            stage.Add(you);
-            var speaker = EventSpeakers.FirstOrDefault(s => s.Event == eventId);
-            if (speaker.Event != null)
+            void Figure(Texture2D art, string side, string name)
             {
-                var them = new VisualElement { pickingMode = PickingMode.Ignore }; them.AddToClassList("js-event-figure"); them.AddToClassList("js-event-speaker");
-                var art = OriginalCombatLayout.Art("enemies/" + speaker.Portrait + "-idle");
-                if (art != null) them.Add(JourneyPicture(art, "js-event-figure-art"));
-                them.Add(OriginalCombatLayout.Label(speaker.Name, "js-event-name"));
-                stage.Add(them);
+                var figure = new VisualElement { pickingMode = PickingMode.Ignore }; figure.AddToClassList("js-event-figure"); figure.AddToClassList("js-event-" + side);
+                if (art != null) { var picture = JourneyPicture(art, "js-event-figure-art"); picture.scaleMode = ScaleMode.ScaleToFit; figure.Add(picture); }
+                stage.Add(figure);
+                var caption = OriginalCombatLayout.Label(name, "js-event-name"); caption.AddToClassList("js-event-name-" + side); stage.Add(caption);
             }
+            Figure(OriginalCombatLayout.Art("player/" + classId + "-ready"), "player", "You");
+            var speaker = EventSpeakers.FirstOrDefault(s => s.Event == eventId);
+            if (speaker.Event != null) Figure(OriginalCombatLayout.Art("enemies/" + speaker.Portrait + "-idle"), "speaker", speaker.Name);
             // First in paint order: the HUD band draws over the stage, as the JS band over the dialogue scene.
             _root.Insert(0, stage);
         }

@@ -1,12 +1,14 @@
 /* JsJourney.uss — the HTML/JS build 1815 journey details (OriginalRunPanel.Journey.cs, OriginalMapBoard).
-   Shared run HUD (styles/shared-run-hud.css), Quick menu (03c), map detail band (03b), spoils rows
-   (06, 06b), merchant tabs and thumbnails (08c), rest recovery preview (08a) and the event stage (08e).
+   Shared run HUD (styles/shared-run-hud.css; fixed to the app's top off the map), Quick menu (03c),
+   map detail band (03b), spoils rows and the two-column desktop spoils (06, 06b), merchant tabs at the
+   panel's foot and thumbnails (08c, 08d), rest recovery preview (08a) and the event stage (08e, 08f).
    Attached by the run panel to its body and by the map board to itself; colours come from the theme's
    --ash-* tokens. Selectors that restyle theme-styled controls carry one class more than the theme. */
 
 /* ---- Shared run HUD: a 100 px #201b15 band ------------------------------------------------------ */
 .js-journey-hud { position: relative; height: 100px; flex-shrink: 0; background-color: var(--ash-hud); border-bottom-width: 1px; border-bottom-color: rgba(42,36,25,0.9); }
-.js-journey-hud.js-hud-bleed { position: absolute; left: 0; top: -108px; width: 100%; }
+/* Off the map the band is a child of the app root, over the scroll view (which starts under it). */
+.js-journey-hud.js-hud-fixed { position: absolute; left: 0; top: 0; right: 0; }
 /* Row 1: red outline heart, "71/71", then the hairline HP rule whose fill is HP / max HP. */
 .js-journey-hp { position: absolute; left: 16px; right: 120px; top: 30px; height: 20px; flex-direction: row; align-items: center; }
 .js-journey-heart { width: 18px; height: 18px; flex-shrink: 0; --unity-image-tint-color: #d4544a; }
@@ -36,6 +38,9 @@
 .app .js-quick-menu > .js-quick-row:hover, .app .js-quick-menu > .js-quick-row:focus { background-color: #241d15; color: var(--ash-gold); }
 .app .js-quick-chip { position: absolute; right: 12px; top: 12px; margin: 0; padding: 1px 6px; font-size: 10px; color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 3px; }
 .js-quick-rule { height: 1px; margin: 4px 0; background-color: #6a5b43; }
+/* Fullscreen [OFF] / Music [ON]: small outlined status chips, muted when off. */
+.app .js-quick-toggle > .js-quick-chip { color: var(--ash-muted); border-color: #6a5b43; }
+.app .js-quick-toggle > .js-quick-chip.js-quick-chip-on { color: var(--ash-gold); border-color: var(--ash-gold); }
 
 /* ---- Map detail band (03b) and the selected medallion ------------------------------------------ */
 .app .map-detail-band { flex-shrink: 0; height: 128px; flex-direction: column; padding: 8px 16px; background-color: #211c15; border-top-width: 1px; border-top-color: #2a2419; overflow: hidden; }
@@ -66,20 +71,45 @@
 .app .js-reward-body { margin: 4px 0 0 0; padding: 0; font-size: 13px; color: var(--ash-ink-dim); white-space: normal; }
 .app .js-chip { margin: 6px 0 0 0; padding: 1px 6px; font-size: 10px; letter-spacing: 1px; color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 3px; background-color: rgba(0,0,0,0); -unity-font: resource("Fonts/Inter-SemiBold"); }
 .app .js-reward-title-line > .js-chip-new { margin: 0 0 0 8px; }
+/* Columns (06): one stack on a phone; on desktop (.ui-wide, >= 900 px) reward rows left and
+   PROGRESSION right, the folio widening to hold both (.js-spoils-split). */
+.js-spoils-columns { flex-direction: column; }
+.js-spoils-col { flex-direction: column; min-width: 0; }
+.ui-wide .body.run-phase-rewards.js-spoils-split { max-width: 980px; }
+.ui-wide .js-spoils-columns { flex-direction: row; align-items: flex-start; }
+.ui-wide .js-spoils-rewards { flex-grow: 1; flex-shrink: 1; }
+.ui-wide .js-spoils-progress { width: 290px; flex-shrink: 0; margin-left: 22px; }
+.js-spoils-progress > .js-section-eyebrow { margin-top: 8px; }
+/* Buttons inside a column keep the theme's framed option row (OriginalTheme .run-phase-* > .button). */
+.app .run-phase-rewards .js-spoils-col > .button {
+    -unity-text-align: middle-left; min-height: 52px; padding: 12px 18px; margin: 4px 0; font-size: 15px; color: var(--ash-ink); background-color: rgba(0,0,0,0); border-width: 0;
+    background-image: resource("Art/js1815/ui/panel-folio"); -unity-slice-left: 48; -unity-slice-right: 48; -unity-slice-top: 48; -unity-slice-bottom: 48; -unity-slice-scale: 0.25px; }
+.app .run-phase-rewards .js-spoils-col > .button:hover, .app .run-phase-rewards .js-spoils-col > .button:focus { color: var(--ash-gold); -unity-background-image-tint-color: #fff2d4; }
+.app .run-phase-rewards .js-spoils-col > .button:disabled { color: var(--ash-muted); -unity-background-image-tint-color: #8c8478; }
+/* PROGRESSION rows: name and gold level, a dark pill track with a gold fill and xp, the next level. */
+.js-progress-row { flex-direction: row; align-items: center; flex-wrap: wrap; min-height: 26px; margin: 2px 0; }
+.app .js-progress-name { flex-grow: 1; flex-shrink: 1; min-width: 80px; margin: 0; padding: 0; font-size: 14px; color: var(--ash-ink); }
+.app .js-progress-level { margin: 0 6px; padding: 0; font-size: 14px; color: var(--ash-gold); }
+.js-progress-track { width: 70px; height: 14px; border-radius: 7px; border-width: 1px; border-color: #85714f; background-color: #0d0b08; overflow: hidden; justify-content: center; }
+.js-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: var(--ash-gold); border-radius: 7px; }
+.app .js-progress-value { margin: 0; padding: 0; font-size: 8px; -unity-font: resource("Fonts/Inter-SemiBold"); color: #ffffff; -unity-text-align: middle-center; text-shadow: 0 1px 1px #000000; }
 /* A pending take button reads as the same framed row: icon left, NEW chip right. */
-.app .body.run-phase-rewards > .button.js-reward-row-button { min-height: 64px; padding: 12px 120px 12px 66px; margin: 4px 0; background-image: none; background-color: #241d15; border-width: 1px; border-color: #6a5b43; border-radius: 8px; -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 16px; color: var(--ash-gold); white-space: normal; }
-.app .body.run-phase-rewards > .button.js-reward-row-button:hover, .app .body.run-phase-rewards > .button.js-reward-row-button:focus { border-color: var(--ash-gold); background-color: #2e251b; color: #ffe08a; }
-.app .body.run-phase-rewards > .button.js-reward-row-button:disabled { color: var(--ash-muted); opacity: 0.7; }
+.app .run-phase-rewards .js-spoils-col > .button.js-reward-row-button { min-height: 64px; padding: 12px 120px 12px 66px; margin: 4px 0; background-image: none; background-color: #241d15; border-width: 1px; border-color: #6a5b43; border-radius: 8px; -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 16px; color: var(--ash-gold); white-space: normal; }
+.app .run-phase-rewards .js-spoils-col > .button.js-reward-row-button:hover, .app .run-phase-rewards .js-spoils-col > .button.js-reward-row-button:focus { border-color: var(--ash-gold); background-color: #2e251b; color: #ffe08a; }
+.app .run-phase-rewards .js-spoils-col > .button.js-reward-row-button:disabled { color: var(--ash-muted); opacity: 0.7; }
 .js-reward-row-icon { position: absolute; left: 16px; top: 14px; width: 34px; height: 34px; }
 .js-reward-row-thumb { position: absolute; right: 66px; top: 14px; width: 34px; height: 34px; }
 .app .js-reward-row-button > .js-chip-new { position: absolute; right: 14px; top: 22px; margin: 0; }
+/* One description line under the title (06): the title rises, the line sits at the row's foot. */
+.app .run-phase-rewards .js-spoils-col > .button.js-reward-row-button.js-reward-row-described { min-height: 72px; padding-top: 10px; padding-bottom: 32px; }
+.app .js-reward-row-desc { position: absolute; left: 66px; right: 120px; bottom: 10px; margin: 0; padding: 0; font-size: 13px; -unity-font: resource("Fonts/Inter-Regular"); color: var(--ash-ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-left; }
 /* 06b: the gold NEW pill above each offered card. */
 .app .js-new-pill { align-self: center; margin: 0 0 6px 0; padding: 2px 8px; font-size: 9px; letter-spacing: 1px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 9px; background-color: #171310; }
 /* Section eyebrows (PROGRESSION, merchant categories, REST, RECOVERY PREVIEW): gold small caps. */
 .app .js-section-eyebrow { margin: 14px 0 6px 0; padding: 0; font-size: 11px; letter-spacing: 1.8px; -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-gold); }
 
 /* ---- Merchant (08c): category tabs and framed thumbnails --------------------------------------- */
-.js-shop-tabs { flex-direction: row; flex-wrap: wrap; margin: 4px -3px 6px -3px; }
+.js-shop-tabs { flex-direction: row; flex-wrap: wrap; margin: 14px -3px 6px -3px; padding-top: 8px; border-top-width: 1px; border-top-color: #85714f; }
 .app .js-shop-tabs > .js-shop-tab { flex-basis: 30%; flex-grow: 1; min-height: 40px; height: 42px; margin: 3px; padding: 0 8px; background-image: none; background-color: #241d15; border-width: 1px; border-color: #85714f; border-radius: 3px; font-size: 12px; letter-spacing: 0.5px; color: var(--ash-ink-dim); -unity-text-align: middle-center; }
 .app .js-shop-tabs > .js-shop-tab.js-active { border-color: var(--ash-gold); border-bottom-width: 2px; color: var(--ash-gold); background-color: rgba(201,162,39,0.08); }
 .app .body.run-phase-shop > .button.js-shop-offer { min-height: 78px; padding: 10px 100px 10px 84px; margin: 4px 0; background-image: none; background-color: #1a1611; border-width: 1px; border-color: #6a5b43; border-radius: 3px; -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 16px; color: var(--ash-gold); -unity-text-align: middle-left; white-space: normal; }
@@ -99,12 +129,23 @@
 .app .js-recovery-after { min-width: 24px; margin: 0; padding: 0; font-size: 15px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-ink); }
 .app .js-recovery-gain { width: 46px; margin: 0; padding: 0 6px 0 0; font-size: 15px; -unity-text-align: middle-right; color: #7fd97f; }
 
-/* ---- Event stage (08e): the player left, the speaker right, above the dialogue box ------------- */
-.js-event-stage { position: absolute; left: 0; right: 0; top: -240px; height: 240px; overflow: hidden; }
+/* ---- Event stage (08e, 08f): the player left, the speaker right, above the dialogue box ---------
+   Phone: both stand whole, 46 % wide, over the names. Desktop: each figure is ~30 % of the width with
+   its head about a third down and the box ~1.4 stage-heights tall, so the dialogue box crops it at the
+   waist as the JS stage does. Names sit in the JS 20 % slots, 2.5 % from each edge, at the stage foot. */
+.js-event-stage { position: absolute; left: 0; right: 0; top: -400px; height: 400px; overflow: hidden; }
+/* A phone gives the stage the top half as JS 08e does (the theme's 240 px left 140 px under the HUD). */
+.app .body.native-run.run-phase-event { margin-top: 400px; }
+.ui-wide .body.native-run.run-phase-event { margin-top: 330px; }
 .ui-wide .js-event-stage { top: -330px; height: 330px; }
-.js-event-figure { position: absolute; bottom: 4px; width: 36%; height: 64%; justify-content: flex-end; }
-.js-event-player { left: 4%; opacity: 0.55; }
-.js-event-speaker { right: 3%; }
-.js-event-figure-art { flex-grow: 1; }
-.app .js-event-name { margin: 2px 0 0 0; padding: 0; font-size: 13px; color: var(--ash-ink); -unity-text-align: middle-center; text-shadow: 0 1px 3px #000000; }
-.app .js-event-player .js-event-name { color: var(--ash-muted); }
+.js-event-figure { position: absolute; bottom: 20px; width: 46%; height: 64%; }
+.js-event-player { left: -2%; opacity: 0.62; }
+.js-event-speaker { right: 1%; }
+.ui-wide .js-event-figure { bottom: auto; top: 28%; width: 30%; height: 140%; }
+.ui-wide .js-event-player { left: 1%; }
+.ui-wide .js-event-speaker { right: 3%; }
+.js-event-figure-art { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.app .js-event-name { position: absolute; bottom: 2px; width: 34%; white-space: nowrap; margin: 0; padding: 0; font-size: 13px; color: var(--ash-ink); -unity-text-align: middle-center; text-shadow: 0 1px 3px #000000; }
+.app .js-event-name-player { left: 2.5%; color: var(--ash-muted); }
+.app .js-event-name-speaker { right: 2.5%; }
+.ui-wide .js-event-name { width: 20%; }

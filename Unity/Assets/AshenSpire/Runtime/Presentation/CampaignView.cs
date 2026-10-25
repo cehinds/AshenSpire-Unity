@@ -242,6 +242,11 @@ namespace AshenSpire.Presentation
             // spoils as a centred folio, the event as a dialogue box under its stage).
             _body.AddToClassList("run-phase-" + game.Phase.ToString().ToLowerInvariant());
             var panel = new OriginalRunPanel(_body, _root, game, () => Report(), () => MenuRequested?.Invoke(), _diagnostics, MapView, NativeSummary, () => ProfileRequested?.Invoke(), PlayerSettings);
+            // Quick menu (JS 03c): Settings opens the existing settings screen and returns to this run;
+            // Fullscreen and Music flip the same saved settings the settings screen does.
+            panel.OpenSettings = () => Settings(() => Native(game, feedback));
+            panel.ToggleFullscreen = () => { var on = !Screen.fullScreen; Screen.fullScreen = on; if (_playerSettings != null) { _playerSettings.Fullscreen = on; Changed(); } return on; };
+            if (_playerSettings != null) panel.ToggleMusic = () => { _playerSettings.MusicEnabled = !_playerSettings.MusicEnabled; Changed(); return _playerSettings.MusicEnabled; };
             var projection = NativeFeedbackProjection.FromEvents(game.LastEvents);
             EnemyDeaths(game.LastEvents);
             if (panel.Stage == null || projection == null) return null;

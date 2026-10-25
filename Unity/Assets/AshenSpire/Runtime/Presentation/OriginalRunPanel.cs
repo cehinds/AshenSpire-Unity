@@ -220,38 +220,45 @@ namespace AshenSpire.Presentation
         private void Rewards()
         {
             var room = _game.Room; var offers = room["rewards"];
-            SpoilsHead();
+            var columns = new VisualElement { name = "native-spoils-columns" }; columns.AddToClassList("js-spoils-columns");
+            var rows = SpoilsColumn(columns, "native-spoils-rewards", "js-spoils-rewards");
+            SpoilsHead(rows); _root.Add(columns);
             foreach (var kind in new[] { "cinders", "relic", "flask", "armament" })
             {
                 if (room["states"][kind] != null) continue;
-                if (kind == "cinders") { if ((int?)offers[kind] > 0) RewardRow(Button("native-reward-cinders", "Collect " + offers[kind] + " cinders", () => _game.Reward("cinders")), kind); }
+                if (kind == "cinders") { if ((int?)offers[kind] > 0) RewardRow(Button("native-reward-cinders", "Collect " + offers[kind] + " cinders", () => _game.Reward("cinders"), rows), kind); }
                 else if (!string.IsNullOrEmpty((string)offers[kind + "Id"]))
                 {
                     var table = kind == "armament" ? "equipment.armaments" : kind + "s"; var row = _game.Catalog.Record(table, (string)offers[kind + "Id"]);
                     var refusal = OriginalRewardAvailability.Refusal(_game.Catalog.Data(), _game.RunPlayer, kind, (string)row["id"]);
-                    var take = Button("native-reward-" + kind, "Take " + (string)row["name"], () => _game.Reward(kind)); take.SetEnabled(refusal == null); RewardRow(take, kind);
-                    if (refusal != null) Text(refusal + " You can leave this reward behind.", "caption");
+                    var take = Button("native-reward-" + kind, "Take " + (string)row["name"], () => _game.Reward(kind), rows); take.SetEnabled(refusal == null); RewardRow(take, kind);
+                    if (refusal != null) rows.Add(Label(refusal + " You can leave this reward behind.", "caption"));
                 }
             }
             if (room["states"]["card"] == null)
             {
-                if (RewardOffered("card")) CardChoiceHead();
-                var grid = OriginalCardInspection.Grid(); _root.Add(grid);
+                if (RewardOffered("card")) CardChoiceHead(rows);
+                var grid = OriginalCardInspection.Grid(); rows.Add(grid);
                 foreach (var token in offers["cardIds"] ?? new JArray())
                 { var id = (string)token; var card = _game.Catalog.Record("cards", id); CardOffer(grid, card, "native-reward-card-" + id, "Take " + card["name"], () => _game.Reward("card", id)); NewPill(grid); }
             }
             var earned = _game.EarnedProgressionView();
+            _root.EnableInClassList("js-spoils-split", earned != null);
             if (earned != null)
             {
-                SectionLabel("PROGRESSION");
-                Text("Character level " + earned["level"]["level"] + " · " + earned["level"]["xp"] + " / " + earned["xpToNext"] + " XP", "stat");
-                Button("native-claim-level", "Level up! · " + earned["pendingLevels"] + " waiting", _game.ClaimLevel).SetEnabled((int)earned["pendingLevels"] > 0);
+                var progress = SpoilsColumn(columns, "native-spoils-progression", "js-spoils-progress");
+                progress.Add(Label("PROGRESSION", "js-section-eyebrow"));
+                var level = (int)earned["level"]["level"];
+                ProgressRow(progress, "Character", "Level " + level, (double)earned["level"]["xp"], (double)earned["xpToNext"], "Level " + (level + 1),
+                    "Character level " + level + " · " + earned["level"]["xp"] + " / " + earned["xpToNext"] + " XP");
+                Button("native-claim-level", "Level up! · " + earned["pendingLevels"] + " waiting", _game.ClaimLevel, progress).SetEnabled((int)earned["pendingLevels"] > 0);
                 foreach (var skill in earned["skills"])
                 {
                     if ((double)skill["xp"] == 0 && (int)skill["level"] == 0) continue;
-                    var id = (string)skill["id"];
-                    Text(skill["label"] + " · level " + skill["level"] + " · " + skill["xp"] + " / " + skill["xpToNext"] + " XP", "caption");
-                    if ((int)skill["pendingLevels"] > 0) Button("native-claim-skill-" + id, "Level up " + skill["label"], () => _game.ClaimSkill(id));
+                    var id = (string)skill["id"]; var at = (int)skill["level"];
+                    ProgressRow(progress, (string)skill["label"], "Lv " + at, (double)skill["xp"], (double)skill["xpToNext"], "Lv. " + (at + 1),
+                        skill["label"] + " · level " + at + " · " + skill["xp"] + " / " + skill["xpToNext"] + " XP");
+                    if ((int)skill["pendingLevels"] > 0) Button("native-claim-skill-" + id, "Level up " + skill["label"], () => _game.ClaimSkill(id), progress);
                 }
             }
             // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Owner decision 2026-10-02:
@@ -273,12 +280,12 @@ namespace AshenSpire.Presentation
         {
             Text("Merchant", "node-title");
             // JS 08c: category tabs (here the categories this merchant stocks) that jump to their offers.
-            var kinds = new[] { ("cards", "COMBAT CARDS"), ("relics", "RELICS"), ("flasks", "FLASKS") }.Where(k => (_game.Room[k.Item1] as JArray)?.Count > 0).ToList();
+            // They sit at the panel's foot, above Leave, as the JS 3x2 tab grid does.
+            var kinds = new[] { ("cards", "Combat cards"), ("relics", "RELICS"), ("flasks", "FLASKS") }.Where(k => (_game.Room[k.Item1] as JArray)?.Count > 0).ToList();
             var sellables = _settings?.MerchantBuyBack != false ? new OriginalRunServices(_game.Catalog).Sellables(_game.RunPlayer).OfType<JObject>().ToArray() : new JObject[0];
-            ShopTabs(kinds.Concat(new[] { ("services", "SERVICES") }).Concat(sellables.Length > 0 ? new[] { ("sell", "SELL") } : new (string, string)[0]).ToArray());
             foreach (var (kind, title) in kinds)
             {
-                SectionLabel(title, "native-shop-section-" + kind);
+                SectionLabel(title.ToUpperInvariant(), "native-shop-section-" + kind);
                 var grid = kind == "cards" ? OriginalCardInspection.Grid() : null; if (grid != null) _root.Add(grid);
                 foreach (var entry in (_game.Room[kind] as JArray ?? new JArray()).Select((value, index) => (value, index)))
                 {
@@ -304,6 +311,7 @@ namespace AshenSpire.Presentation
                 var sale = (JObject)row.DeepClone();
                 Button("native-sell-" + row["kind"] + "-" + row["index"], "Sell " + row["name"] + " · receive " + row["price"] + " cinders", () => _game.Service("sell", sale));
             }
+            ShopTabs(kinds.Concat(new[] { ("services", "SERVICES") }).Concat(sellables.Length > 0 ? new[] { ("sell", "SELL") } : new (string, string)[0]).ToArray());
             Button("native-shop-leave", "Return to the route", _game.LeaveShop);
         }
         private void Shrine()
