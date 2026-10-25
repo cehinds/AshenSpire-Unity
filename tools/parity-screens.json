@@ -84,7 +84,7 @@
     {"id": "09a-settings-general", "dom": [".modal", ".set-tab"],
       "unity": {"steps": [{"click": "settings"}]}},
     {"id": "09b-settings-accessibility", "dom": [".modal", ".set-tab"],
-      "unity": {"steps": [{"click": "settings"}, {"click": "settings-section-1", "ifPresent": true}]}},
+      "unity": {"steps": [{"click": "settings"}, {"click": "settings-section-2", "ifPresent": true}]}},
     {"id": "09c-settings-advanced", "dom": [".modal", ".set-tab"],
       "unity": null, "pending": "Phase 12: settings tabs"},
     {"id": "09d-settings-debug-mode", "dom": [".modal", ".set-tab"],
