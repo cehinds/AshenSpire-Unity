@@ -301,12 +301,69 @@ namespace AshenSpire.Presentation
             RenderModStatus();
         }
 
+        // JS 09a–09c: three equal tabs (General | Accessibility | Advanced), each with its own
+        // sub-pickers. Settings rows are grouped, in order, under the tab that owns their heading.
+        private static readonly (string Id, string Label)[] SettingsTabs = { ("general", "General"), ("accessibility", "Accessibility"), ("advanced", "Advanced") };
+        private static int SettingsTabOf(string heading)
+        {
+            switch ((heading ?? "").Trim().ToUpperInvariant())
+            {
+                case "GAME": case "AUDIO": return 0;
+                case "ACCESSIBILITY": case "CONTROLS": case "CONTROLLER": return 1;
+                default: return 2; // CONTENT MODS, HOW TO PLAY and anything added later.
+            }
+        }
+
         // Reparent the existing controls after construction; callbacks, IDs and
-        // saved values stay with the same elements. Every section remains open.
+        // saved values stay with the same elements. Every section stays in the tree:
+        // the browser harnesses click any setting by name, so a tab never hides rows.
+        // A tab click jumps to its first section (the same jump as the settings-section-N
+        // sub-pickers, which keep their ids and numbering); the active tab follows the
+        // jump and then the scroll position. Styling: Resources/JsCollection.uss.
         private void ComposeSettingsSections()
         {
             _body.AddToClassList("settings-screen");
-            var navigation = new VisualElement(); navigation.AddToClassList("settings-navigation");
+            _body.AddToClassList("js-settings");
+            JsCollectionSheet.Attach(_root);
+            var navigation = new VisualElement(); navigation.AddToClassList("settings-navigation"); navigation.AddToClassList("js-settings-tabs");
+            var groups = new VisualElement[SettingsTabs.Length]; var subnavs = new VisualElement[SettingsTabs.Length];
+            var tabs = new Button[SettingsTabs.Length];
+            var sections = new List<(VisualElement Section, int Tab)>();
+            var activeTab = -1; var jumping = false;
+            void Activate(int tab)
+            {
+                if (tab == activeTab) return;
+                activeTab = tab;
+                for (var t = 0; t < tabs.Length; t++)
+                {
+                    tabs[t].EnableInClassList("selected", t == tab);
+                    groups[t].EnableInClassList("active", t == tab);
+                }
+            }
+            void Jump(VisualElement target, int tab)
+            {
+                Activate(tab);
+                target.Focus();
+                // Align the heading, rather than merely exposing the
+                // section's bottom edge as ScrollTo does for tall groups.
+                var y = target.worldBound.y - _scroll.contentContainer.worldBound.y - 12;
+                jumping = true;
+                try { _scroll.scrollOffset = new Vector2(_scroll.scrollOffset.x, Mathf.Max(0, y)); }
+                finally { jumping = false; }
+                Report();
+            }
+            for (var t = 0; t < SettingsTabs.Length; t++)
+            {
+                var group = new VisualElement(); group.AddToClassList("settings-tab-group"); navigation.Add(group); groups[t] = group;
+                var tabIndex = t;
+                tabs[t] = Control("settings-tab-" + SettingsTabs[t].Id, SettingsTabs[t].Label, () =>
+                {
+                    var first = sections.FirstOrDefault(s => s.Tab == tabIndex).Section;
+                    if (first != null) Jump(first, tabIndex); else { Activate(tabIndex); Report(); }
+                }, "settings-tab");
+                group.Add(tabs[t]);
+                var subnav = new VisualElement(); subnav.AddToClassList("settings-subnav"); group.Add(subnav); subnavs[t] = subnav;
+            }
             VisualElement section = null; var index = 0;
             foreach (var child in _body.Children().ToList())
             {
@@ -315,20 +372,26 @@ namespace AshenSpire.Presentation
                 {
                     section = new VisualElement { focusable = true }; section.AddToClassList("settings-section");
                     _body.Add(section);
-                    var target = section;
-                    navigation.Add(Control("settings-section-" + index++, ((Label)child).text,
-                        () =>
-                        {
-                            target.Focus();
-                            // Align the heading, rather than merely exposing the
-                            // section's bottom edge as ScrollTo does for tall groups.
-                            var y = target.worldBound.y - _scroll.contentContainer.worldBound.y - 12;
-                            _scroll.scrollOffset = new Vector2(_scroll.scrollOffset.x, Mathf.Max(0, y));
-                            Report();
-                        }, "settings-jump"));
+                    var target = section; var heading = ((Label)child).text; var tab = SettingsTabOf(heading);
+                    section.AddToClassList("settings-tab-" + SettingsTabs[tab].Id);
+                    sections.Add((section, tab));
+                    subnavs[tab].Add(Control("settings-section-" + index++, Title(heading.ToLowerInvariant()), () => Jump(target, tab), "settings-jump"));
                 }
                 if (section != null) section.Add(child);
             }
+            // A tab with no rows still shows, disabled, so the three-tab bar keeps its shape.
+            for (var t = 0; t < tabs.Length; t++) tabs[t].SetEnabled(subnavs[t].childCount > 0);
+            Activate(0);
+            // The active tab follows the reader: the last section whose heading has reached the top.
+            var scroll = _scroll;
+            scroll.verticalScroller.valueChanged += offset =>
+            {
+                if (jumping || scroll != _scroll || sections.Count == 0 || sections[0].Section.panel == null) return;
+                var current = sections[0].Tab;
+                foreach (var entry in sections) if (entry.Section.worldBound.y - scroll.contentContainer.worldBound.y <= offset + 24) current = entry.Tab;
+                // At the bottom the last short sections cannot reach the top, so a later tab chosen there stays.
+                Activate(offset > 0 && offset >= scroll.verticalScroller.highValue - 1 ? Math.Max(activeTab, current) : current);
+            };
             _body.Insert(2, navigation);
             _body.Q<Button>("back")?.BringToFront();
         }

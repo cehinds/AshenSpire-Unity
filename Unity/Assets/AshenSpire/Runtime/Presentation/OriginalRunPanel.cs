@@ -393,51 +393,79 @@ namespace AshenSpire.Presentation
             Text((string)record["name"], "node-title"); Text((string)record["text"], "lead");
             foreach (var choice in _game.EventChoices) { var id = (string)choice["id"]; Button("native-choice-" + id, (string)choice["label"], () => _game.ChooseEvent(id)); }
         }
+        // JS 07a: the Cards pane of the collection modal (OriginalRunPanel.Collection.cs).
         private void Deck()
         {
             _backAction = Render;
-            _mapView?.SetMapSurface?.Invoke(false);
-            OriginalCombatLayout.SetSurface(_root, false);
-            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("YOUR DECK & EQUIPMENT", "heading"); var run = _game.RunPlayer;
-            foreach (var item in new WeaponLoadout(_game.Catalog).Pieces((JObject)run["loadout"], (string)run["classId"])) Text((string)item["name"], "stat");
-            if (_game.Phase != OriginalRunPhase.Victory && _game.Phase != OriginalRunPhase.Defeat) Button("native-equipment", _game.Phase == OriginalRunPhase.Combat ? "Switch prepared weapon sets" : "Change equipment and weapon sets", Equipment);
-            OriginalCardInspection.Browse(_root, ((JArray)run["deck"]).OfType<JObject>(), _game.Resolve, _game.Cost, _game.Catalog, "native-deck",
+            var pane = Collection("cards"); var run = _game.RunPlayer; var deck = ((JArray)run["deck"]).OfType<JObject>().ToArray();
+            PaneTitle(pane, "Cards · " + deck.Length, "Your complete deck, including class and equipment cards.");
+            var pieces = new WeaponLoadout(_game.Catalog).Pieces((JObject)run["loadout"], (string)run["classId"]).OfType<JObject>().Select(item => (string)item["name"]).ToArray();
+            if (pieces.Length > 0) pane.Add(Label("Equipped · " + string.Join(" · ", pieces), "js-pane-note"));
+            OriginalCardInspection.Browse(pane, deck, _game.Resolve, _game.Cost, _game.Catalog, "native-deck",
                 instance => ReadCard(_game.Resolve(instance), _game.Cost(instance), Deck), _report, _deckBrowse);
-            Button("native-deck-back", "Back to run", Render); _report();
+            _report();
         }
+        // JS 07b: the Equipment pane. Each opened set is a framed slot row ("MH1 — Greatsword" with an
+        // EQUIPPED/ACTIVE chip) holding the same set/equip/empty commands as before; the active item of
+        // the first slot is inspected at the right.
         private void Equipment()
         {
             _backAction = Deck;
-            _mapView?.SetMapSurface?.Invoke(false);
-            OriginalCombatLayout.SetSurface(_root, false);
-            _root.Clear(); _actions?.RemoveFromHierarchy(); Text("EQUIPMENT", "heading"); _notice = Text("", "notice");
+            var pane = Collection("equipment");
             var run = _game.RunPlayer; var upgrades = new ItemUpgradeService(_game.Catalog);
             var owned = upgrades.OwnedRefs(run).Where(x => !x.StartsWith("relic/", StringComparison.Ordinal)).Select(upgrades.Definition).ToArray();
+            var layout = new VisualElement(); layout.AddToClassList("js-equipment"); pane.Add(layout);
+            var list = new VisualElement(); list.AddToClassList("js-equipment-slots"); layout.Add(list);
+            list.Add(Label("Equipped positions", "js-pane-title"));
+            JObject inspected = null; string inspectedCode = null;
             foreach (var slot in _game.Catalog.Table("equipment.slots").OfType<JObject>())
             {
-                var slotId = (string)slot["id"]; Text(OriginalCardText.Humanize(slotId), "node-title");
+                var slotId = (string)slot["id"]; var slotLabel = (string)slot["label"] ?? OriginalCardText.Humanize(slotId);
+                string Code(int n) => ((string)slot["positionCode"] ?? slotLabel.ToUpperInvariant()).Replace("{n}", n.ToString());
                 var combat = _game.Phase == OriginalRunPhase.Combat;
-                if (combat && (string)slot["swap"] != "combat") { Text("Fastened until this fight ends", "caption"); continue; }
+                if (combat && (string)slot["swap"] != "combat")
+                {
+                    var locked = new VisualElement(); locked.AddToClassList("js-slot-locked"); list.Add(locked);
+                    locked.Add(Label(Code(1) + " — ", "js-slot-code")); locked.Add(Label("Fastened", "js-slot-name")); locked.Add(Label("Fastened until this fight ends", "caption"));
+                    continue;
+                }
                 for (var index = 0; index < _game.OpenedSets(slotId); index++)
                 {
                     var set = index; var current = (string)run["loadout"]["sets"][slotId][index];
-                    Text("Set " + (index + 1) + " · " + (string.IsNullOrEmpty(current) ? "Empty" : OriginalCardText.Humanize(current)), "caption");
-                    if ((int)run["loadout"]["active"][slotId] != index)
+                    var item = string.IsNullOrEmpty(current) ? null : owned.FirstOrDefault(x => (string)x["id"] == current);
+                    var active = (int)run["loadout"]["active"][slotId] == index;
+                    var row = new VisualElement(); row.AddToClassList("js-slot-row"); row.EnableInClassList("active", active); list.Add(row);
+                    var top = new VisualElement(); top.AddToClassList("js-slot-head"); row.Add(top);
+                    var thumb = new VisualElement(); thumb.AddToClassList("js-item-thumb"); top.Add(thumb);
+                    var art = ItemArt(item); if (art != null) thumb.Add(new Image { image = art, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore });
+                    var title = new VisualElement(); title.AddToClassList("js-slot-title"); top.Add(title);
+                    title.Add(Label(Code(index + 1) + " — ", "js-slot-code"));
+                    title.Add(Label(string.IsNullOrEmpty(current) ? "Empty" : (string)item?["name"] ?? OriginalCardText.Humanize(current), "js-slot-name"));
+                    Chip(top, active ? string.IsNullOrEmpty(current) ? "ACTIVE" : "EQUIPPED" : "SET " + (index + 1), active ? "js-chip-on" : null);
+                    if (active && item != null && inspected == null) { inspected = item; inspectedCode = Code(index + 1); }
+                    var actions = new VisualElement(); actions.AddToClassList("js-slot-actions"); row.Add(actions);
+                    if (!active)
                     {
                         var allowance = combat && (string)_game.Catalog.Data()["balance"]["equipment"]["swapCostKind"] == "allowance";
                         var receipt = combat ? _game.SwapPrice(slotId, set) : null; var price = combat ? (int)receipt["cost"] : 0;
-                        var button = Button("native-set-" + slotId + "-" + index, "Use set " + (index + 1) + (combat ? allowance ? " · 1 swap (" + _game.SwapsLeft + " left)" : " · " + price + " actions" : ""), () => _game.SelectSet(slotId, set));
+                        var button = Button("native-set-" + slotId + "-" + index, "Use set " + (index + 1) + (combat ? allowance ? " · 1 swap (" + _game.SwapsLeft + " left)" : " · " + price + " actions" : ""), () => _game.SelectSet(slotId, set), actions);
                         button.SetEnabled(!combat || (allowance ? _game.SwapsLeft > 0 : (int)_game.Player["energy"] >= price));
                         // Weapon swap cost setting (US-15.2): name the live rule and how it reached the price.
-                        if (combat && !allowance) Text(OriginalGameplayOptions.DescribeSwapPrice(receipt, (JObject)_game.Catalog.Data()["balance"]["equipment"]), "caption");
+                        if (combat && !allowance) row.Add(Label(OriginalGameplayOptions.DescribeSwapPrice(receipt, (JObject)_game.Catalog.Data()["balance"]["equipment"]), "caption"));
                     }
                     if (combat) continue;
-                    foreach (var item in owned.Where(x => WeaponLoadout.Fits(slot, x)))
-                    { var id = (string)item["id"]; Button("native-equip-" + slotId + "-" + index + "-" + id, "Equip " + (string)item["name"], () => _game.Equip(slotId, set, id)); }
-                    if (!string.IsNullOrEmpty(current)) Button("native-empty-" + slotId + "-" + index, "Empty this slot", () => _game.Equip(slotId, set, null));
+                    foreach (var fit in owned.Where(x => WeaponLoadout.Fits(slot, x)))
+                    { var id = (string)fit["id"]; Button("native-equip-" + slotId + "-" + index + "-" + id, "Equip " + (string)fit["name"], () => _game.Equip(slotId, set, id), actions); }
+                    if (!string.IsNullOrEmpty(current)) Button("native-empty-" + slotId + "-" + index, "Empty this slot", () => _game.Equip(slotId, set, null), actions).AddToClassList("js-slot-unequip");
                 }
             }
-            Button("native-equipment-back", "Back to deck", Deck); _report();
+            if (inspected != null)
+            {
+                var detail = new VisualElement(); detail.AddToClassList("js-equipment-inspect"); layout.Add(detail);
+                detail.Add(Label("Inspect · " + inspectedCode, "js-pane-title"));
+                detail.Add(ItemCard(inspected, WeaponLoadout.ItemRef(inspected)));
+            }
+            _report();
         }
         private Image Picture(string art) { var image = new Image { image = Resources.Load<Texture2D>("Art/" + art), scaleMode = ScaleMode.ScaleToFit }; image.AddToClassList("fighter"); return image; }
         private Label Text(string text, string style) { var label = Label(text, style); _root.Add(label); return label; }
