@@ -183,6 +183,12 @@ var defendPlan = OriginalCardRulesFit.Choose("Gain 5 Block.", rw, rh, rmax, rmin
 Check(defendPlan.Step == OriginalCardRulesFit.Step.FaceLines && defendPlan.Size == rmax, "rules: a short card keeps the JS face lines at full size");
 foreach (var (step, ids) in fitSteps)
     Console.WriteLine("Rules fit step " + step + " (" + (OriginalCardRulesFit.Step)step + "): " + ids.Count + " cards" + (step >= 2 ? " — " + string.Join(", ", ids) : ""));
+// Face details (JS 1815 .card): rank gem, cost-shift sign, damage underline and changed-number colours.
+Check(OriginalCardRulesFit.Rank("Strike", false) == 0 && OriginalCardRulesFit.Rank("Strike+", false) == 2 && OriginalCardRulesFit.Rank("Strike++", true) == 3 && OriginalCardRulesFit.Rank("Strike", true) == 2, "face: an upgraded card shows Rank 1 + its upgrades");
+Check(OriginalCardRulesFit.CostShift(0, 1, false) == -1 && OriginalCardRulesFit.CostShift(3, 2, false) == 1 && OriginalCardRulesFit.CostShift(2, 2, false) == 0 && OriginalCardRulesFit.CostShift(0, 1, true) == 0, "face: the SP cost shift is the sign of shown minus printed, never for X");
+Check(OriginalCardRulesFit.Markup("9 damage\nGain 5 Block", "6 damage\nGain 5 Block", true) == "<color=#205e2b><b><u>9</u></b></color> damage\nGain 5 Block", "face: a risen damage figure is green, bold and underlined in a hand");
+Check(OriginalCardRulesFit.Markup("9 damage", "9 damage", false) == null && OriginalCardRulesFit.Markup("Gain 5 Block", null, true) == null, "face: unchanged rules away from a hand stay plain");
+Check(OriginalCardRulesFit.Markup("Gain 4 Block. 7 damage.", "Gain 5 Block. 7 damage.", true) == "Gain <color=#8d2424><b>4</b></color> Block. <u>7</u> damage.", "face: running prose marks only the damage clause and the fallen number");
 var result = new JObject { ["checks"]=checks,["authoredDefinitions"]=364,["fixtures"]=oracle["fixtures"].Count(),["realCombatCommands"]=commands,["bonusReceipts"]=bonusChecks,["weaponReceipts"]=weaponReceipts,["sourceCommit"]=oracle["sourceCommit"],["fixtureSha256"]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(fixtures,"card-text-reference.json")))).ToLowerInvariant(),["status"]="PASS" };
 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
 File.WriteAllText(output,result.ToString(Formatting.Indented)+Environment.NewLine);

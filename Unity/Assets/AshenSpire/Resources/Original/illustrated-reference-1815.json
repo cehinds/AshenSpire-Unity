@@ -982,6 +982,31 @@
    "w": 340,
    "h": 303.31
   },
+  "rank": {
+   "x": 110.98887724025559,
+   "y": 322.8620148642254,
+   "w": 137.98968943537986,
+   "h": 26.27597027154916,
+   "text": {
+    "x": 27.438070697739892,
+    "y": 12.549528525698284,
+    "w": 45.12378764869031,
+    "h": 74.8445456392788
+   },
+   "fontScale": 0.8695652173913044,
+   "color": "#f3f6ff",
+   "resource": "Art/js1815/cards/rank-38f76bfb3ff18dc0"
+  },
+  "costShift": {
+   "down": {
+    "color": "#7fd97f",
+    "resource": "Art/js1815/cards/shift-c8bdd6e030f1227c"
+   },
+   "up": {
+    "color": "#d4622e",
+    "resource": "Art/js1815/cards/shift-e93220373460ad26"
+   }
+  },
   "tagsBand": {
    "x": 36,
    "y": 463.32,
@@ -12407,6 +12432,42 @@
    "provenance": "svg",
    "htmlSha256": "9b266446f1eae93d893c697dc971dce5163945526f72ecd0c00c405902662d8f",
    "resource": "Art/js1815/cards/mark-ba53e14a30f2abfd"
+  },
+  "rank-38f76bfb3ff18dc0": {
+   "rendered": "rendered/rank-38f76bfb3ff18dc0.png",
+   "kind": "rank",
+   "size": [
+    137.98968943537986,
+    26.27597027154916
+   ],
+   "scale": 4,
+   "provenance": "styles/illustrated-cards.css .card-rank-bar",
+   "htmlSha256": "3b6563706b9a65b4fa5d5548ca1e9a751a221aa21dae941b7f29c871f2d5b765",
+   "resource": "Art/js1815/cards/rank-38f76bfb3ff18dc0"
+  },
+  "shift-c8bdd6e030f1227c": {
+   "rendered": "rendered/shift-c8bdd6e030f1227c.png",
+   "kind": "shift",
+   "size": [
+    16,
+    16
+   ],
+   "scale": 4,
+   "provenance": "styles/illustrated-cards.css .cost-shift::after",
+   "htmlSha256": "bc5cac5d85b7b4527a8325b1d44f705c851d5250a7d3e5532953eca4e9715e96",
+   "resource": "Art/js1815/cards/shift-c8bdd6e030f1227c"
+  },
+  "shift-e93220373460ad26": {
+   "rendered": "rendered/shift-e93220373460ad26.png",
+   "kind": "shift",
+   "size": [
+    16,
+    16
+   ],
+   "scale": 4,
+   "provenance": "styles/illustrated-cards.css .cost-shift[data-shift='up']::after",
+   "htmlSha256": "f803dd77c1dc51c55214557bc44e3c55f9cfb8e31d83b0df484336138f5f0cd6",
+   "resource": "Art/js1815/cards/shift-e93220373460ad26"
   },
   "fade-15968f08bc5f4624": {
    "rendered": "rendered/fade-15968f08bc5f4624.png",

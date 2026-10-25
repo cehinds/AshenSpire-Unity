@@ -190,3 +190,11 @@
 .published-card-face .published-card-inspect-cue { display: none; margin: 0; padding: 0; color: #654923; -unity-font-style: bold; -unity-text-align: lower-center; text-shadow: 0 1px 0 #f0dfba; }
 .published-card-face .published-card-inspect-cue--shown { display: flex; }
 .inspection-card .published-card-face .published-card-inspect-cue--shown { display: none; }
+/* Rank gem (JS .card-rank): an upgraded card's "Rank N" on the blue faceted bar at the parchment's top. */
+.published-card-face .published-card-rank-text {
+    margin: 0; padding: 0; white-space: nowrap; -unity-text-align: middle-center; letter-spacing: 0.3px;
+    -unity-font: resource("Fonts/LiberationSerif-Bold"); -unity-font-style: normal; text-shadow: 0 1px 2px #000000;
+}
+/* Cost shift (JS .cost-shift): the moved SP price takes its colour in code; its mark is an image child
+   inside the value's own box, at the right of the centred digits. */
+.published-card-face .published-card-cost-shift { -unity-text-outline-color: #0b0805; }

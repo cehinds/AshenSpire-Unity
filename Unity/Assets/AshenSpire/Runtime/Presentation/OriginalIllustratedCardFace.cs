@@ -6,15 +6,14 @@
 // Resources/Original/illustrated-reference-1815.json with art in Art/js1815/cards:
 // its "face" block adds the combat face of src/ui/components/illustratedCard.js —
 // the raised parchment, the title fade, the footer sigil band and its brass braces,
-// the right-edge tag rail and the hand's slot badge. Build 898 is the published
+// the right-edge tag rail and the hand's slot badge, plus the rank gem of an upgraded card, the
+// cost-shift mark beside a moved SP price and, in a hand, underlined damage figures. Build 898 is the published
 // test reference (Original/illustrated-reference, Art/html898) and is drawn as before.
 // Regenerate with tools/unity-illustrated-reference.mjs + tools/import-published-ui-art.py.
 // FONT: every text layer takes a USS class (OriginalCards.uss owns the typefaces).
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using AshenSpire.Domain.Original;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -35,8 +34,10 @@ namespace AshenSpire.Presentation
         private readonly List<(VisualElement Element, float Size, float Pad)> _marks = new List<(VisualElement, float, float)>();
         private readonly List<Label> _counts = new List<Label>();
         private VisualElement _band, _rail;
-        private Label _bandLabel, _slot, _rules, _inspectCue;
+        private Label _bandLabel, _slot, _rules, _inspectCue, _stamina, _rankText;
+        private VisualElement _shift, _rank;
         private string _rulesSource, _baseRules;
+        private OriginalCardRulesFit.Plan? _rulesPlan;
         /// <summary>The escalation step the rules needed at the current size (OriginalCardRulesFit).</summary>
         public OriginalCardRulesFit.Step RulesStep { get; private set; } = OriginalCardRulesFit.Step.FaceLines;
         private float _lastWidth = -1;
@@ -63,7 +64,7 @@ namespace AshenSpire.Presentation
         /// shows its quick-play key 1–9. Null (the default, e.g. rewards, decks) shows no badge.
         /// Never derived from sibling order: the hand brings the selected card to the front.
         /// </summary>
-        public int? SlotIndex { get => _slotIndex; set { _slotIndex = value; Slot(); } }
+        public int? SlotIndex { get => _slotIndex; set { var marked = _slotIndex != null; _slotIndex = value; Slot(); if (marked != (value != null)) RulesMarkup(); } }
         private int? _slotIndex;
 
         private static JObject Load(string resource)
@@ -139,6 +140,7 @@ namespace AshenSpire.Presentation
                     var label = new Label(copy) { tooltip = binding == "rules" ? rules : copy, enableRichText = false };
                     label.AddToClassList("published-card-text"); label.AddToClassList("published-card-text-" + (binding ?? layerId));
                     if (binding == "rules" && _face != null) { _rules = label; _rulesSource = rules; _baseRules = baseRules; }
+                    if (binding == "stamina" && _face != null) CostShift(label, card, cost);
                     label.style.whiteSpace = (int?)layer["maxLines"] == 1 ? WhiteSpace.NoWrap : WhiteSpace.Normal;
                     label.style.overflow = Overflow.Hidden;
                     label.style.marginLeft = label.style.marginRight = label.style.marginTop = label.style.marginBottom = 0;
@@ -161,6 +163,8 @@ namespace AshenSpire.Presentation
                 views.Add((7, Band(card, typeName, tint)));
                 var rail = Rail(card, tint);
                 if (rail != null) views.Add((7, rail));
+                var rank = OriginalCardRulesFit.Rank(title, (bool?)card["upgraded"] == true);
+                if (rank > 0 && _face["rank"] is JObject gem) views.Add((9, Rank(gem, rank, tint)));
                 _slot = new Label { pickingMode = PickingMode.Ignore, name = "published-card-slot" };
                 _slot.AddToClassList("published-card-slot"); _slot.style.display = DisplayStyle.None;
                 views.Add((9, _slot));
@@ -234,6 +238,47 @@ namespace AshenSpire.Presentation
             return Place(_band, rect, "tags");
         }
 
+        // The rank gem (JS .card-rank): a blue faceted bar on the parchment's top edge reading "Rank N".
+        private VisualElement Rank(JObject rect, int rank, Color tint)
+        {
+            _rank = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = "Rank " + rank + " · upgraded" };
+            _rank.AddToClassList("published-card-rank");
+            var bar = new Image { image = LoadTexture((string)rect["resource"]), tintColor = tint, scaleMode = ScaleMode.StretchToFill, pickingMode = PickingMode.Ignore };
+            bar.AddToClassList("published-card-rank-bar"); bar.style.position = Position.Absolute;
+            bar.style.left = bar.style.top = 0; bar.style.right = bar.style.bottom = 0; _rank.Add(bar);
+            var text = (JObject)rect["text"];
+            _rankText = new Label("Rank " + rank) { pickingMode = PickingMode.Ignore, name = "published-card-rank-text" };
+            _rankText.AddToClassList("published-card-text"); _rankText.AddToClassList("published-card-rank-text");
+            _rankText.style.position = Position.Absolute;
+            // The text box is centred on the gem; Rank N may be wider than its authored box.
+            _rankText.style.left = 0; _rankText.style.right = 0;
+            _rankText.style.top = Length.Percent((float)text["y"]); _rankText.style.height = Length.Percent((float)text["h"]);
+            if (ColorUtility.TryParseHtmlString((string)rect["color"], out var color)) _rankText.style.color = color;
+            _rank.Add(_rankText);
+            return Place(_rank, rect, "rank");
+        }
+
+        // A rule moved the printed SP price (JS .cost-shift): cheaper reads green with a down mark,
+        // dearer reads --danger with an up mark. The printed price is the definition's own profile
+        // in the same payment model the shown cost uses; nothing here charges or validates.
+        private void CostShift(Label label, JObject card, JObject cost)
+        {
+            int printed;
+            try
+            {
+                var aliased = (int?)cost["action"] == (int?)cost["stamina"];
+                printed = (int?)(aliased ? OriginalCardPayment.Profile(card) : CardMechanics.CostProfile(card))["stamina"] ?? 0;
+            }
+            catch (ArgumentException) { return; }
+            var shift = OriginalCardRulesFit.CostShift((int?)cost["stamina"] ?? 0, printed, (bool?)cost["variable"] == true);
+            if (shift == 0 || !(_face["costShift"]?[shift < 0 ? "down" : "up"] is JObject mark)) return;
+            if (ColorUtility.TryParseHtmlString((string)mark["color"], out var color)) label.style.color = color;
+            label.AddToClassList("published-card-cost-shift"); label.AddToClassList(shift < 0 ? "published-card-cost-shift--down" : "published-card-cost-shift--up");
+            label.tooltip = (shift < 0 ? "Cheaper" : "Dearer") + " than printed (" + printed + " SP)";
+            _shift = new Image { image = LoadTexture((string)mark["resource"]), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore, name = "published-card-cost-shift-mark" };
+            _shift.style.position = Position.Absolute; _stamina = label; label.Add(_shift);
+        }
+
         // Right-edge rail: up to five engraved marks, each with an optional count chip.
         private VisualElement Rail(JObject card, Color tint)
         {
@@ -290,21 +335,7 @@ namespace AshenSpire.Presentation
 
         // Numbers that rose read green and bold, numbers that fell red (.ic-text .val.up/.down).
         internal static string Highlight(string text, string baseText, string up = "#205e2b", string down = "#8d2424")
-        {
-            if (string.IsNullOrEmpty(text) || text.IndexOf('<') >= 0 || baseText == null) return null;
-            var now = Regex.Matches(text, @"\d+"); var was = Regex.Matches(baseText, @"\d+");
-            if (now.Count == 0 || now.Count != was.Count) return null;
-            var output = new StringBuilder(); var at = 0; var changed = false;
-            for (var i = 0; i < now.Count; i++)
-            {
-                output.Append(text, at, now[i].Index - at); at = now[i].Index + now[i].Length;
-                if (!long.TryParse(now[i].Value, out var a) || !long.TryParse(was[i].Value, out var b) || a == b) { output.Append(now[i].Value); continue; }
-                output.Append("<color=").Append(a > b ? up : down).Append("><b>").Append(now[i].Value).Append("</b></color>"); changed = true;
-            }
-            output.Append(text, at, text.Length - at);
-            return changed ? output.ToString() : null;
-        }
-
+            => baseText == null ? null : OriginalCardRulesFit.Markup(text, baseText, false, up, down);
         private void Fit()
         {
             var width = contentRect.width;
@@ -361,7 +392,39 @@ namespace AshenSpire.Presentation
                         size = Mathf.Max(minimum, size - (maximum - minimum) / 7); text.Label.style.fontSize = size;
                     }
                 }
+                if (text.Label == _stamina && _shift != null)
+                {
+                    // ::after { font-size:.5em; vertical-align:top; margin-left:.1em } beside the centred digits.
+                    var box = new Vector2((float)text.Layer["w"] * scale, (float)text.Layer["h"] * scale);
+                    var digits = text.Label.MeasureTextSize(text.Label.text, box.x, MeasureMode.AtMost, 0, MeasureMode.Undefined);
+                    var mark = size * .5f;
+                    _shift.style.width = _shift.style.height = mark;
+                    _shift.style.left = (box.x + digits.x) / 2 + size * .1f;
+                    _shift.style.top = Mathf.Max(0, (box.y - digits.y) / 2 + size * .08f);
+                }
             }
+            if (_rankText != null && _face["rank"] is JObject gem)
+            {
+                // clamp(8px, h·text.h/1.15 card units, 20px): JS .card-rank-text.
+                var rankSize = (float)gem["h"] * (float)gem["text"]["h"] / 100 * ((float?)gem["fontScale"] ?? 1) * scale;
+                _rankText.style.fontSize = Mathf.Clamp(rankSize, 8, 20);
+            }
+        }
+        // The fitted rules as plain or rich text: changed numbers coloured (all views) and, in a hand
+        // (SlotIndex set), the damage figures underlined. Markup never changes the measured copy.
+        private void RulesMarkup()
+        {
+            if (_rules == null || !(_rulesPlan is OriginalCardRulesFit.Plan plan)) return;
+            _rules.enableRichText = false; _rules.text = plan.Text;
+            string baseText = null;
+            if (_baseRules != null)
+            {
+                var baseLines = OriginalCardRulesFit.FaceLines(_baseRules);
+                baseText = plan.Step == OriginalCardRulesFit.Step.FaceLines ? baseLines : OriginalCardRulesFit.Joined(baseLines);
+            }
+            var rules = (JObject)_face?["rules"];
+            var marked = OriginalCardRulesFit.Markup(plan.Text, baseText, _slotIndex != null, (string)rules?["up"] ?? "#205e2b", (string)rules?["down"] ?? "#8d2424");
+            if (marked != null) { _rules.enableRichText = true; _rules.text = marked; }
         }
         // Rules are never silently clipped: face lines, then running prose, then below the
         // document minimum to a readable floor; past that the face shows an "Inspect card" cue
@@ -379,13 +442,7 @@ namespace AshenSpire.Presentation
                     return label.MeasureTextSize(copy, width, MeasureMode.AtMost, 0, MeasureMode.Undefined).y;
                 });
             RulesStep = plan.Step;
-            label.style.fontSize = plan.Size; label.text = plan.Text;
-            if (_baseRules != null)
-            {
-                var baseLines = OriginalCardRulesFit.FaceLines(_baseRules);
-                var marked = Highlight(plan.Text, plan.Step == OriginalCardRulesFit.Step.FaceLines ? baseLines : OriginalCardRulesFit.Joined(baseLines));
-                if (marked != null) { label.enableRichText = true; label.text = marked; }
-            }
+            label.style.fontSize = plan.Size; _rulesPlan = plan; RulesMarkup();
             label.EnableInClassList("published-card-rules-overflow", plan.Clipped);
             if (plan.Clipped && _inspectCue == null)
             {

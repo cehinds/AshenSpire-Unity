@@ -2392,6 +2392,54 @@
    "bytes": 8571,
    "outputSha256": "d5e2782d329998a44a335a6e0d65bc11a99c770a9a30e9bc807dfa2905b764af",
    "conversion": "chromium-rendered"
+  },
+  {
+   "key": "rank-38f76bfb3ff18dc0",
+   "source": "styles/illustrated-cards.css .card-rank-bar",
+   "sourcePath": "rendered/rank-38f76bfb3ff18dc0.png",
+   "sourceSha256": "228f404ae7666359413d620aa37dd865a4e180289f724f72fda8cb380f98e588",
+   "renderedHtmlSha256": "3b6563706b9a65b4fa5d5548ca1e9a751a221aa21dae941b7f29c871f2d5b765",
+   "resource": "Art/js1815/cards/rank-38f76bfb3ff18dc0",
+   "trim": null,
+   "size": [
+    552,
+    108
+   ],
+   "bytes": 28123,
+   "outputSha256": "326596a5517b7cb22f921c66ae7e7d968dc091347df3a7201dbb4563eea599e4",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "shift-c8bdd6e030f1227c",
+   "source": "styles/illustrated-cards.css .cost-shift::after",
+   "sourcePath": "rendered/shift-c8bdd6e030f1227c.png",
+   "sourceSha256": "34340e122c31ff5ada0708410340f0dbf1ea6cda9c988c7dbc4436709779e6d0",
+   "renderedHtmlSha256": "bc5cac5d85b7b4527a8325b1d44f705c851d5250a7d3e5532953eca4e9715e96",
+   "resource": "Art/js1815/cards/shift-c8bdd6e030f1227c",
+   "trim": null,
+   "size": [
+    64,
+    64
+   ],
+   "bytes": 580,
+   "outputSha256": "379f30761fb8d35eea28bee348a97a68789359620207b7ee5d56afff74842498",
+   "conversion": "chromium-rendered"
+  },
+  {
+   "key": "shift-e93220373460ad26",
+   "source": "styles/illustrated-cards.css .cost-shift[data-shift='up']::after",
+   "sourcePath": "rendered/shift-e93220373460ad26.png",
+   "sourceSha256": "929044705e33b8a27d10e112903d853accbe8029a378fed2d14db580e2351f6d",
+   "renderedHtmlSha256": "f803dd77c1dc51c55214557bc44e3c55f9cfb8e31d83b0df484336138f5f0cd6",
+   "resource": "Art/js1815/cards/shift-e93220373460ad26",
+   "trim": null,
+   "size": [
+    64,
+    64
+   ],
+   "bytes": 422,
+   "outputSha256": "497df3bb309db9f690b70addb48e54a14cc754409f7302e993f11e2b9faf38d3",
+   "conversion": "chromium-rendered"
   }
  ]
 }

@@ -72,6 +72,7 @@ async function build1815(){
  const {combatProfileFor,combatProfileTags}=await load('src/model/combatCardProfile.js');
  const {cardSideTags,cardTagRailHtml}=await load('src/ui/components/cardTagSymbols.js');
  const {ACTION_SIGILS,mirrorSigil}=await load('src/content/combatSigils.js');
+ const {rankAnchor}=await load('src/ui/components/cardLayout.js');
  const registries=createRegistries(contentBundle);
  const unityContent=JSON.parse(fs.readFileSync(path.resolve('Unity/Assets/AshenSpire/Resources/Original/content.json'),'utf8'));
  const prefix='Art/js1815/cards/';
@@ -165,8 +166,18 @@ async function build1815(){
  const tagSymbols={};
  for(const id of [...tagIds].sort())tagSymbols[id]=markAsset(tagSvg(id),tagStyle);
  // CSS-drawn backdrops and the footer's SVG braces, rendered from their own rules.
+ // The rank gem (illustratedCard.js rankAnchor + .card-rank-bar) on the raised parchment, and the
+ // cost-shift marks (.cost-shift::after, \25BE green / \25B4 --danger) beside a moved SP price.
+ const panel=template.layers.find(l=>l.id==='panel');
+ const anchor=rankAnchor(CARD_COMPONENTS.template,{...panel,y:panel.y-lift});
+ const rb=anchor.box,cq=W/100;
+ const rankBar=`<div id="shot" style="position:relative;width:${rb.w}px;height:${rb.h}px"><div style="position:absolute;inset:0;background:linear-gradient(160deg,#c0dcee,#6e94bf 40%,#244968 60%,#88b6d1);clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)"><div style="position:absolute;inset:${.65*cq}px;clip-path:polygon(6% 0,94% 0,100% 50%,94% 100%,6% 100%,0 50%);background:linear-gradient(160deg,#6597c1 0%,#2c5d91 24%,#123a6a 48%,#092448 52%,#1b4d7b 83%,#407fa9 100%);box-shadow:inset 0 ${.8*cq}px ${1*cq}px #89bdde50,inset 0 -${.6*cq}px ${.8*cq}px #020e25"></div></div></div>`;
+ const shiftMark=(points,color)=>`<div id="shot" style="width:16px;height:16px"><svg viewBox="0 0 16 16" style="display:block;width:16px;height:16px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6))"><polygon points="${points}" fill="${color}"/></svg></div>`;
  const face={
   lift,artWindow,
+  rank:{...rb,text:anchor.text,fontScale:1/1.15,color:'#f3f6ff',resource:renderAsset('rank',rankBar,rb.w,rb.h,4,'styles/illustrated-cards.css .card-rank-bar')},
+  costShift:{down:{color:'#7fd97f',resource:renderAsset('shift',shiftMark('2,4 14,4 8,13','#7fd97f'),16,16,4,'styles/illustrated-cards.css .cost-shift::after')},
+   up:{color:'#d4622e',resource:renderAsset('shift',shiftMark('2,12 14,12 8,3','#d4622e'),16,16,4,"styles/illustrated-cards.css .cost-shift[data-shift='up']::after")}},
   tagsBand:{x:W*.1,y:H*.858,w:W*.8,h:H*.116,paddingX:W*.03,paddingBottom:W*.006,fontSize:W*.07,letterSpacing:.085,color:'#efd09a'},
   titleFade:{x:W*.06,y:H*.035,w:W*.88,h:H*.22,resource:renderAsset('fade',`<div id="shot" style="width:${W*.88}px;height:${H*.22}px;border-radius:${W*.03}px ${W*.03}px 0 0;background:linear-gradient(to bottom,#15110ff5 0%,#15110ff5 48%,#15110fb3 66%,#15110f00 100%)"></div>`,W*.88,H*.22,2,'styles/illustrated-cards.css .card-title-fade')},
   footerBackdrop:{x:W*.06,y:H*.853,w:W*.88,h:H*.113,resource:renderAsset('fade',`<div id="shot" style="width:${W*.88}px;height:${H*.113}px;background:linear-gradient(#100d0980,#08070540)"></div>`,W*.88,H*.113,2,'styles/illustrated-cards.css .card-footer-backdrop')},
