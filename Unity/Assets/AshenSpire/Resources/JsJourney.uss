@@ -1,0 +1,110 @@
+/* JsJourney.uss — the HTML/JS build 1815 journey details (OriginalRunPanel.Journey.cs, OriginalMapBoard).
+   Shared run HUD (styles/shared-run-hud.css), Quick menu (03c), map detail band (03b), spoils rows
+   (06, 06b), merchant tabs and thumbnails (08c), rest recovery preview (08a) and the event stage (08e).
+   Attached by the run panel to its body and by the map board to itself; colours come from the theme's
+   --ash-* tokens. Selectors that restyle theme-styled controls carry one class more than the theme. */
+
+/* ---- Shared run HUD: a 100 px #201b15 band ------------------------------------------------------ */
+.js-journey-hud { position: relative; height: 100px; flex-shrink: 0; background-color: var(--ash-hud); border-bottom-width: 1px; border-bottom-color: rgba(42,36,25,0.9); }
+.js-journey-hud.js-hud-bleed { position: absolute; left: 0; top: -108px; width: 100%; }
+/* Row 1: red outline heart, "71/71", then the hairline HP rule whose fill is HP / max HP. */
+.js-journey-hp { position: absolute; left: 16px; right: 120px; top: 30px; height: 20px; flex-direction: row; align-items: center; }
+.js-journey-heart { width: 18px; height: 18px; flex-shrink: 0; --unity-image-tint-color: #d4544a; }
+.app .js-journey-hp-value { margin: 0 10px 0 10px; padding: 0; font-size: 14px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-ink); flex-shrink: 0; }
+.js-journey-hp-rule { flex-grow: 1; height: 3px; min-height: 3px; background-color: #0d0b08; border-width: 0; }
+.js-journey-hp-fill { height: 100%; background-color: #a43c35; }
+/* Row 2: round relic coins (and the seed on the map). */
+.js-journey-hud-extras { position: absolute; left: 16px; right: 170px; top: 55px; height: 26px; flex-direction: row; align-items: center; overflow: hidden; }
+.js-journey-relics { flex-direction: row; align-items: center; flex-shrink: 1; min-width: 0; overflow: hidden; margin: 0 10px 0 0; }
+.js-journey-relic { width: 24px; height: 24px; margin-right: 4px; padding: 2px; border-radius: 12px; border-width: 1px; border-color: #85714f; background-color: #171310; flex-shrink: 0; align-items: center; justify-content: center; }
+.js-journey-relic-art { width: 100%; height: 100%; }
+.app .js-journey-relic-initial { margin: 0; padding: 0; font-size: 11px; color: var(--ash-gold); }
+.app .js-journey-hud-extras > .map-header-seed { margin: 0; padding: 0; font-size: 11px; color: var(--ash-muted); background-color: rgba(0,0,0,0); }
+/* Top right: two 44 px square icon buttons (Armoury shield, Quick-menu bars), CINDERS under them. */
+.js-journey-hud-tools { position: absolute; right: 12px; top: 28px; flex-direction: row; }
+.app .js-journey-hud .js-journey-icon-button { width: 44px; height: 44px; min-width: 0; min-height: 0; margin: 0 0 0 6px; padding: 0; border-width: 1px; border-color: #000000; border-radius: 3px; background-image: none; background-color: #171310; font-size: 1px; color: rgba(0,0,0,0); }
+.app .js-journey-hud .js-journey-icon-button:hover, .app .js-journey-hud .js-journey-icon-button:focus { border-color: #ffe3a3; background-color: #241d15; }
+.js-journey-icon-art { position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; }
+.js-journey-cinders { position: absolute; right: 12px; top: 76px; flex-direction: row; align-items: center; }
+.app .js-journey-cinders-label { margin: 0 5px 0 8px; padding: 0; font-size: 12px; letter-spacing: 0.5px; color: var(--ash-ink); }
+.app .js-journey-cinders-value { margin: 0; padding: 0; font-size: 13px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-ink); }
+
+/* ---- Quick menu (03c): a ~310 px dropdown under the icon ---------------------------------------- */
+.js-quick-menu { position: absolute; padding: 0 0 6px 0; background-color: #15120e; border-width: 1px; border-color: #85714f; border-radius: 4px; }
+.app .js-quick-eyebrow { margin: 0 0 4px 0; padding: 10px 14px 8px 14px; font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); border-bottom-width: 1px; border-bottom-color: #85714f; }
+.app .js-quick-menu > .js-quick-row { min-height: 44px; height: 44px; margin: 0; padding: 0 14px 0 40px; border-width: 0; border-radius: 0; background-image: none; background-color: rgba(0,0,0,0); -unity-text-align: middle-left; font-size: 14px; -unity-font: resource("Fonts/Inter-Regular"); color: var(--ash-ink); }
+.app .js-quick-menu > .js-quick-row:hover, .app .js-quick-menu > .js-quick-row:focus { background-color: #241d15; color: var(--ash-gold); }
+.app .js-quick-chip { position: absolute; right: 12px; top: 12px; margin: 0; padding: 1px 6px; font-size: 10px; color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 3px; }
+.js-quick-rule { height: 1px; margin: 4px 0; background-color: #6a5b43; }
+
+/* ---- Map detail band (03b) and the selected medallion ------------------------------------------ */
+.app .map-detail-band { flex-shrink: 0; height: 128px; flex-direction: column; padding: 8px 16px; background-color: #211c15; border-top-width: 1px; border-top-color: #2a2419; overflow: hidden; }
+.ui-wide .map-detail-band { height: 96px; flex-direction: row; align-items: center; }
+.map-detail-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.app .map-detail-band .map-detail-floor { margin: 0; padding: 0; font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); }
+.app .map-detail-band .map-detail-title { margin: 2px 0 2px 0; padding: 0; font-size: 16px; -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-ink); letter-spacing: 0.5px; }
+.app .map-detail-band .map-detail { margin: 0; padding: 0; font-size: 13px; color: var(--ash-muted); background-color: rgba(0,0,0,0); white-space: normal; }
+.map-detail-actions { flex-direction: row; flex-shrink: 0; margin: 6px -5px 0 -5px; }
+.ui-wide .map-detail-actions { margin: 0 0 0 10px; }
+.app .map-detail-actions > .button { flex-grow: 1; min-width: 120px; min-height: 44px; height: 44px; margin: 0 5px; padding: 0 16px; font-size: 14px; -unity-text-align: middle-center; }
+.ui-wide .map-detail-actions > .button { flex-grow: 0; min-width: 160px; }
+.app .map-detail-actions > .map-detail-back { background-color: var(--ash-panel); border-color: #a58a52; }
+.app .map-board .map-node.selected { border-width: 5px; border-color: var(--ash-ink); background-color: var(--ash-panel); }
+.app .map-board .map-node.selected > .map-node-halo { border-color: rgba(89,189,117,0.8); border-width: 4px; }
+
+/* ---- Spoils (06, 06b) ---------------------------------------------------------------------------- */
+.js-spoils-head { margin: 0 0 10px 0; padding: 0 0 10px 0; border-bottom-width: 1px; border-bottom-color: var(--ash-edge-soft); }
+.app .js-spoils-eyebrow { margin: 0; padding: 0; font-size: 10px; letter-spacing: 1.8px; color: var(--ash-muted); }
+.app .js-spoils-title { margin: 2px 0 0 0; padding: 0; font-size: 22px; letter-spacing: 1.5px; -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-gold); }
+.app .js-spoils-count { position: absolute; right: 0; top: 0; margin: 0; padding: 0; font-size: 13px; color: var(--ash-ink-dim); }
+.js-reward-row { flex-direction: row; align-items: center; min-height: 64px; margin: 4px 0; padding: 10px 14px; background-color: #241d15; border-width: 1px; border-color: #6a5b43; border-radius: 8px; }
+.js-reward-locked { opacity: 0.62; }
+.js-reward-icon { width: 34px; height: 34px; margin-right: 16px; flex-shrink: 0; }
+.js-reward-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; align-items: flex-start; }
+.js-reward-title-line { flex-direction: row; align-items: center; }
+.app .js-reward-title { margin: 0; padding: 0; font-size: 16px; -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-gold); }
+.app .js-reward-body { margin: 4px 0 0 0; padding: 0; font-size: 13px; color: var(--ash-ink-dim); white-space: normal; }
+.app .js-chip { margin: 6px 0 0 0; padding: 1px 6px; font-size: 10px; letter-spacing: 1px; color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 3px; background-color: rgba(0,0,0,0); -unity-font: resource("Fonts/Inter-SemiBold"); }
+.app .js-reward-title-line > .js-chip-new { margin: 0 0 0 8px; }
+/* A pending take button reads as the same framed row: icon left, NEW chip right. */
+.app .body.run-phase-rewards > .button.js-reward-row-button { min-height: 64px; padding: 12px 120px 12px 66px; margin: 4px 0; background-image: none; background-color: #241d15; border-width: 1px; border-color: #6a5b43; border-radius: 8px; -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 16px; color: var(--ash-gold); white-space: normal; }
+.app .body.run-phase-rewards > .button.js-reward-row-button:hover, .app .body.run-phase-rewards > .button.js-reward-row-button:focus { border-color: var(--ash-gold); background-color: #2e251b; color: #ffe08a; }
+.app .body.run-phase-rewards > .button.js-reward-row-button:disabled { color: var(--ash-muted); opacity: 0.7; }
+.js-reward-row-icon { position: absolute; left: 16px; top: 14px; width: 34px; height: 34px; }
+.js-reward-row-thumb { position: absolute; right: 66px; top: 14px; width: 34px; height: 34px; }
+.app .js-reward-row-button > .js-chip-new { position: absolute; right: 14px; top: 22px; margin: 0; }
+/* 06b: the gold NEW pill above each offered card. */
+.app .js-new-pill { align-self: center; margin: 0 0 6px 0; padding: 2px 8px; font-size: 9px; letter-spacing: 1px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-gold); border-width: 1px; border-color: var(--ash-gold); border-radius: 9px; background-color: #171310; }
+/* Section eyebrows (PROGRESSION, merchant categories, REST, RECOVERY PREVIEW): gold small caps. */
+.app .js-section-eyebrow { margin: 14px 0 6px 0; padding: 0; font-size: 11px; letter-spacing: 1.8px; -unity-font: resource("Fonts/LiberationSerif-Bold"); color: var(--ash-gold); }
+
+/* ---- Merchant (08c): category tabs and framed thumbnails --------------------------------------- */
+.js-shop-tabs { flex-direction: row; flex-wrap: wrap; margin: 4px -3px 6px -3px; }
+.app .js-shop-tabs > .js-shop-tab { flex-basis: 30%; flex-grow: 1; min-height: 40px; height: 42px; margin: 3px; padding: 0 8px; background-image: none; background-color: #241d15; border-width: 1px; border-color: #85714f; border-radius: 3px; font-size: 12px; letter-spacing: 0.5px; color: var(--ash-ink-dim); -unity-text-align: middle-center; }
+.app .js-shop-tabs > .js-shop-tab.js-active { border-color: var(--ash-gold); border-bottom-width: 2px; color: var(--ash-gold); background-color: rgba(201,162,39,0.08); }
+.app .body.run-phase-shop > .button.js-shop-offer { min-height: 78px; padding: 10px 100px 10px 84px; margin: 4px 0; background-image: none; background-color: #1a1611; border-width: 1px; border-color: #6a5b43; border-radius: 3px; -unity-font: resource("Fonts/LiberationSerif-Bold"); font-size: 16px; color: var(--ash-gold); -unity-text-align: middle-left; white-space: normal; }
+.app .body.run-phase-shop > .button.js-shop-offer:hover, .app .body.run-phase-shop > .button.js-shop-offer:focus { border-color: var(--ash-gold); background-color: #241d15; }
+.app .body.run-phase-shop > .button.js-shop-offer:disabled { color: var(--ash-muted); }
+.js-shop-thumb { position: absolute; left: 7px; top: 8px; width: 60px; height: 60px; padding: 5px; background-color: #0d0b08; border-width: 1px; border-color: #85714f; border-radius: 2px; }
+.js-shop-thumb-art { flex-grow: 1; }
+.app .js-shop-buy { position: absolute; right: 8px; top: 17px; width: 76px; height: 42px; margin: 0; padding: 0; -unity-text-align: middle-center; -unity-font: resource("Fonts/Inter-SemiBold"); font-size: 14px; color: var(--ash-go-ink); background-color: var(--ash-go-fill); border-width: 1px; border-color: var(--ash-go-edge); border-radius: 3px; }
+.app .js-shop-buy.js-shop-buy-off { color: var(--ash-muted); background-color: var(--ash-panel); border-color: var(--ash-edge); }
+
+/* ---- Rest (08a): RECOVERY PREVIEW, a hairline table ------------------------------------------- */
+.js-recovery { margin: 0 0 14px 0; }
+.js-recovery-row { flex-direction: row; align-items: center; height: 36px; border-bottom-width: 1px; border-bottom-color: #6a5b43; }
+.js-recovery-icon { width: 18px; height: 18px; margin: 0 10px 0 2px; flex-shrink: 0; }
+.app .js-recovery-label { flex-grow: 1; margin: 0; padding: 0; font-size: 15px; color: var(--ash-ink); }
+.app .js-recovery-before { margin: 0 4px 0 0; padding: 0; font-size: 15px; color: var(--ash-ink); }
+.app .js-recovery-after { min-width: 24px; margin: 0; padding: 0; font-size: 15px; -unity-font: resource("Fonts/Inter-SemiBold"); color: var(--ash-ink); }
+.app .js-recovery-gain { width: 46px; margin: 0; padding: 0 6px 0 0; font-size: 15px; -unity-text-align: middle-right; color: #7fd97f; }
+
+/* ---- Event stage (08e): the player left, the speaker right, above the dialogue box ------------- */
+.js-event-stage { position: absolute; left: 0; right: 0; top: -240px; height: 240px; overflow: hidden; }
+.ui-wide .js-event-stage { top: -330px; height: 330px; }
+.js-event-figure { position: absolute; bottom: 4px; width: 36%; height: 64%; justify-content: flex-end; }
+.js-event-player { left: 4%; opacity: 0.55; }
+.js-event-speaker { right: 3%; }
+.js-event-figure-art { flex-grow: 1; }
+.app .js-event-name { margin: 2px 0 0 0; padding: 0; font-size: 13px; color: var(--ash-ink); -unity-text-align: middle-center; text-shadow: 0 1px 3px #000000; }
+.app .js-event-player .js-event-name { color: var(--ash-muted); }

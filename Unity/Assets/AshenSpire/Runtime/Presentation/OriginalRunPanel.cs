@@ -48,13 +48,9 @@ namespace AshenSpire.Presentation
             if (combatSurface) _root.Add(OriginalCombatLayout.Hud(p, run, _game.ActNumber, _game.Turn, (string)_game.Catalog.Record("classes", (string)run["classId"])["name"]));
             else if (!RunSummary.IsTerminal(_game.Phase))
             {
-            // The run header. map-header-* classes let the display settings (root classes from
-            // OriginalDisplayOptions, styled in OriginalTheme.uss) tighten it and hide relics/seed.
-            Text("ACT " + _game.ActNumber + " · " + _game.Phase.ToString().ToUpperInvariant(), "heading").AddToClassList("map-header-title");
-            var badge = OriginalAppearance.Badge("native-run-appearance", run["customization"] as JObject); badge.AddToClassList("map-header-identity"); _root.Add(badge);
-            Text("HP " + p["hp"] + "/" + p["maxHp"] + " · MP " + p["mana"] + "/" + p["maxMana"] + " · Stamina " + p["stamina"] + "/" + p["maxStamina"], "stat").AddToClassList("map-header-stats");
-            Text(run["cinders"] + " cinders · " + ((int?)run["smithingStones"] ?? 0) + " Smithing Stones", "caption").AddToClassList("map-header-purse");
-            if (_game.Phase == OriginalRunPhase.Map) MapHeaderExtras(run);
+            // The JS shared run HUD (OriginalRunPanel.Journey.cs). Its relic row and seed keep the
+            // map-header-relics / map-header-seed classes the display settings hide.
+            JourneyHud(p, run);
             }
             _notice = Text("", "notice"); _notice.style.display = DisplayStyle.None;
             switch (_game.Phase)
@@ -104,7 +100,6 @@ namespace AshenSpire.Presentation
         }
         private void Routes()
         {
-            Text("Choose a connected route", "node-title");
             var run = _game.RunPlayer;
             var relicIds = (run["relics"] as JArray ?? new JArray()).Values<string>();
             var revealUnknown = relicIds.Any(id => (bool?)_game.Catalog.Record("relics", id)["passives"]?["revealUnknown"] == true);
@@ -115,17 +110,6 @@ namespace AshenSpire.Presentation
             board.style.flexGrow = 1; board.style.flexShrink = 1; board.style.minHeight = 0;
             _root.Add(board);
             ControlHints(OriginalKeyBindings.MapActions);
-        }
-        // HTML map header: relic icons and the run seed (Settings → Relics / Seed in map header).
-        // One line; the relic list ellipsizes rather than pushing the map down.
-        private void MapHeaderExtras(JObject run)
-        {
-            var row = new VisualElement { name = "native-map-header-extras", pickingMode = PickingMode.Ignore }; row.AddToClassList("map-header-extras");
-            var seed = (string)run["seedString"] ?? run["seed"]?.ToString();
-            if (!string.IsNullOrEmpty(seed)) row.Add(OriginalCombatLayout.Label("Seed " + seed, "map-header-seed"));
-            var relics = (run["relics"] as JArray ?? new JArray()).Values<string>().Select(id => (string)_game.Catalog.Record("relics", id)?["name"] ?? id).ToArray();
-            if (relics.Length > 0) row.Add(OriginalCombatLayout.Label("Relics · " + string.Join(", ", relics), "map-header-relics"));
-            if (row.childCount > 0) _root.Add(row);
         }
         // HTML hint bar (Settings → Control hints): the current keyboard shortcuts along the bottom of map
         // and combat. OriginalTheme.uss shows it only in wide windows (.ui-wide, like the HTML game hiding
@@ -235,10 +219,31 @@ namespace AshenSpire.Presentation
         private static string CostText(JObject cost) => OriginalCardCostText.Describe(cost);
         private void Rewards()
         {
-            Text("Spoils of the climb", "node-title"); var room = _game.Room; var offers = room["rewards"];
+            var room = _game.Room; var offers = room["rewards"];
+            SpoilsHead();
+            foreach (var kind in new[] { "cinders", "relic", "flask", "armament" })
+            {
+                if (room["states"][kind] != null) continue;
+                if (kind == "cinders") { if ((int?)offers[kind] > 0) RewardRow(Button("native-reward-cinders", "Collect " + offers[kind] + " cinders", () => _game.Reward("cinders")), kind); }
+                else if (!string.IsNullOrEmpty((string)offers[kind + "Id"]))
+                {
+                    var table = kind == "armament" ? "equipment.armaments" : kind + "s"; var row = _game.Catalog.Record(table, (string)offers[kind + "Id"]);
+                    var refusal = OriginalRewardAvailability.Refusal(_game.Catalog.Data(), _game.RunPlayer, kind, (string)row["id"]);
+                    var take = Button("native-reward-" + kind, "Take " + (string)row["name"], () => _game.Reward(kind)); take.SetEnabled(refusal == null); RewardRow(take, kind);
+                    if (refusal != null) Text(refusal + " You can leave this reward behind.", "caption");
+                }
+            }
+            if (room["states"]["card"] == null)
+            {
+                if (RewardOffered("card")) CardChoiceHead();
+                var grid = OriginalCardInspection.Grid(); _root.Add(grid);
+                foreach (var token in offers["cardIds"] ?? new JArray())
+                { var id = (string)token; var card = _game.Catalog.Record("cards", id); CardOffer(grid, card, "native-reward-card-" + id, "Take " + card["name"], () => _game.Reward("card", id)); NewPill(grid); }
+            }
             var earned = _game.EarnedProgressionView();
             if (earned != null)
             {
+                SectionLabel("PROGRESSION");
                 Text("Character level " + earned["level"]["level"] + " · " + earned["level"]["xp"] + " / " + earned["xpToNext"] + " XP", "stat");
                 Button("native-claim-level", "Level up! · " + earned["pendingLevels"] + " waiting", _game.ClaimLevel).SetEnabled((int)earned["pendingLevels"] > 0);
                 foreach (var skill in earned["skills"])
@@ -248,25 +253,6 @@ namespace AshenSpire.Presentation
                     Text(skill["label"] + " · level " + skill["level"] + " · " + skill["xp"] + " / " + skill["xpToNext"] + " XP", "caption");
                     if ((int)skill["pendingLevels"] > 0) Button("native-claim-skill-" + id, "Level up " + skill["label"], () => _game.ClaimSkill(id));
                 }
-            }
-            foreach (var kind in new[] { "cinders", "relic", "flask", "armament" })
-            {
-                if (room["states"][kind] != null) continue;
-                if (kind == "cinders") { if ((int?)offers[kind] > 0) Button("native-reward-cinders", "Collect " + offers[kind] + " cinders", () => _game.Reward("cinders")); }
-                else if (!string.IsNullOrEmpty((string)offers[kind + "Id"]))
-                {
-                    var table = kind == "armament" ? "equipment.armaments" : kind + "s"; var row = _game.Catalog.Record(table, (string)offers[kind + "Id"]);
-                    var refusal = OriginalRewardAvailability.Refusal(_game.Catalog.Data(), _game.RunPlayer, kind, (string)row["id"]);
-                    Button("native-reward-" + kind, "Take " + (string)row["name"], () => _game.Reward(kind)).SetEnabled(refusal == null);
-                    if (refusal != null) Text(refusal + " You can leave this reward behind.", "caption");
-                }
-            }
-            if (room["states"]["card"] == null)
-            {
-                Text("Choose a card · tap its face to inspect", "caption");
-                var grid = OriginalCardInspection.Grid(); _root.Add(grid);
-                foreach (var token in offers["cardIds"] ?? new JArray())
-                { var id = (string)token; var card = _game.Catalog.Record("cards", id); CardOffer(grid, card, "native-reward-card-" + id, "Take " + card["name"], () => _game.Reward("card", id)); }
             }
             // Reward collection (US-15.2, HTML reward.js collectMode/resolveContinue). Owner decision 2026-10-02:
             // the default is manual, where Continue takes only the pending cinders (reward.js grants them on arrival)
@@ -285,22 +271,35 @@ namespace AshenSpire.Presentation
         }
         private void Shop()
         {
-            Text("The wandering merchant", "node-title");
-            var grid = OriginalCardInspection.Grid(); _root.Add(grid);
-            foreach (var kind in new[] { "cards", "relics", "flasks" })
+            Text("Merchant", "node-title");
+            // JS 08c: category tabs (here the categories this merchant stocks) that jump to their offers.
+            var kinds = new[] { ("cards", "COMBAT CARDS"), ("relics", "RELICS"), ("flasks", "FLASKS") }.Where(k => (_game.Room[k.Item1] as JArray)?.Count > 0).ToList();
+            var sellables = _settings?.MerchantBuyBack != false ? new OriginalRunServices(_game.Catalog).Sellables(_game.RunPlayer).OfType<JObject>().ToArray() : new JObject[0];
+            ShopTabs(kinds.Concat(new[] { ("services", "SERVICES") }).Concat(sellables.Length > 0 ? new[] { ("sell", "SELL") } : new (string, string)[0]).ToArray());
+            foreach (var (kind, title) in kinds)
+            {
+                SectionLabel(title, "native-shop-section-" + kind);
+                var grid = kind == "cards" ? OriginalCardInspection.Grid() : null; if (grid != null) _root.Add(grid);
                 foreach (var entry in (_game.Room[kind] as JArray ?? new JArray()).Select((value, index) => (value, index)))
                 {
                     var row = _game.Catalog.Record(kind, (string)entry.value["id"]); var index = entry.index;
                     var refusal = OriginalRewardAvailability.Refusal(_game.Catalog.Data(), _game.RunPlayer, kind.TrimEnd('s'), (string)row["id"]);
-                    var available = (bool?)entry.value["sold"] != true && (int)entry.value["cost"] <= (int)_game.RunPlayer["cinders"] && refusal == null;
+                    var sold = (bool?)entry.value["sold"] == true;
+                    var available = !sold && (int)entry.value["cost"] <= (int)_game.RunPlayer["cinders"] && refusal == null;
                     if (kind == "cards") CardOffer(grid, row, "native-buy-" + kind + "-" + index, "Buy · " + entry.value["cost"] + " cinders", () => _game.Buy("card", index), available,
-                        (bool?)entry.value["sold"] == true ? "Sold" : (int)entry.value["cost"] > (int)_game.RunPlayer["cinders"] ? "Not enough cinders" : refusal);
-                    else Button("native-buy-" + kind + "-" + index, (string)row["name"] + " · " + entry.value["cost"] + " cinders", () => _game.Buy(kind.TrimEnd('s'), index)).SetEnabled(available);
+                        sold ? "Sold" : (int)entry.value["cost"] > (int)_game.RunPlayer["cinders"] ? "Not enough cinders" : refusal);
+                    else
+                    {
+                        var buy = Button("native-buy-" + kind + "-" + index, (string)row["name"] + " · " + entry.value["cost"] + " cinders", () => _game.Buy(kind.TrimEnd('s'), index)); buy.SetEnabled(available);
+                        ShopOffer(buy, OfferArt(kind, (string)row["id"]), available, sold);
+                    }
                     if (refusal != null) Text(refusal, "caption");
                 }
+            }
+            SectionLabel("SERVICES", "native-shop-section-services");
             Services();
-            if (_settings?.MerchantBuyBack != false)
-            foreach (JObject row in new OriginalRunServices(_game.Catalog).Sellables(_game.RunPlayer))
+            if (sellables.Length > 0) SectionLabel("SELL", "native-shop-section-sell");
+            foreach (var row in sellables)
             {
                 var sale = (JObject)row.DeepClone();
                 Button("native-sell-" + row["kind"] + "-" + row["index"], "Sell " + row["name"] + " · receive " + row["price"] + " cinders", () => _game.Service("sell", sale));
@@ -309,7 +308,8 @@ namespace AshenSpire.Presentation
         }
         private void Shrine()
         {
-            Text("A moment of grace", "node-title"); Text("Rest restores health and mana. Your shared flask charges are refilled on arrival.", "lead");
+            SectionLabel("REST"); Text("Shrine", "node-title"); Text("Rest restores health and mana. Your shared flask charges are refilled on arrival.", "lead");
+            RecoveryPreview();
             var pool = _game.RunPlayer["flaskCharges"]; Text("Shared flask allocation", "stat");
             for (var hp = 0; hp <= (int)pool["capacity"]; hp++)
             {
@@ -389,6 +389,7 @@ namespace AshenSpire.Presentation
         private void Event()
         {
             var record = _game.Catalog.Record("events", (string)_game.Room["eventId"]);
+            EventStage((string)_game.Room["eventId"]);
             Text((string)record["name"], "node-title"); Text((string)record["text"], "lead");
             foreach (var choice in _game.EventChoices) { var id = (string)choice["id"]; Button("native-choice-" + id, (string)choice["label"], () => _game.ChooseEvent(id)); }
         }
