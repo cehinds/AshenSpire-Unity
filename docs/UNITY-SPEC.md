@@ -1,6 +1,52 @@
-# Unity specification — faithful rebuild with preserved campaign checkpoints
+# Unity specification: owner decisions for the Unity port
+
+## Owner decision, 2026-10-25: JS Core 2 is the game
+
+AshenSpire-Unity becomes a full port of the HTML/JS game (`cehinds/AshenSpire`, pinned at
+`dev` `3a90974b`, build 1854) running its **Core 2** profile, `ashen.core@2.0.0`. Rules,
+content, screens and look follow JS. The contract, the pin and its update procedure, the
+imported JS documents and their precedence, old saves, co-op and the port plan are in
+[SPEC.md §0](../SPEC.md#0-unity-port-contract-js-core-2-is-the-game-owner-2026-10-25).
+
+**Where a Unity decision in this file (or a document it records decisions in) conflicts with
+JS Core 2, JS wins, everywhere.** Recorded rulings:
+
+| Subject | Earlier Unity decision | Now (JS Core 2) |
+|---|---|---|
+| Creation | 8-point lean scale, Standard and Assign-points modes, Starseer INT 3 and WIS 2, 0.5.5 kits (owner, 2026-09-24) | 6 points: every attribute 1, class primary 2; fixed class loadout; the JS starter deck for the class (`packs/core/starterDeck.json`); only Reaver at first, then Starseer, Rogue, Herald (`packs/core/classUnlocks.json`) |
+| Stats and turn resources | ruleset 6: Actions, Stamina and Mana wallets, Catch Breath, the AR/DR/PR weight table, carry weight (2026-09-24) | Core 2 stats (`packs/core/stats.json`) and SP/MP pools (JS §17) |
+| Opening hand | class base 3–5, +1 from the primary stat, 4–6 cards (2026-09-24, 2026-09-25) | 4 + INT |
+| High contrast | off by default until its styles are tuned (2026-10-02, [Unity-Settings.md](Unity-Settings.md)) | **on** by default (JS `settings.js` `highContrast` `def: true`) |
+| Animation speed | three steps, Quick/Normal/Slow (2026-10-02) | JS pacing controls: combat step pause (500 ms), animation step duration (390 ms), `mobile-fast` preset, animation speed choice, auto-combat speed ×1.5 |
+| Reward collection | manual; only cinders collected automatically, at Continue (2026-10-02) | JS: cinders granted on arrival; Inspect before collecting and during confirmation; `manual` default |
+| Original-game save import | required for phase 1 (2026-09-28) | retired with the 0.5.5 rules (SPEC §0.6) |
+| Saves from earlier Unity builds | preserved and loadable on their frozen rules | not loaded, not migrated, not deleted; the player is told (SPEC §0.6) |
+| Co-op | native co-op with an authoritative C# LAN companion | removed, with the companion and its packaging (SPEC §0.7) |
+| Parity reference | `b17a7f45` (0.5.5 content); published test 898 for the migration | JS `3a90974b`, build 1854 (SPEC §0.2) |
+| Open gaps O-5 (Poise and Ward rows) and O-6 (dodge formula) | flagged for review | closed: Core 2 Poise, Ward (off) and accuracy replace them |
+
+### Status of the sections below
+
+The sections below are kept as the record of earlier decisions. Each is marked:
+
+- **Retired:** describes the 0.5.5 game or the campaign adaptation; not a contract any more.
+- **In force:** still applies to the Core 2 game, as worded in its banner.
+
+| Section | Status |
+|---|---|
+| Original-game save import | Retired |
+| Owner-requested creation defaults | Retired (overturned above) |
+| Owner-requested attribute and resource progression | Retired, except the bot-gate rule ("record wins, gate errors"), which applies to the Core 2 playthrough gate once it is rebuilt, and the four-part versioning pointer |
+| Native original modes and service contract | Retired |
+| Class identity slice 0.4 | Retired |
+| Combat presentation slice 0.5 | In force as a principle: commands resolve and save first; presentation observes results and never applies damage or spends resources. Its cues and campaign content are retired. |
+| Content authoring slice 0.6 | Retired (it edits the campaign content) |
+| Browser mobile viewport slice 0.7 | In force for the CSS-pixel canvas, the 1.5 render-density cap and the 44 px touch floor; its choice of reference resolution is replaced by the SPEC §7.2 panel-scale contract |
+| Interruption and return slice 0.8 | In force, reading "campaign" as the current Core 2 run |
 
 ## Original-game save import (owner decision, 2026-09-28)
+
+> **Retired 2026-10-25.** It imported 0.5.5-rules saves; the 0.5.5 rules are dropped (SPEC §0.6).**
 
 Phase 1 requires original JavaScript-game save import. Import must preview its
 destination, preserve the original save, refuse incompatible state explicitly,
@@ -12,6 +58,8 @@ profile progression. The current compatibility/validation checklist is in
 does not complete this acceptance requirement or authorize a feature-version bump.
 
 ## Owner-requested creation defaults (four-part versioning)
+
+> **Retired 2026-10-25.** Overturned: Core 2 creation is 6 points with the class primary at 2 and the JS starter deck (SPEC §0.5, §5.1).**
 
 Owner, 2026-09-24: "why are the numbers so high, rebase because the numbers
 should be 1's with 3 points to spend (total of 8, not 35) ... use my past prompts
@@ -61,6 +109,8 @@ are Constantine's explicit fork settings; the pinned original-engine fixtures
 remain unchanged as historical parity evidence.
 
 ## Owner-requested attribute and resource progression
+
+> **Retired 2026-10-25,** except the "Bot gate: record wins, gate errors" rule and the four-part versioning pointer. Core 2 stats, pools and hand rules replace everything else here (SPEC §4.1, §5.1). The parity references `b17a7f45` and `d5c982e7` below are historical; the pin is SPEC §0.2.**
 
 `Original/progression.json` (schema 2) records intentional Unity improvements
 separately from the pinned original oracle. Every calculation is
@@ -234,6 +284,8 @@ Acceptance: all four classes can complete seeded campaigns; model tests cover il
 
 ## Native original modes and service contract — 0.0.10.0
 
+> **Retired 2026-10-25.** Custom Climb, the 0.5.5 shrine and merchant services and native co-op are not part of Core 2; co-op and its companion are removed (SPEC §0.7).**
+
 Custom Climb freezes Ascension, authored modifiers, sealed/draft deck preparation,
 keepsakes and Endless configuration with the run. Draft offers are saved before
 selection; resume must not reroll them. Custom runs retain their original profile
@@ -266,6 +318,8 @@ roadmap. The following 0.4–0.8 slices describe historical adaptation behavior.
 
 ## Class identity slice — 0.4
 
+> **Retired 2026-10-25** (campaign adaptation).**
+
 New expeditions receive authored signature-heavy eight-card loadouts. Reaver builds strength into heavy attacks; Rogue combines poison and weakness with defensive tempo; Herald sustains through faith attacks and protection; Starseer uses draw and multi-effect magic. Existing saved decks are retained.
 
 A configured CommonRewardTag and each hero's RewardTags partition the existing RewardCards catalog. New rewards select two distinct affinity cards and one shared card, deterministically using saved RNG; affinity and shared pools must be disjoint and validated. Saved pending reward IDs are retained without rerolling or being rejected for belonging to an older pool. Definitions without affinity configuration retain the legacy three-card random selection.
@@ -278,6 +332,8 @@ Acceptance: no duplicate or off-affinity new rewards; deterministic offers survi
 
 ## Combat presentation slice — 0.5
 
+> **In force as a principle (2026-10-25):** commands resolve and save first, and presentation only observes them. The cue set and campaign specifics are retired; Core 2 pacing is SPEC §7.4.**
+
 Successful commands resolve and save immediately. Presentation observes their results; animation and audio never apply damage, consume resources or block input. Ordered card-tag rules choose authored feedback cues. Each cue defines a sprite-pose timeline, duration, motion distance, impact color and synthesized sound shape. Existing hero sprites are reused. Enemy reactions and temporary outcome labels accompany actual health, block, poison and healing changes.
 
 One view-owned feedback component runs a bounded timeline and cancels it when the view changes or a newer command arrives. Cached textures avoid repeated resource loads during animation. Reduced motion retains static outcome text with no movement or flashing; fast motion shortens the timeline. Mute stops active sounds and remains persisted. Feedback preferences and cues do not change the campaign save schema or simulation.
@@ -285,6 +341,8 @@ One view-owned feedback component runs a bounded timeline and cancels it when th
 Acceptance: invalid cue IDs, tags, poses and numeric ranges fail content validation; successful, rejected, repeated and interrupted commands preserve their existing model outcomes; normal and fast timelines return to idle; reduced motion and mute work through real controls and survive reload; actual damage labels reflect blocked/capped results; browser evidence captures an active pose and settled frame. Web, Windows and Android builds and the full campaign regression pass, with physical-device and audible listening limits stated separately.
 
 ## Content authoring slice — 0.6
+
+> **Retired 2026-10-25** (it edits `campaign.json`).**
 
 The Unity Campaign Content Editor uses structured fields for records, nested effects and lists, with searchable tables for cards, heroes, foes, encounters, equipment, tags and feedback cues. Campaign settings expose resources, reward catalogs and sound volume. Adding or duplicating records produces readable unique IDs; adding a selected card to the reward catalog is explicit. Draft edits survive table navigation and support Unity Undo/Redo.
 
@@ -294,11 +352,15 @@ Acceptance: structured nested edits and add/remove operations support Undo/Redo;
 
 ## Browser mobile viewport slice — 0.7
 
+> **Partly in force (2026-10-25):** the CSS-pixel canvas, the 1.5 render-density cap and the 44 px touch floor stay. Choosing the reference resolution is replaced by the SPEC §7.2 panel-scale contract.**
+
 Browser layout uses the displayed canvas height in CSS pixels, independently of its render-buffer resolution. Keep the existing 1.5 render-density cap. Named action buttons, settings toggles and seed input have a minimum 44 CSS-pixel touch height at supported phone sizes. Compact landscape layouts use the displayed height when choosing their reference resolution. Reflow existing controls after orientation or viewport changes without changing campaign state or saves.
 
 Acceptance: reproduce the 0.6 high-density failure; verify densities 1, 2 and 3, narrow portrait, landscape and repeated rotation; use real touchscreen input for a dense-browser combat/reward check; verify canvas-offset input mapping with synthetic safe-area padding. Report browser emulation separately from physical devices. Native safe-area behavior, gameplay, content and save schema remain unchanged. Export Web, Windows and Android checkpoints and retain prior evidence.
 
 ## Interruption and return slice — 0.8
+
+> **In force (2026-10-25),** reading "campaign" as the current Core 2 run.**
 
 Native application pause and browser document hiding save the current campaign, cancel active visual feedback and stop transient audio. A blocking cover preserves the current screen, card selection, seed draft and scroll position. Returning to the foreground enables an explicit Return button; it does not advance the run or replay an interrupted cue. Temporary audio suspension is separate from the persisted mute setting. Overlapping interruption sources and repeated notifications are idempotent. Browser canvas blur and Android keyboard focus loss do not count as backgrounding.
 
