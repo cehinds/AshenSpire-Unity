@@ -1,8 +1,8 @@
 {
   "_": "Snapshot of the HTML game UI data consumed by tools/unity-ui-tokens.mjs. Refresh with --import <js-checkout>; never hand-edit.",
   "source": "cehinds/AshenSpire",
-  "commit": "c3049c989f698f5d03a7f78954a2a2a5098a7f20",
-  "build": 1837,
+  "commit": "3a90974b180a6521e2edd6c16c6ee2b1c2f0ffad",
+  "build": 1854,
   "excluded": [
     "content/config/ui/presentation/equipmentAnimations.json"
   ],
@@ -46,7 +46,7 @@
     "config/ui/presentation/startupGate.json": "a9fb421fb8ef4096a878fc6cf416ce8071e16a209d2807a10ec212279fa91744",
     "config/ui/presentation/tooltipHelp.json": "0d41173b062e9a88fe9769122da45e1a31210d20d8293af08189ce6ab3b9dddd",
     "config/ui/presentation/tooltipPlacement.json": "2718119752f3c76b1390e55455457880c3cca158380b9a7487ddd07232ffb14d",
-    "config/ui/presentation/uiContent.json": "d10e2fc4e0bd49f09eb14138fe5e8db153f35b3e63f21f7aecf7a912dba9f26b",
+    "config/ui/presentation/uiContent.json": "8a589d6ac8cb857e43a55cc5123d51a453cdcbe313cc325ba9f6c6be38699d51",
     "config/ui/scenes/w4.json": "bb195b08ffbf3422d4199ab61d381f611968c460d69f1f8335b5a63431d79601",
     "config/ui/scenes/w4a-combat.json": "82e7f7f742befb118bf77d45a08f12cc685b7b4c6958689357f6eb04b2a8ac0a",
     "config/ui/scenes/w4b-map.json": "a6b55b5513cd1756b284cd55a28a0cdea3c123d13579454252a40db03ccdfe68",
