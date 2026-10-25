@@ -18,6 +18,46 @@ node tests/run-node.mjs        # CI-style, exits 1 on failure
 # or open tests/index.html in a browser — same suite, green/red list
 ```
 
+## Parity harness: JS reference vs Unity screens
+
+The Unity port is checked screen by screen against the HTML/JS game. The screen list,
+the view sizes (desktop 1280×720 mouse, portrait 390×844 touch) and how Unity reaches
+each screen live in `tools/parity-screens.json`. Every capture writes
+`<view>-<id>.png`, a `<view>-<id>.json` rect dump and a `manifest.json`, so any two
+capture folders can be paired. Output goes under `TestResults/` (git-ignored).
+
+```
+# 1. JS reference (Playwright; read-only against the JS checkout, which it serves itself)
+node tools/js-reference-capture.mjs ../AshenSpire --out TestResults/Parity/js
+#    --only '^04' redoes a subset and merges into the manifest; --views desktop; --url to use a running server
+
+# 2a. Unity in the editor (owner machine; needs a graphics device, so no -nographics and no -quit)
+Unity -batchmode -projectPath Unity -executeMethod AshenSpire.EditorTools.Cli.CaptureScreens
+#    or menu AshenSpire > Parity > Capture Screens. Writes TestResults/Parity/unity-editor
+#    (ASHEN_PARITY_OUT, ASHEN_PARITY_ONLY=<regex>, ASHEN_PARITY_VIEWS=desktop also apply).
+# 2b. Unity WebGL player (runs in a container too)
+python3 -m http.server 8787 --bind 127.0.0.1 --directory Published/Web
+node tools/unity-parity-capture.mjs http://127.0.0.1:8787/ --out TestResults/Parity/unity-web
+
+# 3. Report: A | B | diff per screen, pixel score, layout-rect deltas
+node tools/parity-report.mjs --a TestResults/Parity/js --b TestResults/Parity/unity-web --out TestResults/Parity/report
+node --test tools/parity-report.test.mjs     # the harness logic (runs in the Unity fast gate)
+```
+
+- The JS side uses the default (Core 2) profile through the game's own `?shot=` hooks and
+  real flows from a fresh profile. Its content (seed `SHOWCASE`) differs from Unity's
+  (Standard Reaver, seed 1), so pixel scores rank screens for review; they are not a gate.
+- The editor capture is the PlayMode test `ScreenCaptureTests` (Unity/Assets/AshenSpire/Tests).
+  It is ignored unless `ASHEN_PARITY_CAPTURE=1`, which the editor entry sets, so normal test
+  runs skip it. It renders the scene's PanelSettings into a RenderTexture of the view size,
+  backs up and restores the game's PlayerPrefs saves, and starts every screen from an empty profile.
+- **Unity steps** (`unity.steps`, replayed by both Unity captures on the named controls the
+  game reports): `{"click": id}`, `{"match": regex, "index": n}` (the n-th enabled control
+  whose id matches), `{"standard": true}` (Standard creation preset), `{"fill": [id, text]}`,
+  `{"key": "d"}`, `{"wait": ms}`; modifiers `command` (wait for the game to answer),
+  `ifPresent` (skip when absent) and `repeat`. `unity: null` plus `pending` marks a screen
+  Unity does not have yet; `pairs` maps a JS selector to a Unity control for rect deltas.
+
 ## The CI door: a tool's silence is not its success (#12)
 
 Every CI step that runs a checker is wrapped:

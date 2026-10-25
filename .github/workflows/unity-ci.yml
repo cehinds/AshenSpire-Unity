@@ -42,7 +42,7 @@ jobs:
           echo "Changed files: $(wc -l < "$RUNNER_TEMP/changed.txt")"
           match() { if grep -Eq "$1" "$RUNNER_TEMP/changed.txt"; then echo true; else echo false; fi; }
           unity="$(match '^(Unity/|GameContent/Unity/|UnityTests/|tools/NativeLan/)')"
-          tooling="$(match '^(tools/unity-|\.github/workflows/)')"
+          tooling="$(match '^(tools/unity-|tools/parity-|tools/js-reference-capture|\.github/workflows/)')"
           docs="$(match '(^docs/|\.md$)')"
           echo "unity=$unity tooling=$tooling docs=$docs"
           { echo "unity=$unity"; echo "tooling=$tooling"; echo "docs=$docs"; } >> "$GITHUB_OUTPUT"
@@ -83,6 +83,8 @@ jobs:
         run: node tools/verdict.mjs -- node tools/unity-runtime-check.mjs
       - name: Generated content schema matches src/model/schemas.js
         run: node tools/unity-content-schema.mjs --check
+      - name: Parity harness logic (screen list, manifest, PNG diff, report)
+        run: node --test tools/parity-report.test.mjs
 
   domain-tests:
     name: Console tests (${{ matrix.shard }})

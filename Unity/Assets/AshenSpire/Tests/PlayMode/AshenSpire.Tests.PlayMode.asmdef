@@ -1,0 +1,9 @@
+{
+  "name": "AshenSpire.Tests.PlayMode",
+  "rootNamespace": "AshenSpire.Tests.PlayMode",
+  "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner", "AshenSpire.Application", "AshenSpire.Presentation", "AshenSpire.Domain"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll", "Newtonsoft.Json.dll"],
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "autoReferenced": false
+}

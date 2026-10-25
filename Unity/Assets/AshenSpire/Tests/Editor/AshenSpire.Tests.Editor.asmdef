@@ -1,0 +1,8 @@
+{
+  "name": "AshenSpire.Tests.Editor",
+  "rootNamespace": "AshenSpire.EditorTools",
+  "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "autoReferenced": false
+}
