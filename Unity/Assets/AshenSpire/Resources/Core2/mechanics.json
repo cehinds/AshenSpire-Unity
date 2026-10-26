@@ -130,5 +130,165 @@
    "force": 0.7,
    "alteration": 0.7
   }
+ },
+ "damageTypes": {
+  "damageTypes": {
+   "slashing": {
+    "tag": "damage:slashing",
+    "physical": true,
+    "magicShare": 0
+   },
+   "piercing": {
+    "tag": "damage:piercing",
+    "physical": true,
+    "magicShare": 0
+   },
+   "blunt": {
+    "tag": "damage:blunt",
+    "physical": true,
+    "magicShare": 0
+   },
+   "fire": {
+    "tag": "damage:fire",
+    "physical": false,
+    "magicShare": 1
+   },
+   "frost": {
+    "tag": "damage:frost",
+    "physical": false,
+    "magicShare": 1
+   },
+   "lightning": {
+    "tag": "damage:lightning",
+    "physical": false,
+    "magicShare": 1
+   },
+   "arcane": {
+    "tag": "damage:arcane",
+    "physical": false,
+    "magicShare": 0.5
+   },
+   "sacred": {
+    "tag": "damage:sacred",
+    "physical": false,
+    "magicShare": 1
+   },
+   "decay": {
+    "tag": "damage:decay",
+    "physical": false,
+    "magicShare": 1
+   },
+   "poison": {
+    "tag": "damage:poison",
+    "physical": false,
+    "magicShare": 1
+   },
+   "psychic": {
+    "tag": "damage:psychic",
+    "physical": false,
+    "magicShare": 1
+   },
+   "earth": {
+    "tag": "damage:earth",
+    "physical": false,
+    "magicShare": 0
+   }
+  },
+  "schools": {
+   "force": {
+    "magicShare": 0.5,
+    "magicType": "arcane",
+    "physicalType": "blunt"
+   },
+   "alteration": {
+    "magicShare": 0,
+    "magicType": "arcane",
+    "physicalType": "blunt"
+   },
+   "earth": {
+    "magicShare": 0,
+    "magicType": "arcane",
+    "physicalType": "earth"
+   },
+   "lightning": {
+    "magicShare": 1,
+    "magicType": "lightning"
+   },
+   "fire": {
+    "magicShare": 1,
+    "magicType": "fire"
+   },
+   "frost": {
+    "magicShare": 1,
+    "magicType": "frost"
+   },
+   "divine": {
+    "magicShare": 1,
+    "magicType": "sacred"
+   },
+   "decay": {
+    "magicShare": 1,
+    "magicType": "decay"
+   }
+  },
+  "magicSplit": {
+   "meleeSpell": 0.7,
+   "technique": 0.3
+  }
+ },
+ "counterRules": {
+  "defaultCoverage": {
+   "melee": {
+    "camps": [
+     "physical"
+    ],
+    "ranges": [
+     "melee"
+    ],
+    "targeting": [
+     "single"
+    ],
+    "maneuvers": [
+     "attack",
+     "smash"
+    ],
+    "effects": [
+     "damage"
+    ]
+   },
+   "ranged": {
+    "camps": [
+     "physical"
+    ],
+    "ranges": [
+     "reach",
+     "ranged"
+    ],
+    "targeting": [
+     "single"
+    ],
+    "effects": [
+     "damage"
+    ]
+   },
+   "spell": {
+    "camps": [
+     "spell"
+    ],
+    "ranges": [
+     "melee",
+     "reach",
+     "ranged"
+    ],
+    "targeting": [
+     "single"
+    ],
+    "effects": [
+     "damage",
+     "status"
+    ]
+   }
+  },
+  "maxReturnsPerCycle": 1
  }
 }

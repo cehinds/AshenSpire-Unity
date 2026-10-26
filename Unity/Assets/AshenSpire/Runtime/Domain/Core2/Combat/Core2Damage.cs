@@ -15,10 +15,17 @@
 //       takes the Staggered stance, loses staminaLoss SP at its next turn start and gains vulnerableStacks
 //       Vulnerable (which only lengthens it: ×1.25 is one flat multiplier).
 //   src/engine/combatDamagePreview.js applyReceiptToPreviewTarget — the same on a detached preview target.
-// Not in phase 5a (named where they enter the chain): Counter returns and advantage Block (5b), the status-rule
-// "proposal" stage (legacy-adapter statuses), per-armament rating sources (gear, phase 8).
+//   Phase 5b: a Counter return (carrier counterReturnAttack, "flatReturn") is final pre-protection damage: no
+//   matching-stance, Vulnerable, advantage or defensive-stance stage (SPEC §17; profileDamageReceipt). The magic share
+//   is the whole damage-type table (Core2DamageTypes, JS magicShareOf), and a player's hit reads PR when it is a spell,
+//   has any magic share, or is a magical card (JS isMagicalAttack / cardIsMagical). drainFixCorePoise (Poise damage
+//   riders and Counter returns) and fixCorePoiseBreak live here; the Counter's advantage Block is added by
+//   Core2Contacts before the hit lands (actions.js applyProfileDamage counterBlock).
+// Not ported (named where they enter the chain): the status-rule "proposal" stage (legacy-adapter statuses),
+// per-armament rating sources (gear, phase 8), blockCap (no Core 2 status sets one at the pin).
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AshenSpire.Domain.Core2
 {
@@ -97,8 +104,18 @@ namespace AshenSpire.Domain.Core2
             return taken;
         }
 
-        /// <summary>The hit's magic share: the carrier's damage typing when supplied (JS magicShareOf), else the camp (spell = 1).</summary>
-        public static double MagicShare(Core2Carrier carrier) => carrier?.MagicShare ?? (carrier?.Profile?.Camp == "spell" ? 1 : 0);
+        /// <summary>The hit's magic share (JS magicShareOf over {...combatProfile, magicShare: carrier.magicShare}).</summary>
+        public static double MagicShare(Core2Rules rules, Core2Carrier carrier) => rules.DamageTypes.MagicShareOf(carrier?.Profile, carrier?.MagicShare);
+
+        private static readonly HashSet<string> MagicalTagWords = new HashSet<string>(new[] { "magic", "magical", "arcane", "holy", "fire", "spell" }, StringComparer.Ordinal);
+        /// <summary>JS isMagicalAttack / cardIsMagical: a non-physical damage school, a magical tag word, or a Mana cost.</summary>
+        public static bool IsMagicalAttack(Core2Carrier carrier)
+        {
+            if (carrier == null) return false;
+            if (!string.IsNullOrEmpty(carrier.DamageSchool)) return carrier.DamageSchool != "physical";
+            if (carrier.Tags.Any(tag => tag != null && MagicalTagWords.Contains(tag.Substring(tag.LastIndexOf(':') + 1)))) return true;
+            return carrier.BaseMp > 0;
+        }
 
         /// <summary>JS profileDamageReceipt under FixCore. <paramref name="roll"/> is a legacy chance roll; FixCore passes null and rolls Accuracy first.</summary>
         public static Core2DamageReceipt Receipt(Core2Rules rules, Core2Combatant source, Core2Combatant target, int baseDamage, Core2Carrier carrier, Core2HitOptions options = null, double? roll = null)
@@ -110,21 +127,24 @@ namespace AshenSpire.Domain.Core2
             // (JS concurrentStances.js defensiveCombatStance with activeCombatStances of one row).
             var defending = Core2Stances.ConfiguredStance(target?.Stance);
             var advantage = Core2Stances.StanceAdvantage(rules, attacking, defending);
-            var share = MagicShare(carrier);
-            // A player's spell (camp or any magic share) reads PR; enemies keep AR for their spells (their PR is 0 in data).
-            var ratingId = source != null && source.Side != Core2Side.Enemy && (carrier.Profile?.Camp == "spell" || share > 0) ? "pr" : "ar";
+            var flatReturn = carrier.Profile?.CounterReturnAttack == true;
+            var share = MagicShare(rules, carrier);
+            // A player's spell (camp, any magic share, or a magical card) reads PR; enemies keep AR for their spells (their PR is 0 in data).
+            var ratingId = source != null && source.Side != Core2Side.Enemy && (carrier.Profile?.Camp == "spell" || share > 0 || IsMagicalAttack(carrier)) ? "pr" : "ar";
             var rating = source == null ? 0 : Core2Statuses.RatingValue(rules, source, ratingId);
             double ratingBonus = carrier.SkipRatingBonus ? 0 : rating * rules.AttackRatingWeight;
             double raw = baseDamage;
             raw = raw + ratingBonus;
-            var stanceMultiplier = Core2Stances.StanceEffectiveness(rules, source, carrier);
+            // A Core 2 Counter return is final pre-protection damage (SPEC §17): no matching-stance or defensive-stance stage.
+            var stanceMultiplier = flatReturn ? 1 : Core2Stances.StanceEffectiveness(rules, source, carrier);
             raw = raw * stanceMultiplier;
-            if (target != null && target.StatusStacks("vulnerable") > 0) raw = raw * rules.VulnerabilityMultiplier;
+            if (!flatReturn && target != null && target.StatusStacks("vulnerable") > 0) raw = raw * rules.VulnerabilityMultiplier;
             var defenseMultiplier = Core2Stances.StanceMitigationMultiplier(rules, attacking, defending, out var defenseAdvantage);
             var smashRule = advantage && attacking == "smash";
-            var advantageMultiplier = smashRule ? rules.SmashDamageMultiplier : advantage ? rules.StanceAdvantageMultiplier : 1;
+            // Core 2 Counter returns carry their advantage in the return itself (SPEC §17), so the chain does not multiply it again.
+            var advantageMultiplier = smashRule ? rules.SmashDamageMultiplier : advantage && !flatReturn ? rules.StanceAdvantageMultiplier : 1;
             var exact = raw * advantageMultiplier;
-            exact = exact * defenseMultiplier;
+            exact = exact * (flatReturn ? 1 : defenseMultiplier);
             var amount = Math.Max(0, (int)Math.Floor(exact));
             var preview = target == null ? null : Core2Accuracy.Preview(rules, source, target, carrier, options);
             var hitChance = (preview?.HitChance ?? 100) / 100.0;
@@ -171,7 +191,10 @@ namespace AshenSpire.Domain.Core2
         public static void Stagger(Core2CombatContext ctx, Core2Combatant entity)
         {
             var rules = ctx.Rules;
-            if (rules.StaggeredStance) entity.Stance = Core2Stance.Staggered();
+            // The hit that broke Poise still earns its Counter return: remember the spent Counter for the action's completion (SPEC §17).
+            if (entity.Counter != null && entity.Counter.Charges == 0) entity.CounterStaggeredSerial = entity.Counter.Serial;
+            entity.Counter = null;
+            if (rules.StaggeredStance) entity.Stance = Core2Stance.Staggered(entity.OwnerCycle);
             if (rules.StaggeredStaminaLoss > 0) entity.PendingStaminaLoss += rules.StaggeredStaminaLoss;
             if (rules.StaggeredVulnerableStacks > 0) Core2Statuses.Apply(ctx, entity, "vulnerable", rules.StaggeredVulnerableStacks);
         }
@@ -184,7 +207,8 @@ namespace AshenSpire.Domain.Core2
         {
             if (target == null || !target.Alive) return new Core2HitOutcome();
             var rules = ctx.Rules;
-            var accuracy = Core2Accuracy.Resolve(rules, source, target, carrier, dice, options);
+            // A contact of a committed action was rolled once when the action began (JS carrier.expansionContact).
+            var accuracy = options?.AccuracyResolved == true ? null : Core2Accuracy.Resolve(rules, source, target, carrier, dice, options);
             if (accuracy != null && !accuracy.Hit) return new Core2HitOutcome { Accuracy = accuracy };
             var receipt = Receipt(rules, source, target, baseDamage, carrier, options);
             var blockBefore = target.Block;
@@ -198,18 +222,37 @@ namespace AshenSpire.Domain.Core2
             var outcome = new Core2HitOutcome { Accuracy = accuracy, Receipt = receipt, BlockBroken = blockBefore > 0 && target.Block == 0 };
             if (poiseBefore > 0 && target.Poise != null && target.Poise.Value == 0 && target.Alive && target.Hp > 0)
             {
-                // JS fixCorePoiseBreak: an enemy's break counts against the round's stagger claim.
                 outcome.PoiseBroken = true;
-                if (target.Side == Core2Side.Enemy) ctx.ClaimStagger(target);
-                Stagger(ctx, target);
+                PoiseBreak(ctx, target);
             }
             // One break is one stagger: an advantaged Smash staggers an enemy whose Poise did not break, once per round.
-            else if (receipt.Interrupted && target.Side == Core2Side.Enemy && target.Alive && ctx.ClaimStagger(target))
+            else if (receipt.Interrupted && target.Side == Core2Side.Enemy && target.Alive && ctx.ClaimStagger(target, rules.StaggerLimitPerTargetPerRound))
             {
                 outcome.Interrupted = true;
                 Stagger(ctx, target);
             }
             return outcome;
+        }
+
+        /// <summary>JS fixCorePoiseBreak: the owner is Staggered; an enemy's break also uses the round's stagger claim.</summary>
+        public static void PoiseBreak(Core2CombatContext ctx, Core2Combatant target)
+        {
+            if (target.Side == Core2Side.Enemy) ctx.ClaimStagger(target, ctx.Rules.StaggerLimitPerTargetPerRound);
+            Stagger(ctx, target);
+        }
+
+        /// <summary>
+        /// JS drainFixCorePoise: Poise damage a card, rider or Counter return carries under FixCore — whole numbers, never
+        /// more than the pool holds; emptying it (with the owner still standing) breaks Poise. Returns what it spent.
+        /// </summary>
+        public static int DrainPoise(Core2CombatContext ctx, Core2Combatant target, int amount)
+        {
+            var n = Math.Max(0, amount);
+            if (target == null || !target.Alive || !(n > 0) || target.Poise == null || !(target.Poise.Value > 0)) return 0;
+            var spent = Math.Min(target.Poise.Value, n);
+            target.Poise.Value -= spent;
+            if (target.Poise.Value == 0 && target.Hp > 0) PoiseBreak(ctx, target);
+            return spent;
         }
 
         /// <summary>JS applyReceiptToPreviewTarget: carry one landed hit to the next on a detached preview target.</summary>
@@ -224,7 +267,7 @@ namespace AshenSpire.Domain.Core2
             if (before > 0 && defender.Poise.Value == 0)
             {
                 // JS previewPoiseBreak: the stance and Vulnerable only (no SP is owed on a preview).
-                if (rules.StaggeredStance) defender.Stance = Core2Stance.Staggered();
+                if (rules.StaggeredStance) defender.Stance = Core2Stance.Staggered(defender.OwnerCycle);
                 if (rules.StaggeredVulnerableStacks > 0)
                 {
                     if (!defender.Statuses.TryGetValue("vulnerable", out var inst)) defender.Statuses["vulnerable"] = inst = new Core2StatusInstance();

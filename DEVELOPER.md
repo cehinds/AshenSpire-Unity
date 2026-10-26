@@ -62,20 +62,30 @@ dotnet run --project UnityTests/Core2Content          # loads the export, checks
   values (`Core2Rules`), stance identity (`Core2Stances`), card pricing and the SP/MP turn pools
   (`Core2Pricing`), d20 + Precision against fixed Evasion (`Core2Accuracy`), the damage chain with
   Block, Poise absorption and the Staggered stance (`Core2Damage`), status stacking and decay
-  (`Core2Statuses`) and the intent damage range (`Core2IntentProjection`). Each type names the JS
-  file and function it ports. Nothing in the running game calls it until phase 8 switches new runs
-  to Core 2.
+  (`Core2Statuses`) and the intent damage range (`Core2IntentProjection`). Phase 5b adds stance
+  entry (Precision and Evade grants, Block cards refilling Poise) and entry-grant faces
+  (`Core2Stances`), the damage-type table (`Core2DamageTypes`), Counters and Spell Counters
+  (`Core2Counters`), contact-by-contact resolution of an attack with the defender's Counter
+  (`Core2Contacts`) and engagement bands with Advance and Throw (`Core2Range`). Each type names the
+  JS file and function it ports. Nothing in the running game calls it until phase 8 switches new
+  runs to Core 2.
 - **Oracles:** each family is `{input, expected}` cases from the JS functions named in the file
   header: starter decks, card pricing (Adept, successive Spell, X cost, floors), hit chance (d20 +
   Precision against fixed Evasion, natural 1 and 20), Block then Poise absorption, stance matchups
   and entry grants, Counter returns, enemy SP planning, intent damage ranges, and five scripted
-  fights with fixed seeds. `UnityTests/Core2Content` replays the starter decks and the phase 5a
-  families (pricing, hit chance, Poise absorption, damage ranges) case by case through the combat
-  domain (`OracleReplay.cs`) and lists the 5b/5c families as PENDING with the phase that ports
-  them. A damage-range case carries `input.state` (attacker, defender, move carrier with its magic
-  share, range contact): the projection is phase 5a, building that state is 5b/5c.
-  `UnityTests/Core2Combat` checks the rules the oracles do not reach (snapshot refusal, pools,
-  decay, Weak, Staggered, naturals with advantage, flooring, multi-hit ranges).
+  fights with fixed seeds. `UnityTests/Core2Content` replays the starter decks, the phase 5a
+  families (pricing, hit chance, Poise absorption, damage ranges) and the 5b families (matchups,
+  Counter returns) case by case through the combat domain (`OracleReplay.cs`) and lists enemy
+  planning (5c) and the scripted fights as PENDING. A damage-range case carries `input.state`
+  (attacker, defender, move carrier with its magic share, range contact); building that state is
+  5c work. `UnityTests/Core2Combat` checks the rules the oracles do not reach (snapshot refusal,
+  pools, decay, Weak, Staggered, naturals with advantage, flooring, multi-hit ranges; and for 5b
+  the damage-type table, entry grants, live stance entry, Counter exchanges against single and
+  multi-hit moves, Spell Counters, reactive Sweep, range plans and a return that must Advance),
+  with expected values read from the JS game at the pin.
+- **Export additions (5b):** `mechanics.json` also carries `damageTypes` (JS
+  `src/content/combatRules.js`: types, schools, magic split) and `counterRules` (the Counter
+  coverage defaults a Core 2 fight reads).
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
   shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
