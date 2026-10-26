@@ -129,7 +129,21 @@ namespace AshenSpire.Domain.Core2
         private readonly Dictionary<string, Core2StatusDefinition> _statuses;
         public IReadOnlyDictionary<string, Core2StatusDefinition> Statuses => _statuses;
 
-        public Core2Rules(JObject fixCore, JObject stanceRules, JObject modules, IEnumerable<Core2Row> statuses, JObject damageTypes = null, JObject counterRules = null)
+        // ---- phase 5c: enemy plans and Perception (mechanics.json actionCosts, fixCoreMechanics) ---------------
+        /// <summary>JS ACTION_COST_TABLE (content/actionCosts.js): the SP an enemy move without its own `sp` costs, by stance.</summary>
+        public IReadOnlyDictionary<string, int> ActionCostTable { get; }
+        /// <summary>fixCoreMechanics.enemyHealBlockCost: a move that both heals and blocks costs this much SP.</summary>
+        public int EnemyHealBlockCost { get; }
+        /// <summary>fixCoreMechanics.perception.baseDC: the read DC is baseDC + target INT + target WIS + bonuses.</summary>
+        public int PerceptionBaseDC { get; }
+        public int PerceptionBonus { get; }
+        /// <summary>cards.roundShuffle: "entireDeck" returns every card and reshuffles the whole deck each round (JS refreshProfileRound).</summary>
+        public string RoundShuffle { get; }
+        /// <summary>cards.freeCommandLimit: card plays a turn may accept before only End Turn remains.</summary>
+        public int FreeCommandLimit { get; }
+
+        public Core2Rules(JObject fixCore, JObject stanceRules, JObject modules, IEnumerable<Core2Row> statuses, JObject damageTypes = null, JObject counterRules = null,
+            JObject actionCosts = null)
         {
             if (fixCore == null || stanceRules == null || modules == null) throw new ArgumentNullException(nameof(fixCore));
             if ((int?)fixCore["version"] != 1 || fixCore["enabled"]?.Type != JTokenType.Boolean)
@@ -201,6 +215,12 @@ namespace AshenSpire.Domain.Core2
             ManaPerTurn = (int?)modules["resources"]?["manaPerTurn"] ?? 0;
             HandBase = (int?)modules["cards"]?["handBase"] ?? 4;
             HandAttribute = (string)modules["cards"]?["handAttribute"] ?? "intelligence";
+            RoundShuffle = (string)modules["cards"]?["roundShuffle"];
+            FreeCommandLimit = (int?)modules["cards"]?["freeCommandLimit"] ?? 32;
+            ActionCostTable = ((actionCosts?["table"] as JObject) ?? new JObject()).Properties().ToDictionary(p => p.Name, p => (int)p.Value, StringComparer.Ordinal);
+            EnemyHealBlockCost = (int?)fixCore["enemyHealBlockCost"] ?? 3;
+            PerceptionBaseDC = (int?)fixCore["perception"]?["baseDC"] ?? 5;
+            PerceptionBonus = ((fixCore["perception"]?["bonuses"] as JArray) ?? new JArray()).Sum(v => v.Type == JTokenType.Integer || v.Type == JTokenType.Float ? (int)Math.Floor((double)v) : 0);
 
             DamageTypes = new Core2DamageTypes(damageTypes ?? throw new InvalidDataException("Core 2 rules: mechanics.json damageTypes is required (tools/export-js-core2.mjs)"));
             var coverage = counterRules?["defaultCoverage"] as JObject ?? throw new InvalidDataException("Core 2 rules: mechanics.json counterRules.defaultCoverage is required (tools/export-js-core2.mjs)");
@@ -224,7 +244,8 @@ namespace AshenSpire.Domain.Core2
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             return new Core2Rules(content.Mechanics["fixCoreMechanics"] as JObject, content.Mechanics["stanceRules"] as JObject,
-                content.Profile["modules"] as JObject, content.Statuses, content.Mechanics["damageTypes"] as JObject, content.Mechanics["counterRules"] as JObject);
+                content.Profile["modules"] as JObject, content.Statuses, content.Mechanics["damageTypes"] as JObject, content.Mechanics["counterRules"] as JObject,
+                content.Mechanics["actionCosts"] as JObject);
         }
 
         public Core2StatusDefinition Status(string id) => _statuses.TryGetValue(id, out var row) ? row

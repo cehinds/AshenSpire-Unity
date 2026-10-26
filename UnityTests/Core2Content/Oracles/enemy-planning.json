@@ -13,6 +13,546 @@
  "profileHash": "sha256:59214dc474c262ee2e644f3c4ddbf3b94cea056c6026c5ad13002698bc263d33",
  "core2ActionRulesVersion": 1,
  "caseCount": 66,
+ "starts": {
+  "7": {
+   "player": {
+    "classId": "reaver",
+    "hp": 71,
+    "maxHp": 71,
+    "maxStamina": 3,
+    "mana": 1,
+    "maxMana": 1,
+    "attributes": {
+     "strength": 4,
+     "dexterity": 1,
+     "constitution": 1,
+     "wisdom": 1,
+     "intelligence": 1
+    },
+    "ratings": {
+     "ar": 5,
+     "dr": 1,
+     "pr": 1,
+     "ward": 2,
+     "poise": 8
+    },
+    "level": 1,
+    "baseEvasionBonus": 0,
+    "basePrecisionBonus": 0,
+    "poise": {
+     "max": 8,
+     "value": 8
+    },
+    "handSize": 5,
+    "relicIds": [
+     "forsakenMedallion",
+     "ashenGrip"
+    ]
+   },
+   "deck": [
+    {
+     "instanceId": "gp1",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp2",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp3",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp4",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp5",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp6",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp7",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp8",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp9",
+     "cardId": "core.counter"
+    },
+    {
+     "instanceId": "gp10",
+     "cardId": "core.reaverSpecial"
+    }
+   ],
+   "primaryWeaponRange": "melee",
+   "cards": {
+    "core.strike": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "attack",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": []
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.defend": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "defend",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": [
+       "reaction"
+      ]
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.counter": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "counter",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": [
+       "reaction"
+      ]
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.reaverSpecial": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "smash",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": []
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    }
+   },
+   "propertyRules": [
+    {
+     "kind": "relic",
+     "id": "forsakenMedallion",
+     "rules": [
+      {
+       "tag": "forsakenMedallion",
+       "triggers": [
+        {
+         "on": "damageDealt",
+         "once": true,
+         "if": {
+          "p": "all",
+          "preds": [
+           {
+            "p": "eventIsAttack"
+           },
+           {
+            "p": "eventSourceIsOwner"
+           }
+          ]
+         },
+         "do": [
+          {
+           "op": "poiseDamage",
+           "amount": 4
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "relic",
+     "id": "ashenGrip",
+     "rules": [
+      {
+       "tag": "ashenGrip",
+       "triggers": [
+        {
+         "on": "stanceEntered",
+         "limitPerTurn": 1,
+         "do": [
+          {
+           "op": "restoreStamina",
+           "amount": 1
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "class",
+     "id": "reaver",
+     "rules": [
+      {
+       "tag": "favored",
+       "passives": {
+        "skillXpMult": 1.25
+       }
+      },
+      {
+       "tag": "oathKept",
+       "triggers": [
+        {
+         "on": "stanceEntered",
+         "if": {
+          "p": "eventSourceIsOwner"
+         },
+         "do": [
+          {
+           "op": "applyStatus",
+           "target": "owner",
+           "status": "stanceShifted",
+           "stacks": 1
+          }
+         ]
+        },
+        {
+         "on": "cardPreparing",
+         "if": {
+          "p": "all",
+          "preds": [
+           {
+            "p": "eventSourceIsOwner"
+           },
+           {
+            "p": "cardTagIs",
+            "tag": "oath"
+           },
+           {
+            "p": "not",
+            "pred": {
+             "p": "hasStatus",
+             "of": "owner",
+             "status": "stanceShifted"
+            }
+           }
+          ]
+         },
+         "do": [
+          {
+           "op": "block",
+           "target": "owner",
+           "amount": 2
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "511": {
+   "player": {
+    "classId": "reaver",
+    "hp": 71,
+    "maxHp": 71,
+    "maxStamina": 3,
+    "mana": 1,
+    "maxMana": 1,
+    "attributes": {
+     "strength": 4,
+     "dexterity": 1,
+     "constitution": 1,
+     "wisdom": 1,
+     "intelligence": 1
+    },
+    "ratings": {
+     "ar": 5,
+     "dr": 1,
+     "pr": 1,
+     "ward": 2,
+     "poise": 8
+    },
+    "level": 1,
+    "baseEvasionBonus": 0,
+    "basePrecisionBonus": 0,
+    "poise": {
+     "max": 8,
+     "value": 8
+    },
+    "handSize": 5,
+    "relicIds": [
+     "forsakenMedallion",
+     "ashenGrip"
+    ]
+   },
+   "deck": [
+    {
+     "instanceId": "gp1",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp2",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp3",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp4",
+     "cardId": "core.strike"
+    },
+    {
+     "instanceId": "gp5",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp6",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp7",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp8",
+     "cardId": "core.defend"
+    },
+    {
+     "instanceId": "gp9",
+     "cardId": "core.counter"
+    },
+    {
+     "instanceId": "gp10",
+     "cardId": "core.reaverSpecial"
+    }
+   ],
+   "primaryWeaponRange": "melee",
+   "cards": {
+    "core.strike": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "attack",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": []
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.defend": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "defend",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": [
+       "reaction"
+      ]
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.counter": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "counter",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": [
+       "reaction"
+      ]
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    },
+    "core.reaverSpecial": {
+     "combatProfile": {
+      "camp": "physical",
+      "maneuver": "smash",
+      "school": null,
+      "damageType": "slashing",
+      "counterMode": null,
+      "traits": []
+     },
+     "rangeSource": {
+      "coverage": "melee",
+      "weapon": true,
+      "sourceWeaponId": "greatsword",
+      "throwCapable": false,
+      "bypass": false
+     }
+    }
+   },
+   "propertyRules": [
+    {
+     "kind": "relic",
+     "id": "forsakenMedallion",
+     "rules": [
+      {
+       "tag": "forsakenMedallion",
+       "triggers": [
+        {
+         "on": "damageDealt",
+         "once": true,
+         "if": {
+          "p": "all",
+          "preds": [
+           {
+            "p": "eventIsAttack"
+           },
+           {
+            "p": "eventSourceIsOwner"
+           }
+          ]
+         },
+         "do": [
+          {
+           "op": "poiseDamage",
+           "amount": 4
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "relic",
+     "id": "ashenGrip",
+     "rules": [
+      {
+       "tag": "ashenGrip",
+       "triggers": [
+        {
+         "on": "stanceEntered",
+         "limitPerTurn": 1,
+         "do": [
+          {
+           "op": "restoreStamina",
+           "amount": 1
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "class",
+     "id": "reaver",
+     "rules": [
+      {
+       "tag": "favored",
+       "passives": {
+        "skillXpMult": 1.25
+       }
+      },
+      {
+       "tag": "oathKept",
+       "triggers": [
+        {
+         "on": "stanceEntered",
+         "if": {
+          "p": "eventSourceIsOwner"
+         },
+         "do": [
+          {
+           "op": "applyStatus",
+           "target": "owner",
+           "status": "stanceShifted",
+           "stacks": 1
+          }
+         ]
+        },
+        {
+         "on": "cardPreparing",
+         "if": {
+          "p": "all",
+          "preds": [
+           {
+            "p": "eventSourceIsOwner"
+           },
+           {
+            "p": "cardTagIs",
+            "tag": "oath"
+           },
+           {
+            "p": "not",
+            "pred": {
+             "p": "hasStatus",
+             "of": "owner",
+             "status": "stanceShifted"
+            }
+           }
+          ]
+         },
+         "do": [
+          {
+           "op": "block",
+           "target": "owner",
+           "amount": 2
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
  "cases": [
   {"input":{"seed":511,"classId":"reaver","enemyId":"wanderingSoldier"},"expected":{"maxStamina":1,"stamina":1,"intentMoveId":"slash","plannedMoves":[],"plan":["slash"],"quotes":{"slash":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true},"guard":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true},"warcry":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true},"advance":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true}}}},
   {"input":{"seed":511,"classId":"reaver","enemyId":"blightHound"},"expected":{"maxStamina":1,"stamina":1,"intentMoveId":"bite","plannedMoves":[],"plan":["bite"],"quotes":{"bite":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true},"lunge":{"sp":2,"advanceSp":0,"totalSp":2,"route":"advance","available":true},"advance":{"sp":1,"advanceSp":0,"totalSp":1,"route":"advance","available":true}}}},

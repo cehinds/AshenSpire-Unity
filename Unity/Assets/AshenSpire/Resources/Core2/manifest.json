@@ -1,6 +1,6 @@
 {
  "counts": {
-  "adapterCards": 1,
+  "adapterCards": 4,
   "armaments": 28,
   "armour": 35,
   "baseCards": 58,
@@ -24,11 +24,11 @@
  },
  "files": [
   {
-   "bytes": 645,
+   "bytes": 2263,
    "path": "adapter/cards.json",
-   "sha256": "7e36f3a73f9460ae0c492ad75bfee0b151eb91ba35ffb3b834fbb70a7ed3ea8d",
+   "sha256": "e87d1efc06adb7913097d12bb34507d1529bc3d2afa928eb91ac2327d3a804bd",
    "tables": {
-    "cards": 1
+    "cards": 4
    }
   },
   {
@@ -95,14 +95,16 @@
    }
   },
   {
-   "bytes": 5151,
+   "bytes": 9530,
    "path": "mechanics.json",
-   "sha256": "630421bc444bc8aace5135e52b521db39adec6c2b756a0d832419e4ae9d076ce",
+   "sha256": "0ca94fecb91ea277d37869146b4979a52e2a290c84cea48e5dcc5bc2709b61e9",
    "tables": {
+    "actionCostTable": 6,
     "counterCoverage": 3,
     "damageTypes": 12,
     "fixCoreMechanics": 16,
-    "stanceRules": 23
+    "stanceRules": 23,
+    "statusControl": 14
    }
   },
   {

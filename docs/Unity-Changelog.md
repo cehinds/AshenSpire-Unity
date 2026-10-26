@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.37.0 · build 40 · 2026-10-26
+
+- Core 2 phase 5c: enemy SP pools, live budget planning with the multi-hit floor, Perception and follow-up concealment, enemy inspection data and an engine-free fight loop that replays the scripted-fight oracles
+
 ## 0.0.36.0 · build 39 · 2026-10-26
 
 - Core 2 combat domain (phase 5b): stance entry, matchups, Counters and Spell Counters, contact-by-contact resolution, damage-type table, range and Advance (not wired into gameplay)

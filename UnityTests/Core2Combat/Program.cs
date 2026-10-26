@@ -1,4 +1,4 @@
-// Core 2 combat domain checks (SPEC.md §0.9 phase 5a) for rules the JS oracle families do not reach.
+// Core 2 combat domain checks (SPEC.md §0.9 phases 5a-5c) for rules the JS oracle families do not reach.
 // Run from the repository root: dotnet run --project UnityTests/Core2Combat [-- <repo root>]
 // Every expected value below is worked from the JS function cited next to it (at the SPEC §0.2 pin) and the
 // exported Core 2 data; the oracle replays live in UnityTests/Core2Content.
@@ -486,6 +486,83 @@ try
     Check(refused != null && refused.RangeRefused && refused.Hit == null, "an unaffordable return Advance skips the return; the interception (Block) stands");
     var paidReturn = ReachDuel(2);
     Check(paidReturn.Plan.AdvanceSp == 1 && paidReturn.Hit.Receipt.HpLoss == 6, "with SP to spare the defender pays 1 SP to close and the return lands");
+
+    // ---- Phase 5c: seeded streams (src/engine/rng.js createRng, values printed by JS at the pin) ------------------
+    var rng = new Core2Rng(511);
+    Equal(rng.Float("enemyAI"), 0.2570719097275287, "rng.js: seed 511 enemyAI draw 1");
+    Equal(rng.Float("enemyAI"), 0.008900965796783566, "rng.js: seed 511 enemyAI draw 2");
+    Equal(rng.Int("combatAvoidance", 1, 20), 10, "rng.js: seed 511 first d20 on combatAvoidance");
+    Equal(string.Join(",", rng.Shuffle("shuffle", new[] { 1, 2, 3, 4, 5 })), "2,1,5,3,4", "rng.js: Fisher-Yates shuffle of five draws four times");
+    Check(rng.Counter("enemyAI") == 2 && rng.Counter("combatAvoidance") == 1 && rng.Counter("shuffle") == 4, "rng.js: each stream counts only its own draws");
+    var detached = rng.Detached();
+    detached.Float("enemyAI");
+    Equal(rng.Counter("enemyAI"), 2, "a detached copy (JS createRng(seed, counters)) never advances the fight's streams");
+    Check(Throws<ArgumentException>(() => rng.Float("noSuchStream")) || Throws<InvalidOperationException>(() => rng.Float("noSuchStream")) || Throws<KeyNotFoundException>(() => rng.Float("noSuchStream")), "an unknown stream is refused");
+
+    // ---- Phase 5c: Perception (JS rollKnowledgeRead, fixCore.perception baseDC 5) -------------------------------
+    Equal(rules.PerceptionBaseDC, 5, "Perception base DC 5");
+    Equal(rules.EnemyHealBlockCost, 3, "enemy heal+Block moves cost 3 SP (fixCore.enemyHealBlockCost)");
+    var observer = Player();
+    observer.Attributes["wisdom"] = 2;
+    var watched = Enemy();
+    watched.Attributes["intelligence"] = 3;
+    watched.Attributes["wisdom"] = 4;
+    var read = Core2Knowledge.RollRead(rules, new Core2Rng(1), observer, watched);
+    Check(read.Roll == 11 && read.Dc == 12 && read.Total == 13 && read.Passed && read.Visibility == "exact", "Perception: d20 11 + WIS 2 = 13 meets DC 5 + INT 3 + WIS 4 = 12 (exact read)");
+    watched.Attributes["wisdom"] = 6;
+    var unread = Core2Knowledge.RollRead(rules, new Core2Rng(1), observer, watched);
+    Check(!unread.Passed && unread.Label == "?" && unread.Dc == 14, "Perception: 13 against DC 14 fails and reads '?'");
+    var reads = new Core2Rng(1);
+    Core2Knowledge.RollRead(rules, reads, observer, watched);
+    Check(reads.Counter("enemyIntentVisibility") == 1 && reads.Counter("enemyIntentClue") == 1, "a read draws one visibility roll and one clue draw");
+
+    // ---- Phase 5c: enemy SP pools, multi-hit floor, live plans (JS enemyMoveSp, extendEnemyQueue) ----------------
+    var oracleStart = (JObject)JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests", "Core2Content", "Oracles", "enemy-planning.json")))["starts"]["511"];
+    Core2Fight Fight(string enemyId, uint seed = 511) => Core2Fight.Create(content, Core2FightSetup.FromJson(oracleStart), new List<string> { enemyId }, seed);
+    var wardenFight = Fight("fellWarden");
+    var wardenEnemy = wardenFight.Enemies[0];
+    var hammer = content.Enemy("fellWarden").Move("hammerToss");
+    Check((int?)hammer.Raw["sp"] == 1 && hammer.Hits > 1, "fellWarden hammerToss is an authored 1 SP multi-hit move");
+    Equal(Core2EnemyMoves.MoveSp(wardenFight.Ctx, wardenEnemy, hammer.Raw, hammer.Id), 2, "a multi-hit move costs at least 2 SP");
+    Equal(wardenEnemy.MaxStamina, 3, "fellWarden's SP pool is 3 at seed 511");
+    var wardenPlan = Core2EnemyPlanning.PlanActions(wardenFight, wardenEnemy).Select(a => a.MoveId).ToList();
+    Equal(string.Join(",", wardenPlan), "caneStrike,caneStrike,heldBlade", "fellWarden opens caneStrike, caneStrike, then the charging heldBlade");
+    Check(content.Enemy("fellWarden").Move(wardenPlan.Last()).Raw["delay"] != null, "a plan stops at its first delayed (charging) move");
+    Check(wardenPlan.Sum(id => Core2EnemyMoves.MoveSp(wardenFight.Ctx, wardenEnemy, content.Enemy("fellWarden").Move(id).Raw, id)) <= wardenEnemy.MaxStamina, "the opening plan fits the SP pool");
+    Equal(wardenEnemy.Stamina, wardenEnemy.MaxStamina, "planning commits moves without spending SP before the enemy acts");
+
+    // ---- Phase 5c: concealment (JS concealKnowledgeIntent) and the enemy inspector -------------------------------
+    Core2Fight hiddenFight = null;
+    for (uint seed = 1; seed < 200 && hiddenFight == null; seed++)
+    {
+        var candidate = Fight("graveWisp", seed);
+        if (Core2Knowledge.Project(candidate.Enemies[0]).Hidden) hiddenFight = candidate;
+    }
+    Check(hiddenFight != null, "some seed fails the opening Perception read against graveWisp");
+    if (hiddenFight != null)
+    {
+        var wisp = hiddenFight.Enemies[0];
+        var view = Core2Knowledge.Project(wisp);
+        Check(view.MoveId == null && view.Damage == null && view.Label == "?" && view.Stance == "unknown", "a failed read shows '?' and nothing about the move");
+        var hidden = Core2EnemyInspector.Inspect(hiddenFight, wisp);
+        Check(hidden.CurrentHidden && hidden.Current == null && hidden.Stance == null && hidden.Moves.All(m => !m.Active) && hidden.Deck.All(c => !c.Active), "the inspector never reveals a concealed current action");
+    }
+    var shown = Fight("graveWisp");
+    var shownWisp = shown.Enemies[0];
+    var inspection = Core2EnemyInspector.Inspect(shown, shownWisp);
+    Equal(string.Join(",", inspection.Resources.Select(r => r.Label)), "HP,SP,Poise,Block", "inspector pools: HP, SP, Poise, Block");
+    var sp = inspection.Resources.First(r => r.Label == "SP");
+    Check(sp.Value == shownWisp.Stamina && sp.Max == shownWisp.MaxStamina, "inspector SP reads current of maximum");
+    Equal(string.Join(",", inspection.Deck.Select(c => c.CardId + "x" + c.Copies + ">" + c.MoveId)), "graveWisp.cursex2>curse,graveWisp.drainx1>drain,graveWisp.advancex1>advance", "inspector deck: authored identities and copies joined by legacyMove");
+    Check(inspection.Deck.All(c => c.ActionSp == inspection.Moves.First(m => m.MoveId == c.MoveId).Sp), "deck rows quote the live action SP");
+    Equal(string.Join(",", inspection.Moves.Select(m => m.MoveId)), string.Join(",", content.Enemy("graveWisp").Moves.Select(m => m.Id)), "move set lists every authored move in authored order");
+    Check(inspection.History.Count == 0 && inspection.Last == null, "no history before the enemy has acted");
+    shown.ReactionsEnabled = false;
+    shown.EndTurn();
+    var after = Core2EnemyInspector.Inspect(shown, shownWisp);
+    var started = shown.Events.Where(e => e.Type == "enemyMoveStarted").ToList();
+    Check(after.History.SequenceEqual(started.Select(e => (string)e.Data["moveId"])), "history lists the moves that started, oldest first");
+    Check(started.Count == 0 || (after.Last != null && after.Last.PaidSp == (int?)started.Last().Data["totalSp"]), "last played carries its paid SP receipt");
 }
 catch (Exception error)
 {

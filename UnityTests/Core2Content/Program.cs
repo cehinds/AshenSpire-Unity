@@ -6,10 +6,10 @@
 // 2. The Resources/Core2 mirror is byte-identical and every asset has a Unity .meta.
 // 3. The JS oracle fixtures (Oracles/*.json, tools/oracle-js-core2.mjs) come from the same commit
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
-//    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges) and
-//    5b families (matchups, Counter returns) are replayed case by case through
-//    Runtime/Domain/Core2/Combat (OracleReplay.cs); families whose rules arrive in phase 5c (enemy
-//    planning, then whole scripted fights) are reported PENDING with the reason.
+//    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
+//    families (matchups, Counter returns) and 5c families (enemy SP planning, whole scripted fights)
+//    are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
+//    no replay yet would be reported PENDING with its reason.
 using System.Text;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain.Core2;
@@ -155,19 +155,22 @@ try
         ["damage-ranges"] = null,
         ["matchups"] = null,
         ["counter-return"] = null,
-        ["enemy-planning"] = "phase 5c ports the enemy SP pool and Core 2 action planning",
-        ["scripted-fights"] = "needs the whole Core 2 combat domain (phase 5a-5c)",
+        ["enemy-planning"] = null,
+        ["scripted-fights"] = null,
     };
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
     Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the nine oracle families");
-    var replays = new Dictionary<string, Func<Core2Content, JArray, OracleReplay.Result>>
+    Func<Core2Content, JObject, OracleReplay.Result> Cases(Func<Core2Content, JArray, OracleReplay.Result> replay) => (c, data) => replay(c, (JArray)data["cases"]);
+    var replays = new Dictionary<string, Func<Core2Content, JObject, OracleReplay.Result>>
     {
-        ["pricing"] = OracleReplay.Pricing,
-        ["hit-chance"] = OracleReplay.HitChance,
-        ["poise-absorb"] = OracleReplay.PoiseAbsorb,
-        ["damage-ranges"] = OracleReplay.DamageRanges,
-        ["matchups"] = OracleReplay.Matchups,
-        ["counter-return"] = OracleReplay.CounterReturn,
+        ["pricing"] = Cases(OracleReplay.Pricing),
+        ["hit-chance"] = Cases(OracleReplay.HitChance),
+        ["poise-absorb"] = Cases(OracleReplay.PoiseAbsorb),
+        ["damage-ranges"] = Cases(OracleReplay.DamageRanges),
+        ["matchups"] = Cases(OracleReplay.Matchups),
+        ["counter-return"] = Cases(OracleReplay.CounterReturn),
+        ["enemy-planning"] = OracleReplay.EnemyPlanning,
+        ["scripted-fights"] = OracleReplay.ScriptedFights,
     };
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));
     var classIds = new HashSet<string>(content.Classes.Select(c => c.Id));
@@ -205,7 +208,7 @@ try
         }
         else if (replays.TryGetValue(family, out var replay))
         {
-            var outcome = replay(content, cases);
+            var outcome = replay(content, data);
             foreach (var failure in outcome.Failures) Console.Error.WriteLine("FAIL: " + failure);
             Check(outcome.Cases == cases.Count && outcome.Passed == outcome.Cases, family + ": " + outcome.Passed + "/" + cases.Count + " JS oracle cases match the Core 2 combat domain");
             replayed.Add(family + " " + outcome.Passed + "/" + cases.Count);
@@ -223,6 +226,6 @@ catch (Exception error)
 foreach (var line in replayed) Console.WriteLine("ORACLE: " + line + " cases pass");
 foreach (var line in pending) Console.WriteLine("PENDING: " + line);
 if (failures > 0) { Console.Error.WriteLine("Core2Content: " + failures + " failed, " + checks + " passed"); return 1; }
-Console.WriteLine("Core2Content: " + replayed.Count + " oracle families replayed, " + pending.Count + " pending phase 5c (listed above).");
+Console.WriteLine("Core2Content: " + replayed.Count + " oracle families replayed" + (pending.Count > 0 ? ", " + pending.Count + " pending (listed above)." : "."));
 Console.WriteLine("Core2Content: " + checks + " checks passed");
 return 0;
