@@ -98,6 +98,7 @@ namespace AshenSpire.Editor
                 }
                 File.WriteAllText(Root + "/Resources/Original/" + file + ".json", authored);
             }
+            var core2 = ImportCore2();
             File.WriteAllText(Root + "/Resources/campaign.json", campaignJson);
             var target = Root + "/Resources/expedition.json";
             Directory.CreateDirectory(Path.GetDirectoryName(target));
@@ -114,6 +115,27 @@ namespace AshenSpire.Editor
             OriginalSpriteImport.Configure();
             ImportMusic();
             Debug.Log($"Content import: {content.Cards.Length} cards and {content.Enemies.Length} enemies validated.");
+            Debug.Log($"Core 2 export (JS {core2.Manifest.JsCommit.Substring(0, 8)}, build {core2.Manifest.JsBuild}): {core2.Cards.Count} cards, {core2.Enemies.Count} enemies validated and mirrored to Resources/{AshenSpire.Domain.Core2.Core2Content.Folder}.");
+        }
+
+        // GameContent/Unity/Core2 is the JS Core 2 export (tools/export-js-core2.mjs; SPEC.md §0.9 phase 4).
+        // Validate it with the engine-free loader, then mirror it byte for byte to Resources/Core2, as
+        // Original/ is mirrored above. Gameplay does not read it yet. The exporter writes the same mirror,
+        // so this step only repairs a mirror edited or deleted by hand.
+        private static AshenSpire.Domain.Core2.Core2Content ImportCore2()
+        {
+            var folder = AshenSpire.Domain.Core2.Core2Content.Folder;
+            var source = Path.Combine(Repository, "GameContent/Unity", folder);
+            var loaded = AshenSpire.Domain.Core2.Core2Content.LoadFolder(source);
+            var paths = new[] { AshenSpire.Domain.Core2.Core2Content.ManifestPath }.Concat(loaded.Manifest.Files.Select(file => file.Path));
+            foreach (var relative in paths)
+            {
+                var from = Path.Combine(source, relative);
+                var to = Path.Combine(Root + "/Resources/" + folder, relative);
+                Directory.CreateDirectory(Path.GetDirectoryName(to));
+                if (!File.Exists(to) || !File.ReadAllBytes(to).SequenceEqual(File.ReadAllBytes(from))) File.Copy(from, to, true);
+            }
+            return loaded;
         }
 
         private static void ImportMusic()

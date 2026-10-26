@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.34.0 · build 37 · 2026-10-26
+
+- Core 2 content export, engine-free loader and JS oracle fixtures (not wired into gameplay)
+
 ## 0.0.33.2 · build 36 · 2026-10-05
 
 - Integrate owner-supplied illustrated screens, engraved controls, and fixed-ratio card faces.

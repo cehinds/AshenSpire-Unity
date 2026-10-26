@@ -1,0 +1,348 @@
+{
+ "counts": {
+  "adapterCards": 1,
+  "armaments": 28,
+  "armour": 35,
+  "baseCards": 58,
+  "characters": 37,
+  "classes": 4,
+  "coreCards": 15,
+  "encounters": 35,
+  "enemies": 33,
+  "enemyCards": 138,
+  "enemyRelics": 6,
+  "events": 25,
+  "flasks": 7,
+  "gear": 47,
+  "gearArmour": 19,
+  "gearLeftHand": 8,
+  "gearRightHand": 20,
+  "profileCards": 211,
+  "relics": 73,
+  "seats": 3,
+  "statuses": 101
+ },
+ "files": [
+  {
+   "bytes": 645,
+   "path": "adapter/cards.json",
+   "sha256": "7e36f3a73f9460ae0c492ad75bfee0b151eb91ba35ffb3b834fbb70a7ed3ea8d",
+   "tables": {
+    "cards": 1
+   }
+  },
+  {
+   "bytes": 13552,
+   "path": "adapter/encounters.json",
+   "sha256": "233962d0be074572efa392fc0a9e6d0b999b338db04b2c84dd06dc4a1f31cee7",
+   "tables": {
+    "encounters": 35,
+    "mapConfigs": 3,
+    "seats": 3
+   }
+  },
+  {
+   "bytes": 73690,
+   "path": "adapter/enemies.json",
+   "sha256": "a2f62db8d602479a04d5bf753c2e80db567e47acce7681cddb3efe7b1b9daec6",
+   "tables": {
+    "enemies": 33,
+    "moves": 138
+   }
+  },
+  {
+   "bytes": 74067,
+   "path": "adapter/equipment.json",
+   "sha256": "831fafc655b8635c8a6471f6e1c36354a8755e2f6b1c77146dc511598239452d",
+   "tables": {
+    "armaments": 28,
+    "armour": 35,
+    "slots": 7
+   }
+  },
+  {
+   "bytes": 33796,
+   "path": "adapter/events.json",
+   "sha256": "ccb24d8cbe1f2dfeac60511a6a4993220ef708be92ac66e89ecd33d87016508d",
+   "tables": {
+    "events": 25,
+    "questChains": 2,
+    "speakers": 5
+   }
+  },
+  {
+   "bytes": 3005,
+   "path": "adapter/flasks.json",
+   "sha256": "f6c76a2522d2998353dd19d9b3f62a7e8d700aaea2dd502f7370ec530e636f80",
+   "tables": {
+    "flasks": 7
+   }
+  },
+  {
+   "bytes": 27757,
+   "path": "adapter/relics.json",
+   "sha256": "fd85f50abb4dd02241f89acd1d25824ede5c2657744f7313e1fcd81da4583b28",
+   "tables": {
+    "relics": 73
+   }
+  },
+  {
+   "bytes": 48619,
+   "path": "adapter/statuses.json",
+   "sha256": "d360f31df8a6a369e05d1155e2dfd0922ec903f62ae7277fa868725e6c9b4bea",
+   "tables": {
+    "statuses": 101
+   }
+  },
+  {
+   "bytes": 2583,
+   "path": "mechanics.json",
+   "sha256": "bd1826cba1c2026c6f6205ae5be6450546d73c5ececbe2a9ccf8b6837e61d9a7",
+   "tables": {
+    "fixCoreMechanics": 16,
+    "stanceRules": 23
+   }
+  },
+  {
+   "bytes": 2524,
+   "path": "pack/baseCardAdmission.json",
+   "sha256": "20f744fe36fd16e7a07bc3e7135b7124b1e81a54a14afea1efe7fbff91a92df8",
+   "tables": {
+    "baseCardAdmission": 3
+   }
+  },
+  {
+   "bytes": 3321,
+   "path": "pack/baseCardGroups.json",
+   "sha256": "54f2733c0946c14f70a14280c3ab35326f6b3aa2b5ff8ffbc32e05bccd26bc2f",
+   "tables": {
+    "baseCardGroups": 4
+   }
+  },
+  {
+   "bytes": 10114,
+   "path": "pack/baseCardSourceManifest.json",
+   "sha256": "4102a7c54b2d1695e8eeda51996bbb4dcb99d83de22a5cbcfce905a05b14196e",
+   "tables": {
+    "baseCardSourceManifest": 6
+   }
+  },
+  {
+   "bytes": 17771,
+   "path": "pack/baseCardStatusSource.json",
+   "sha256": "8eebcf3c277d449224dfd256e622d4a740374d5cb4246912f2b93279437e0b83",
+   "tables": {
+    "baseCardStatusSource": 4
+   }
+  },
+  {
+   "bytes": 22739,
+   "path": "pack/baseCardVariants.json",
+   "sha256": "e85e3188dcb634c8c4719b9f0cead9712bb18d484b2d29b8ec784662e2cd6b82",
+   "tables": {
+    "baseCardVariants": 72
+   }
+  },
+  {
+   "bytes": 269585,
+   "path": "pack/baseCards.json",
+   "sha256": "7e0744ad762510822c547d0b6066a8e798aa55681b16c0dfb4e70613daeb5ff6",
+   "tables": {
+    "baseCards": 3
+   }
+  },
+  {
+   "bytes": 990,
+   "path": "pack/cardPools.json",
+   "sha256": "356efe670e8d011f0ae48f5f15ce8bf21ad2be7f95017018e3b3fe889395d102",
+   "tables": {
+    "cardPools": 7
+   }
+  },
+  {
+   "bytes": 136011,
+   "path": "pack/cards.json",
+   "sha256": "62f7929e1ae45812b4b123be6755eef767f75bc02b6941fed6193be8c9a061d3",
+   "tables": {
+    "cards": 211
+   }
+  },
+  {
+   "bytes": 58465,
+   "path": "pack/characters.json",
+   "sha256": "b1c6d50b184198a504c84d297ec1c6dd618902904e1bc6810aaf14055ca63933",
+   "tables": {
+    "characters": 37
+   }
+  },
+  {
+   "bytes": 436,
+   "path": "pack/classAttributes.json",
+   "sha256": "9c0bd960931e506758d67f73e2e466842d3e25f49b15c87ae7a75223ec1cdb56",
+   "tables": {
+    "classAttributes": 4
+   }
+  },
+  {
+   "bytes": 140,
+   "path": "pack/classUnlocks.json",
+   "sha256": "75e8e8ccc215ab4d3ef9dfce099ccf5d05a71353cc66c64806633d828b8dac6b",
+   "tables": {
+    "classUnlocks": 3
+   }
+  },
+  {
+   "bytes": 2381,
+   "path": "pack/classes.json",
+   "sha256": "93aafa996092d568185442280cfc40c48a2c9ed48899c97adfeeb98b5bc3356d",
+   "tables": {
+    "classes": 4
+   }
+  },
+  {
+   "bytes": 51941,
+   "path": "pack/enemies.json",
+   "sha256": "36cd63a25e198479b7308ef11c9fd1f37c68c078f1321aded853b469d2638a0f",
+   "tables": {
+    "enemies": 33
+   }
+  },
+  {
+   "bytes": 72706,
+   "path": "pack/enemyCards.json",
+   "sha256": "0c2c3f9ec0a8df192bd96a13cf5f529a3828b89148270712c519cac8bfa06cc1",
+   "tables": {
+    "enemyCards": 138
+   }
+  },
+  {
+   "bytes": 1045,
+   "path": "pack/enemyRelics.json",
+   "sha256": "679c36fc5bbdea00a305dfe7d88a6852e2a7e964f771a4ad97c0d9b3798d31ce",
+   "tables": {
+    "enemyRelics": 6
+   }
+  },
+  {
+   "bytes": 14089,
+   "path": "pack/gear.json",
+   "sha256": "0faa3ffbb2d90b316983b07d639f58d11f59e2e134b7a6240cef83df6ae3b424",
+   "tables": {
+    "gear": 47
+   }
+  },
+  {
+   "bytes": 2734,
+   "path": "pack/provisionalPolicies.json",
+   "sha256": "14c6e1d9c154cd00bc20f74162a16eecb74f16ded7e67bcbe1d5c8b01b65c79f",
+   "tables": {
+    "provisionalPolicies": 2
+   }
+  },
+  {
+   "bytes": 69294,
+   "path": "pack/resourceVariants.json",
+   "sha256": "a07ebb4ac7999d426a1034c714dcbb89366f4bfaa2131d6faadf809ecb87589b",
+   "tables": {
+    "resourceVariants": 225
+   }
+  },
+  {
+   "bytes": 243,
+   "path": "pack/rests.json",
+   "sha256": "ea01a86a09f3ff219ceb7d776ce949bae01d1bb61537f550cdb8c260d66ab4d4",
+   "tables": {
+    "rests": 4
+   }
+  },
+  {
+   "bytes": 3342,
+   "path": "pack/rewards.json",
+   "sha256": "012219f1030ce81e04173c79f87836a92ae56ba4272a6d7ec389d047ce71e4b4",
+   "tables": {
+    "rewards": 6
+   }
+  },
+  {
+   "bytes": 381,
+   "path": "pack/routes.json",
+   "sha256": "1c57e786fd96b5bb80cec5b695c27e21704f9592f303087b865e5e2f02df28d2",
+   "tables": {
+    "routes": 14
+   }
+  },
+  {
+   "bytes": 59,
+   "path": "pack/shops.json",
+   "sha256": "ceb7bdcc9e09e83e6dd01e071a753b80403fae38355626fd092cfbe3ba1608a8",
+   "tables": {
+    "shops": 3
+   }
+  },
+  {
+   "bytes": 1556,
+   "path": "pack/starterDeck.json",
+   "sha256": "6df9162f88f57a3ff8f9daf7ded330420585cbf0e7902a857e65066d5dda6adb",
+   "tables": {
+    "starterDeck": 4
+   }
+  },
+  {
+   "bytes": 60,
+   "path": "pack/startingHands.json",
+   "sha256": "ca9fa9d1d19504e1103cba0290d2a5c5be234e0c81c77595cb1e89b41c19f02f",
+   "tables": {
+    "startingHands": 4
+   }
+  },
+  {
+   "bytes": 379,
+   "path": "pack/stats.json",
+   "sha256": "096793ed0de6e157ef8b1dbafc65667857e7020b0f6494840fdda97d3424a8a8",
+   "tables": {
+    "stats": 6
+   }
+  },
+  {
+   "bytes": 100065,
+   "path": "profile.json",
+   "sha256": "bb1d1ae58fba875835ec3a1ddb975b04d4a92efb1d8d21d8e909e5f944611c89",
+   "tables": {
+    "contentKeys": 26,
+    "modules": 39,
+    "schemas": 30
+   }
+  }
+ ],
+ "gaps": [],
+ "generator": "tools/export-js-core2.mjs",
+ "js": {
+  "build": "0.7.1.1854",
+  "commit": "3a90974b180a6521e2edd6c16c6ee2b1c2f0ffad",
+  "digest": "4a4af1690b",
+  "ordinal": 1854,
+  "release": "0.7.1",
+  "repository": "https://github.com/cehinds/AshenSpire"
+ },
+ "profile": {
+  "core": "ashen.core@2.0.0",
+  "core2ActionRulesVersion": 1,
+  "hash": "sha256:59214dc474c262ee2e644f3c4ddbf3b94cea056c6026c5ad13002698bc263d33",
+  "id": "core",
+  "portability": {
+   "portable": false,
+   "reason": "Host gameplay adapter; no portable rules VM is claimed.",
+   "requiredCapabilities": [
+    "ashen.legacy-adapter@1"
+   ]
+  },
+  "runtimeHash": "sha256:73ef240835ff52f3dec38ad7b0a972d6f4886adf88fbbf1e3bf12a42d53161f2"
+ },
+ "schemaVersion": 1,
+ "scriptedEffects": [
+  {
+   "path": "adapter.flasks.6.effects.0",
+   "script": "wondrousDraught"
+  }
+ ]
+}
