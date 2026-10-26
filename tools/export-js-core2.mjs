@@ -1,0 +1,156 @@
+#!/usr/bin/env node
+// Export the JS game's fully resolved Core 2 data (profile `ashen.core@2.0.0`, SPEC.md §0.1)
+// for the Unity port: GameContent/Unity/Core2/** plus its byte-identical Resources mirror
+// (Unity/Assets/AshenSpire/Resources/Core2/**, with stable .meta files).
+//
+//   node tools/export-js-core2.mjs <js-checkout>            write the export
+//   node tools/export-js-core2.mjs <js-checkout> --check    exit 1 if the committed export differs
+//   (--allow-unpinned: write from a commit other than the SPEC §0.2 pin, for a pin-bump PR only)
+//
+// Read-only against the JS checkout. It runs the JS game's own resolver, the exact path a
+// Core 2 run takes in src/main.js:
+//   resolveGameProfile('default')                                  -> the profile snapshot
+//   createRegistries(applyGameProfileToContent(contentBundle, p))  -> the runtime registries
+// and writes:
+//   profile.json       the snapshot without its content tables (modules, schemas, lock, hash)
+//   mechanics.json     FixCore values (content/source/fixCoreMechanics.json), stance defaults,
+//                      core2ActionRulesVersion
+//   pack/<key>.json    every resolved profile content table (games/ashenspire/packs/core + base cards)
+//   adapter/*.json     legacy-adapter tables a Core 2 run reads from the registries: relics,
+//                      events, flasks, statuses, enemies (compiled moves), encounters/seats/map
+//                      configs, equipment rows the reward groups name, and the legacy cards those
+//                      tables reference
+//   manifest.json      JS commit/build, profile hash, sha256/bytes/row counts per file, gaps
+// JS key order is preserved inside content (move, weight and category order is read by the
+// game); only objects this tool builds (manifest, file maps) are key-sorted.
+import {join} from 'node:path';
+import {readFileSync, writeFileSync} from 'node:fs';
+import {root, CORE, JS_REPOSITORY, parseArgs, jsIdentity, requirePin, loadJs, toPlain, sortKeys, jsonText, sha256, syncTree, folderMeta, textMeta} from './js-core2-shared.mjs';
+
+const USAGE = 'usage: node tools/export-js-core2.mjs <js-checkout> [--check] [--allow-unpinned]';
+const OUT = 'GameContent/Unity/Core2';
+const MIRROR = 'Unity/Assets/AshenSpire/Resources/Core2';
+
+const args = parseArgs(process.argv.slice(2), USAGE);
+let identity, pinCheck;
+try { identity = jsIdentity(args.js); pinCheck = requirePin(identity, args.allowUnpinned); }
+catch (error) { console.error(`export-js-core2: ${error.message}`); process.exit(1); }
+
+const js = await loadJs(args.js);
+const {profile, registries, bundle, catalog} = js;
+const gaps = [];
+const plain = (value, path) => toPlain(value, path, gaps);
+const files = {};
+const tables = {};
+const put = (path, value, counts) => { files[path] = jsonText(value); tables[path] = counts; };
+const count = value => Array.isArray(value) ? value.length : value && typeof value === 'object' ? Object.keys(value).length : 1;
+
+// 1. Profile snapshot (content tables go to pack/).
+const contentKeys = Object.keys(profile.content);
+const scalars = Object.fromEntries(contentKeys.filter(key => !profile.content[key] || typeof profile.content[key] !== 'object').map(key => [key, profile.content[key]]));
+const {content: _content, ...snapshot} = profile;
+put('profile.json', plain({...snapshot, runtimeHash: catalog.runtimeHash, contentKeys, contentScalars: scalars}, 'profile'),
+  {modules: Object.keys(profile.modules).length, schemas: Object.keys(profile.schemas || {}).length, contentKeys: contentKeys.length});
+
+// 2. Rule values the Core 2 domain reads.
+const {fixCoreMechanics} = await js.load('src/content/generated/fixCoreMechanics.js');
+const {stanceRules} = await js.load('src/content/stanceRules.js');
+const {CORE2_ACTION_RULES_VERSION} = await js.load('src/model/core2ActionPolicy.js');
+put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules}, 'mechanics'),
+  {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules)});
+
+// 3. Core pack: every resolved profile content table.
+for (const key of contentKeys) if (!(key in scalars)) put(`pack/${key}.json`, plain(profile.content[key], `content.${key}`), {[key]: count(profile.content[key])});
+
+// 4. Legacy-adapter tables, from the runtime registries a Core 2 run binds.
+const all = registry => registry.all().map(row => row);
+const relics = all(registries.relics), flasks = all(registries.flasks), statuses = all(registries.statuses), events = all(registries.events);
+const enemies = all(registries.enemies), encounters = all(registries.encounters), seats = all(registries.seats);
+put('adapter/relics.json', plain(relics, 'relics'), {relics: relics.length});
+put('adapter/flasks.json', plain(flasks, 'flasks'), {flasks: flasks.length});
+put('adapter/statuses.json', plain({statuses, proposalStatusRules: bundle.proposalStatusRules}, 'statuses'), {statuses: statuses.length});
+put('adapter/events.json', plain({events, eventHistoryRequirements: bundle.eventHistoryRequirements, eventChoiceIds: bundle.eventChoiceIds, questChains: bundle.questChains, eventSpeakers: bundle.eventSpeakers, speakers: bundle.speakers}, 'events'),
+  {events: events.length, questChains: count(bundle.questChains), speakers: count(bundle.speakers)});
+put('adapter/enemies.json', plain(enemies, 'enemies'), {enemies: enemies.length, moves: enemies.reduce((n, e) => n + Object.keys(e.moves || {}).length, 0)});
+put('adapter/encounters.json', plain({encounters, seats, mapConfigs: bundle.mapConfigs}, 'encounters'), {encounters: encounters.length, seats: seats.length, mapConfigs: count(bundle.mapConfigs)});
+const equipment = {armaments: registries.equipment.armaments, armour: registries.equipment.armour, slots: registries.equipment.slots};
+put('adapter/equipment.json', plain(equipment, 'equipment'), {armaments: equipment.armaments.length, armour: equipment.armour.length, slots: count(equipment.slots)});
+
+// Legacy cards the adapter tables name (event and relic grants), beyond the profile's own cards.
+const profileCardIds = new Set(profile.content.cards.map(card => card.id));
+const referenced = new Set();
+(function scan(value) {
+  if (typeof value === 'string') { if (!profileCardIds.has(value) && registries.cards.has(value)) referenced.add(value); return; }
+  if (value && typeof value === 'object') for (const child of Object.values(value)) scan(child);
+})(JSON.parse(files['adapter/relics.json'] + '').concat(JSON.parse(files['adapter/events.json']).events, JSON.parse(files['adapter/flasks.json'])));
+const adapterCards = [...referenced].sort().map(id => registries.cards.get(id));
+put('adapter/cards.json', plain(adapterCards, 'adapterCards'), {cards: adapterCards.length});
+
+// Scripted effects are JS functions: listed for phase 8, never exported as data.
+const scripts = [];
+(function scan(value, path) {
+  if (value && typeof value === 'object') {
+    if (typeof value.script === 'string') scripts.push({path, script: value.script});
+    for (const [key, child] of Object.entries(value)) scan(child, `${path}.${key}`);
+  }
+})({relics: JSON.parse(files['adapter/relics.json']), events: JSON.parse(files['adapter/events.json']).events, flasks: JSON.parse(files['adapter/flasks.json'])}, 'adapter');
+
+// 5. Manifest.
+const sums = {
+  classes: profile.content.classes.length,
+  characters: profile.content.characters.length,
+  profileCards: profile.content.cards.length,
+  coreCards: profile.content.cards.filter(card => card.id.startsWith('core.')).length,
+  baseCards: profile.content.cards.filter(card => card.id.startsWith('base.')).length,
+  enemyCards: profile.content.enemyCards.length,
+  enemies: profile.content.enemies.length,
+  enemyRelics: profile.content.enemyRelics.length,
+  gear: profile.content.gear.length,
+  gearRightHand: profile.content.gear.filter(g => g.slot === 'rightHand').length,
+  gearLeftHand: profile.content.gear.filter(g => g.slot === 'leftHand').length,
+  gearArmour: profile.content.gear.filter(g => !['rightHand', 'leftHand'].includes(g.slot)).length,
+  relics: relics.length, events: events.length, flasks: flasks.length, statuses: statuses.length,
+  encounters: encounters.length, seats: seats.length, adapterCards: adapterCards.length,
+  armaments: equipment.armaments.length, armour: equipment.armour.length,
+};
+const manifest = sortKeys({
+  schemaVersion: 1,
+  generator: 'tools/export-js-core2.mjs',
+  js: {repository: JS_REPOSITORY, commit: identity.commit, build: identity.build, release: identity.release, ordinal: identity.ordinal, digest: identity.digest},
+  profile: {id: profile.id, core: CORE, hash: profile.hash, runtimeHash: catalog.runtimeHash, core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION,
+    portability: profile.portability},
+  counts: sums,
+  files: Object.keys(files).sort().map(path => ({path, sha256: sha256(files[path]), bytes: Buffer.byteLength(files[path]), tables: tables[path]})),
+  gaps: gaps.map(gap => ({...gap})),
+  scriptedEffects: scripts,
+});
+files['manifest.json'] = jsonText(manifest);
+
+// 6. Resources mirror (consumed by Resources.Load at runtime; BuildTools "Validate and Import Content" rewrites it too).
+const mirror = {};
+for (const [path, text] of Object.entries(files)) { mirror[path] = text; mirror[path + '.meta'] = textMeta(`${MIRROR}/${path}`); }
+for (const folder of new Set(Object.keys(files).filter(p => p.includes('/')).map(p => p.slice(0, p.lastIndexOf('/'))))) mirror[folder + '.meta'] = folderMeta(`${MIRROR}/${folder}`);
+
+const diffs = [
+  ...syncTree(join(root, OUT), files, args.check, OUT),
+  ...syncTree(join(root, MIRROR), mirror, args.check, MIRROR),
+];
+const topMeta = join(root, MIRROR + '.meta');
+const wantTop = folderMeta(MIRROR);
+let topText = null; try { topText = readFileSync(topMeta, 'utf8'); } catch { /* absent */ }
+if (topText !== wantTop) {
+  if (args.check) diffs.push(`differs ${MIRROR}.meta`);
+  else writeFileSync(topMeta, wantTop);
+}
+
+const pinNote = pinCheck.problems.length ? ` (UNPINNED: ${pinCheck.problems.join('; ')})` : '';
+if (args.check) {
+  for (const line of diffs) console.error(line);
+  if (diffs.length) { console.log(`export-js-core2: ${Object.keys(files).length + Object.keys(mirror).length + 1 - diffs.length} passed, ${diffs.length} failed`); console.error(`Regenerate: node tools/export-js-core2.mjs ${args.js}`); process.exit(1); }
+  console.log(`JS ${identity.commit.slice(0, 8)} build ${identity.build}, profile ${profile.hash.slice(0, 19)}${pinNote}`);
+  console.log(`export-js-core2: OK — ${Object.keys(files).length + Object.keys(mirror).length + 1} checks passed`);
+} else {
+  console.log(`JS ${identity.commit.slice(0, 8)} build ${identity.build}, profile ${profile.hash.slice(0, 19)}${pinNote}`);
+  console.log(`Wrote ${Object.keys(files).length} files to ${OUT} and its Resources mirror; ${gaps.length} non-JSON value(s) recorded, ${scripts.length} scripted effect(s).`);
+  console.log(JSON.stringify(sums));
+}

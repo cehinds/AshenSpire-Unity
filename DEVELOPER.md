@@ -18,6 +18,55 @@ node tests/run-node.mjs        # CI-style, exits 1 on failure
 # or open tests/index.html in a browser — same suite, green/red list
 ```
 
+## Unity: the JS Core 2 export and oracles (SPEC §0.9 phase 4)
+
+The Unity game is JS Core 2 (`ashen.core@2.0.0`) at the commit pinned in SPEC.md §0.2. Its data
+is not hand-authored here: it is exported from a JS checkout at that commit by the JS game's own
+resolver (`resolveGameProfile('default')`, then
+`createRegistries(applyGameProfileToContent(contentBundle, profile))`, the path a Core 2 run
+takes in JS `src/main.js`). Both tools are read-only against the JS checkout and refuse a dirty
+tree or a commit other than the pin (`--allow-unpinned` is for a pin-bump PR only).
+
+```
+# the JS checkout must be at the SPEC §0.2 commit
+git -C ../AshenSpire checkout 3a90974b180a6521e2edd6c16c6ee2b1c2f0ffad
+
+node tools/export-js-core2.mjs ../AshenSpire           # writes GameContent/Unity/Core2 + Resources/Core2 mirror
+node tools/export-js-core2.mjs ../AshenSpire --check   # exit 1 if the committed export differs
+node tools/oracle-js-core2.mjs ../AshenSpire           # writes UnityTests/Core2Content/Oracles/*.json
+node tools/oracle-js-core2.mjs ../AshenSpire --check
+dotnet run --project UnityTests/Core2Content          # loads the export, checks it and the fixtures
+```
+
+- **`GameContent/Unity/Core2/`** (generated; never edit): `profile.json` (the resolved profile
+  snapshot without its content: modules, schemas, lock, rules `hash`), `mechanics.json`
+  (`fixCoreMechanics`, stance defaults, `core2ActionRulesVersion`), `pack/<key>.json` (every
+  resolved profile content table: cards incl. base and enemy cards, classes, characters, starter
+  decks, stats, gear, enemies, enemy cards and relics, routes, rewards, shops, rests, unlocks),
+  `adapter/*.json` (the legacy-adapter tables a Core 2 run reads from its registries: relics,
+  events with quest gates, flasks, statuses, compiled enemy moves, encounters/seats/map configs,
+  armaments and armour, and the legacy cards those tables name) and `manifest.json` (JS commit,
+  build, profile hash, sha256/bytes/row counts per file, and the JS-scripted effects that need a
+  hand port). JS key order is kept inside content, because the game reads move, weight and category
+  order; only the manifest is key-sorted.
+- **Resources mirror:** the exporter also writes `Unity/Assets/AshenSpire/Resources/Core2/**`
+  byte for byte, with stable `.meta` GUIDs. *AshenSpire › 1. Validate and Import Content* validates
+  the export and repairs the mirror, as it does for `Original/`. At runtime
+  `AshenSpire.Application.Core2Resources.Load()` reads it through `Resources.Load<TextAsset>`.
+- **Loader:** `Runtime/Domain/Core2` (assembly `AshenSpire.Core2`, no UnityEngine). `Core2Content`
+  refuses a file whose sha256 differs from the manifest, then checks ids and cross-references.
+  Gameplay does not read it yet; phase 5 (combat) and phase 8 (run layer) do.
+- **Oracles:** each family is `{input, expected}` cases from the JS functions named in the file
+  header: starter decks, card pricing (Adept, successive Spell, X cost, floors), hit chance (d20 +
+  Precision against fixed Evasion, natural 1 and 20), Block then Poise absorption, stance matchups
+  and entry grants, Counter returns, enemy SP planning, intent damage ranges, and five scripted
+  fights with fixed seeds. `UnityTests/Core2Content` asserts the starter decks now and lists every
+  other family as PENDING with the phase that ports it; phase 5 replaces each PENDING line with
+  real comparisons.
+- **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
+  both `--check`s, and runs `Core2Content` in the map-and-data shard. After a pin bump (SPEC §0.2
+  step 5), regenerate both and commit them in the same PR.
+
 ## The CI door: a tool's silence is not its success (#12)
 
 Every CI step that runs a checker is wrapped:

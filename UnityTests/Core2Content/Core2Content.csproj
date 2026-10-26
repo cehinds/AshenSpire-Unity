@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Core 2 export and JS oracle checks (SPEC.md §0.9 phase 4). Compiles the engine-free
+       Core 2 loader exactly as Unity does (Runtime/Domain/Core2) against the committed export. -->
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Core2/*.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+</Project>

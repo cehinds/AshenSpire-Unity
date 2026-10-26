@@ -1,0 +1,21 @@
+{
+ "family": "starter-decks",
+ "phase": "phase 4 (loader)",
+ "description": "The opening deck each class starts a Core 2 run with (packs/core/starterDeck.json classDecks; SPEC §0.10 item 1).",
+ "sources": [
+  "src/model/gameProfileRun.js gameProfileStarterDeck"
+ ],
+ "js": {
+  "commit": "3a90974b180a6521e2edd6c16c6ee2b1c2f0ffad",
+  "build": "0.7.1.1854"
+ },
+ "profileHash": "sha256:59214dc474c262ee2e644f3c4ddbf3b94cea056c6026c5ad13002698bc263d33",
+ "core2ActionRulesVersion": 1,
+ "caseCount": 4,
+ "cases": [
+  {"input":{"classId":"reaver"},"expected":{"deck":["core.strike","core.strike","core.strike","core.strike","core.defend","core.defend","core.defend","core.defend","core.counter","core.reaverSpecial"]}},
+  {"input":{"classId":"starseer"},"expected":{"deck":["core.cantrip","core.cantrip","core.cantrip","core.starseerSpecial","core.starseerSpecial","base.ethereal","base.ethereal","base.ethereal","base.ethereal"]}},
+  {"input":{"classId":"rogue"},"expected":{"deck":["core.strike","core.strike","core.defend","core.defend","core.counter","core.counter","core.evade","core.evade","base.draw","core.rogueSpecial"]}},
+  {"input":{"classId":"herald"},"expected":{"deck":["base.paid-resource-variant","base.paid-resource-variant","base.paid-resource-variant","base.paid-resource-variant","base.ethereal","base.ethereal","base.ethereal","core.smash","base.exhaust"]}}
+ ]
+}

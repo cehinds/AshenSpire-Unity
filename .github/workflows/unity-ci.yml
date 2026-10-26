@@ -42,7 +42,7 @@ jobs:
           echo "Changed files: $(wc -l < "$RUNNER_TEMP/changed.txt")"
           match() { if grep -Eq "$1" "$RUNNER_TEMP/changed.txt"; then echo true; else echo false; fi; }
           unity="$(match '^(Unity/|GameContent/Unity/|UnityTests/|tools/NativeLan/)')"
-          tooling="$(match '^(tools/unity-|\.github/workflows/)')"
+          tooling="$(match '^(tools/unity-|tools/export-js-core2|tools/oracle-js-core2|tools/js-core2-shared|SPEC\.md$|\.github/workflows/)')"
           docs="$(match '(^docs/|\.md$)')"
           echo "unity=$unity tooling=$tooling docs=$docs"
           { echo "unity=$unity"; echo "tooling=$tooling"; echo "docs=$docs"; } >> "$GITHUB_OUTPUT"
@@ -84,6 +84,41 @@ jobs:
       - name: Generated content schema matches src/model/schemas.js
         run: node tools/unity-content-schema.mjs --check
 
+  core2-export:
+    name: Core 2 export and oracles match the JS pin
+    needs: changes
+    if: ${{ needs.changes.outputs.unity == 'true' || needs.changes.outputs.tooling == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the JS pin from SPEC.md section 0.2
+        id: pin
+        run: |
+          set -euo pipefail
+          commit="$(grep -oE 'Commit \(the pin\) \| `[0-9a-f]{40}`' SPEC.md | grep -oE '[0-9a-f]{40}')"
+          echo "JS pin: $commit"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+      - name: Check out the JS game at the pin (sources only)
+        uses: actions/checkout@v4
+        with:
+          repository: cehinds/AshenSpire
+          ref: ${{ steps.pin.outputs.commit }}
+          path: js-pin
+          fetch-depth: 1
+          sparse-checkout: |
+            src
+            engine
+            games
+            content
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: GameContent/Unity/Core2 equals a fresh export at the pin
+        run: node tools/verdict.mjs -- node tools/export-js-core2.mjs js-pin --check
+      - name: UnityTests/Core2Content/Oracles equal fresh JS oracles at the pin
+        run: node tools/verdict.mjs -- node tools/oracle-js-core2.mjs js-pin --check
+
   domain-tests:
     name: Console tests (${{ matrix.shard }})
     needs: changes
@@ -103,7 +138,7 @@ jobs:
           - shard: presentation
             suites: 'NativeFeedback CardText CardCosts HandRules SpriteStyles Viewport RendererPatch Interruption'
           - shard: map-and-data
-            suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json'
+            suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json Core2Content'
           - shard: features
             suites: 'Mods? SaveSlots? RunSummary? Telegraphs? Music? Feel? HoldConfirm? Gamepad? CardQol?'
     steps:
