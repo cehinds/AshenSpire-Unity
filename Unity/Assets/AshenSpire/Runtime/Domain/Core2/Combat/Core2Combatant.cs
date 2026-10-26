@@ -29,10 +29,12 @@ namespace AshenSpire.Domain.Core2
         public int Duration { get; set; }
         /// <summary>Precision stacks a trait:persistent grant keeps past its owner's turn end (JS persistentStacks).</summary>
         public int PersistentStacks { get; set; }
-        public Core2StatusInstance Clone() => new Core2StatusInstance { Stacks = Stacks, Duration = Duration, PersistentStacks = PersistentStacks };
+        /// <summary>A build-up status's threshold (JS inst.meter.max, a proc status such as Bleed); Stacks holds the meter value. 0 for none.</summary>
+        public int MeterMax { get; set; }
+        public Core2StatusInstance Clone() => new Core2StatusInstance { Stacks = Stacks, Duration = Duration, PersistentStacks = PersistentStacks, MeterMax = MeterMax };
     }
 
-    public sealed class Core2Combatant
+    public sealed partial class Core2Combatant
     {
         public string Id { get; set; }
         public Core2Side Side { get; set; }
@@ -99,6 +101,9 @@ namespace AshenSpire.Domain.Core2
         public int Attribute(string id) => Attributes.TryGetValue(id, out var value) ? value : 0;
         public int Rating(string id) => Ratings.TryGetValue(id, out var value) ? value : 0;
 
+        /// <summary>Copies the phase 5c fight state (plan, history, reads) into a clone (Core2CombatantFight.cs).</summary>
+        partial void CloneFightState(Core2Combatant copy);
+
         public Core2Combatant Clone()
         {
             var copy = (Core2Combatant)MemberwiseClone();
@@ -109,6 +114,7 @@ namespace AshenSpire.Domain.Core2
             copy.Statuses = Statuses.ToDictionary(p => p.Key, p => p.Value.Clone(), StringComparer.Ordinal);
             copy.ConcurrentStances = new List<Core2Stance>(ConcurrentStances);
             copy.Counter = Counter?.Clone();
+            CloneFightState(copy);
             return copy;
         }
     }

@@ -63,8 +63,17 @@ const {combatRules} = await js.load('src/content/combatRules.js');
 const {combatExpansionMatchups} = await js.load('src/content/combatMatchups.js');
 const damageTypes = {damageTypes: combatRules.damageTypes, schools: combatRules.schools, magicSplit: combatRules.magicSplit};
 const counterRules = {defaultCoverage: combatExpansionMatchups.counter.defaultCoverage, maxReturnsPerCycle: combatExpansionMatchups.counter.maxReturnsPerCycle};
-put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules, damageTypes, counterRules}, 'mechanics'),
-  {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules), damageTypes: count(damageTypes.damageTypes), counterCoverage: count(counterRules.defaultCoverage)});
+// The enemy move price table and SP row an enemy plan reads (src/content/actionCosts.js; phase 5c): a move without
+// its own `sp` costs its stance's table price (model/actionCosts.js enemyMoveSpOf, stanceCost/actionStance).
+const {ACTION_COST_TABLE, ENEMY_SP_ROW} = await js.load('src/content/actionCosts.js');
+const actionCosts = {table: ACTION_COST_TABLE, enemySpRow: ENEMY_SP_ROW};
+// The expansion status-control rules a Core 2 fight snapshots (combatExpansionRules.statuses = content/combatStatusRules.js):
+// active-status caps, pressure gauges, chance recovery and its attribute profiles (phase 5c fight loop).
+const {combatStatusRules} = await js.load('src/content/combatStatusRules.js');
+put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules, damageTypes, counterRules, actionCosts,
+  statusControl: combatStatusRules}, 'mechanics'),
+  {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules), damageTypes: count(damageTypes.damageTypes), counterCoverage: count(counterRules.defaultCoverage),
+    actionCostTable: count(actionCosts.table), statusControl: count(combatStatusRules.statuses)});
 
 // 3. Core pack: every resolved profile content table.
 for (const key of contentKeys) if (!(key in scalars)) put(`pack/${key}.json`, plain(profile.content[key], `content.${key}`), {[key]: count(profile.content[key])});
@@ -83,13 +92,20 @@ put('adapter/encounters.json', plain({encounters, seats, mapConfigs: bundle.mapC
 const equipment = {armaments: registries.equipment.armaments, armour: registries.equipment.armour, slots: registries.equipment.slots};
 put('adapter/equipment.json', plain(equipment, 'equipment'), {armaments: equipment.armaments.length, armour: equipment.armour.length, slots: count(equipment.slots)});
 
-// Legacy cards the adapter tables name (event and relic grants), beyond the profile's own cards.
+// Legacy cards the adapter tables name (event, relic and enemy-move grants), beyond the profile's own cards.
 const profileCardIds = new Set(profile.content.cards.map(card => card.id));
 const referenced = new Set();
 (function scan(value) {
   if (typeof value === 'string') { if (!profileCardIds.has(value) && registries.cards.has(value)) referenced.add(value); return; }
   if (value && typeof value === 'object') for (const child of Object.values(value)) scan(child);
 })(JSON.parse(files['adapter/relics.json'] + '').concat(JSON.parse(files['adapter/events.json']).events, JSON.parse(files['adapter/flasks.json'])));
+// Enemy moves name the cards they shuffle into the player's piles (addCard, e.g. a curse's Dazed).
+(function scan(value) {
+  if (Array.isArray(value)) { for (const child of value) scan(child); return; }
+  if (!value || typeof value !== 'object') return;
+  if (value.op === 'addCard' && typeof value.card === 'string' && !profileCardIds.has(value.card) && registries.cards.has(value.card)) referenced.add(value.card);
+  for (const child of Object.values(value)) scan(child);
+})(JSON.parse(files['adapter/enemies.json']));
 const adapterCards = [...referenced].sort().map(id => registries.cards.get(id));
 put('adapter/cards.json', plain(adapterCards, 'adapterCards'), {cards: adapterCards.length});
 

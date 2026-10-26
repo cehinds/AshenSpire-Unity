@@ -67,25 +67,37 @@ dotnet run --project UnityTests/Core2Content          # loads the export, checks
   (`Core2Stances`), the damage-type table (`Core2DamageTypes`), Counters and Spell Counters
   (`Core2Counters`), contact-by-contact resolution of an attack with the defender's Counter
   (`Core2Contacts`) and engagement bands with Advance and Throw (`Core2Range`). Each type names the
-  JS file and function it ports. Nothing in the running game calls it until phase 8 switches new
-  runs to Core 2.
+  JS file and function it ports. Phase 5c adds the seeded streams (`Core2Rng`, an exact port of
+  `src/engine/rng.js`), enemy stats and SP pools (`Core2EnemyStats`), move pricing with the multi-hit
+  floor (`Core2EnemyMoves`), live budget planning and the saved plan (`Core2EnemyPlanning`),
+  Perception and follow-up concealment (`Core2Knowledge`), the enemy inspector's data
+  (`Core2EnemyInspector`) and a minimal fight loop (`Core2Fight`: create, play a card, End Turn,
+  enemy phase, statuses, relic triggers) sufficient to replay the scripted fights with reactions
+  switched off. Nothing in the running game calls it until phase 8 switches new runs to Core 2.
 - **Oracles:** each family is `{input, expected}` cases from the JS functions named in the file
   header: starter decks, card pricing (Adept, successive Spell, X cost, floors), hit chance (d20 +
   Precision against fixed Evasion, natural 1 and 20), Block then Poise absorption, stance matchups
   and entry grants, Counter returns, enemy SP planning, intent damage ranges, and five scripted
-  fights with fixed seeds. `UnityTests/Core2Content` replays the starter decks, the phase 5a
-  families (pricing, hit chance, Poise absorption, damage ranges) and the 5b families (matchups,
-  Counter returns) case by case through the combat domain (`OracleReplay.cs`) and lists enemy
-  planning (5c) and the scripted fights as PENDING. A damage-range case carries `input.state`
-  (attacker, defender, move carrier with its magic share, range contact); building that state is
-  5c work. `UnityTests/Core2Combat` checks the rules the oracles do not reach (snapshot refusal,
+  fights with fixed seeds. `UnityTests/Core2Content` replays every family case by case through
+  the combat domain (`OracleReplay.cs`): the starter decks, the phase 5a families (pricing, hit
+  chance, Poise absorption, damage ranges), the 5b families (matchups, Counter returns) and the 5c
+  families (enemy planning, scripted fights). A damage-range case carries `input.state` (attacker,
+  defender, move carrier with its magic share, range contact). Because the run layer is phase 8, a
+  scripted fight carries `input.start` (the run's player, deck order, gear-resolved card faces,
+  relic and gear trigger rules) and enemy planning carries the same per seed in `starts`. `UnityTests/Core2Combat` checks the rules the oracles do not reach (snapshot refusal,
   pools, decay, Weak, Staggered, naturals with advantage, flooring, multi-hit ranges; and for 5b
   the damage-type table, entry grants, live stance entry, Counter exchanges against single and
-  multi-hit moves, Spell Counters, reactive Sweep, range plans and a return that must Advance),
-  with expected values read from the JS game at the pin.
+  multi-hit moves, Spell Counters, reactive Sweep, range plans and a return that must Advance;
+  and for 5c the seeded streams, Perception DCs, the multi-hit floor, a plan stopping at its
+  charging move, concealment and the inspector), with expected values read from the JS game at the
+  pin.
 - **Export additions (5b):** `mechanics.json` also carries `damageTypes` (JS
   `src/content/combatRules.js`: types, schools, magic split) and `counterRules` (the Counter
   coverage defaults a Core 2 fight reads).
+- **Export additions (5c):** `mechanics.json` also carries `actionCosts` (JS
+  `src/content/actionCosts.js`: the action cost table and the enemy SP row) and `statusControl`
+  (`src/content/combatStatusRules.js`); `adapter/cards.json` adds the legacy cards enemy moves put
+  into the player's piles (`addCard`, e.g. Dazed).
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
   shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.

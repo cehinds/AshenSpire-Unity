@@ -314,4 +314,136 @@ static class OracleReplay
         }
         return result;
     }
+
+    // ---- enemy SP planning (phase 5c) ----------------------------------------------------------------------------
+    /// <summary>
+    /// Each enemy alone against the seed's starting player (data.starts): its SP pool, the plan it opened with, and the
+    /// quote of every authored move, built by the engine-free fight exactly as JS createRunCombat built it.
+    /// </summary>
+    public static Result EnemyPlanning(Core2Content content, JObject data)
+    {
+        var result = new Result();
+        foreach (var row in (JArray)data["cases"])
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            var seed = (int)input["seed"];
+            var enemyId = (string)input["enemyId"];
+            JObject got;
+            try
+            {
+                var setup = Core2FightSetup.FromJson((JObject)data["starts"][seed.ToString(CultureInfo.InvariantCulture)]);
+                var fight = Core2Fight.Create(content, setup, new List<string> { enemyId }, (uint)seed);
+                var live = fight.Enemies[0];
+                var quotes = new JObject();
+                foreach (var move in content.Enemy(enemyId).Moves)
+                {
+                    var q = Core2EnemyMoves.Quote(fight.Ctx, fight.Range, live, fight.Player, move.Raw, move.Id);
+                    quotes[move.Id] = new JObject { ["sp"] = q.Sp, ["advanceSp"] = q.AdvanceSp, ["totalSp"] = q.TotalSp, ["route"] = q.Route, ["available"] = q.Available };
+                }
+                got = new JObject
+                {
+                    ["maxStamina"] = live.MaxStamina, ["stamina"] = live.Stamina, ["intentMoveId"] = live.Intent?.MoveId,
+                    ["plannedMoves"] = new JArray((live.PlannedMoves ?? new List<Core2PlannedMove>()).Select(m => m.MoveId)),
+                    ["plan"] = new JArray(Core2EnemyPlanning.PlanActions(fight, live).Select(a => a.MoveId)), ["quotes"] = quotes,
+                };
+            }
+            catch (Exception error) { got = new JObject { ["error"] = error.GetType().Name + ": " + error.Message }; }
+            result.Compare(JToken.DeepEquals(got, expected), () => "enemy planning " + enemyId + " seed " + seed + ": " + FirstDifference(got, expected));
+        }
+        return result;
+    }
+
+    // ---- scripted fights (phase 5 complete) ----------------------------------------------------------------------
+    /// <summary>
+    /// Whole fights under the oracle's policy: reactions off; each turn play the first affordable card in hand order at
+    /// the first living enemy (else untargeted), then End Turn. Compares every turn's snapshot, the event counts, every
+    /// damage event and the final RNG counters.
+    /// </summary>
+    public static Result ScriptedFights(Core2Content content, JObject data)
+    {
+        var result = new Result();
+        foreach (var row in (JArray)data["cases"])
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            JObject got;
+            try { got = ScriptedFight(content, input); }
+            catch (Exception error) { got = new JObject { ["error"] = error.GetType().Name + ": " + error.Message }; }
+            result.Compare(JToken.DeepEquals(got, expected), () => "scripted fight " + input["classId"] + " seed " + input["seed"] + ": " + FirstDifference(got, expected));
+        }
+        return result;
+    }
+
+    static JObject ScriptedFight(Core2Content content, JObject input, int maxTurns = 30)
+    {
+        var fight = Core2Fight.Create(content, Core2FightSetup.FromJson((JObject)input["start"]), ((JArray)input["enemyIds"]).Select(t => (string)t).ToList(), (uint)(int)input["seed"]);
+        fight.ReactionsEnabled = false;
+        var turns = new JArray();
+        for (var turn = 1; turn <= maxTurns && fight.Result == null; turn++)
+        {
+            var plays = new JArray();
+            for (var guard = 0; guard < 20 && fight.Result == null; guard++)
+            {
+                var target = fight.Enemies.FirstOrDefault(e => e.Alive);
+                string played = null;
+                foreach (var card in fight.Hand.ToList())
+                {
+                    Core2Costs costs;
+                    try { costs = fight.CardCosts(card.InstanceId); } catch (InvalidOperationException) { continue; }
+                    if (costs.Sp > fight.Player.Stamina || costs.Mp > fight.Player.Mana) continue;
+                    foreach (var targetId in new[] { target?.Id, null })
+                    {
+                        try { fight.PlayCard(card.InstanceId, targetId); played = card.CardId; break; }
+                        catch (InvalidOperationException) { }
+                    }
+                    if (played != null) break;
+                }
+                if (played == null) break;
+                plays.Add(played);
+            }
+            var snapshot = new JObject
+            {
+                ["turn"] = turn, ["plays"] = plays,
+                ["player"] = new JObject { ["hp"] = fight.Player.Hp, ["block"] = fight.Player.Block, ["stamina"] = fight.Player.Stamina, ["mana"] = fight.Player.Mana, ["stance"] = fight.Player.Stance?.Maneuver },
+                ["enemies"] = new JArray(fight.Enemies.Select(e => new JObject
+                {
+                    ["enemyId"] = e.EnemyId, ["hp"] = e.Hp, ["block"] = e.Block, ["poise"] = e.Poise?.Value, ["stamina"] = e.Stamina,
+                    ["intent"] = e.Intent?.MoveId, ["alive"] = e.Alive,
+                })),
+            };
+            if (fight.Result == null) fight.EndTurn();
+            snapshot["after"] = new JObject { ["playerHp"] = fight.Player.Hp, ["enemyHp"] = new JArray(fight.Enemies.Select(e => e.Hp)) };
+            turns.Add(snapshot);
+        }
+        var counts = new JObject();
+        foreach (var group in fight.Events.GroupBy(e => e.Type).OrderBy(g => g.Key, StringComparer.Ordinal)) counts[group.Key] = group.Count();
+        var rng = new JObject();
+        foreach (var pair in fight.Rng.Counters().OrderBy(p => p.Key, StringComparer.Ordinal)) rng[pair.Key] = pair.Value;
+        return new JObject
+        {
+            ["result"] = fight.Result, ["turns"] = turns, ["eventCounts"] = counts,
+            ["damageDealt"] = new JArray(fight.Events.Where(e => e.Type == "damageDealt").Select(e => new JObject
+            {
+                ["source"] = e.Data["sourceId"], ["target"] = e.Data["targetId"], ["amount"] = e.Data["amount"], ["blocked"] = (int?)e.Data["blocked"] ?? 0,
+            })),
+            ["rngCounters"] = rng,
+        };
+    }
+
+    /// <summary>The first path where two JSON values differ, with both sides (a readable fight mismatch).</summary>
+    static string FirstDifference(JToken got, JToken want, string path = "$")
+    {
+        if (got is JObject a && want is JObject b)
+        {
+            foreach (var name in a.Properties().Select(p => p.Name).Union(b.Properties().Select(p => p.Name)))
+                if (!JToken.DeepEquals(a[name], b[name])) return FirstDifference(a[name], b[name], path + "." + name);
+        }
+        if (got is JArray x && want is JArray y && x.Count == y.Count)
+        {
+            for (var i = 0; i < x.Count; i++)
+                if (!JToken.DeepEquals(x[i], y[i])) return FirstDifference(x[i], y[i], path + "[" + i + "]");
+        }
+        return path + ": got " + Show(got) + "; JS " + Show(want);
+    }
 }

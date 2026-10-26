@@ -43,19 +43,24 @@ const {counterReturn, counterBeats} = await load('src/engine/counterRule.js');
 const {enemyMoveQuote} = await load('src/engine/combatRoundsAdapter.js');
 const {enemyPlanActions} = await load('src/engine/normalPreview.js');
 const {projectCombatIntent} = await load('src/ui/models/CombatIntentProjectionModel.js');
-const {enemyMoveCarrier, expandedEnemyMove} = await load('src/engine/combatCardTactics.js');
-const {rangeHitContact} = await load('src/engine/combatEngagement.js');
+const {enemyMoveCarrier, expandedEnemyMove, tacticalCarrier} = await load('src/engine/combatCardTactics.js');
+const {rangeHitContact, rangeSourceContact} = await load('src/engine/combatEngagement.js');
 const {proposalTargetPlan} = await load('src/engine/proposalStatusRuntime.js');
 const {attributesOf, levelOf} = await load('src/engine/counterReturn.js');
 const {magicShareOf} = await load('src/model/combatRatings.js');
 const {gameProfileStarterDeck} = await load('src/model/gameProfileRun.js');
+const {equippedIn, slotHand} = await load('src/model/loadout.js');
+const {attackDescriptor} = await load('src/model/attackTags.js');
 const {CORE2_ACTION_RULES_VERSION} = await load('src/model/core2ActionPolicy.js');
 
 const CLASSES = ['reaver', 'starseer', 'rogue', 'herald'];
 const ALL_UNLOCKED = {gameProfileUnlocks: {[profile.id]: {completedRunIds: ['oracle-a', 'oracle-b', 'oracle-c']}}};
+const runOf = new WeakMap();
 function fight({classId = 'reaver', seed = 511, enemyIds = ['wanderingSoldier']} = {}) {
   const run = createRunState({registries, classId, seed, profileMeta: ALL_UNLOCKED});
-  return createRunCombat({registries, run, rng: createRng(seed), enemyIds});
+  const combat = createRunCombat({registries, run, rng: createRng(seed), enemyIds});
+  runOf.set(combat, run);
+  return combat;
 }
 const plain = value => toPlain(value, 'oracle', []);
 const clone = value => structuredClone(plain(value));
@@ -72,9 +77,9 @@ function primeNatural20(combat) {
 }
 
 const families = {};
-function family(id, phase, description, sources, cases) {
+function family(id, phase, description, sources, cases, extra = {}) {
   families[id] = {family: id, phase, description, sources, js: {commit: identity.commit, build: identity.build}, profileHash: profile.hash,
-    core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, caseCount: cases.length, cases};
+    core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, caseCount: cases.length, ...extra, cases};
 }
 
 // ── starter decks ──────────────────────────────────────────────────────────────────────────────
@@ -213,8 +218,11 @@ family('counter-return', 'phase 5b', 'Counter return per hit: 50% of incoming, a
 
 // ── enemy SP planning ──────────────────────────────────────────────────────────────────────────
 const planning = [];
+// The player each seed's fights start with (the run layer is phase 8): cases name it by seed.
+const planningStarts = {};
 for (const seed of [511, 7]) for (const enemy of registries.enemies.all()) {
   const combat = fight({seed, enemyIds: [enemy.id]});
+  planningStarts[seed] ??= fightStart(combat);
   const live = combat.enemies[0];
   const def = registries.enemies.get(enemy.id);
   const plan = enemyPlanActions(combat, live).map(entry => entry.id);
@@ -226,7 +234,7 @@ for (const seed of [511, 7]) for (const enemy of registries.enemies.all()) {
     expected: {maxStamina: live.maxStamina, stamina: live.stamina, intentMoveId: live.intent?.moveId ?? null, plannedMoves: (live.plannedMoves || []).map(m => m.moveId), plan, quotes}});
 }
 family('enemy-planning', 'phase 5c', 'Each enemy\'s SP pool, the opening plan it commits within that budget, and the SP quote of every move (multi-hit moves cost at least 2).',
-  ['src/engine/normalPreview.js enemyPlanActions', 'src/engine/combatRoundsAdapter.js enemyMoveQuote'], planning);
+  ['src/engine/normalPreview.js enemyPlanActions', 'src/engine/combatRoundsAdapter.js enemyMoveQuote'], planning, {starts: planningStarts});
 
 // ── damage ranges ──────────────────────────────────────────────────────────────────────────────
 // input.state is what the projection reads at that moment (phase 5a replays it): the attacker and
@@ -274,8 +282,44 @@ family('damage-ranges', 'phase 5a', 'The intent damage range ("0–12") shown fo
 
 // ── scripted fights ────────────────────────────────────────────────────────────────────────────
 function settle(combat) { for (let i = 0; combat.pendingReaction && i < 50; i++) dispatch(combat, {type: 'chooseReaction', offerId: combat.pendingReaction.id, optionId: null}); }
+// What the run layer hands the fight (phase 8 builds it from the run): the player as createRunCombat stamped it, the deck
+// in run order (the shuffle reorders it), the property rules mounted for the player's relics, class card and gear
+// (engine/properties.js, balance values resolved), and the primary weapon's range (combatEngagement.js initializeCombatRange).
+function fightStart(combat) {
+  const p = combat.player;
+  let primary = null;
+  for (const hand of ['right', 'left']) {
+    for (const slot of registries.equipment?.slots || []) if (slotHand(slot) === hand) {
+      const piece = combat.loadout && equippedIn(registries, combat.loadout, p.classId, slot.id);
+      if (piece && attackDescriptor(piece).source === 'weapon') { primary = piece; break; }
+    }
+    if (primary) break;
+  }
+  const run = runOf.get(combat);
+  return {
+    player: {classId: p.classId, hp: run.hp, maxHp: run.maxHp, maxStamina: p.energyMax, mana: run.mana, maxMana: run.maxMana,
+      attributes: p.attributes, ratings: p.ratings, level: combat.characterLevel ?? 1, baseEvasionBonus: p.baseEvasionBonus || 0,
+      basePrecisionBonus: p.basePrecisionBonus || 0, poise: p.persistentPoise, handSize: combat.handMax, relicIds: p.relicIds,
+      ...(p.classUnequipped ? {classUnequipped: true} : {})},
+    deck: run.deck.map(card => ({instanceId: card.instanceId, cardId: card.cardId})),
+    primaryWeaponRange: primary?.range || 'melee',
+    // Each deck card's face as the player's gear resolves it (combatCardTactics.js tacticalCarrier: the damage type the
+    // wielded piece gives an untyped card) and the range source its damage commits (combatEngagement.js rangeSourceContact).
+    cards: Object.fromEntries([...new Set(run.deck.map(card => card.cardId))].map(cardId => {
+      const def = resolveCombatCard(combat, {instanceId: 'oracle', cardId, upgraded: false});
+      const carrier = tacticalCarrier(def, {}, combat, p);
+      const damage = (def.effects || []).find(effect => effect.op === 'damage') || {};
+      const source = rangeSourceContact(combat, p, null, carrier, damage, '0');
+      return [cardId, {combatProfile: carrier.combatProfile, rangeSource: {coverage: source.coverage, weapon: source.weapon, sourceWeaponId: source.sourceWeaponId,
+        throwCapable: source.throwCapable, bypass: source.bypass}}];
+    })),
+    propertyRules: Object.values(combat.propertyMounts?.player || {}).map(mount => ({kind: mount.kind, id: mount.id,
+      rules: mount.rules.map(rule => ({tag: rule.tag, ...(rule.triggers ? {triggers: rule.triggers} : {}), ...(rule.passives ? {passives: rule.passives} : {})}))})),
+  };
+}
 function scripted({classId, seed, enemyIds, maxTurns = 30}) {
   const combat = fight({classId, seed, enemyIds});
+  const start = fightStart(combat);
   dispatch(combat, {type: 'setReactions', enabled: false});
   const turns = [];
   for (let turn = 1; turn <= maxTurns && !combat.result; turn++) {
@@ -303,7 +347,7 @@ function scripted({classId, seed, enemyIds, maxTurns = 30}) {
   }
   const types = {};
   for (const event of combat.eventLog) types[event.type] = (types[event.type] || 0) + 1;
-  return {result: combat.result ?? null, turns, eventCounts: Object.fromEntries(Object.entries(types).sort()),
+  return {start, result: combat.result ?? null, turns, eventCounts: Object.fromEntries(Object.entries(types).sort()),
     damageDealt: combat.eventLog.filter(e => e.type === 'damageDealt').map(e => ({source: e.sourceId, target: e.targetId, amount: e.amount, blocked: e.blocked ?? 0})),
     rngCounters: Object.fromEntries(Object.entries(combat.rng.getCounters()).sort())};
 }
@@ -313,7 +357,8 @@ const fights = [
   {classId: 'rogue', seed: 42, enemyIds: ['fellWarden']},
   {classId: 'starseer', seed: 9, enemyIds: ['huskBrute']},
   {classId: 'herald', seed: 77, enemyIds: ['lanternMoth']},
-].map(input => ({input: {...input, policy: 'reactions off; each turn play the first affordable card in hand order at the first living enemy, then End Turn'}, expected: scripted(input)}));
+].map(input => { const {start, ...expected} = scripted(input);
+  return {input: {...input, policy: 'reactions off; each turn play the first affordable card in hand order at the first living enemy, then End Turn', start}, expected}; });
 family('scripted-fights', 'phase 5 (all three PRs)', 'Whole Core 2 fights with fixed seeds and a fixed play policy: per-turn plays and pools, every damage event, event counts and final RNG counters.',
   ['src/engine/runCombat.js createRunCombat', 'src/engine/combat.js dispatch/cardPlayCosts'], fights);
 

@@ -1,5 +1,27 @@
 [
  {
+  "id": "dazed",
+  "name": "Dazed",
+  "class": "colorless",
+  "rarity": "special",
+  "cost": 0,
+  "type": "status",
+  "keywords": [
+   "unplayable",
+   "ethereal"
+  ],
+  "icon": "progression",
+  "effects": [],
+  "textTemplate": "Unplayable. Ethereal.",
+  "flavor": "Light behind the eyes, left by a Grave Wisp.\n\nThose who have seen a wisp up close say it looked at them as if reading.\n\nClose your eyes. Do not speak your name until the light is gone.",
+  "tags": [
+   "camp:physical"
+  ],
+  "kindIds": [
+   "classification.statusCard"
+  ]
+ },
+ {
   "id": "guilt",
   "name": "Guilt",
   "class": "colorless",
@@ -26,6 +48,48 @@
   ],
   "kindIds": [
    "classification.curse"
+  ]
+ },
+ {
+  "id": "slimed",
+  "name": "Slimed",
+  "class": "colorless",
+  "rarity": "special",
+  "cost": 1,
+  "type": "status",
+  "keywords": [
+   "exhaust"
+  ],
+  "icon": "madness",
+  "effects": [],
+  "textTemplate": "Exhaust.",
+  "flavor": "Grey muck from the drowned hamlet.\n\nIt clings, and will not wash out in cold water. The hamlet flooded before the Burning, in a flood the Wardens called natural.\n\nIt is warmer than anything in the weald has a right to be.",
+  "tags": [
+   "camp:physical"
+  ],
+  "kindIds": [
+   "classification.statusCard"
+  ]
+ },
+ {
+  "id": "wound",
+  "name": "Wound",
+  "class": "colorless",
+  "rarity": "special",
+  "cost": 0,
+  "type": "status",
+  "keywords": [
+   "unplayable"
+  ],
+  "icon": "attack",
+  "effects": [],
+  "textTemplate": "Unplayable.",
+  "flavor": "A cut that closed wrong.\n\nIt knits into a hard ridge that aches before the weather turns. Climbers call it the road keeping its share.\n\nThe hamlets' older word for it means owed.",
+  "tags": [
+   "camp:physical"
+  ],
+  "kindIds": [
+   "classification.statusCard"
   ]
  }
 ]
