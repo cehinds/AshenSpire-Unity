@@ -56,8 +56,15 @@ put('profile.json', plain({...snapshot, runtimeHash: catalog.runtimeHash, conten
 const {fixCoreMechanics} = await js.load('src/content/generated/fixCoreMechanics.js');
 const {stanceRules} = await js.load('src/content/stanceRules.js');
 const {CORE2_ACTION_RULES_VERSION} = await js.load('src/model/core2ActionPolicy.js');
-put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules}, 'mechanics'),
-  {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules)});
+// The damage-type table magicShareOf reads (src/content/combatRules.js; a Core 2 fight has no ratingsRules
+// override) and the Counter coverage defaults armExpansionCounter reads (combatExpansionMatchups.counter,
+// what a Core 2 fight's combatExpansionRules.matchups carries).
+const {combatRules} = await js.load('src/content/combatRules.js');
+const {combatExpansionMatchups} = await js.load('src/content/combatMatchups.js');
+const damageTypes = {damageTypes: combatRules.damageTypes, schools: combatRules.schools, magicSplit: combatRules.magicSplit};
+const counterRules = {defaultCoverage: combatExpansionMatchups.counter.defaultCoverage, maxReturnsPerCycle: combatExpansionMatchups.counter.maxReturnsPerCycle};
+put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules, damageTypes, counterRules}, 'mechanics'),
+  {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules), damageTypes: count(damageTypes.damageTypes), counterCoverage: count(counterRules.defaultCoverage)});
 
 // 3. Core pack: every resolved profile content table.
 for (const key of contentKeys) if (!(key in scalars)) put(`pack/${key}.json`, plain(profile.content[key], `content.${key}`), {[key]: count(profile.content[key])});

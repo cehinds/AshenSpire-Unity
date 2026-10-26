@@ -95,10 +95,12 @@
    }
   },
   {
-   "bytes": 2583,
+   "bytes": 5151,
    "path": "mechanics.json",
-   "sha256": "bd1826cba1c2026c6f6205ae5be6450546d73c5ececbe2a9ccf8b6837e61d9a7",
+   "sha256": "630421bc444bc8aace5135e52b521db39adec6c2b756a0d832419e4ae9d076ce",
    "tables": {
+    "counterCoverage": 3,
+    "damageTypes": 12,
     "fixCoreMechanics": 16,
     "stanceRules": 23
    }

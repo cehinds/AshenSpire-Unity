@@ -79,6 +79,22 @@ namespace AshenSpire.Domain.Core2
         /// <summary>The round whose turn-start decay already ran (JS fixCoreDecayRound): decay is once per round.</summary>
         public int? DecayRound { get; set; }
 
+        // ---- phase 5b: tactical turn, Counter and range state (JS combatMatchups.js, counterRule.js) ----------------
+        /// <summary>The prepared Counter (JS combatCounter), or null.</summary>
+        public Core2CounterState Counter { get; set; }
+        /// <summary>JS combatOwnerCycle: this combatant's turn count; a Counter and the Staggered stance lapse by it.</summary>
+        public int OwnerCycle { get; set; }
+        /// <summary>JS combatPreparationSerial: the last Counter serial issued.</summary>
+        public int PreparationSerial { get; set; }
+        /// <summary>JS combatCounterReturnedCycle: the owner cycle an automatic Counter return was spent in (one per cycle).</summary>
+        public int? CounterReturnedCycle { get; set; }
+        /// <summary>JS combatCounterStaggered: the serial of a spent Counter whose covered hit broke Poise (it still answers).</summary>
+        public int? CounterStaggeredSerial { get; set; }
+        /// <summary>JS counters.cardsPlayedThisCombat: a spell Counter stays armed only while no later card is accepted.</summary>
+        public int CardsPlayed { get; set; }
+        /// <summary>JS rangeActorKey: "player:&lt;seat&gt;" or "enemy:&lt;id&gt;"; null derives it from Side and Id.</summary>
+        public string RangeKey { get; set; }
+
         public int StatusStacks(string id) => Statuses.TryGetValue(id, out var row) ? Math.Max(0, row.Stacks) : 0;
         public int Attribute(string id) => Attributes.TryGetValue(id, out var value) ? value : 0;
         public int Rating(string id) => Ratings.TryGetValue(id, out var value) ? value : 0;
@@ -92,6 +108,7 @@ namespace AshenSpire.Domain.Core2
             copy.Ratings = new Dictionary<string, int>(Ratings, StringComparer.Ordinal);
             copy.Statuses = Statuses.ToDictionary(p => p.Key, p => p.Value.Clone(), StringComparer.Ordinal);
             copy.ConcurrentStances = new List<Core2Stance>(ConcurrentStances);
+            copy.Counter = Counter?.Clone();
             return copy;
         }
     }

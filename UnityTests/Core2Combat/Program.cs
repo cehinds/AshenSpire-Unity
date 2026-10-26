@@ -230,6 +230,262 @@ try
     var spell = Carrier("{type:'attack',tags:['camp:spell','source:spell'],combatProfile:{camp:'spell',maneuver:null,range:'reach',stanceTrigger:false},magicShare:1}");
     var against = Core2IntentProjection.Project(rules, mantis, defender, spell, 8, 1);
     Check(against.Max == 10 && against.Baseline.Max == 8 && against.Tone == "red", "a prepared Spell beats the Defend stance (×1.25): the shown range rises and stays red");
+
+    // =============================================================================================================
+    // Phase 5b. Expected values below were read from the JS game at the pin: the pure functions called directly
+    // (magicShareOf, stanceEntryBonuses, counterCoverageMatches, rangeActionPlan, movedEngagementState) and live
+    // Core 2 fights (createRunCombat, reaver, seed 511; dispatch playCard / endTurn) whose events are quoted.
+    // =============================================================================================================
+
+    // ---- Damage-type table (JS combatRatings.js magicShareOf over src/content/combatRules.js) ------------------
+    var shareCases = new (string Profile, double Share)[]
+    {
+        ("{camp:'physical',maneuver:'attack',damageType:'slashing'}", 0), ("{camp:'spell',school:'fire',damageType:'fire'}", 1),
+        ("{camp:'spell',school:'force'}", 0.5), ("{camp:'spell',school:'alteration',damageType:'piercing'}", 0), ("{camp:'spell',school:'illusion'}", 1),
+        ("{camp:'spell',reach:'melee',damageType:'blunt'}", 0.7), ("{camp:'physical',maneuver:'attack',school:'lightning'}", 0.3),
+        ("{camp:'physical',maneuver:'smash',damageType:'fire'}", 0.3), ("{camp:'physical',maneuver:'attack',damageType:'arcane'}", 0.3),
+        ("{camp:'physical',damageType:'arcane'}", 0.5), ("{camp:'physical',maneuver:'attack',damageComponents:[{type:'slashing',weight:3},{type:'fire',weight:1}]}", 0.25),
+        ("{camp:'spell',damageComponents:[{type:'frost',weight:1},{type:'earth',weight:1}]}", 0.5), ("{camp:'spell'}", 1), ("{camp:'physical'}", 0),
+        ("{camp:'spell',damageType:'earth'}", 0), ("{camp:'physical',maneuver:'attack',magicShare:0.4,school:'fire'}", 0.4), ("{camp:'spell',damageType:'cold'}", 1),
+        ("{camp:'physical',maneuver:'attack',riderSpell:true}", 0.3),
+    };
+    var shareMisses = shareCases.Where(c => Math.Abs(rules.DamageTypes.MagicShareOf(Core2CombatProfile.FromJson(JObject.Parse(c.Profile))) - c.Share) > 1e-12)
+        .Select(c => c.Profile + " → " + rules.DamageTypes.MagicShareOf(Core2CombatProfile.FromJson(JObject.Parse(c.Profile))) + " (JS " + c.Share + ")").ToList();
+    Check(shareMisses.Count == 0, "magicShareOf precedence: own share, components, sub-1 school, melee spell 0.7, technique 0.3, school, type, camp (18 JS cases)" + (shareMisses.Count == 0 ? "" : ": " + string.Join("; ", shareMisses)));
+    var forceShare = Core2Damage.Receipt(rules, Player(), Enemy(), 10, Carrier("{type:'spell',combatProfile:{camp:'spell',school:'force',range:'melee'}}"));
+    Check(forceShare.Physical == 5 && forceShare.Magical == 5, "a Force hit splits its card damage 50:50 between Block and Barrier/Poise");
+
+    // ---- Entry grants (JS stanceEntryBonuses, FixCore floor) ---------------------------------------------------
+    string Grants(string profile) => Core2Stances.EntryBonuses(rules, Carrier("{combatProfile:" + profile + "}")).ToString();
+    Equal(Grants("{camp:'spell',maneuver:'defend',school:'frost'}"), "precision 0, evade 0, block 1, barrier 2", "magical Defense entry: Frost 50:50 floors Block, Barrier takes the rest");
+    Equal(Grants("{camp:'spell',maneuver:'defend',school:'force'}"), "precision 0, evade 0, block 2, barrier 1", "magical Defense entry: Force 70:30");
+    Equal(Grants("{camp:'spell',maneuver:'defend'}"), "precision 0, evade 0, block 0, barrier 3", "magical Defense entry: default 30:70 floors to 0:3");
+    Equal(Grants("{camp:'spell',maneuver:'counter',mirrors:'counter'}"), "precision 1, evade 0, block 0, barrier 3", "a mirrored spell Counter grants both offensive Precision and the magical split");
+    Equal(Grants("{camp:'physical',maneuver:'attack',evade:{}}"), "precision 1, evade 1, block 0, barrier 0", "an Attack that authors Evade adds the auxiliary Evade stack");
+    Equal(Grants("{camp:'physical',maneuver:'defend',evade:{whileStatus:'hidden'}}"), "precision 0, evade 0, block 3, barrier 0", "a conditional Evade grants nothing until its status holds");
+    Equal(Grants("{camp:'physical',maneuver:'counter',evade:{}}"), "precision 1, evade 1, block 3, barrier 0", "an Evade Counter keeps its Counter offense (counterStance)");
+
+    // ---- Entering stances in a live fight (JS setProfileStance; reaver, seed 511) -----------------------------
+    Core2Combatant Reaver()
+    {
+        var reaver = Player("reaver");
+        reaver.Hp = reaver.MaxHp = 71;
+        reaver.Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["strength"] = 4, ["dexterity"] = 1, ["constitution"] = 1, ["wisdom"] = 1, ["intelligence"] = 1 };
+        reaver.Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 5, ["dr"] = 1, ["pr"] = 1, ["ward"] = 2, ["poise"] = 8 };
+        reaver.Poise = new Core2Pool(8, 8);
+        return reaver;
+    }
+    Core2Carrier Card(string id) => Core2Carrier.FromCard(content.Card(id));
+    var live = Core2CombatContext.NewFight(content);
+    var hero2 = Reaver();
+    var strikeEntry = Core2Stances.EnterStance(live, hero2, Card("core.strike"));
+    Check(strikeEntry.Changed && strikeEntry.Precision == 3 && hero2.StatusStacks("precision") == 3 && hero2.Stance.ToString() == "physical/attack/melee",
+        "Strike enters Attack: +1 Precision + the stat mix 2 = 3 (JS: precision 3)");
+    var secondStrike = Card("core.strike");
+    var again = Core2Stances.EnterStance(live, hero2, secondStrike);
+    Check(!again.Changed && again.SameStance && secondStrike.FixCoreSameStance == true && hero2.StatusStacks("precision") == 3, "a second Strike repeats no grant and is priced as same-stance");
+    var defendCard = Card("core.defend");
+    Core2Stances.EnterStance(live, hero2, defendCard);
+    hero2.Poise.Value = 3;
+    var defendGain1 = Core2Stances.GainBlock(live, hero2, 10, defendCard);
+    Check(defendGain1.Block == 14 && defendGain1.PoiseRestored == 5 && hero2.Poise.Value == 8 && hero2.StatusStacks("precision") == 3,
+        "Defend: 10 + DR (1 + Defend 3) = 14 Block, and the Block refills Poise 3 → 8 (JS: block 14, poise 8)");
+    var defend2 = Card("core.defend");
+    Core2Stances.EnterStance(live, hero2, defend2);
+    var defendGain2 = Core2Stances.GainBlock(live, hero2, 10, defend2);
+    Check(defendGain2.Block == 17 && defendGain2.PoiseRestored == 0 && hero2.Block == 31, "a second Defend: floor(14 × 1.25) = 17 Block; a full Poise takes no overflow (JS: block 31)");
+    Check(rules.DefenseRestore == 5 && hero2.Barrier == 0, "the 5-point Defense restore is data the configured Core 2 fight does not apply (JS setProfileStance)");
+    var dodger3 = Reaver();
+    var evadeEntry = Core2Stances.EnterStance(live, dodger3, Card("core.evade"));
+    Check(evadeEntry.Changed && evadeEntry.Evade == 0 && dodger3.Stance.Maneuver == "evade" && dodger3.StatusStacks("evade") == 0,
+        "Evade enters the Evade stance; its own applyStatus is the stack, so entry adds none (JS: evade 1 after its effect)");
+    var caster2 = Reaver();
+    Core2Stances.EnterStance(live, caster2, Card("core.cantrip"));
+    Check(caster2.Stance.ToString() == "spell/attack/melee/mirrored" && caster2.StatusStacks("precision") == 3, "Arcane Spark: the mirrored Attack stance in the spell camp, +3 Precision");
+    Core2Stances.EnterStance(live, caster2, Card("core.manaSurge"));
+    Check(caster2.Stance.Maneuver == "prepared" && caster2.Stance.Camp == "spell" && caster2.StatusStacks("precision") == 6, "Mana Surge then enters Prepared (spell): a new stance, Precision 6 (JS)");
+    Check(Core2Stances.StanceRatingBonus(rules, caster2, "pr") == 1 && Core2Stances.StanceRatingBonus(rules, caster2, "ar") == 0, "Prepared raises PR, not AR");
+
+    // ---- Counter: one exchange (JS: core.counter, then wanderingSoldier's Slash 8; enemy d20 10, return d20 14) -------
+    Core2Combatant Soldier()
+    {
+        var soldier = Enemy(new Core2Stance("attack"));
+        soldier.Id = "e1"; soldier.Hp = soldier.MaxHp = 33; soldier.Poise = new Core2Pool(5, 5);
+        soldier.Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["strength"] = 2, ["dexterity"] = 1, ["constitution"] = 3, ["wisdom"] = -1, ["intelligence"] = 0 };
+        soldier.Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 4, ["dr"] = 3, ["pr"] = 0, ["poise"] = 5, ["ward"] = 5 };
+        return soldier;
+    }
+    Core2Combatant ArmedReaver(Core2CombatContext fightCtx)
+    {
+        var reaver = Reaver();
+        var counterCard = Card("core.counter");
+        reaver.CardsPlayed += 1;
+        Core2Stances.EnterStance(fightCtx, reaver, counterCard);
+        Core2Stances.GainBlock(fightCtx, reaver, 5, counterCard);
+        Core2Counters.Arm(fightCtx, reaver, counterCard);
+        Core2Statuses.DecayAtTurnEnd(fightCtx, reaver);
+        return reaver;
+    }
+    var slash = Carrier("{type:'attack',tags:['camp:physical','maneuver:attack','damage:slashing','source:weapon','delivery:melee'],combatProfile:{camp:'physical',maneuver:'attack',damageType:'slashing',range:'melee',targeting:'single'}}");
+    var duel = Core2CombatContext.NewFight(content);
+    var countering = ArmedReaver(duel);
+    Check(countering.Block == 9 && countering.Counter?.Serial == 1 && countering.Counter.Mode == "melee" && countering.Counter.Coverage.Maneuvers.SequenceEqual(new[] { "attack", "smash" })
+        && countering.StatusStacks("precision") == 0, "Counter: 5 + DR 4 = 9 Block, a melee Counter (serial 1) covering Attack and Smash; entry Precision expires at turn end");
+    var soldier1 = Soldier();
+    var exchange = Core2Contacts.ResolveAttack(duel, soldier1, countering, slash, new[] { 8 }, new Dice(10, 14));
+    var first = exchange.Single();
+    Check(first.Covered && first.CounterConsumed && first.CounterBlock == 3 && first.Hit.Receipt.Incoming == 12 && first.Hit.Amount == 12 && first.Hit.Receipt.Blocked == 12
+        && first.Hit.Receipt.HpLoss == 0 && countering.Hp == 71 && countering.Block == 0,
+        "Slash (8 + AR 5) × 1.25 × Counter mitigation 0.75 = 12; the advantaged Counter adds floor(25% × 12) = 3 Block first: 12 blocked (JS)");
+    Check(first.Return != null && first.Return.Payload.Hp == 9 && first.Return.Payload.Poise == 4 && first.Return.Accuracy.Hit
+        && first.Return.Hit.Receipt.HpLoss == 6 && first.Return.Hit.Receipt.PoiseAbsorbed == 3 && first.Return.Hit.Receipt.Advantage && first.Return.PoiseSpent == 2,
+        "the return: 50% + 25% of 12 = 9 HP (flat: no ×1.25 though it is advantaged), Poise floor(50% × 9) = 4; Poise absorbs 3 of the 9, the drain takes the last 2 (JS)");
+    Check(soldier1.Hp == 27 && soldier1.Poise.Value == 0 && soldier1.Stance.Maneuver == "staggered" && soldier1.StatusStacks("vulnerable") == 1 && countering.CounterReturnedCycle == 0,
+        "the drain breaks the soldier's Poise: Staggered, +1 Vulnerable; the return is spent for the cycle (JS: enemy hp 27, poise 0)");
+
+    // ---- Counter against a multi-hit move (JS: fellWarden Twin Daggers 3 × 4; d20 10, return 14, then 4, 10, 7) -------
+    var warden = Enemy(new Core2Stance("attack"));
+    warden.Id = "e1"; warden.Hp = warden.MaxHp = 120; warden.Level = 5; warden.Poise = new Core2Pool(27, 27);
+    warden.Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["strength"] = 8, ["dexterity"] = 2, ["constitution"] = 1, ["wisdom"] = 1, ["intelligence"] = 0 };
+    warden.Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 9, ["dr"] = 6, ["pr"] = 0, ["poise"] = 27, ["ward"] = 15 };
+    var daggers = Carrier("{type:'attack',tags:['camp:physical','maneuver:attack','damage:piercing','source:weapon','delivery:melee'],combatProfile:{camp:'physical',maneuver:'attack',damageType:'piercing',range:'melee',targeting:'single'}}");
+    var flurryFight = Core2CombatContext.NewFight(content);
+    var flurried = ArmedReaver(flurryFight);
+    var contacts4 = Core2Contacts.ResolveAttack(flurryFight, warden, flurried, daggers, new[] { 3, 3, 3, 3 }, new Dice(10, 14, 4, 10, 7));
+    Check(contacts4.Count == 4 && contacts4[0].Covered && contacts4[0].Return?.Hit != null && contacts4.Skip(1).All(c => !c.Covered && c.Return == null),
+        "each of the 4 contacts rolls its own d20; the Counter intercepts and answers only the first (one charge, one return per cycle)");
+    Check(warden.Hp == 114 && warden.Poise.Value == 20, "the first contact's return: 6 HP through the warden's Poise (3 absorbed), then 4 Poise (JS: hp 114, poise 20)");
+    Check(contacts4.Select(c => c.Hit.Receipt.HpLoss).SequenceEqual(new[] { 0, 9, 9, 10 }) && flurried.Hp == 43 && flurried.Poise.Value == 0,
+        "the later contacts land 12 each into Poise: 9, 9, then 10 as the last 2 Poise go (JS: player hp 43)");
+    Check(flurried.Stance.Maneuver == "staggered" && flurried.StatusStacks("vulnerable") == 1 && flurried.PendingStaminaLoss == 1 && flurried.Stance.ExpiresOnOwnerCycle == 1,
+        "the fourth contact breaks the player's Poise: Staggered until the next turn, +1 Vulnerable, -1 SP owed");
+    Core2Counters.StartTacticalTurn(flurried);
+    Check(flurried.Stance == null && flurried.Counter == null && flurried.OwnerCycle == 1 && !Core2Counters.ReturnSpent(flurried), "the owner's next turn ends the Staggered stance and the spent Counter; a new cycle may return again");
+
+    // ---- Counter rules the exchange does not reach -------------------------------------------------------------
+    var missFight = Core2CombatContext.NewFight(content);
+    var dodgedCounter = ArmedReaver(missFight);
+    var missed = Core2Contacts.ResolveAttack(missFight, Soldier(), dodgedCounter, slash, new[] { 8 }, new Dice(1)).Single();
+    Check(missed.Covered && !missed.CounterConsumed && missed.Hit == null && missed.Return == null && dodgedCounter.Counter.Charges == 1,
+        "a covered attack that misses neither consumes the Counter nor draws a return");
+    var smashFight2 = Core2CombatContext.NewFight(content);
+    var smashed = ArmedReaver(smashFight2);
+    var smashMove = Carrier("{type:'attack',combatProfile:{camp:'physical',maneuver:'smash',range:'melee',targeting:'single'}}");
+    var smashHit = Core2Contacts.ResolveAttack(smashFight2, Soldier(), smashed, smashMove, new[] { 8 }, new Dice(10, 14)).Single();
+    Check(smashHit.Covered && smashHit.CounterBlock > 0 && smashHit.Return?.Payload.Hp > 0, "Counter beats Smash too: advantaged Block and return");
+    var sweepFight = Core2CombatContext.NewFight(content);
+    var sweptCounter = ArmedReaver(sweepFight);
+    var sweepMove = Carrier("{type:'attack',combatProfile:{camp:'physical',maneuver:'sweep',range:'melee'}}");
+    var swept = Core2Contacts.ResolveAttack(sweepFight, Soldier(), sweptCounter, sweepMove, new[] { 8 }, new Dice(10)).Single();
+    Check(!swept.Covered && swept.Return == null && sweptCounter.Counter.Charges == 1 && swept.Hit.Receipt.Advantage,
+        "a Sweep is area targeting: no Counter covers it, and Sweep beats the Counter stance (×1.25)");
+    var cover = rules.CounterDefaultCoverage["melee"];
+    Core2CombatProfile Prof(string json) => Core2CombatProfile.FromJson(JObject.Parse(json));
+    Check(Core2Counters.CoverageMatches(cover, Prof("{camp:'physical',range:'melee',targeting:'single',maneuver:'attack'}"))
+        && !Core2Counters.CoverageMatches(cover, Prof("{camp:'physical',range:'reach',targeting:'single',maneuver:'attack'}"))
+        && !Core2Counters.CoverageMatches(cover, Prof("{camp:'spell',range:'melee',targeting:'single',maneuver:'attack'}"))
+        && Core2Counters.CoverageMatches(cover, Prof("{camp:'physical',range:'melee',targeting:'single',maneuver:'counter',counterReturnAttack:true}"))
+        && !Core2Counters.CoverageMatches(cover, Prof("{camp:'physical',range:'melee',targeting:'single',maneuver:'attack'}"), "status"),
+        "default melee coverage: physical melee single Attack/Smash damage; a return reads as an Attack (JS counterCoverageMatches)");
+    var lapsed = ArmedReaver(Core2CombatContext.NewFight(content));
+    Core2Counters.StartTacticalTurn(lapsed);
+    Check(lapsed.Counter == null && Core2Counters.Prepared(live, lapsed) == null, "a Counter lapses at its owner's next turn");
+    var leftStance = ArmedReaver(Core2CombatContext.NewFight(content));
+    leftStance.Stance = new Core2Stance("attack");
+    Check(Core2Counters.Prepared(live, leftStance) == null, "a Counter answers only while its owner stands in Counter");
+
+    // ---- Spell Counters (JS profileStance.js isSpellCounter / armsAsCoreCounter; preparedCounter) ------------------
+    var frostCounter = Carrier("{type:'spell',tags:['camp:spell','maneuver:counter','school:frost'],combatProfile:{camp:'spell',maneuver:'counter',school:'frost',range:'reach',counterCoverage:{camps:['spell'],ranges:['melee','reach','ranged'],targeting:['single'],effects:['damage','status']}}}");
+    Check(Core2Counters.IsSpellCounter(frostCounter) && Core2Counters.ArmsAsCoreCounter(rules, frostCounter) && Core2Stances.ConfiguredStance(frostCounter) == "prepared",
+        "a spell-camp counter maneuver with coverage is a spell Counter: it arms, standing in Prepared");
+    Check(!Core2Counters.IsSpellCounter(Carrier("{type:'spell',combatProfile:{camp:'spell',maneuver:'counter'}}")), "without authored coverage a spell is not a Counter");
+    var spellFight = Core2CombatContext.NewFight(content);
+    var mage = Reaver();
+    mage.CardsPlayed = 1;
+    Core2Stances.EnterStance(spellFight, mage, frostCounter);
+    var spellArmed = Core2Counters.Arm(spellFight, mage, frostCounter);
+    Check(mage.Stance.Maneuver == "prepared" && spellArmed.Mode == "spell" && spellArmed.Coverage.Camps.SequenceEqual(new[] { "spell" }) && Core2Counters.Prepared(spellFight, mage) != null,
+        "a spell Counter arms in spell mode with its authored coverage while its owner stands in Prepared");
+    var bolt = Carrier("{type:'attack',combatProfile:{camp:'spell',maneuver:'casting',school:'fire',damageType:'fire',range:'ranged',targeting:'single'}}");
+    var caster3 = Enemy(new Core2Stance("casting", "spell", "ranged"));
+    caster3.Hp = caster3.MaxHp = 40; caster3.Poise = new Core2Pool(4, 4);
+    var spellExchange = Core2Contacts.ResolveAttack(spellFight, caster3, mage, bolt, new[] { 8 }, new Dice(10, 14)).Single();
+    Check(spellExchange.Covered && spellExchange.CounterBlock == 0 && spellExchange.Return?.Payload.Hp == spellExchange.Incoming / 2 && spellExchange.Return.Payload.Poise == (int)Math.Floor(0.2 * spellExchange.Return.Payload.Hp),
+        "a spell Counter answers a covered spell: not advantaged (Counter beats only Attack and Smash), so 50% HP and 20% of that as Poise, no Block");
+    mage.CardsPlayed += 1;
+    mage.Counter = spellArmed; spellArmed.Charges = 1;
+    Check(Core2Counters.Prepared(spellFight, mage) == null, "any later accepted card disarms a spell Counter, whatever stance it leaves");
+
+    // ---- Reactive Sweep riders (JS prepareTacticalCard) ---------------------------------------------------------
+    var sweepCard = Card("core.sweep");
+    Check(Core2Counters.ReactiveSweepRiders(rules, sweepCard, Prof("{camp:'physical',maneuver:'attack',range:'melee'}"), true) == (3, 3)
+        && Core2Counters.ReactiveSweepRiders(rules, sweepCard, Prof("{camp:'physical',maneuver:'ranged'}"), true) == null
+        && Core2Counters.ReactiveSweepRiders(rules, sweepCard, Prof("{camp:'spell',maneuver:'casting',range:'melee'}"), true) == null
+        && Core2Counters.ReactiveSweepRiders(rules, sweepCard, Prof("{camp:'physical',maneuver:'attack',range:'melee'}"), false) == null,
+        "a Sweep played as a reaction to a physical melee attack adds 3 Poise and 3 Ward damage; nothing otherwise");
+
+    // ---- Range and Advance (JS model/combatEngagement.js, quoted plans) ---------------------------------------------
+    Check(rules.RangePolicy.Enabled && rules.RangePolicy.AdvanceSpPerBand == 1 && rules.RangePolicy.ReachPrecisionBonus == 1 && rules.RangePolicy.ThrowPrecisionPenalty == 1,
+        "Core 2 range policy: on, 1 SP per band, Reach +1, Throw -1");
+    var bands = Core2RangeState.Create(rules.RangePolicy, new[] { new Core2RangeActor("player:player", "melee"), new Core2RangeActor("enemy:e1", "ranged"), new Core2RangeActor("enemy:e2", "reach"), new Core2RangeActor("enemy:e3", "melee") });
+    Check(bands.Band("player:player", "enemy:e1") == 2 && bands.Band("enemy:e2", "player:player") == 1 && bands.Band("player:player", "enemy:e3") == 0 && bands.Engagements.Count == 3,
+        "each opposing pair starts at the greater starting band (JS: e1 2, e2 1, e3 0)");
+    Core2RangeSource Src(string target, string coverage, bool weapon = false, bool throwCapable = false, string weaponId = null, bool bypass = false, string id = null) =>
+        new Core2RangeSource { TargetKey = target, Coverage = coverage, Weapon = weapon, ThrowCapable = throwCapable, SourceWeaponId = weaponId, Bypass = bypass, ContactId = id };
+    string PlanText(Core2RangePlan plan) => plan.Route + " " + plan.Available + " " + plan.AdvanceSp + " [" + string.Join(" ", plan.Targets.Select(t => t.TargetKey + ":" + t.ActualBand + "/" + t.Band + "/" + t.Coverage + "/" + t.MissingBands + "/" + t.EffectiveBand + "/" + t.PrecisionDelta)) + "]";
+    Equal(PlanText(Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "melee"), Src("enemy:e2", "melee"), Src("enemy:e3", "melee") })),
+        "advance True 2 [enemy:e1:2/2/0/2/0/0 enemy:e2:1/1/0/1/0/0 enemy:e3:0/0/0/0/0/0]", "Advance pays the greatest gap once (2 SP) and closes each pair by its own gap");
+    var thrown = Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e2", "melee", true, true, "dagger") }, "throw");
+    Equal(PlanText(thrown), "throw True 0 [enemy:e2:1/1/0/1/1/-1]", "a Throw-capable dagger reaches one band further at -1 Precision, no SP");
+    Equal(PlanText(Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "melee", true, true) }, "throw")), "throw False 0 [enemy:e1:2/2/0/2/2/-1]", "Throw cannot cover two bands");
+    Equal(PlanText(Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e3", "reach", true, false, "halberd"), Src("enemy:e2", "reach", true) })),
+        "advance True 0 [enemy:e3:0/0/1/0/0/1 enemy:e2:1/1/1/0/1/0]", "a Reach weapon gains +1 Precision only at actual Melee engagement");
+    Equal(PlanText(Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "melee", bypass: true) })), "advance True 0 [enemy:e1:2/2/0/0/2/0]", "a range bypass waives approach and does not move the pair");
+    Equal(PlanText(Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "ranged", true, false, "shortbow"), Src("enemy:e1", "melee", true, false, "dagger", id: "b") })),
+        "advance True 2 [enemy:e1:2/2/2/0/0/0 enemy:e1:2/2/0/2/0/0]", "a bow and a dagger at one opponent share one approach: both meet the closed distance");
+    var rangeOff = Core2RangeState.Create(new Core2RangePolicy(enabled: false), new[] { new Core2RangeActor("player:player"), new Core2RangeActor("enemy:e1", "ranged") });
+    Check(PlanText(Core2Range.ActionPlan(rangeOff, "player:player", new[] { Src("enemy:e1", "melee") })) == "advance True 0 [enemy:e1:2/2/0/0/2/0]"
+        && !Core2Range.ActionPlan(rangeOff, "player:player", new[] { Src("enemy:e1", "melee") }, "throw").Available
+        && Core2Range.HitContact(rangeOff, "player:player", Src("enemy:e1", "melee")).InRange, "range off: no gaps, no Throw route, everything connects");
+    var moved = bands.Moved("player:player", "enemy:e1", -1).Moved("player:player", "enemy:e3", -1);
+    Check(moved.Band("player:player", "enemy:e1") == 1 && moved.Band("player:player", "enemy:e3") == 0 && bands.Band("player:player", "enemy:e1") == 2 && rangeOff.Moved("player:player", "enemy:e1", -1) == rangeOff,
+        "Advance closes one band (clamped at Melee); the old state is untouched; range off moves nothing (JS movedEngagementState)");
+    Check(Core2Range.MovementBands(content.Card("core.advance")).SequenceEqual(new[] { -1 }) && Core2Range.MovementBands(content.Card("core.backstep")).SequenceEqual(new[] { 1 })
+        && Core2Range.PureEngagementMovement(content.Card("core.advance")) && !Core2Range.PureEngagementMovement(content.Card("core.closingDodge"))
+        && !Core2Range.RangeCardPlayable(rangeOff, content.Card("core.advance")) && Core2Range.RangeCardPlayable(rangeOff, content.Card("core.closingDodge")),
+        "Advance and Closing Dodge close a band, Backstep retreats; a movement-only card refuses play with range off, Closing Dodge keeps its Evade");
+    var incomingRoot = Core2Range.ActionPlan(bands, "enemy:e1", new[] { Src("player:player", "melee") });
+    var nested = Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "melee", true) }, "advance", incomingRoot);
+    Check(incomingRoot.AdvanceSp == 2 && PlanText(nested) == "advance True 0 [enemy:e1:2/0/0/0/0/0]", "a nested return meets the incoming root's closed distance and pays no Advance (JS)");
+    Check(!Core2Range.HitContact(bands, "player:player", Src("enemy:e1", "melee")).InRange && Core2Range.HitContact(bands, "player:player", Src("enemy:e1", "melee"), Core2Range.ActionPlan(bands, "player:player", new[] { Src("enemy:e1", "melee") })).InRange
+        && Core2Range.HitContact(bands, "player:player", Src("enemy:e2", "melee", true, true, "dagger"), thrown).InRange,
+        "unplanned, a melee attack at Ranged is out of reach; its Advance plan (or a Throw plan one band out) connects");
+    var initial = Core2Range.Initialize(rules, Player(), "melee", new[] { (Enemy(), content.Enemy("graveWisp").Raw.Value<string>("startingRange")) });
+    Equal(initial.Band("player:player", "enemy:enemy"), 1, "a fight starts each pair at the greater of the player's weapon band and the enemy's authored startingRange (Grave Wisp: reach)");
+    var reachMan = Player(); reachMan.Level = 0;
+    var halberdHit = Core2Accuracy.Preview(rules, reachMan, Enemy(), attack, new Core2HitOptions { Contact = Core2Range.HitContact(bands, "player:player", Src("enemy:e3", "reach", true, false, "halberd")) });
+    Check(halberdHit.Accuracy == Core2Accuracy.Preview(rules, reachMan, Enemy(), attack).Accuracy + 1, "the Reach bonus reaches the hit preview's Accuracy (+1)");
+
+    // ---- A Counter return that must Advance (RangeAdvance.md: the defender pays its own approach, or no return) -------
+    Core2CounterExchange ReachDuel(int stamina)
+    {
+        var fightCtx = Core2CombatContext.NewFight(content);
+        var defender = ArmedReaver(fightCtx);
+        defender.Stamina = stamina;
+        var pike = Soldier(); pike.Id = "e2";
+        var state = Core2RangeState.Create(rules.RangePolicy, new[] { new Core2RangeActor("player:player"), new Core2RangeActor("enemy:e2", "reach") });
+        var halberd = Src("player:player", "reach", true, false, "halberd");
+        var plan = Core2Range.ActionPlan(state, "enemy:e2", new[] { halberd });
+        var result = Core2Contacts.ResolveAttack(fightCtx, pike, defender, slash, new[] { 8 }, new Dice(10, 14),
+            new Core2ActionOptions { Range = state, Plan = plan, AttackSource = _ => halberd, ReturnSource = Src("enemy:e2", "melee", true, false, "greatsword") }).Single();
+        Check(plan.AdvanceSp == 0 && result.Covered && result.CounterConsumed && defender.Stamina == Math.Max(0, stamina - 1) && pike.Hp == (stamina >= 1 ? 27 : 33),
+            "a halberd at Reach needs no Advance; the defender's melee return needs 1 band (" + stamina + " SP held)");
+        return result.Return;
+    }
+    var refused = ReachDuel(0);
+    Check(refused != null && refused.RangeRefused && refused.Hit == null, "an unaffordable return Advance skips the return; the interception (Block) stands");
+    var paidReturn = ReachDuel(2);
+    Check(paidReturn.Plan.AdvanceSp == 1 && paidReturn.Hit.Receipt.HpLoss == 6, "with SP to spare the defender pays 1 SP to close and the return lands");
 }
 catch (Exception error)
 {

@@ -10,8 +10,9 @@
 //                      enumerated and the shown % is floor(100 × hits / outcomes)
 //   diceHit            FixCore ("strict natural"): the kept die hits on 20, misses on 1, else hits when die ≥ need
 //   resolveAttackHit   rolls the 'combatAvoidance' stream; a miss against held Evade spends one Evade stack
-// Range engagement (src/engine/combatEngagement.js rangeHitContact) is phase 5b: a caller passes the contact it
-// computed; without one the carrier's range is compared with the range the target holds.
+// Range engagement (src/engine/combatEngagement.js rangeHitContact) is Core2Range.HitContact: a range-aware fight passes
+// the contact it computed; without one the carrier's range is compared with the range the target holds (JS: a fight
+// with no rangeState).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,10 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS proposal.unavoidable: the hit bypasses Evasion.</summary>
         public bool Unavoidable { get; set; }
         public bool EvadeDisabled { get; set; }
-        /// <summary>JS carrier.counterRequiredRange.</summary>
+        /// <summary>JS carrier.counterRequiredRange (else the carrier's own CounterRequiredRange).</summary>
         public string RequiredRange { get; set; }
+        /// <summary>The hit is one contact of an action whose Accuracy was rolled when it began (JS carrier.expansionContact): no second roll.</summary>
+        public bool AccuracyResolved { get; set; }
     }
 
     public sealed class Core2HitPreview
@@ -132,7 +135,7 @@ namespace AshenSpire.Domain.Core2
             // A spell stance at Reach is delivery, not a held distance: melee still connects (owner bug, 2026-10-18).
             var held = target.Stance;
             var delivery = held != null && held.Camp == "spell" && held.Range == "reach";
-            var requiredRange = options.RequiredRange ?? (delivery ? "melee" : held?.Range) ?? "melee";
+            var requiredRange = options.RequiredRange ?? carrier?.CounterRequiredRange ?? (delivery ? "melee" : held?.Range) ?? "melee";
             var rangeOverride = profile.RangeOverride || profile.Traits.Contains("adequateReach");
             var inRange = options.Contact != null ? options.Contact.InRange
                 : rangeOverride || Core2Stances.RangeIndex(range) >= 0 && Core2Stances.RangeIndex(requiredRange) >= 0 && Core2Stances.RangeIndex(range) >= Core2Stances.RangeIndex(requiredRange);

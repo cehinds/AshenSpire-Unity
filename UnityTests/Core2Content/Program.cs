@@ -6,9 +6,10 @@
 // 2. The Resources/Core2 mirror is byte-identical and every asset has a Unity .meta.
 // 3. The JS oracle fixtures (Oracles/*.json, tools/oracle-js-core2.mjs) come from the same commit
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
-//    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges) are
-//    replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs); families whose
-//    rules arrive in phase 5b/5c are reported PENDING with the reason.
+//    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges) and
+//    5b families (matchups, Counter returns) are replayed case by case through
+//    Runtime/Domain/Core2/Combat (OracleReplay.cs); families whose rules arrive in phase 5c (enemy
+//    planning, then whole scripted fights) are reported PENDING with the reason.
 using System.Text;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain.Core2;
@@ -152,8 +153,8 @@ try
         ["hit-chance"] = null,
         ["poise-absorb"] = null,
         ["damage-ranges"] = null,
-        ["matchups"] = "phase 5b ports maneuver stances, entry grants, ratings and matchups",
-        ["counter-return"] = "phase 5b ports Counter returns",
+        ["matchups"] = null,
+        ["counter-return"] = null,
         ["enemy-planning"] = "phase 5c ports the enemy SP pool and Core 2 action planning",
         ["scripted-fights"] = "needs the whole Core 2 combat domain (phase 5a-5c)",
     };
@@ -165,6 +166,8 @@ try
         ["hit-chance"] = OracleReplay.HitChance,
         ["poise-absorb"] = OracleReplay.PoiseAbsorb,
         ["damage-ranges"] = OracleReplay.DamageRanges,
+        ["matchups"] = OracleReplay.Matchups,
+        ["counter-return"] = OracleReplay.CounterReturn,
     };
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));
     var classIds = new HashSet<string>(content.Classes.Select(c => c.Id));
@@ -220,6 +223,6 @@ catch (Exception error)
 foreach (var line in replayed) Console.WriteLine("ORACLE: " + line + " cases pass");
 foreach (var line in pending) Console.WriteLine("PENDING: " + line);
 if (failures > 0) { Console.Error.WriteLine("Core2Content: " + failures + " failed, " + checks + " passed"); return 1; }
-Console.WriteLine("Core2Content: " + replayed.Count + " oracle families replayed, " + pending.Count + " pending phase 5b/5c (listed above).");
+Console.WriteLine("Core2Content: " + replayed.Count + " oracle families replayed, " + pending.Count + " pending phase 5c (listed above).");
 Console.WriteLine("Core2Content: " + checks + " checks passed");
 return 0;

@@ -1,7 +1,8 @@
 // Core2Stances.cs — stance identity, combat profiles and the carriers (cards and enemy moves) the rules price and
 // resolve. Phase 5a needs stance identity for the same-stance Adept discount, the Spell chain, active ratings,
-// matching-stance effectiveness and stance mitigation; the stance *entry* rules (grants, Defense restore,
-// matchups beyond the damage receipt) are phase 5b.
+// matching-stance effectiveness and stance mitigation. Phase 5b adds stance entry (EnterStance: JS setProfileStance),
+// the entry grants a card face shows (EntryBonuses: stanceEntryBonuses) and Block-card Poise refill (GainBlock: JS
+// gainBlock / computeBlockGain / restorePersistentPoise).
 //
 // JS at the pin:
 //   src/model/stanceRules.js        stanceOf, sameStance, spellChain, stanceRatingBonus, stanceEffectiveness
@@ -10,6 +11,7 @@
 //   src/model/cardClassification.js cardPreparationCategory, martialStanceType
 //   src/engine/stanceMitigation.js  stanceMitigation
 //   src/model/fixCoreMechanics.js   fixCoreStaggeredStance
+//   src/engine/gameProfileCombat.js setProfileStance; src/engine/actions.js gainBlock, computeBlockGain, gainBlockAmount
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,14 +29,16 @@ namespace AshenSpire.Domain.Core2
         public bool Mirrored { get; }
         public bool CounterStance { get; }
         public string School { get; }
+        /// <summary>JS expiresOnOwnerCycle: the owner cycle at which the stance lapses (the Staggered stance, until its owner's next turn).</summary>
+        public int? ExpiresOnOwnerCycle { get; set; }
 
         public Core2Stance(string maneuver, string camp = "physical", string range = "melee", bool mirrored = false, bool counterStance = false, string school = null)
         {
             Maneuver = maneuver; Camp = camp ?? "physical"; Range = range ?? "melee"; Mirrored = mirrored; CounterStance = counterStance; School = school;
         }
 
-        /// <summary>JS fixCoreStaggeredStance: the stance a Poise break puts its owner in.</summary>
-        public static Core2Stance Staggered() => new Core2Stance("staggered");
+        /// <summary>JS fixCoreStaggeredStance: the stance a Poise break puts its owner in, until its owner's next turn begins.</summary>
+        public static Core2Stance Staggered(int ownerCycle = 0) => new Core2Stance("staggered") { ExpiresOnOwnerCycle = ownerCycle + 1 };
 
         public static Core2Stance FromJson(JToken token)
         {
@@ -70,11 +74,32 @@ namespace AshenSpire.Domain.Core2
         public bool Projectile { get; set; }
         public bool RangeOverride { get; set; }
         public List<string> Traits { get; set; } = new List<string>();
+        /// <summary>The single damage type (damage:&lt;type&gt; tag or authored), null for none or a mixed hit (JS damageType).</summary>
+        public string DamageType { get; set; }
+        /// <summary>JS physicalDamageType: the physical part's type when the profile authors it.</summary>
+        public string PhysicalDamageType { get; set; }
+        /// <summary>JS profile.reach (an authored delivery reach; magicShareOf's melee-spell test reads it).</summary>
+        public string Reach { get; set; }
+        /// <summary>JS riderSpell: a physical maneuver carrying a spell rider is a technique.</summary>
+        public bool RiderSpell { get; set; }
+        /// <summary>JS damageComponents: the weighted parts of a mixed hit.</summary>
+        public List<Core2DamageComponent> DamageComponents { get; set; } = new List<Core2DamageComponent>();
+        /// <summary>JS profile.magicShare: an authored share that overrides the damage-type table.</summary>
+        public double? MagicShare { get; set; }
+        /// <summary>JS counterMode (counter:melee|ranged|spell tag): which Counter a counter maneuver prepares.</summary>
+        public string CounterMode { get; set; }
+        /// <summary>JS targeting: single or area (a Sweep is area).</summary>
+        public string Targeting { get; set; }
+        /// <summary>JS counterCoverage: what an authored Counter answers; null takes the mode's default.</summary>
+        public Core2CounterCoverage CounterCoverage { get; set; }
+        /// <summary>JS counterReturnAttack: this hit is a Counter's return (a flat, final pre-protection amount).</summary>
+        public bool CounterReturnAttack { get; set; }
 
         public Core2CombatProfile Clone()
         {
             var copy = (Core2CombatProfile)MemberwiseClone();
             copy.Traits = new List<string>(Traits);
+            copy.DamageComponents = new List<Core2DamageComponent>(DamageComponents);
             return copy;
         }
 
@@ -96,8 +121,19 @@ namespace AshenSpire.Domain.Core2
                 Projectile = row["projectile"] != null && row["projectile"].Type != JTokenType.Null && !(row["projectile"].Type == JTokenType.Boolean && !(bool)row["projectile"]),
                 RangeOverride = (bool?)row["rangeOverride"] == true || (bool?)row["adequateReach"] == true,
                 Traits = Core2Json.Strings(row["traits"]).ToList(),
+                DamageType = (string)row["damageType"], PhysicalDamageType = (string)row["physicalDamageType"], Reach = (string)row["reach"],
+                RiderSpell = row["riderSpell"] != null && row["riderSpell"].Type != JTokenType.Null && !(row["riderSpell"].Type == JTokenType.Boolean && !(bool)row["riderSpell"]),
+                DamageComponents = Components(row["damageComponents"]),
+                MagicShare = row["magicShare"]?.Type == JTokenType.Integer || row["magicShare"]?.Type == JTokenType.Float ? (double)row["magicShare"] : (double?)null,
+                CounterMode = (string)row["counterMode"], Targeting = (string)row["targeting"],
+                CounterCoverage = row["counterCoverage"] is JObject coverage ? Core2CounterCoverage.FromJson(coverage) : null,
+                CounterReturnAttack = (bool?)row["counterReturnAttack"] ?? false,
             };
         }
+
+        internal static List<Core2DamageComponent> Components(JToken token) => token is JArray rows
+            ? rows.OfType<JObject>().Select(c => new Core2DamageComponent((string)c["type"], c["weight"]?.Type == JTokenType.Integer || c["weight"]?.Type == JTokenType.Float ? (double)c["weight"] : 0)).ToList()
+            : new List<Core2DamageComponent>();
     }
 
     /// <summary>
@@ -123,12 +159,29 @@ namespace AshenSpire.Domain.Core2
         public int BaseSp { get; set; }
         /// <summary>Authored MP before any discount (JS resourceCosts.mp ?? manaCost).</summary>
         public int BaseMp { get; set; }
-        /// <summary>Hit's magic share when the damage typing is supplied (JS magicShareOf); null reads the camp (spell = 1).</summary>
+        /// <summary>The carrier's own magic share (JS carrier.magicShare), which overrides the damage-type table; null reads the table.</summary>
         public double? MagicShare { get; set; }
+        /// <summary>JS def.damageSchool ("physical", "magic", …): cardIsMagical reads it first.</summary>
+        public string DamageSchool { get; set; }
         /// <summary>JS skipRatingBonus: the hit adds no attack rating.</summary>
         public bool SkipRatingBonus { get; set; }
         /// <summary>JS carrier.fixCoreSameStance: the matching-stance decision taken when the carrier entered its stance.</summary>
         public bool? FixCoreSameStance { get; set; }
+        /// <summary>JS carrier.appliedStatuses: statuses the card's own effects apply (an Evade card grants no second entry stack).</summary>
+        public List<string> AppliedStatuses { get; set; } = new List<string>();
+        /// <summary>JS carrier.counterRequiredRange: the range a Counter return must reach (the covered contacts' farthest).</summary>
+        public string CounterRequiredRange { get; set; }
+        /// <summary>JS carrier.combatReaction: a reaction-made hit (a return, a rider); it never arms or answers a Counter.</summary>
+        public bool CombatReaction { get; set; }
+
+        /// <summary>A copy with its own profile and lists.</summary>
+        public Core2Carrier Clone()
+        {
+            var copy = (Core2Carrier)MemberwiseClone();
+            copy.Tags = new List<string>(Tags); copy.KindIds = new List<string>(KindIds); copy.AppliedStatuses = new List<string>(AppliedStatuses);
+            copy.Profile = Profile?.Clone();
+            return copy;
+        }
 
         public bool HasTag(string tag) => Tags.Contains(tag);
         public bool IsReaction => Tags.Contains("trait:reaction");
@@ -148,8 +201,11 @@ namespace AshenSpire.Domain.Core2
                 XCost = card.XCost,
                 BaseSp = costs?["sp"] != null ? (int)costs["sp"] : raw["staminaCost"] != null ? card.StaminaCost : card.XCost ? 0 : card.Cost,
                 BaseMp = costs?["mp"] != null ? (int)costs["mp"] : card.ManaCost,
+                DamageSchool = Core2Json.OptionalString(raw, "damageSchool"),
+                AppliedStatuses = card.Effects.OfType<JObject>().Where(e => (string)e["op"] == "applyStatus" && e["status"] != null).Select(e => (string)e["status"]).ToList(),
             };
             carrier.Profile = Core2Stances.CombatProfileFor(carrier.Id, carrier.Tags, raw);
+            if (raw["magicShare"]?.Type == JTokenType.Integer || raw["magicShare"]?.Type == JTokenType.Float) carrier.MagicShare = (double)raw["magicShare"];
             return carrier;
         }
 
@@ -166,6 +222,10 @@ namespace AshenSpire.Domain.Core2
                 XCost = row["cost"]?.Type == JTokenType.String && (string)row["cost"] == "X",
                 MagicShare = row["magicShare"] != null && row["magicShare"].Type != JTokenType.Null ? (double)row["magicShare"] : (double?)null,
                 SkipRatingBonus = (bool?)row["skipRatingBonus"] ?? false,
+                AppliedStatuses = Core2Json.Strings(row["appliedStatuses"]).ToList(),
+                DamageSchool = (string)row["damageSchool"], BaseMp = (int?)row["manaCost"] ?? 0,
+                CounterRequiredRange = (string)row["counterRequiredRange"],
+                CombatReaction = (bool?)row["combatReaction"] ?? false,
             };
             carrier.Profile = row["combatProfile"] is JObject profile ? Core2CombatProfile.FromJson(profile) : Core2Stances.CombatProfileFor(carrier.Id, carrier.Tags, row);
             if (carrier.Profile.Mirrors == null && row["mirrors"]?.Type == JTokenType.String) carrier.Profile.Mirrors = (string)row["mirrors"];
@@ -182,6 +242,8 @@ namespace AshenSpire.Domain.Core2
         private static readonly HashSet<string> CampIds = new HashSet<string>(new[] { "physical", "spell" }, StringComparer.Ordinal);
         private static readonly HashSet<string> ManeuverIds = new HashSet<string>(new[] { "attack", "defend", "counter", "sweep", "ranged", "smash", "casting" }, StringComparer.Ordinal);
         private static readonly HashSet<string> SpellCamps = new HashSet<string>(new[] { "spell", "spells", "magic", "magical" }, StringComparer.Ordinal);
+        private static readonly HashSet<string> CounterModes = new HashSet<string>(new[] { "melee", "ranged", "spell" }, StringComparer.Ordinal);
+        private static readonly HashSet<string> TargetingIds = new HashSet<string>(new[] { "single", "area" }, StringComparer.Ordinal);
         private static readonly Dictionary<string, string> LegacyRange = new Dictionary<string, string>(StringComparer.Ordinal) { ["contact"] = "melee", ["near"] = "reach", ["far"] = "ranged" };
 
         public static string NormalizeRange(string value) => value != null && LegacyRange.TryGetValue(value, out var current) ? current : value;
@@ -205,7 +267,20 @@ namespace AshenSpire.Domain.Core2
                 School = Identity("school:", tags, null),
                 Range = Identity("range:", tags.Select(t => t.StartsWith("reach:", StringComparison.Ordinal) ? "range:" + NormalizeRange(t.Substring(6)) : t), new HashSet<string>(Ranges)),
                 Traits = tags.Where(t => t.StartsWith("trait:", StringComparison.Ordinal)).Select(t => t.Substring(6)).Distinct().ToList(),
+                CounterMode = Identity("counter:", tags, CounterModes),
+                Targeting = Identity("targeting:", tags, TargetingIds),
             };
+            // JS: the attack's components, else its damageType, else the damage:<type> tags; one type names the hit.
+            var components = raw?["attack"]?["components"] as JArray;
+            var types = (components != null ? components.Select(c => (string)c["type"])
+                : raw?["attack"]?["damageType"]?.Type == JTokenType.String ? new[] { (string)raw["attack"]["damageType"] }
+                : tags.Where(t => t.StartsWith("damage:", StringComparison.Ordinal)).Select(t => t.Substring(7))).Where(t => !string.IsNullOrEmpty(t)).Distinct().ToList();
+            profile.DamageType = types.Count == 1 ? types[0] : null;
+            if (components != null && types.Count > 1)
+            {
+                profile.DamageComponents = Core2CombatProfile.Components(components);
+                profile.DamageType = profile.DamageComponents.OrderByDescending(c => c.Weight).First().Type;
+            }
             if (raw != null)
             {
                 var reach = raw["reach"]?.Type == JTokenType.String ? NormalizeRange((string)raw["reach"]) : null;
@@ -217,6 +292,8 @@ namespace AshenSpire.Domain.Core2
                 if (raw["evade"] != null) { profile.Evade = authored.Evade; profile.EvadeWhileStatus = authored.EvadeWhileStatus; }
                 if (raw["projectile"] != null) profile.Projectile = authored.Projectile;
                 if (raw["traits"] is JArray) profile.Traits = authored.Traits;
+                if (raw["targeting"] != null) profile.Targeting = authored.Targeting;
+                if (raw["counterCoverage"] != null) profile.CounterCoverage = authored.CounterCoverage;
             }
             return profile;
         }
@@ -369,5 +446,109 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS gameProfileCombat.js advantage: the attacking stance's matchups list the defending one.</summary>
         public static bool StanceAdvantage(Core2Rules rules, string attacking, string defending) =>
             rules.StanceInclude.Contains(attacking) && rules.StanceMatchups.TryGetValue(attacking ?? "", out var beats) && beats.Contains(defending);
+
+        // ---- phase 5b: entering a stance ------------------------------------------------------------------------
+
+        /// <summary>
+        /// JS stanceEntryBonuses under FixCore: an offensive stance (Attack, Smash, Sweep, Counter, Casting, or an Evade that
+        /// keeps Counter offense) grants offensivePrecision; a defensive one (Defend, Counter, Evade) grants entryProtection,
+        /// split Block:Barrier for the spell camp by its school's share (spellBlockShare otherwise), Block floored and the
+        /// exact rest Barrier; Evade (or an auxiliary Evade the card authors) grants evadeStacks. This is what a card face
+        /// shows; a Core 2 fight grants only the Precision and Evade parts (EnterStance).
+        /// </summary>
+        public static Core2EntryGrants EntryBonuses(Core2Rules rules, Core2Carrier carrier)
+        {
+            var stance = StanceOf(carrier);
+            if (stance == null) return new Core2EntryGrants();
+            var m = stance.Maneuver;
+            var offensive = stance.CounterStance || m == "attack" || m == "smash" || m == "sweep" || m == "counter" || m == "casting";
+            var defensive = m == "defend" || m == "counter" || m == "evade";
+            var amount = defensive ? rules.EntryProtection : 0;
+            var share = stance.School != null && rules.SchoolBlockShares.TryGetValue(stance.School, out var school) ? school : rules.SpellBlockShare;
+            var block = stance.Camp == "spell" ? (int)Math.Floor(amount * share) : amount;
+            var profile = carrier.Profile ?? new Core2CombatProfile();
+            var auxiliaryEvade = profile.Evade && profile.EvadeEligible != false && (profile.EvadeWhileStatus == null || profile.EvadeEligible == true);
+            return new Core2EntryGrants
+            {
+                Precision = offensive ? rules.OffensivePrecision : 0, Evade = m == "evade" || auxiliaryEvade ? rules.EvadeStacks : 0,
+                Block = block, Barrier = amount - block,
+            };
+        }
+
+        /// <summary>
+        /// JS setProfileStance (configured profile, FixCore) — what accepting a card does to its player's or enemy's stance:
+        /// the matching-stance decision is taken first (it prices the card's effects ×1.25); the entity then stands in the
+        /// card's configured stance (Neutral when the stances module does not include it), carrying the card's camp and range
+        /// (a mirrored Spell keeps its basic's stance in the spell camp). Only a real stance change grants: Precision of
+        /// offensivePrecision + the stat mix, and the Evade stack unless the card applies Evade itself. A Core 2 fight grants
+        /// no entry Block or Barrier and no 5-point Defense restore (those are the non-configured expansion path); a Block
+        /// card's Poise refill is GainBlock. Stance capacity is 1 in Core 2, so no concurrent stance is remembered.
+        /// </summary>
+        public static Core2StanceEntry EnterStance(Core2CombatContext ctx, Core2Combatant entity, Core2Carrier carrier)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            var rules = ctx.Rules;
+            if (carrier != null && carrier.FixCoreSameStance == null) carrier.FixCoreSameStance = SameStance(entity, carrier);
+            var previous = entity.Stance;
+            var changed = !SameStance(entity, carrier);
+            var grants = changed ? EntryBonuses(rules, carrier) : null;
+            var name = ConfiguredStance(carrier);
+            var mirrored = MirroredManeuver(carrier) != null;
+            entity.Stance = rules.StanceInclude.Contains(name)
+                ? new Core2Stance(name, mirrored ? "spell" : carrier?.Profile?.Camp ?? "physical", carrier?.Profile?.Range ?? "melee", mirrored)
+                : new Core2Stance("neutral", "physical", "melee");
+            var precision = grants != null && grants.Precision > 0 ? Core2Accuracy.PrecisionEntryGrant(rules, entity, grants.Precision) : 0;
+            if (precision > 0) Core2Statuses.Apply(ctx, entity, "precision", precision, persistent: carrier.Tags.Contains("trait:persistent"));
+            var evade = grants != null && grants.Evade > 0 && !carrier.AppliedStatuses.Contains("evade") ? grants.Evade : 0;
+            if (evade > 0) Core2Statuses.Apply(ctx, entity, "evade", evade);
+            entity.ConcurrentStances.Clear();
+            return new Core2StanceEntry { Previous = previous, Stance = entity.Stance, Changed = changed, SameStance = carrier?.FixCoreSameStance == true, Precision = precision, Evade = evade };
+        }
+
+        /// <summary>
+        /// JS gainBlock for a card or move under FixCore: Block = floor((base + DR × defenseRatingWeight) × matching-stance
+        /// effectiveness) (computeBlockGain, configured branch; none when the profile has no Block defense); the Block a card
+        /// lays down also refills Poise by the same amount, up to its maximum, with no overflow (gainBlockAmount →
+        /// restorePersistentPoise). Ward is off in Core 2, so it is not refilled. Returns the Block gained and Poise restored.
+        /// </summary>
+        public static (int Block, int PoiseRestored) GainBlock(Core2CombatContext ctx, Core2Combatant entity, int baseBlock, Core2Carrier carrier)
+        {
+            if (entity == null || !entity.Alive) return (0, 0);
+            var rules = ctx.Rules;
+            var amount = rules.BlockDefense
+                ? Math.Max(0, (int)Math.Floor((baseBlock + Core2Statuses.RatingValue(rules, entity, "dr") * rules.DefenseRatingWeight) * StanceEffectiveness(rules, entity, carrier)))
+                : 0;
+            entity.Block += amount;
+            var restored = 0;
+            if (amount > 0 && carrier != null && entity.Poise != null)
+            {
+                restored = Math.Min(Math.Max(0, entity.Poise.Max - entity.Poise.Value), amount);
+                entity.Poise.Value += restored;
+            }
+            return (amount, restored);
+        }
+    }
+
+    /// <summary>JS stanceEntryBonuses result.</summary>
+    public sealed class Core2EntryGrants
+    {
+        public int Precision { get; set; }
+        public int Evade { get; set; }
+        public int Block { get; set; }
+        public int Barrier { get; set; }
+        public override string ToString() => "precision " + Precision + ", evade " + Evade + ", block " + Block + ", barrier " + Barrier;
+    }
+
+    /// <summary>What EnterStance did.</summary>
+    public sealed class Core2StanceEntry
+    {
+        public Core2Stance Previous { get; set; }
+        public Core2Stance Stance { get; set; }
+        /// <summary>The stance identity (maneuver and camp) changed, so the entry grants applied.</summary>
+        public bool Changed { get; set; }
+        /// <summary>The card matched the stance held before it (JS carrier.fixCoreSameStance).</summary>
+        public bool SameStance { get; set; }
+        public int Precision { get; set; }
+        public int Evade { get; set; }
     }
 }

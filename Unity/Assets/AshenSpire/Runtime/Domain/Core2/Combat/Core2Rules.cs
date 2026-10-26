@@ -7,7 +7,10 @@
 //   engine/mechanics/defense.poiseProtection/mechanic.json — the Poise multiplier default (0.75), used because
 //   fixCoreMechanics.json protectionParameters is empty at the pin;
 //   legacy-adapter statuses (adapter/statuses.json) with the FixCore overrides (src/model/fixCoreMechanics.js
-//   fixCoreStatusDefinition: weak, vulnerable and staggered stack by adding).
+//   fixCoreStatusDefinition: weak, vulnerable and staggered stack by adding);
+//   src/content/combatRules.js (mechanics.json damageTypes) — the damage-type, school and magic-split table magicShareOf
+//   reads (phase 5b); combatExpansionMatchups.counter (mechanics.json counterRules) — the Counter coverage defaults;
+//   fixCoreMechanics.json counter / range — the Counter return fractions and the range policy (phase 5b).
 // No value is invented here: a missing key falls back only where the JS reader itself has a default, and the
 // fallback cites it.
 using System;
@@ -72,6 +75,14 @@ namespace AshenSpire.Domain.Core2
         public double SmashPoiseFraction { get; }
         /// <summary>defense.poiseProtection multiplier: an absorbing Poise pool lets floor(x × this) of a physical hit through.</summary>
         public double PoiseProtectionMultiplier { get; }
+        // fixCoreMechanics.counter (JS FIXCORE_COUNTER_DEFAULTS fill a missing key; fixCoreCounterRules).
+        public double CounterReturnFraction { get; }
+        public double CounterPoiseFraction { get; }
+        public double CounterAdvantageIncomingFraction { get; }
+        public double CounterAdvantagePoiseFraction { get; }
+        public double CounterAdvantageBlockFraction { get; }
+        /// <summary>fixCoreMechanics.range (JS snapshotRangePolicy over RANGE_POLICY_DEFAULTS).</summary>
+        public Core2RangePolicy RangePolicy { get; }
 
         // ---- stanceRules (src/content/stanceRules.js) ---------------------------------------------
         public int OffensiveRating { get; }
@@ -79,6 +90,16 @@ namespace AshenSpire.Domain.Core2
         public int OffensivePrecision { get; }
         public int EvadeStacks { get; }
         public int EntryProtection { get; }
+        /// <summary>stanceRules.spellBlockShare / schoolBlockShares: a spell-camp entry protection's Block part (JS stanceEntryBonuses).</summary>
+        public double SpellBlockShare { get; }
+        public IReadOnlyDictionary<string, double> SchoolBlockShares { get; }
+        /// <summary>stanceRules.defenseRestore. Read only by the non-configured (expansion) Defend path; a Core 2 fight never applies it (Core2Stances.EnterStance).</summary>
+        public int DefenseRestore { get; }
+        /// <summary>stanceRules.fallbackPoise: the Poise an un-authored Counter reply or enemy Smash carries.</summary>
+        public int FallbackPoise { get; }
+        /// <summary>stanceRules.sweepReactionPoise / sweepReactionWard: a reactive Sweep's riders against a melee physical attacker.</summary>
+        public int SweepReactionPoise { get; }
+        public int SweepReactionWard { get; }
 
         // ---- profile modules ----------------------------------------------------------------------
         public IReadOnlyList<string> StanceInclude { get; }
@@ -87,17 +108,28 @@ namespace AshenSpire.Domain.Core2
         public double StanceDefenseMitigation { get; }
         public bool StaggerOnAdvantage { get; }
         public IReadOnlyList<string> StaggerManeuvers { get; }
+        /// <summary>stances.staggerLimitPerTargetPerRound (JS claimStagger, default 1).</summary>
+        public int StaggerLimitPerTargetPerRound { get; }
         public double AttackRatingWeight { get; }
+        /// <summary>effects.defenseRatingWeight: DR's weight in a Block gain (JS computeBlockGain, configured branch).</summary>
+        public double DefenseRatingWeight { get; }
+        /// <summary>defenses.include has "block": a configured profile without it grants no Block (JS computeBlockGain).</summary>
+        public bool BlockDefense { get; }
         public IReadOnlyList<string> ResourceInclude { get; }
         /// <summary>resources.manaPerTurn; absent in Core 2, so MP is not restored at turn start (JS combat.js startPlayerTurn).</summary>
         public int ManaPerTurn { get; }
         public int HandBase { get; }
         public string HandAttribute { get; }
 
+        // ---- damage typing and Counter coverage (mechanics.json damageTypes / counterRules) -----------
+        public Core2DamageTypes DamageTypes { get; }
+        /// <summary>combatExpansionMatchups.counter.defaultCoverage by Counter mode (melee, ranged, spell).</summary>
+        public IReadOnlyDictionary<string, Core2CounterCoverage> CounterDefaultCoverage { get; }
+
         private readonly Dictionary<string, Core2StatusDefinition> _statuses;
         public IReadOnlyDictionary<string, Core2StatusDefinition> Statuses => _statuses;
 
-        public Core2Rules(JObject fixCore, JObject stanceRules, JObject modules, IEnumerable<Core2Row> statuses)
+        public Core2Rules(JObject fixCore, JObject stanceRules, JObject modules, IEnumerable<Core2Row> statuses, JObject damageTypes = null, JObject counterRules = null)
         {
             if (fixCore == null || stanceRules == null || modules == null) throw new ArgumentNullException(nameof(fixCore));
             if ((int?)fixCore["version"] != 1 || fixCore["enabled"]?.Type != JTokenType.Boolean)
@@ -132,12 +164,26 @@ namespace AshenSpire.Domain.Core2
             SmashBlockFraction = (double?)smash["blockFraction"] ?? 0.25;
             SmashPoiseFraction = (double?)smash["poiseFraction"] ?? 0.5;
             PoiseProtectionMultiplier = (double?)fixCore["protectionParameters"]?["defense.poiseProtection"]?["multiplier"] ?? 0.75;
+            var counter = fixCore["counter"] as JObject ?? new JObject();
+            CounterReturnFraction = (double?)counter["returnFraction"] ?? 0.5;
+            CounterPoiseFraction = (double?)counter["poiseFraction"] ?? 0.2;
+            CounterAdvantageIncomingFraction = (double?)counter["advantageIncomingFraction"] ?? 0.25;
+            CounterAdvantagePoiseFraction = (double?)counter["advantagePoiseFraction"] ?? 0.5;
+            CounterAdvantageBlockFraction = (double?)counter["advantageBlockFraction"] ?? 0.25;
+            RangePolicy = Core2RangePolicy.Snapshot(fixCore["range"] as JObject);
 
             OffensiveRating = (int)Num(stanceRules, "offensiveRating");
             DefensiveRating = (int)Num(stanceRules, "defensiveRating");
             OffensivePrecision = (int)Num(stanceRules, "offensivePrecision");
             EvadeStacks = (int)Num(stanceRules, "evadeStacks");
             EntryProtection = (int)Num(stanceRules, "entryProtection");
+            SpellBlockShare = Num(stanceRules, "spellBlockShare");
+            SchoolBlockShares = ((stanceRules["schoolBlockShares"] as JObject) ?? new JObject()).Properties()
+                .ToDictionary(p => p.Name, p => (double)p.Value, StringComparer.Ordinal);
+            DefenseRestore = (int)Num(stanceRules, "defenseRestore");
+            FallbackPoise = (int)Num(stanceRules, "fallbackPoise");
+            SweepReactionPoise = (int)Num(stanceRules, "sweepReactionPoise");
+            SweepReactionWard = (int)Num(stanceRules, "sweepReactionWard");
 
             var stances = Need(modules, "stances");
             StanceInclude = Core2Json.Strings(stances["include"]);
@@ -147,11 +193,18 @@ namespace AshenSpire.Domain.Core2
             StanceDefenseMitigation = (double?)stances["defenseMitigation"] ?? 0;
             StaggerOnAdvantage = (bool?)stances["staggerOnAdvantage"] ?? false;
             StaggerManeuvers = stances["staggerManeuvers"] is JArray ? Core2Json.Strings(stances["staggerManeuvers"]) : new[] { "smash" };
+            StaggerLimitPerTargetPerRound = (int?)stances["staggerLimitPerTargetPerRound"] ?? 1;
             AttackRatingWeight = (double?)modules["effects"]?["attackRatingWeight"] ?? 0;
+            DefenseRatingWeight = (double?)modules["effects"]?["defenseRatingWeight"] ?? 0;
+            BlockDefense = Core2Json.Strings(modules["defenses"]?["include"]).Contains("block");
             ResourceInclude = Core2Json.Strings(modules["resources"]?["include"]);
             ManaPerTurn = (int?)modules["resources"]?["manaPerTurn"] ?? 0;
             HandBase = (int?)modules["cards"]?["handBase"] ?? 4;
             HandAttribute = (string)modules["cards"]?["handAttribute"] ?? "intelligence";
+
+            DamageTypes = new Core2DamageTypes(damageTypes ?? throw new InvalidDataException("Core 2 rules: mechanics.json damageTypes is required (tools/export-js-core2.mjs)"));
+            var coverage = counterRules?["defaultCoverage"] as JObject ?? throw new InvalidDataException("Core 2 rules: mechanics.json counterRules.defaultCoverage is required (tools/export-js-core2.mjs)");
+            CounterDefaultCoverage = coverage.Properties().ToDictionary(p => p.Name, p => Core2CounterCoverage.FromJson(p.Value), StringComparer.Ordinal);
 
             var overrides = statusRules["overrides"] as JObject ?? new JObject();
             _statuses = new Dictionary<string, Core2StatusDefinition>(StringComparer.Ordinal);
@@ -171,7 +224,7 @@ namespace AshenSpire.Domain.Core2
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             return new Core2Rules(content.Mechanics["fixCoreMechanics"] as JObject, content.Mechanics["stanceRules"] as JObject,
-                content.Profile["modules"] as JObject, content.Statuses);
+                content.Profile["modules"] as JObject, content.Statuses, content.Mechanics["damageTypes"] as JObject, content.Mechanics["counterRules"] as JObject);
         }
 
         public Core2StatusDefinition Status(string id) => _statuses.TryGetValue(id, out var row) ? row

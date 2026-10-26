@@ -1,4 +1,4 @@
-// Replays the phase 5a JS oracle families (UnityTests/Core2Content/Oracles) through the engine-free Core 2 combat
+// Replays the phase 5a and 5b JS oracle families (UnityTests/Core2Content/Oracles) through the engine-free Core 2 combat
 // domain (Runtime/Domain/Core2/Combat) and compares every case with what the JS functions returned at the pin.
 // The inputs are rebuilt exactly as tools/oracle-js-core2.mjs built them; the carrier and stance tables below are
 // copied from that tool and must change with it.
@@ -164,6 +164,31 @@ static class OracleReplay
     }
 
     // ---- Block → Poise absorb ---------------------------------------------------------------------------------
+    /// <summary>tools/oracle-js-core2.mjs strike(): one natural-20 hit from the Reaver into a 500 HP enemy, as applyAttackDamage reports it.</summary>
+    static JObject Strike(Core2Content content, int amount, int block, int poise, int vulnerable = 0, string targetStance = null, string maneuver = "attack")
+    {
+        var ctx = Core2CombatContext.NewFight(content);
+        var source = Player("reaver");
+        source.Attributes = content.Class("reaver").Attributes.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
+        var target = new Core2Combatant
+        {
+            Id = "enemy", Side = Core2Side.Enemy, Hp = 500, MaxHp = 500, Block = block,
+            Poise = new Core2Pool(poise, Math.Max(poise, 20)), Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["dexterity"] = 0 },
+            Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 0, ["dr"] = 0, ["pr"] = 0, ["ward"] = 0, ["poise"] = 20 },
+            Stance = targetStance == null ? null : new Core2Stance(targetStance, "physical", "melee"),
+        };
+        if (vulnerable > 0) target.Statuses["vulnerable"] = new Core2StatusInstance { Stacks = vulnerable };
+        var carrier = Core2Carrier.FromJson(new JObject { ["skipRatingBonus"] = true, ["combatProfile"] = new JObject { ["camp"] = "physical", ["maneuver"] = maneuver, ["range"] = "melee" } });
+        var hit = Core2Damage.ApplyAttack(ctx, source, target, amount, carrier, new FixedDice(20));
+        var receipt = hit.Receipt;
+        return new JObject
+        {
+            ["amount"] = receipt?.Amount ?? 0, ["blocked"] = receipt?.Blocked ?? 0, ["poiseAbsorbed"] = receipt?.PoiseAbsorbed ?? 0,
+            ["poiseDamage"] = receipt?.PoiseDamage ?? 0, ["hpLoss"] = 500 - target.Hp, ["blockAfter"] = target.Block, ["poiseAfter"] = target.Poise.Value,
+            ["targetStanceAfter"] = target.Stance?.Maneuver, ["vulnerableAfter"] = target.StatusStacks("vulnerable"),
+        };
+    }
+
     public static Result PoiseAbsorb(Core2Content content, JArray cases)
     {
         var result = new Result();
@@ -171,27 +196,67 @@ static class OracleReplay
         {
             var input = (JObject)row["input"];
             var expected = (JObject)row["expected"];
-            var ctx = Core2CombatContext.NewFight(content);
-            var source = Player("reaver");
-            source.Attributes = content.Class("reaver").Attributes.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
-            var poise = (int)input["poise"];
-            var target = new Core2Combatant
-            {
-                Id = "enemy", Side = Core2Side.Enemy, Hp = 500, MaxHp = 500, Block = (int)input["block"],
-                Poise = new Core2Pool(poise, Math.Max(poise, 20)), Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["dexterity"] = 0 },
-                Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 0, ["dr"] = 0, ["pr"] = 0, ["ward"] = 0, ["poise"] = 20 },
-            };
-            if ((int)input["vulnerable"] > 0) target.Statuses["vulnerable"] = new Core2StatusInstance { Stacks = (int)input["vulnerable"] };
-            var carrier = Core2Carrier.FromJson(JObject.Parse("{skipRatingBonus:true,combatProfile:{camp:'physical',maneuver:'attack',range:'melee'}}"));
-            var hit = Core2Damage.ApplyAttack(ctx, source, target, (int)input["amount"], carrier, new FixedDice(20));
-            var receipt = hit.Receipt;
-            var got = new JObject
-            {
-                ["amount"] = receipt?.Amount ?? 0, ["blocked"] = receipt?.Blocked ?? 0, ["poiseAbsorbed"] = receipt?.PoiseAbsorbed ?? 0,
-                ["poiseDamage"] = receipt?.PoiseDamage ?? 0, ["hpLoss"] = 500 - target.Hp, ["blockAfter"] = target.Block, ["poiseAfter"] = target.Poise.Value,
-                ["targetStanceAfter"] = target.Stance?.Maneuver, ["vulnerableAfter"] = target.StatusStacks("vulnerable"),
-            };
+            var got = Strike(content, (int)input["amount"], (int)input["block"], (int)input["poise"], (int)input["vulnerable"]);
             result.Compare(Show(got) == Show(expected), () => "poise " + Show(input) + ": got " + Show(got) + "; JS " + Show(expected));
+        }
+        return result;
+    }
+
+    // ---- matchups (phase 5b) -----------------------------------------------------------------------------------
+    // "hit": an Attack/Smash/Sweep into each target stance (Smash vs Defend/Prepared, the advantaged-Smash interrupt,
+    // defensive mitigation, Sweep's advantage over Counter). "stance": each player card's stance identity (stanceOf),
+    // entry grants (stanceEntryBonuses), active ratings in that stance and the matching-stance ×1.25.
+    public static Result Matchups(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        var rules = Core2Rules.From(content);
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            if ((string)input["kind"] == "hit")
+            {
+                var got = Strike(content, (int)input["amount"], (int)input["block"], (int)input["poise"], 0, (string)input["targetStance"], (string)input["maneuver"]);
+                result.Compare(Show(got) == Show(expected), () => "matchup " + Show(input) + ": got " + Show(got) + "; JS " + Show(expected));
+                continue;
+            }
+            var carrier = Core2Carrier.FromCard(content.Card((string)input["cardId"]));
+            var player = Player("reaver");
+            var stance = Core2Stances.StanceOf(carrier, player);
+            var want = Core2Stance.FromJson(expected["stance"]);
+            var identity = stance == null ? want == null : stance.SameIdentity(want);
+            var entry = Core2Stances.EntryBonuses(rules, carrier);
+            var gotEntry = new JObject { ["precision"] = entry.Precision, ["evade"] = entry.Evade, ["block"] = entry.Block, ["barrier"] = entry.Barrier };
+            var source = Player("reaver", stance);
+            JToken gotRatings = stance == null ? JValue.CreateNull()
+                : new JObject { ["ar"] = Core2Stances.StanceRatingBonus(rules, source, "ar"), ["pr"] = Core2Stances.StanceRatingBonus(rules, source, "pr"),
+                    ["dr"] = Core2Stances.StanceRatingBonus(rules, source, "dr"), ["ward"] = Core2Stances.StanceRatingBonus(rules, source, "ward") };
+            var effectiveness = stance == null ? 1 : Core2Stances.StanceEffectiveness(rules, source, carrier);
+            result.Compare(identity && Show(gotEntry) == Show(expected["entry"]) && Show(gotRatings) == Show(expected["ratings"])
+                && effectiveness == (double)expected["sameStanceEffectiveness"],
+                () => "stance " + input["cardId"] + ": got " + (stance?.ToString() ?? "none") + ", entry " + Show(gotEntry) + ", ratings " + Show(gotRatings) + ", x" + effectiveness + "; JS " + Show(expected));
+        }
+        return result;
+    }
+
+    // ---- counter returns (phase 5b) ----------------------------------------------------------------------------
+    public static Result CounterReturn(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        var rules = Core2Rules.From(content);
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            if ((string)input["kind"] == "beats")
+            {
+                var beats = Core2Counters.Beats(rules, (string)input["maneuver"]);
+                result.Compare(beats == (bool)expected["beats"], () => "counter beats " + input["maneuver"] + ": got " + beats + "; JS " + Show(expected));
+                continue;
+            }
+            var r = Core2Counters.Return(rules, (int)input["incoming"], (bool)input["advantaged"]);
+            var got = new JObject { ["hp"] = r.Hp, ["poise"] = r.Poise, ["block"] = r.Block };
+            result.Compare(Show(got) == Show(expected), () => "counter return " + Show(input) + ": got " + Show(got) + "; JS " + Show(expected));
         }
         return result;
     }
