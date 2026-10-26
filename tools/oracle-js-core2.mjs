@@ -17,7 +17,7 @@
 //                   stanceRatingBonus, stanceEffectiveness                          (phase 5b)
 //   counter-return  counterReturn, counterBeats                                     (phase 5b)
 //   enemy-planning  enemyPlanActions, enemyMoveQuote, maxStamina per enemy           (phase 5c)
-//   damage-ranges   projectCombatIntent(...).projectedDamage                         (phase 5c/6)
+//   damage-ranges   projectCombatIntent(...).projectedDamage, with its inputs        (phase 5a)
 //   scripted-fights whole fights under a fixed play policy and seed                  (phase 5 complete)
 import {join} from 'node:path';
 import {root, parseArgs, jsIdentity, requirePin, loadJs, toPlain, syncTree} from './js-core2-shared.mjs';
@@ -43,6 +43,11 @@ const {counterReturn, counterBeats} = await load('src/engine/counterRule.js');
 const {enemyMoveQuote} = await load('src/engine/combatRoundsAdapter.js');
 const {enemyPlanActions} = await load('src/engine/normalPreview.js');
 const {projectCombatIntent} = await load('src/ui/models/CombatIntentProjectionModel.js');
+const {enemyMoveCarrier, expandedEnemyMove} = await load('src/engine/combatCardTactics.js');
+const {rangeHitContact} = await load('src/engine/combatEngagement.js');
+const {proposalTargetPlan} = await load('src/engine/proposalStatusRuntime.js');
+const {attributesOf, levelOf} = await load('src/engine/counterReturn.js');
+const {magicShareOf} = await load('src/model/combatRatings.js');
 const {gameProfileStarterDeck} = await load('src/model/gameProfileRun.js');
 const {CORE2_ACTION_RULES_VERSION} = await load('src/model/core2ActionPolicy.js');
 
@@ -224,6 +229,33 @@ family('enemy-planning', 'phase 5c', 'Each enemy\'s SP pool, the opening plan it
   ['src/engine/normalPreview.js enemyPlanActions', 'src/engine/combatRoundsAdapter.js enemyMoveQuote'], planning);
 
 // ── damage ranges ──────────────────────────────────────────────────────────────────────────────
+// input.state is what the projection reads at that moment (phase 5a replays it): the attacker and
+// defender as the fight built them, the move's carrier with its magic share (damage typing), and the
+// range contact (engagement bands). Building that state (enemy planning, ratings from gear, range)
+// is phase 5b/5c/8 work; the fight-level families check it end to end.
+const statusStacks = entity => Object.fromEntries(Object.entries(entity.statuses || {}).filter(([, row]) => row?.stacks > 0).map(([id, row]) => [id, row.stacks]).sort());
+function rangeState(combat, enemy) {
+  const def = registries.enemies.get(enemy.enemyId);
+  const move = expandedEnemyMove(enemy, def.moves[enemy.intent.moveId] || {}, enemy.intent.moveId, combat);
+  const carrier = enemyMoveCarrier(enemy, move, enemy.intent.moveId, combat);
+  const contact = rangeHitContact(combat, enemy, combat.player, carrier);
+  const proposal = proposalTargetPlan(combat, enemy, combat.player, carrier);
+  const pool = row => row ? {value: row.value, max: row.max} : null;
+  return {
+    base: enemy.intent.damage ?? null, hits: enemy.intent.hits ?? 1, damageEffects: (move.effects || []).filter(row => row.op === 'damage').length,
+    attacker: {kind: enemy.kind, level: levelOf(combat, enemy), levelProfile: !!def.levelProfile, attributes: attributesOf(combat, enemy), ratings: enemy.ratings,
+      statuses: statusStacks(enemy), stance: enemy.combatStance ?? null, basePrecisionBonus: enemy.basePrecisionBonus || 0,
+      accuracyAdvantage: !!enemy.accuracyAdvantage, accuracyDisadvantage: !!enemy.accuracyDisadvantage},
+    defender: {kind: combat.player.kind, hp: combat.player.hp, block: combat.player.block || 0, barrier: combat.player.barrier || 0,
+      poise: pool(combat.player.persistentPoise), ward: pool(combat.player.persistentWard), ratings: combat.player.ratings, statuses: statusStacks(combat.player),
+      stance: combat.player.combatStance ?? null, attributes: attributesOf(combat, combat.player), level: levelOf(combat, combat.player), baseEvasionBonus: combat.player.baseEvasionBonus || 0},
+    carrier: {type: carrier.type ?? null, tags: carrier.tags || [], combatProfile: carrier.combatProfile, mirrors: carrier.mirrors ?? null,
+      magicShare: magicShareOf({...carrier.combatProfile, ...(Number.isFinite(carrier.magicShare) ? {magicShare: carrier.magicShare} : {})}, combat.ratingsRules)},
+    contact: contact ? {inRange: !!contact.inRange, precisionDelta: contact.precisionDelta || 0} : null,
+    proposal: {allowed: proposal.allowed !== false, accuracyDelta: proposal.accuracyDelta || 0, unavoidable: !!proposal.unavoidable,
+      perceptionChance: proposal.perceptionChance ?? null, evadeChance: proposal.evadeChance || 0},
+  };
+}
 const ranges = [];
 for (const enemy of registries.enemies.all()) for (const [block, stance] of [[0, null], [5, null], [0, 'defend'], [0, 'evade']]) {
   const combat = fight({enemyIds: [enemy.id]});
@@ -233,12 +265,12 @@ for (const enemy of registries.enemies.all()) for (const [block, stance] of [[0,
   if (stance) combat.player.combatStance = {camp: 'physical', maneuver: stance, range: 'melee'}; else delete combat.player.combatStance;
   const shown = projectCombatIntent(combat, live.id);
   const d = shown?.projectedDamage;
-  ranges.push({input: {classId: 'reaver', seed: 511, enemyId: enemy.id, playerBlock: block, playerStance: stance},
+  ranges.push({input: {classId: 'reaver', seed: 511, enemyId: enemy.id, playerBlock: block, playerStance: stance, ...(live.intent?.damage != null ? {state: rangeState(combat, live)} : {})},
     expected: {hidden: !!shown?.hidden, moveId: live.intent?.moveId ?? null, damage: live.intent?.damage ?? null, hits: live.intent?.hits ?? null,
       projected: d ? {min: d.min ?? null, max: d.max ?? null, label: d.label ?? null, uncertain: d.uncertain ?? null, reason: d.reason ?? null} : null}});
 }
-family('damage-ranges', 'phase 5c / 6', 'The intent damage range ("0–12") shown for each enemy\'s opening move against the player\'s current Block and stance.',
-  ['src/ui/models/CombatIntentProjectionModel.js projectCombatIntent'], ranges);
+family('damage-ranges', 'phase 5a', 'The intent damage range ("0–12") shown for each enemy\'s opening move against the player\'s current Block and stance; input.state is the projection\'s attacker, defender, carrier and range contact.',
+  ['src/ui/models/CombatIntentProjectionModel.js projectCombatIntent', 'src/engine/gameProfileCombat.js profileDamageReceipt', 'src/engine/combatDamagePreview.js applyReceiptToPreviewTarget'], ranges);
 
 // ── scripted fights ────────────────────────────────────────────────────────────────────────────
 function settle(combat) { for (let i = 0; combat.pendingReaction && i < 50; i++) dispatch(combat, {type: 'chooseReaction', offerId: combat.pendingReaction.id, optionId: null}); }

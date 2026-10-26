@@ -56,16 +56,29 @@ dotnet run --project UnityTests/Core2Content          # loads the export, checks
 - **Loader:** `Runtime/Domain/Core2` (assembly `AshenSpire.Core2`, no UnityEngine). `Core2Content`
   refuses a file whose sha256 differs from the manifest, then checks ids and cross-references.
   Gameplay does not read it yet; phase 5 (combat) and phase 8 (run layer) do.
+- **Combat domain (phase 5a):** `Runtime/Domain/Core2/Combat` (same engine-free assembly) ports the
+  JS Core 2 combat rules beside the old 0.5.5 domain, which it does not touch: the run profile
+  snapshot and per-fight `core2ActionRulesVersion` stamp (`Core2ProfileSnapshot`), the FixCore
+  values (`Core2Rules`), stance identity (`Core2Stances`), card pricing and the SP/MP turn pools
+  (`Core2Pricing`), d20 + Precision against fixed Evasion (`Core2Accuracy`), the damage chain with
+  Block, Poise absorption and the Staggered stance (`Core2Damage`), status stacking and decay
+  (`Core2Statuses`) and the intent damage range (`Core2IntentProjection`). Each type names the JS
+  file and function it ports. Nothing in the running game calls it until phase 8 switches new runs
+  to Core 2.
 - **Oracles:** each family is `{input, expected}` cases from the JS functions named in the file
   header: starter decks, card pricing (Adept, successive Spell, X cost, floors), hit chance (d20 +
   Precision against fixed Evasion, natural 1 and 20), Block then Poise absorption, stance matchups
   and entry grants, Counter returns, enemy SP planning, intent damage ranges, and five scripted
-  fights with fixed seeds. `UnityTests/Core2Content` asserts the starter decks now and lists every
-  other family as PENDING with the phase that ports it; phase 5 replaces each PENDING line with
-  real comparisons.
+  fights with fixed seeds. `UnityTests/Core2Content` replays the starter decks and the phase 5a
+  families (pricing, hit chance, Poise absorption, damage ranges) case by case through the combat
+  domain (`OracleReplay.cs`) and lists the 5b/5c families as PENDING with the phase that ports
+  them. A damage-range case carries `input.state` (attacker, defender, move carrier with its magic
+  share, range contact): the projection is phase 5a, building that state is 5b/5c.
+  `UnityTests/Core2Combat` checks the rules the oracles do not reach (snapshot refusal, pools,
+  decay, Weak, Staggered, naturals with advantage, flooring, multi-hit ranges).
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
-  both `--check`s, and runs `Core2Content` in the map-and-data shard. After a pin bump (SPEC §0.2
-  step 5), regenerate both and commit them in the same PR.
+  both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
+  shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
 
 ## The CI door: a tool's silence is not its success (#12)
 

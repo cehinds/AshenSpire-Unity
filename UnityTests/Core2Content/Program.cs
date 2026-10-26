@@ -5,9 +5,10 @@
 //    loads through the engine-free loader with every sha256, count, id and cross-reference intact.
 // 2. The Resources/Core2 mirror is byte-identical and every asset has a Unity .meta.
 // 3. The JS oracle fixtures (Oracles/*.json, tools/oracle-js-core2.mjs) come from the same commit
-//    and profile hash, are well formed, and name only ids the export contains. Families whose
-//    rules are ported in phase 5 are reported PENDING with the reason; the loader-level family
-//    (starter decks) is asserted now.
+//    and profile hash, are well formed, and name only ids the export contains. The starter decks
+//    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges) are
+//    replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs); families whose
+//    rules arrive in phase 5b/5c are reported PENDING with the reason.
 using System.Text;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain.Core2;
@@ -17,6 +18,7 @@ var root = args.Length > 0 ? args[0] : ".";
 var checks = 0;
 var failures = 0;
 var pending = new List<string>();
+var replayed = new List<string>();
 void Check(bool condition, string label)
 {
     if (condition) { checks++; Console.WriteLine("PASS: " + label); }
@@ -139,23 +141,31 @@ try
     Check(runtime.Contains("Resources.Load<TextAsset>") && runtime.Contains("Core2Content.Folder"), "Core2Resources reads the mirror through Resources.Load");
     var asmdef = JObject.Parse(Read("Unity/Assets/AshenSpire/Runtime/Domain/Core2/AshenSpire.Core2.asmdef"));
     Check((bool?)asmdef["noEngineReferences"] == true, "the Core 2 loader assembly is engine-free");
-    Check(!Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs").Any(f => File.ReadAllText(f).Contains("using UnityEngine")), "no Core 2 loader file uses UnityEngine");
+    Check(!Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).Any(f => File.ReadAllText(f).Contains("using UnityEngine")), "no Core 2 loader or combat file uses UnityEngine");
+    Check(Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).All(f => File.Exists(f + ".meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Combat.meta")), "every Core 2 source file and folder has a Unity .meta");
 
     // ---- 3. JS oracle fixtures -------------------------------------------------------------
     var expectedFamilies = new Dictionary<string, string>
     {
         ["starter-decks"] = null,
-        ["pricing"] = "phase 5a ports card pricing (SP/MP pools, Adept, successive-Spell chain, X cost, floors)",
-        ["hit-chance"] = "phase 5a ports d20 + Precision against fixed Evasion",
-        ["poise-absorb"] = "phase 5a ports Block then Poise absorption, flooring and the Staggered stance",
+        ["pricing"] = null,
+        ["hit-chance"] = null,
+        ["poise-absorb"] = null,
+        ["damage-ranges"] = null,
         ["matchups"] = "phase 5b ports maneuver stances, entry grants, ratings and matchups",
         ["counter-return"] = "phase 5b ports Counter returns",
         ["enemy-planning"] = "phase 5c ports the enemy SP pool and Core 2 action planning",
-        ["damage-ranges"] = "phase 5c and 6 port intent projection and its damage range",
         ["scripted-fights"] = "needs the whole Core 2 combat domain (phase 5a-5c)",
     };
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
     Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the nine oracle families");
+    var replays = new Dictionary<string, Func<Core2Content, JArray, OracleReplay.Result>>
+    {
+        ["pricing"] = OracleReplay.Pricing,
+        ["hit-chance"] = OracleReplay.HitChance,
+        ["poise-absorb"] = OracleReplay.PoiseAbsorb,
+        ["damage-ranges"] = OracleReplay.DamageRanges,
+    };
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));
     var classIds = new HashSet<string>(content.Classes.Select(c => c.Id));
     foreach (var name in fixtures)
@@ -190,6 +200,13 @@ try
                 Equal(string.Join(",", content.StarterDeck(classId)), expected, "starter deck for " + classId + " matches JS gameProfileStarterDeck");
             }
         }
+        else if (replays.TryGetValue(family, out var replay))
+        {
+            var outcome = replay(content, cases);
+            foreach (var failure in outcome.Failures) Console.Error.WriteLine("FAIL: " + failure);
+            Check(outcome.Cases == cases.Count && outcome.Passed == outcome.Cases, family + ": " + outcome.Passed + "/" + cases.Count + " JS oracle cases match the Core 2 combat domain");
+            replayed.Add(family + " " + outcome.Passed + "/" + cases.Count);
+        }
         else if (expectedFamilies.TryGetValue(family, out var reason) && reason != null)
             pending.Add(family + " (" + cases.Count + " cases): " + reason);
     }
@@ -200,8 +217,9 @@ catch (Exception error)
     Console.Error.WriteLine("FAIL: " + error);
 }
 
+foreach (var line in replayed) Console.WriteLine("ORACLE: " + line + " cases pass");
 foreach (var line in pending) Console.WriteLine("PENDING: " + line);
 if (failures > 0) { Console.Error.WriteLine("Core2Content: " + failures + " failed, " + checks + " passed"); return 1; }
-Console.WriteLine("Core2Content: " + pending.Count + " oracle families pending phase 5 (listed above).");
+Console.WriteLine("Core2Content: " + replayed.Count + " oracle families replayed, " + pending.Count + " pending phase 5b/5c (listed above).");
 Console.WriteLine("Core2Content: " + checks + " checks passed");
 return 0;

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Focused checks of the engine-free Core 2 combat domain (SPEC.md §0.9 phase 5a) where the JS oracle
+       families (UnityTests/Core2Content) do not reach: the run/fight snapshot, turn pools, status decay,
+       Weak, the Staggered stance, natural 1/20 with advantage, chain flooring and multi-hit projection. -->
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Core2/**/*.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,252 @@
+// Replays the phase 5a JS oracle families (UnityTests/Core2Content/Oracles) through the engine-free Core 2 combat
+// domain (Runtime/Domain/Core2/Combat) and compares every case with what the JS functions returned at the pin.
+// The inputs are rebuilt exactly as tools/oracle-js-core2.mjs built them; the carrier and stance tables below are
+// copied from that tool and must change with it.
+using System.Globalization;
+using AshenSpire.Domain.Core2;
+using Newtonsoft.Json.Linq;
+
+static class OracleReplay
+{
+    /// <summary>One family's result: cases compared, cases that matched, and the first mismatches.</summary>
+    public sealed class Result
+    {
+        public int Cases;
+        public int Passed;
+        public readonly List<string> Failures = new();
+        public void Compare(bool ok, Func<string> describe)
+        {
+            Cases++;
+            if (ok) Passed++;
+            else if (Failures.Count < 25) Failures.Add(describe());
+        }
+    }
+
+    // ---- tools/oracle-js-core2.mjs pricing carriers and stances ------------------------------------------------
+    static readonly Dictionary<string, string> PricingCarriers = new()
+    {
+        ["physicalAttack"] = "{type:'attack',combatProfile:{camp:'physical',maneuver:'attack',range:'melee'},cardTags:[]}",
+        ["physicalReaction"] = "{type:'attack',combatProfile:{camp:'physical',maneuver:'counter',range:'melee'},cardTags:['trait:reaction']}",
+        ["physicalXCost"] = "{type:'attack',cost:'X',combatProfile:{camp:'physical',maneuver:'attack',range:'melee'},cardTags:[]}",
+        ["spellCasting"] = "{type:'spell',combatProfile:{camp:'spell',maneuver:'casting',range:'ranged'},cardTags:[]}",
+        ["spellReaction"] = "{type:'spell',combatProfile:{camp:'spell',maneuver:'counter',range:'melee'},cardTags:['trait:reaction']}",
+        ["spellMirroredAttack"] = "{type:'spell',combatProfile:{camp:'spell',maneuver:'attack',mirrors:'attack',range:'melee'},cardTags:[]}",
+    };
+    static readonly Dictionary<string, string> PricingStances = new()
+    {
+        ["none"] = null,
+        ["physicalAttack"] = "{camp:'physical',maneuver:'attack',range:'melee'}",
+        ["physicalCounter"] = "{camp:'physical',maneuver:'counter',range:'melee'}",
+        ["physicalDefend"] = "{camp:'physical',maneuver:'defend',range:'melee'}",
+        ["spellCasting"] = "{camp:'spell',maneuver:'casting',range:'ranged'}",
+        ["spellMirroredAttack"] = "{camp:'spell',maneuver:'attack',mirrored:true,range:'melee'}",
+    };
+
+    sealed class FixedDice : ICore2Dice
+    {
+        private readonly int _die;
+        public FixedDice(int die) { _die = die; }
+        public int Roll(string stream, int min, int max) => _die;
+    }
+
+    static Dictionary<string, int> Ints(JToken token) => token is JObject row
+        ? row.Properties().ToDictionary(p => p.Name, p => (int)Math.Floor((double)p.Value), StringComparer.Ordinal)
+        : new Dictionary<string, int>(StringComparer.Ordinal);
+
+    static Core2Combatant Player(string classId, Core2Stance stance = null, bool unequipped = false) => new()
+    {
+        Id = "player", Side = Core2Side.Player, ClassId = classId, ClassUnequipped = unequipped, Stance = stance, Hp = 70, MaxHp = 70,
+    };
+
+    static string Show(JToken token) => token?.ToString(Newtonsoft.Json.Formatting.None) ?? "null";
+
+    // ---- pricing ---------------------------------------------------------------------------------------------
+    public static Result Pricing(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        var ctx = Core2CombatContext.NewFight(content);
+        // (class, card) pairs JS priced in their own stance: a card JS found no stance for has no in-stance row.
+        var inStance = new HashSet<string>(cases.Where(c => (string)c["input"]["kind"] == "hand" && c["input"]["stance"]?.Type == JTokenType.Object)
+            .Select(c => (string)c["input"]["classId"] + "|" + (string)c["input"]["cardId"]));
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            if ((string)input["kind"] == "rule")
+            {
+                var stanceJson = PricingStances[(string)input["stance"]];
+                var player = Player((string)input["classId"], stanceJson == null ? null : Core2Stance.FromJson(JObject.Parse(stanceJson)), (bool)input["classUnequipped"]);
+                var carrier = Core2Carrier.FromJson(JObject.Parse(PricingCarriers[(string)input["carrier"]]));
+                ctx.Phase = (string)input["phase"];
+                var baseCost = (int)input["base"];
+                var sp = Core2Pricing.StanceStaminaCost(ctx, baseCost, player, carrier, 0);
+                var spLane = Core2Pricing.StanceStaminaCost(ctx, baseCost, player, carrier, 2);
+                var mp = Core2Pricing.StanceManaCost(ctx, baseCost, player, carrier);
+                result.Compare(sp == (int)expected["sp"] && spLane == (int)expected["spWithMpLane"] && mp == (int)expected["mp"],
+                    () => "pricing rule " + Show(input) + ": got sp " + sp + ", spWithMpLane " + spLane + ", mp " + mp + "; JS " + Show(expected));
+            }
+            else
+            {
+                ctx.Phase = "player";
+                var card = Core2Carrier.FromCard(content.Card((string)input["cardId"]));
+                var stance = Core2Stance.FromJson(input["stance"]);
+                var player = Player((string)input["classId"], stance);
+                player.Stamina = (int)input["stamina"]; player.Mana = (int)input["mana"];
+                var own = Core2Stances.StanceOf(card, player);
+                var identity = stance != null ? own != null && own.SameIdentity(stance)
+                    : inStance.Contains((string)input["classId"] + "|" + (string)input["cardId"]) == (own != null);
+                string got;
+                bool ok;
+                try
+                {
+                    var costs = Core2Pricing.CardCosts(ctx, player, card);
+                    var want = expected["costs"];
+                    ok = want != null && costs.Sp == (int)want["energy"] && costs.Sp == (int)want["stamina"] && costs.Mp == (int)want["mana"];
+                    got = costs.ToString();
+                }
+                catch (Exception error) { ok = expected["error"] != null; got = "error " + error.Message; }
+                result.Compare(ok && identity, () => "pricing hand " + Show(input) + ": got " + got + ", stance " + (own?.ToString() ?? "none") + "; JS " + Show(expected));
+            }
+        }
+        return result;
+    }
+
+    // ---- hit chance ------------------------------------------------------------------------------------------
+    static Core2Combatant HitTarget(int dexterity, int evade)
+    {
+        var enemy = new Core2Combatant
+        {
+            Id = "enemy", Side = Core2Side.Enemy, Hp = 50, MaxHp = 50, Stance = new Core2Stance("attack"),
+            Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["dexterity"] = dexterity },
+        };
+        if (evade > 0) enemy.Statuses["evade"] = new Core2StatusInstance { Stacks = evade };
+        return enemy;
+    }
+
+    public static Result HitChance(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        var rules = Core2Rules.From(content);
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            if ((string)input["kind"] == "preview")
+            {
+                var attacker = (JObject)input["attacker"];
+                var mode = (string)input["mode"];
+                var source = Player("reaver");
+                source.Attributes = Ints(attacker["attributes"]);
+                source.Level = (int)attacker["level"];
+                if ((int)attacker["precision"] > 0) source.Statuses["precision"] = new Core2StatusInstance { Stacks = (int)attacker["precision"] };
+                source.AccuracyAdvantage = mode == "advantage"; source.AccuracyDisadvantage = mode == "disadvantage";
+                var target = HitTarget((int)input["target"]["dexterity"], (int)input["target"]["evade"]);
+                var carrier = Core2Carrier.FromJson(new JObject { ["combatProfile"] = input["carrier"] });
+                var p = Core2Accuracy.Preview(rules, source, target, carrier);
+                result.Compare(p.Accuracy == (int)expected["accuracy"] && p.Evasion == (int)expected["evasion"] && p.Need == (int)expected["need"]
+                    && p.Mode == (string)expected["mode"] && p.InRange == (bool)expected["inRange"] && p.HitChance == (int)expected["hitChance"],
+                    () => "hit preview " + Show(input) + ": got accuracy " + p.Accuracy + ", evasion " + p.Evasion + ", need " + p.Need + ", " + p.Mode + ", " + p.HitChance + "%; JS " + Show(expected));
+            }
+            else
+            {
+                var source = Player("reaver");
+                source.Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["strength"] = 1, ["dexterity"] = 1, ["constitution"] = 1, ["wisdom"] = 1, ["intelligence"] = 1 };
+                source.Level = 1;
+                source.BasePrecisionBonus = (int)input["basePrecisionBonus"];
+                var target = HitTarget((int)input["target"]["dexterity"], 0);
+                var carrier = Core2Carrier.FromJson(JObject.Parse("{combatProfile:{camp:'physical',maneuver:'attack',range:'melee'}}"));
+                var r = Core2Accuracy.Resolve(rules, source, target, carrier, new FixedDice((int)input["die"]));
+                result.Compare(r.Preview.Accuracy == (int)expected["accuracy"] && r.Preview.Evasion == (int)expected["evasion"] && r.Hit == (bool)expected["hit"],
+                    () => "hit roll " + Show(input) + ": got accuracy " + r.Preview.Accuracy + ", evasion " + r.Preview.Evasion + ", hit " + r.Hit + "; JS " + Show(expected));
+            }
+        }
+        return result;
+    }
+
+    // ---- Block → Poise absorb ---------------------------------------------------------------------------------
+    public static Result PoiseAbsorb(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            var ctx = Core2CombatContext.NewFight(content);
+            var source = Player("reaver");
+            source.Attributes = content.Class("reaver").Attributes.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
+            var poise = (int)input["poise"];
+            var target = new Core2Combatant
+            {
+                Id = "enemy", Side = Core2Side.Enemy, Hp = 500, MaxHp = 500, Block = (int)input["block"],
+                Poise = new Core2Pool(poise, Math.Max(poise, 20)), Attributes = new Dictionary<string, int>(StringComparer.Ordinal) { ["dexterity"] = 0 },
+                Ratings = new Dictionary<string, int>(StringComparer.Ordinal) { ["ar"] = 0, ["dr"] = 0, ["pr"] = 0, ["ward"] = 0, ["poise"] = 20 },
+            };
+            if ((int)input["vulnerable"] > 0) target.Statuses["vulnerable"] = new Core2StatusInstance { Stacks = (int)input["vulnerable"] };
+            var carrier = Core2Carrier.FromJson(JObject.Parse("{skipRatingBonus:true,combatProfile:{camp:'physical',maneuver:'attack',range:'melee'}}"));
+            var hit = Core2Damage.ApplyAttack(ctx, source, target, (int)input["amount"], carrier, new FixedDice(20));
+            var receipt = hit.Receipt;
+            var got = new JObject
+            {
+                ["amount"] = receipt?.Amount ?? 0, ["blocked"] = receipt?.Blocked ?? 0, ["poiseAbsorbed"] = receipt?.PoiseAbsorbed ?? 0,
+                ["poiseDamage"] = receipt?.PoiseDamage ?? 0, ["hpLoss"] = 500 - target.Hp, ["blockAfter"] = target.Block, ["poiseAfter"] = target.Poise.Value,
+                ["targetStanceAfter"] = target.Stance?.Maneuver, ["vulnerableAfter"] = target.StatusStacks("vulnerable"),
+            };
+            result.Compare(Show(got) == Show(expected), () => "poise " + Show(input) + ": got " + Show(got) + "; JS " + Show(expected));
+        }
+        return result;
+    }
+
+    // ---- intent damage ranges ----------------------------------------------------------------------------------
+    static Core2Combatant FromState(JObject row, string id)
+    {
+        var entity = new Core2Combatant
+        {
+            Id = id, Side = (string)row["kind"] == "enemy" ? Core2Side.Enemy : Core2Side.Player,
+            Hp = (int?)row["hp"] ?? 1, MaxHp = (int?)row["hp"] ?? 1, Block = (int?)row["block"] ?? 0, Barrier = (int?)row["barrier"] ?? 0,
+            Level = (int?)row["level"] ?? 1, HasLevelProfile = (bool?)row["levelProfile"] ?? true,
+            Attributes = Ints(row["attributes"]), Ratings = Ints(row["ratings"]), Stance = Core2Stance.FromJson(row["stance"]),
+            BasePrecisionBonus = (int?)row["basePrecisionBonus"] ?? 0, BaseEvasionBonus = (int?)row["baseEvasionBonus"] ?? 0,
+            AccuracyAdvantage = (bool?)row["accuracyAdvantage"] ?? false, AccuracyDisadvantage = (bool?)row["accuracyDisadvantage"] ?? false,
+        };
+        if (row["poise"] is JObject poise) entity.Poise = new Core2Pool((int)poise["value"], (int)poise["max"]);
+        if (row["ward"] is JObject ward) entity.Ward = new Core2Pool((int)ward["value"], (int)ward["max"]);
+        foreach (var status in Ints(row["statuses"])) entity.Statuses[status.Key] = new Core2StatusInstance { Stacks = status.Value };
+        return entity;
+    }
+
+    public static Result DamageRanges(Core2Content content, JArray cases)
+    {
+        var result = new Result();
+        var rules = Core2Rules.From(content);
+        foreach (var row in cases)
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            if (!(input["state"] is JObject state))
+            {
+                // No damage on the opening intent: JS shows no range.
+                result.Compare(expected["projected"]?.Type == JTokenType.Null && expected["damage"]?.Type == JTokenType.Null,
+                    () => "damage range " + Show(input) + ": no state but JS projected " + Show(expected["projected"]));
+                continue;
+            }
+            var contact = state["contact"] as JObject;
+            var proposal = (JObject)state["proposal"];
+            var options = new Core2HitOptions
+            {
+                Contact = contact == null ? null : new Core2RangeContact((bool)contact["inRange"], (int)contact["precisionDelta"]),
+                AccuracyDelta = (double)proposal["accuracyDelta"], Unavoidable = (bool)proposal["unavoidable"],
+            };
+            var plan = new Core2HitProposal
+            {
+                Allowed = (bool)proposal["allowed"], EvadeChance = (double)proposal["evadeChance"],
+                PerceptionChance = proposal["perceptionChance"]?.Type == JTokenType.Null ? (double?)null : (double)proposal["perceptionChance"],
+            };
+            var range = Core2IntentProjection.Project(rules, FromState((JObject)state["attacker"], "enemy"), FromState((JObject)state["defender"], "player"),
+                Core2Carrier.FromJson((JObject)state["carrier"]), (int)state["base"], (int)state["hits"], (int)state["damageEffects"], options, plan);
+            var want = expected["projected"] as JObject;
+            var got = new JObject { ["min"] = range.Min, ["max"] = range.Max, ["label"] = range.Label, ["uncertain"] = range.Uncertain, ["reason"] = range.Reason };
+            result.Compare(want != null && Show(got) == Show(want), () => "damage range " + (string)input["enemyId"] + " block " + input["playerBlock"] + " stance " + Show(input["playerStance"]) + ": got " + Show(got) + "; JS " + Show(want));
+        }
+        return result;
+    }
+}

@@ -134,7 +134,7 @@ jobs:
       matrix:
         include:
           - shard: rules
-            suites: 'Domain Parity CoopRun CoopRun:--policy'
+            suites: 'Domain Parity CoopRun CoopRun:--policy Core2Combat'
           - shard: presentation
             suites: 'NativeFeedback CardText CardCosts HandRules SpriteStyles Viewport RendererPatch Interruption'
           - shard: map-and-data
