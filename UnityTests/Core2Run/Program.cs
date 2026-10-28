@@ -39,6 +39,7 @@ try
         ("run-creation", RunReplay.Creation), ("run-maps", RunReplay.Maps), ("card-faces", RunReplay.Faces), ("reward-offers", RunReplay.Rewards),
         ("shop-stock", RunReplay.Shops), ("rest-outcomes", RunReplay.Rests), ("level-up", RunReplay.Levels), ("scripted-runs", RunReplay.ScriptedRuns),
         ("scripted-runs-auto", RunReplay.ScriptedRunsAuto),
+        ("adept-entitlements", ProgressReplay.Adept), ("deck-edits", ProgressReplay.DeckEdits), ("armoury", ProgressReplay.Armoury), ("skill-progression", ProgressReplay.Skills),
     };
     foreach (var (family, replay) in families)
     {
@@ -55,6 +56,7 @@ try
     }
 
     Core2RunChecks.Run(content, data, Check, Equal, Throws);
+    Core2ProgressChecks.Run(content, data, Check, Equal, Throws);
 }
 catch (Exception error)
 {

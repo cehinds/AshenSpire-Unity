@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.41.0 · build 44 · 2026-10-28
+
+- Core 2 deck editing and Armoury (collected cards, Adept entitlements, sideboard and editor session, Replace/Unequip, storage, combat lock, new-item glow) and progression (class and used-weapon XP with multipliers, level notices, victory receipt, the profile-level unlock save), engine-free and checked against four new JS oracle families
+
 ## 0.0.40.0 · build 43 · 2026-10-28
 
 - Core 2 enemy gaps: enemy status buildup with gauges, recovery and control locks, conditional enemy phases, expanded-move SP pricing, boss damage scale, held-card turn end and relic-trigger Advance; fuzz-fights oracle covers every enemy with reactions off and on

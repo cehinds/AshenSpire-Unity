@@ -15,8 +15,20 @@
 //   shop-stock     gameProfileShopStock, purchaseGameProfileShopOffer
 //   rest-outcomes  beginGameProfileRest, smithingPlan, commitGameProfileRest (smith, levelUp)
 //   level-up       combatXpReceipt, awardLevelXp, xpToNext
-//   scripted-runs  whole runs, floor by floor, under a fixed policy (fights played card by card)
+//   scripted-runs  whole runs, floor by floor, under a fixed policy (fights played card by card), with phase 10's class
+//                  and used-weapon XP (settleConfiguredSkillProgression, skillLevelNotices) and the victory receipt
 //   scripted-runs-auto  the same orchestration with every fight built and then settled as won (all three acts)
+// Phase 9 and 10 families:
+//   adept-entitlements  activeAdeptTraining, collectedAdeptCardIds, unlimitedCardIds, deckCopyLimit, knownCollectedCardIds,
+//                  collectedCardProblems, recordCollectedCards, deckCardEquipmentEligible (per held main-hand armament)
+//   deck-edits     openDeckEdit (add by tile key, remove, move, undo, confirm, cancel) with the collection tiles
+//                  (deckEditorModel), deckEditRefusal, rewardDeckAddRefusal / claimGameProfileRewardToDeck
+//   armoury        equipPiece + stampDeck (Replace, Unequip, moves, storage, ownership and slot refusals), ownership,
+//                  editingLocked, newArmouryItems / markArmourySeen, the Inspect rows (resolveGearItem at rank + Smith
+//                  tier, gear grantedCards, equipmentRequirementReceipt)
+//   skill-progression  xpToNext per track kind, awardSkillXp (queueRewards false), settleConfiguredSkillProgression under
+//                  varied multipliers, skillLevelNotices, combatXpGains, configuredCharacterLevels with grandfathered
+//                  rest points (commitGameProfileRest levelUp)
 export async function runFamilies({js, family, plain, fightStart, settle, ALL_UNLOCKED, CLASSES}) {
   const {profile, registries, load} = js;
   const {createRunState} = await load('src/model/state.js');
@@ -38,6 +50,18 @@ export async function runFamilies({js, family, plain, fightStart, settle, ALL_UN
   const {rangeSourceContact} = await load('src/engine/combatEngagement.js');
   const {seatAtTier, seatTierHpMult, bossTierScale} = await load('src/model/seats.js');
   const {gameModule} = await load('src/model/gameProfile.js');
+  const {skillXpReceipt, settleConfiguredSkillProgression} = await load('src/engine/skillXp.js');
+  const {skillLevelNotices, configuredCharacterLevels, configuredSkillXpMultiplier} = await load('src/model/gameProfileProgression.js');
+  const {combatXpGains} = await load('src/model/rewardprogress.js');
+  const {xpToNext: skillXpToNext, awardSkillXp} = await load('src/model/skills.js');
+  const {activeAdeptTraining, collectedAdeptCardIds, deckCopyLimit} = await load('src/model/deckCopyLimit.js');
+  const {knownCollectedCardIds, collectedCardProblems, recordCollectedCards} = await load('src/model/collectedCards.js');
+  const {unlimitedCardIds, deckCardEquipmentEligible, deckEditRefusal} = await load('src/model/deckRules.js');
+  const {openDeckEdit, deckEditorModel} = await load('src/ui/models/DeckEditorModel.js');
+  const {rewardDeckAddRefusal, claimGameProfileRewardToDeck} = await load('src/model/gameProfileRewards.js');
+  const {equipPiece, ownership, stampDeck, fitsSlot, equipmentRequirementReceipt} = await load('src/model/loadout.js');
+  const {editingLocked, newArmouryItems, markArmourySeen, armouryHasNew} = await load('src/model/armouryRules.js');
+  const {resolveGearItem} = await load('engine/kernel/gameConfig.js');
 
   const clone = value => structuredClone(plain(value));
   const counters = rng => Object.fromEntries(Object.entries(rng.getCounters()).sort());
@@ -69,6 +93,7 @@ export async function runFamilies({js, family, plain, fightStart, settle, ALL_UN
       loadout: {sets: run.loadout.sets, active: run.loadout.active, storage: run.loadout.storage, boughtArmour: run.loadout.boughtArmour || []},
       itemUpgradeLevels: run.itemUpgradeLevels || {}, seatOrder: run.seatOrder, history: run.history, seenEvents: run.seenEvents,
       lastEncounters: run.lastEncounters, bossesBeaten: run.bossesBeaten || [], fightsWon: run.stats?.fightsWon ?? 0,
+      skills: run.skills || {},
       rng: rng ? counters(rng) : null,
     });
   }
@@ -251,12 +276,23 @@ export async function runFamilies({js, family, plain, fightStart, settle, ALL_UN
   function settleFight(run, rng, fight, steps) {
     const {combat, enc} = fight;
     const result = combat.result;
-    // main.js onCombatEnd, configured branch (reactions are phase 7; class and weapon XP tracks are phase 10).
+    // main.js onCombatEnd, configured branch: the skill tracks (class and used-weapon XP) paid once, their level notices,
+    // then character XP (only while progression.characterLevels is on) and the victory receipt.
     runCombatEnd(run, combat);
+    const xpBefore = {character: {...run.level}, tracks: Object.fromEntries(Object.entries(run.skills || {}).map(([id, row]) => [id, {level: row.level || 0, xp: row.xp || 0}]))};
+    const skillStateBefore = {classMasteryState: structuredClone(run.classMasteryState)};
+    const trackReceipt = skillXpReceipt(combat);
+    for (const id of Object.keys(trackReceipt)) trackReceipt[id] = Math.floor(trackReceipt[id] * 1); // featMultiplier: a Core run has no feats
+    const {trackAwards, classAward} = settleConfiguredSkillProgression(registries, run, combat, {receipt: trackReceipt, victory: result === 'victory', pool: enc.pool, classMultiplier: 1});
+    const progression = skillLevelNotices(registries, [classAward, ...trackAwards], {run, beforeState: skillStateBefore, usedArmaments: combat.skillXp?.[combat.playerKey || 'player']?.usedArmaments || []});
     const xp = combatXpReceipt(registries, {victory: result === 'victory', pool: enc.pool, enemies: combat.enemies, characterMultiplier: 1});
-    const levelAward = awardLevelXp(registries, run, xp.total, {pointsPerLevel: gameModule(run, 'progression').attributePointsPerLevel, grantStats: true});
+    const levelXp = configuredCharacterLevels(run) ? xp.total : 0;
+    const levelAward = awardLevelXp(registries, run, levelXp, {pointsPerLevel: gameModule(run, 'progression').attributePointsPerLevel, grantStats: true});
+    const title = enc.pool === 'boss' ? `${registries.enemies.get(enc.enemies[0]).name.toUpperCase()} FALLS` : enc.pool === 'elite' ? 'ELITE VANQUISHED' : 'VICTORY';
+    const victoryReceipt = result === 'victory' ? {title, xpBefore, xpGains: combatXpGains({awards: [classAward, ...trackAwards], levelGained: levelAward.gained})} : null;
     const step = {kind: 'fight', nodeId: run.mapNodeId, encounterId: enc.id, pool: enc.pool, hpMult: fight.hpMult, start: fight.start, result: result ?? 'stalled', turns: fight.turns,
-      enemies: combat.enemies.map(e => ({enemyId: e.enemyId, maxHp: e.maxHp, hp: e.hp, level: e.level ?? null})), xp: clone(xp), levelUps: levelAward.levelUps};
+      enemies: combat.enemies.map(e => ({enemyId: e.enemyId, maxHp: e.maxHp, hp: e.hp, level: e.level ?? null})), xp: clone(xp), levelUps: levelAward.levelUps,
+      progression: clone(progression), victoryReceipt: clone(victoryReceipt)};
     if (result !== 'victory') {
       run.hp = 0; run.combatEntered = null;
       step.run = runView(run, rng); steps.push(step);
@@ -365,6 +401,8 @@ export async function runFamilies({js, family, plain, fightStart, settle, ALL_UN
     const finish = outcome ? {victory: outcome.victory, unlocked: gameProfileCompletedRunMeta(run, {}, {finishId: run.runId, victory: outcome.victory}).unlocked} : null;
     return {steps, finish};
   }
+  progressFamilies();
+
   const scripted = [
     {classId: 'reaver', seed: 11, levelAttribute: 'constitution'},
     {classId: 'reaver', seed: 1854, levelAttribute: 'strength'},
@@ -389,4 +427,282 @@ export async function runFamilies({js, family, plain, fightStart, settle, ALL_UN
   ].map(input => ({input: {...input, policy: AUTO_POLICY}, expected: scriptedRun(input, true)}));
   family('scripted-runs-auto', 'phase 8', 'Whole Core 2 runs to the end of act 3 with every fight built and then settled as won: the run layer across all three acts (spoils, level offers, rests with Smith and Level Up, shops, events and quest steps, act changes, the final boss and the class unlock).',
     ['src/main.js (as scripted-runs)', 'src/engine/runCombat.js createRunCombat/runCombatEnd'], autoRuns);
+
+  // ── phase 9 and 10: collection, deck editing, armoury, skill progression ────────────────────────────────────────────
+  // Each case's input carries the run state its operations start from (stateView: the run view plus the full card
+  // instances, the mint counter and the Armoury's seen list), and the operations themselves, so the port replays them
+  // verbatim; every operation calls the JS game's own function on that state.
+  function progressFamilies() {
+    const fullCards = cards => (cards || []).map(card => ({...card}));
+    const stateView = (run, rng) => clone({...runView(run, rng), deck: fullCards(run.deck), sideboard: fullCards(run.sideboard),
+      editMintCounter: run.editMintCounter ?? null, armorySeen: run.armorySeen ?? null, loadout: {...runView(run, rng).loadout, creationArmourGrant: run.loadout.creationArmourGrant ?? null}});
+    const pileView = run => clone({deck: run.deck.map(c => c.instanceId + '=' + c.cardId), sideboard: (run.sideboard || []).map(c => c.instanceId + '=' + c.cardId),
+      collectedCardIds: run.collectedCardIds || [], editMintCounter: run.editMintCounter ?? null});
+    const coreCards = profile.content.cards.filter(card => card.id.startsWith('core.')).map(card => card.id);
+    const someBase = profile.content.cards.filter(card => card.id.startsWith('base.')).map(card => card.id).slice(0, 24);
+    // Grow a run's collection the way play does: level offers (combat cards only), the first option claimed to the sideboard.
+    function grow(run, rng, rounds) {
+      for (let i = 0; i < rounds; i++) {
+        const offerId = `1:grow${i}:level`;
+        const offer = gameProfileRewardOffers(registries, run, rng, {offerId, source: 'level'});
+        if (offer.options.length) { try { claimGameProfileReward(registries, run, offerId, i % offer.options.length); } catch { /* unavailable */ } }
+      }
+    }
+
+    // ── adept entitlements ──
+    const adept = [];
+    for (const classId of CLASSES) for (const [label, setup] of [
+      ['starter', () => {}],
+      ['collected', run => { run.collectedCardIds = [...new Set([...(run.collectedCardIds || []), 'core.smash', 'core.sweep', 'core.evade', 'core.cantrip', 'core.manaSurge', 'core.advance'])]; }],
+      ['sideboard', run => { run.sideboard.push({instanceId: 'side1', cardId: 'core.sweep', upgraded: false}, {instanceId: 'side2', cardId: 'core.cantrip', upgraded: false}, {instanceId: 'side3', cardId: 'core.strike', upgraded: false}); }],
+      ['malformed', run => { run.collectedCardIds = ['core.strike', 'core.strike', 'not.a.card']; }],
+    ]) {
+      const {run, rng} = newRun(classId, 33);
+      setup(run);
+      const state = stateView(run, rng);
+      const problems = collectedCardProblems(run);
+      let recorded = null;
+      if (!problems.length) { recorded = recordCollectedCards(run); }
+      const expected = {problems, recorded, known: knownCollectedCardIds(run), training: activeAdeptTraining(run), adeptIds: collectedAdeptCardIds(run),
+        unlimited: unlimitedCardIds(run), copyLimits: Object.fromEntries([...coreCards, ...someBase].map(id => [id, deckCopyLimit(registries, id, {}, run)])),
+        collectedAfter: run.collectedCardIds};
+      // Equipment eligibility of every Core and sampled base card for each main-hand armament (off hand empty).
+      const eligibility = {};
+      for (const rightHand of [null, ...wieldable]) {
+        const probe = structuredClone(run);
+        probe.loadout.sets.rightHand = [rightHand, null, null]; probe.loadout.sets.leftHand = [null, null, null];
+        eligibility[rightHand ?? 'none'] = [...coreCards, ...someBase].filter(id => deckCardEquipmentEligible(registries, probe, {cardId: id}));
+      }
+      expected.eligibility = eligibility;
+      adept.push({input: {classId, label, run: state, cards: [...coreCards, ...someBase], hands: [null, ...wieldable]}, expected: clone(expected)});
+    }
+    // A lent card is eligible only while its piece is worn (boneSceptre lends Mana Surge).
+    for (const classId of CLASSES) {
+      const {run, rng} = newRun(classId, 34);
+      run.loadout.sets.rightHand = ['boneSceptre', null, null];
+      stampDeck(registries, run);
+      const state = stateView(run, rng);
+      const granted = run.deck.filter(card => card.grantedBy);
+      const worn = granted.map(card => deckCardEquipmentEligible(registries, run, card));
+      const probe = structuredClone(run);
+      probe.loadout.sets.rightHand = [null, null, null];
+      const bare = granted.map(card => deckCardEquipmentEligible(registries, probe, card));
+      adept.push({input: {classId, label: 'granted', run: state, granted: clone(granted)}, expected: clone({worn, bare})});
+    }
+    family('adept-entitlements', 'phase 9', 'Core 2 collection knowledge and Adept entitlements: the collected-card ledger and its refusals, Martial (Basic) and Magic (Cantrip) Adept, the unlimited cards, copy limits, and each card\'s equipment eligibility per held weapon (a lent card only while its piece is worn).',
+      ['src/model/collectedCards.js knownCollectedCardIds/collectedCardProblems/recordCollectedCards', 'src/model/deckCopyLimit.js activeAdeptTraining/collectedAdeptCardIds/deckCopyLimit',
+        'src/model/deckRules.js unlimitedCardIds/deckCardEquipmentEligible'], adept);
+
+    // ── deck edits ──
+    const tileView = run => {
+      const model = deckEditorModel({registries, run, settings: {}});
+      return clone(model.collection.map(tile => ({key: tile.key, unlimited: !!tile.unlimited, owned: Number.isFinite(tile.owned) ? tile.owned : null, inDeck: tile.inDeck,
+        addable: !!tile.addable, refused: !!tile.refusal, removeInstanceId: tile.removeInstanceId ?? null})).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+    };
+    const SETTINGS = [
+      ['default', {}],
+      ['min12', {deckMinSize: 12}],
+      ['max11', {deckMaxUnlimited: false, deckMaxSize: 11}],
+      ['maxBelowMin', {deckMaxUnlimited: false, deckMaxSize: 5}],
+      ['ordered', {playInDeckOrder: true}],
+    ];
+    const edits = [];
+    let editCase = 0;
+    for (const classId of CLASSES) for (const seed of [7, 1854]) for (const [settingsLabel, settings] of SETTINGS) {
+      if ((editCase++ % 2) && settingsLabel !== 'default') continue; // every class and seed gets the defaults; the variants rotate
+      const {run, rng} = newRun(classId, seed);
+      grow(run, rng, 3);
+      if (classId === 'starseer' || classId === 'herald') run.collectedCardIds = [...new Set([...(run.collectedCardIds || []), 'core.cantrip'])];
+      const state = stateView(run, rng);
+      // The operations: every unlimited mint, each sideboard card by id, two removals, an Undo, a bad mint, moves, Confirm.
+      const ops = [];
+      for (const id of unlimitedCardIds(run)) ops.push({op: 'add', key: `basic:${id}`});
+      for (const card of run.sideboard) ops.push({op: 'add', key: `card:${card.cardId}`});
+      ops.push({op: 'remove', instanceId: run.deck[0].instanceId});
+      ops.push({op: 'remove', instanceId: run.deck[run.deck.length - 1].instanceId});
+      ops.push({op: 'undo'});
+      ops.push({op: 'add', key: 'basic:core.reaverSpecial'});
+      ops.push({op: 'add', key: `card:${run.deck[1].cardId}`});
+      ops.push({op: 'moveTo', instanceId: run.deck[2].instanceId, index: 0});
+      ops.push({op: 'tiles'});
+      for (let i = 0; i < 4; i++) ops.push({op: 'remove', instanceId: run.deck[3 + i].instanceId});
+      ops.push({op: 'confirm'});
+      ops.push({op: 'tiles'});
+      const session = openDeckEdit(registries, run, settings);
+      const results = [{op: 'open', tiles: tileView(run), piles: pileView(run)}];
+      let closed = false;
+      for (const op of ops) {
+        const row = {op: op.op};
+        try {
+          if (op.op === 'add') { const r = session.add(op.key); row.ok = r.ok; row.refused = !!r.refusal; }
+          else if (op.op === 'remove') { const r = session.remove(op.instanceId); row.ok = r.ok; }
+          else if (op.op === 'undo') row.ok = session.undo().ok;
+          else if (op.op === 'moveTo') row.ok = session.moveTo(op.instanceId, op.index).ok;
+          else if (op.op === 'tiles') row.tiles = tileView(run);
+          else if (op.op === 'confirm') {
+            if (closed) { row.skipped = true; } else {
+              const r = session.confirm(); row.ok = r.ok; row.refusal = r.refusal;
+              if (!r.ok) { session.cancel(); row.cancelled = true; }
+              closed = true;
+            }
+          }
+        } catch (error) { row.error = error.message; }
+        row.piles = pileView(run);
+        results.push(row);
+      }
+      // A won card straight into the deck: refusal codes for each option, then the claim of the first card option.
+      const offerId = `1:deck${seed}:combat`;
+      const offer = gameProfileRewardOffers(registries, run, rng, {offerId, source: 'combat'});
+      const offerState = stateView(run, rng);
+      const refusals = offer.options.map((option, index) => rewardDeckAddRefusal(registries, run, offerId, index, settings));
+      const cardIndex = offer.options.findIndex(option => ['combatCards', 'weaponArts'].includes(option.kind));
+      let toDeck = null;
+      if (cardIndex >= 0) {
+        try { toDeck = {index: cardIndex, option: clone(claimGameProfileRewardToDeck(registries, run, offerId, cardIndex, settings)), piles: pileView(run)}; }
+        catch (error) { toDeck = {index: cardIndex, error: error.message, code: error.code ?? null}; }
+        const again = rewardDeckAddRefusal(registries, run, offerId, cardIndex, settings);
+        toDeck.againRefusal = again;
+      }
+      edits.push({input: {classId, seed, settingsLabel, settings, run: state, ops, offer: clone(offer), offerRun: offerState},
+        expected: {results, refusals, toDeck, bounds: clone({count10: deckEditRefusal(10, settings), count9: deckEditRefusal(9, settings), count41: deckEditRefusal(41, settings), count1: deckEditRefusal(1, settings)})}});
+    }
+    family('deck-edits', 'phase 9', 'The Core 2 deck editor session: Adept mints (a kept copy back first, else edit:N), sideboard cards back by tile, removals (a pristine Adept basic is deleted, other cards kept), copy limits, Undo, Play in deck order moves, Confirm only inside the bounds (else Cancel restores everything), the collection tiles, the bound sentences, and a won card straight into the deck.',
+      ['src/ui/models/DeckEditorModel.js openDeckEdit/deckEditorModel', 'src/model/deckRules.js addBasicCard/moveToSideboard/moveFromSideboard/deckEditRefusal',
+        'src/model/gameProfileRewards.js rewardDeckAddRefusal/claimGameProfileRewardToDeck'], edits);
+
+    // ── armoury ──
+    const handSlots = ['rightHand', 'leftHand'];
+    const inspectRows = run => {
+      const rows = [];
+      const settings = gameModule(run, 'gear');
+      for (const slot of registries.equipment.slots) {
+        const armorSlot = slot.kinds.includes('armor');
+        if (!handSlots.includes(slot.id) && !armorSlot) continue;
+        (run.loadout.sets[slot.id] || []).forEach((itemId, setIndex) => {
+          if (!itemId) return;
+          const piece = armorSlot ? registries.equipment.armour.find(row => row.classId === run.class && row.id === itemId) : registries.equipment.armaments.find(row => row.id === itemId);
+          const gear = profile.content.gear.find(item => (item.source?.id || item.id) === itemId && (item.kind === 'armor') === armorSlot && (!item.classes || item.classes.includes(run.class)));
+          const itemRef = armorSlot ? `armor/${run.class}/${itemId}` : `armament/${itemId}`;
+          const tier = run.itemUpgradeLevels?.[itemRef] || 0;
+          const resolved = gear ? resolveGearItem(gear, settings, {rank: (gear.rank ?? 1) + tier}).values : {};
+          const values = Object.fromEntries(['ar', 'dr', 'poise', 'hp', 'mp', 'sp', 'ward', 'evasion', 'precision', 'strength', 'dexterity', 'constitution', 'wisdom', 'intelligence']
+            .map(key => [key, gear ? resolved[key] || 0 : null]).filter(([, v]) => v !== null));
+          const requirements = piece ? equipmentRequirementReceipt(registries, piece, run.attributes, {itemUpgradeLevels: run.itemUpgradeLevels}).requirements.map(row => ({attributeId: row.attributeId, required: row.required, actual: row.actual})) : [];
+          rows.push({slotId: slot.id, setIndex, active: setIndex === (run.loadout.active[slot.id] || 0), itemId, itemRef, name: piece?.name ?? itemId, kind: piece?.kind ?? null, tier,
+            values, grantedCards: (gear?.grantedCards || []).flatMap(grant => Array(grant.copies).fill(grant.card)), requirements});
+        });
+      }
+      return clone(rows);
+    };
+    const armoury = [];
+    for (const classId of CLASSES) for (const seed of [12, 77]) {
+      const {run, rng} = newRun(classId, seed);
+      markArmourySeen(run); // the Armoury opened at birth: everything carried is seen
+      const carried = new Set([...run.loadout.storage, ...Object.values(run.loadout.sets).flat().filter(Boolean)]);
+      const extra = ['boneSceptre', 'kiteShield', 'katana', 'shortbow', 'ashStaff'].filter(id => !carried.has(id)).slice(0, 4);
+      run.loadout.storage.push(...extra);
+      const lockedArmour = registries.equipment.armour.filter(row => row.classId === classId && row.unlock);
+      run.loadout.boughtArmour = [{classId, id: lockedArmour[0].id}];
+      run.itemUpgradeLevels[`armament/${extra[0]}`] = 1;
+      const state = stateView(run, rng);
+      const newBefore = newArmouryItems(run);
+      const glow = armouryHasNew(run);
+      const otherClassArmour = registries.equipment.armour.find(row => row.classId !== classId && row.unlock === '');
+      const notCarried = registries.equipment.armaments.map(row => row.id).find(id => !carried.has(id) && !extra.includes(id));
+      const ops = [
+        {slotId: 'rightHand', setIndex: 0, itemId: extra[0]},
+        {slotId: 'leftHand', setIndex: 1, itemId: extra[1]},
+        {slotId: 'leftHand', setIndex: 0, itemId: extra[2]},
+        {slotId: 'rightHand', setIndex: 1, itemId: extra[2]},
+        {slotId: 'rightHand', setIndex: 0, itemId: null},
+        {slotId: 'rightHand', setIndex: 0, itemId: notCarried},
+        {slotId: 'rightHand', setIndex: 0, itemId: lockedArmour[0].id},
+        {slotId: 'armor', setIndex: 0, itemId: lockedArmour[0].id},
+        {slotId: 'armor', setIndex: 0, itemId: lockedArmour[1]?.id ?? lockedArmour[0].id},
+        {slotId: 'armor', setIndex: 0, itemId: otherClassArmour.id},
+        {slotId: 'armor', setIndex: 0, itemId: 'default'},
+        {slotId: 'rightHand', setIndex: 5, itemId: extra[0]},
+        {fillStorage: true},
+        {slotId: 'rightHand', setIndex: 1, itemId: null},
+        {slotId: 'rightHand', setIndex: 0, itemId: extra[3] ?? extra[0]},
+      ];
+      const results = [];
+      for (const op of ops) {
+        if (op.fillStorage) {
+          for (const id of registries.equipment.armaments.map(row => row.id)) {
+            if (run.loadout.storage.length >= registries.balance.equipment.storageSlots) break;
+            if (!run.loadout.storage.includes(id) && !Object.values(run.loadout.sets).flat().includes(id)) run.loadout.storage.push(id);
+          }
+          results.push({op: 'fillStorage', storage: clone(run.loadout.storage)});
+          continue;
+        }
+        const owned = ownership(registries, {meta: {}, loadout: run.loadout});
+        const ok = equipPiece(registries, run.loadout, op.slotId, op.setIndex, op.itemId, owned,
+          {inCombat: false, attributes: run.attributes, itemUpgradeLevels: run.itemUpgradeLevels, classId: run.class});
+        if (ok) stampDeck(registries, run);
+        const v = runView(run, rng);
+        results.push({op: 'equip', ...op, ok, loadout: v.loadout, deck: v.deck, pools: [v.hp, v.maxHp, v.mana, v.maxMana, v.stamina, v.maxStamina], ratings: v.ratings,
+          equipmentPoolBonuses: v.equipmentPoolBonuses});
+      }
+      const candidates = Object.fromEntries(['rightHand', 'leftHand', 'armor'].map(slotId => {
+        const slot = registries.equipment.slots.find(row => row.id === slotId);
+        const owned = ownership(registries, {meta: {}, loadout: run.loadout});
+        const authored = slot.kinds.includes('armor') ? registries.equipment.armour.filter(row => row.classId === run.class && fitsSlot(slot, row)) : registries.equipment.armaments.filter(row => fitsSlot(slot, row));
+        return [slotId, authored.filter(piece => owned.has(piece)).map(piece => piece.id)];
+      }));
+      const newAfter = newArmouryItems(run);
+      const inspect = inspectRows(run);
+      markArmourySeen(run);
+      armoury.push({input: {classId, seed, run: state, ops}, expected: clone({newBefore, glow, results, candidates, newAfter, inspect, seenAfter: run.armorySeen, newAfterLook: newArmouryItems(run),
+        locked: {unresolved: editingLocked(run, {result: undefined}), resolved: editingLocked(run, {result: 'victory'}), none: editingLocked(run, null)}})});
+    }
+    family('armoury', 'phase 9', 'The Core 2 Armoury: Replace (owned pieces only; the replaced armament to storage; a moved armament leaves its old cell), Unequip, wrong-slot, unowned, bad-location and full-storage refusals, the deck re-stamped (pools, gear grants) after each change, the picker candidates, the new-item glow, the combat lock and the Inspect rows.',
+      ['src/model/loadout.js equipPiece/ownership/stampDeck/fitsSlot/equipmentRequirementReceipt', 'src/model/armouryRules.js editingLocked/newArmouryItems/markArmourySeen/armouryHasNew',
+        'engine/kernel/gameConfig.js resolveGearItem'], armoury);
+
+    // ── skill progression ──
+    const skills = [];
+    for (const kind of ['weapon', 'focus', 'class']) for (let level = 0; level <= 21; level++) skills.push({input: {kind: 'xpToNext', track: kind, level}, expected: {xp: skillXpToNext(registries, kind, level)}});
+    for (const classId of CLASSES) for (const gains of [[0.5], [0], [5], [99, 1], [100, 500, 2000], [100000]]) {
+      const {run} = newRun(classId, 21);
+      const awards = [];
+      for (const skillId of ['item:blade', 'item:shield', 'item:magic-focus', `class:${classId}`]) for (const gain of gains) awards.push(clone(awardSkillXp(registries, run, skillId, gain, {queueRewards: false})));
+      skills.push({input: {kind: 'award', classId, gains}, expected: clone({awards, skills: run.skills})});
+    }
+    const MULTIPLIERS = [{weapon: 1, cls: 1}, {weapon: 0.5, cls: 2}, {weapon: 0, cls: 0}, {weapon: 12, cls: -3}, {weapon: null, cls: null}, {weapon: 1.5, cls: 1.25}];
+    let settleCase = 0;
+    for (const classId of CLASSES) for (const multipliers of MULTIPLIERS) for (const [victory, pool] of [[true, 'normal'], [true, 'boss'], [false, 'elite']]) {
+      const {run} = newRun(classId, 22);
+      if (multipliers.weapon === null) delete run.gameProfile.modules.progression.weaponXpMultiplier; else run.gameProfile.modules.progression.weaponXpMultiplier = multipliers.weapon;
+      if (multipliers.cls === null) delete run.gameProfile.modules.progression.classXpMultiplier; else run.gameProfile.modules.progression.classXpMultiplier = multipliers.cls;
+      const pre = {'item:blade': {xp: 80 + (settleCase % 3) * 10, level: settleCase % 2, pendingDrafts: 0}, [`class:${classId}`]: {xp: 390, level: 0, pendingDrafts: 0}};
+      run.skills = structuredClone(pre);
+      const receipt = [['item:blade', 37 + settleCase], ['item:magic-focus', 12], ['item:shield', 3]];
+      const usedArmaments = ['greatsword', 'boneSceptre', 'dagger', 'kiteShield'];
+      const awards = settleConfiguredSkillProgression(registries, run, {}, {receipt: Object.fromEntries(receipt), victory, pool, classMultiplier: 1});
+      const all = [awards.classAward, ...awards.trackAwards];
+      skills.push({input: {kind: 'settle', classId, multipliers, victory, pool, skills: pre, receipt, usedArmaments},
+        expected: clone({weaponMultiplier: configuredSkillXpMultiplier(run), classMultiplier: configuredSkillXpMultiplier(run, 'class'), classAward: awards.classAward, trackAwards: awards.trackAwards,
+          notices: skillLevelNotices(registries, all, {run, beforeState: {}, usedArmaments}), gains: combatXpGains({receipt: Object.fromEntries(receipt), awards: all, levelGained: 37, levelDiscarded: 3}),
+          victoryGains: combatXpGains({awards: all, levelGained: 12}), skills: run.skills})});
+      settleCase++;
+    }
+    // Character levels off (an old save's profile): no character XP is banked, and earned points stay claimable at a rest.
+    for (const classId of CLASSES) for (const [characterLevels, unspent] of [[false, 0], [false, 1], [true, 0], [true, 1]]) {
+      const {run, rng} = newRun(classId, 23);
+      run.gameProfile.modules.progression.characterLevels = characterLevels;
+      run.level.unspentPoints = unspent;
+      run.mapGraph = {nodes: {n3_0: {id: 'n3_0', floor: 3, type: 'shrine', actualType: 'rest', next: []}}};
+      run.mapNodeId = 'n3_0'; run.floor = 3;
+      const state = stateView(run, rng);
+      beginGameProfileRest(run);
+      let levelUp;
+      try { commitGameProfileRest(registries, run, 'levelUp', {attributeId: 'strength'}); levelUp = {ok: true, attributes: clone(run.attributes), level: clone(run.level)}; }
+      catch (error) { levelUp = {error: error.message.split(' (level')[0]}; }
+      skills.push({input: {kind: 'characterLevels', classId, characterLevels, unspent, run: state}, expected: {characterLevels: configuredCharacterLevels(run), levelXpOf100: configuredCharacterLevels(run) ? 100 : 0, levelUp}});
+    }
+    family('skill-progression', 'phase 10', 'Core 2 class and used-weapon XP: each track kind\'s curve, awards climbing to the cap (Spellcraft opening at level 1), the fight settlement under class/weapon XP multipliers (clamped 0–10, absent = 1), the level notices, the spoils\' XP lines, and character levels switched off with grandfathered rest points.',
+      ['src/model/skills.js xpToNext/awardSkillXp', 'src/engine/skillXp.js settleConfiguredSkillProgression', 'src/model/gameProfileProgression.js configuredSkillXpMultiplier/skillLevelNotices/configuredCharacterLevels',
+        'src/model/rewardprogress.js combatXpGains', 'src/model/gameProfileRest.js commitGameProfileRest'], skills);
+  }
 }

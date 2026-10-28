@@ -36,7 +36,7 @@ node tools/export-js-core2.mjs ../AshenSpire --check   # exit 1 if the committed
 node tools/oracle-js-core2.mjs ../AshenSpire           # writes UnityTests/Core2Content/Oracles/*.json
 node tools/oracle-js-core2.mjs ../AshenSpire --check
 dotnet run --project UnityTests/Core2Content          # loads the export, checks it and the fixtures
-dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-layer oracles + focused checks
+dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 run-layer oracles + focused checks
 ```
 
 - **`GameContent/Unity/Core2/`** (generated; never edit): `profile.json` (the resolved profile
@@ -135,6 +135,28 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-
   unlocks, save refusals, rest once-per-visit, screens, event gates, flasks and map shape. A
   scripted run that reaches a combat rule phase 5 has not ported (status `buildup`) is reported
   PENDING with every step before it matched, as is the one known combat discrepancy it lists.
+- **Deck editing and Armoury (phase 9):** `Core2RunDeck` ports the collected-card ledger
+  (`collectedCardIds`), Martial/Magic Adept entitlements (the class's training catalogue, exported per
+  class in `adapter/run.json` `deck.adept`, ∩ the collected definitions), copy limits, equipment
+  eligibility, the sideboard moves, `edit:N` mints and the editor session `Core2DeckEdit` (add by
+  tile key, remove, Play-in-deck-order moves, Undo, Confirm inside the Deck settings' bounds, Cancel
+  restoring deck, sideboard, mint counter and collection), plus a won card straight into the deck.
+  `Core2RunArmoury` ports Inspect (resolved values at rank + Smith tier, lent cards, minima),
+  Replace/Unequip with refusal codes (`locked`, `location`, `grip`, `requirement`, `slot`,
+  `unowned`, `storage`), the picker candidates, re-stamping (pools and gear grants) after a change
+  and the new-item glow (`armorySeen`). `Core2RunSession` refuses both doors while a fight is
+  unresolved (`editingLocked`). The set ladder (activating another hand set) is not ported.
+- **Progression and unlocks (phase 10):** `Core2RunSkills` ports class XP and used-weapon XP: the
+  fight's skill receipt from its event bus (`Core2SkillXpRecorder`; damage and Block events now
+  name their `cardInstanceId`), the class and weapon XP multipliers, Spellcraft opening at level 1,
+  level notices and the spoils' XP lines. The session settles them once per fight, banks character
+  XP only while `progression.characterLevels` is on (true at the pin; earned points stay claimable
+  at a rest either way), and shows the victory receipt, then the notices, then the offer; a defeat
+  with notices and the final victory open a notice-only spoils that ends the run once acknowledged.
+  `Core2ProfileSave` (`ashen.core2.profile` v1, refusing unreadable, other-format and newer saves)
+  holds the class unlock ledger apart from the run save, keyed by profile id as JS keys it.
+  `tools/js-core2-run.mjs` adds the `adept-entitlements`, `deck-edits`, `armoury` and
+  `skill-progression` families; the scripted runs now carry skills, notices and receipts.
 - **Export additions (7):** `ui/combat.json` carries the combat presentation data: JS
   `actionPacing.json` (step pause, animation step, Auto speed, mobile-fast preset and bounds), the
   animation speed table, the Combat settings rows and Accessibility's `oneTapPlay` with their

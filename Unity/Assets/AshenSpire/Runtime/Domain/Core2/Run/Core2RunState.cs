@@ -137,6 +137,17 @@ namespace AshenSpire.Domain.Core2
         public static Core2LevelLedger FromJson(JToken token) => new Core2LevelLedger { Xp = (int)token["xp"], Level = (int)token["level"], UnspentPoints = (int)token["unspentPoints"] };
     }
 
+    /// <summary>JS run.skills[trackId]: one skill track's ledger (XP toward the next level, the level, drafts queued).</summary>
+    public sealed class Core2SkillRow
+    {
+        public int Xp { get; set; }
+        public int Level { get; set; }
+        public int PendingDrafts { get; set; }
+        public Core2SkillRow Clone() => (Core2SkillRow)MemberwiseClone();
+        public JObject ToJson() => new JObject { ["xp"] = Xp, ["level"] = Level, ["pendingDrafts"] = PendingDrafts };
+        public static Core2SkillRow FromJson(JToken token) => new Core2SkillRow { Xp = (int?)token["xp"] ?? 0, Level = (int?)token["level"] ?? 0, PendingDrafts = (int?)token["pendingDrafts"] ?? 0 };
+    }
+
     /// <summary>One reward or shop option (JS { kind, id }).</summary>
     public sealed class Core2RewardOption
     {
@@ -189,16 +200,24 @@ namespace AshenSpire.Domain.Core2
         public string After { get; set; }
         public int LevelOffers { get; set; }
         public bool NoticeOnly { get; set; }
+        /// <summary>JS pending.progression: the skill level notices this fight earned (shown once, then acknowledged).</summary>
+        public JArray Progression { get; set; }
+        /// <summary>JS pending.victoryReceipt: { title, xpBefore, xpGains } (shown once, then acknowledged).</summary>
+        public JObject VictoryReceipt { get; set; }
         public JObject ToJson()
         {
             var row = new JObject { ["offerId"] = OfferId, ["source"] = Source, ["after"] = After, ["levelOffers"] = LevelOffers };
+            if (Progression != null && Progression.Count > 0) row["progression"] = Progression.DeepClone();
             if (NoticeOnly) row["noticeOnly"] = true;
+            if (VictoryReceipt != null) row["victoryReceipt"] = VictoryReceipt.DeepClone();
             return row;
         }
         public static Core2PendingReward FromJson(JToken token) => token == null || token.Type == JTokenType.Null ? null : new Core2PendingReward
         {
             OfferId = (string)token["offerId"], Source = (string)token["source"], After = (string)token["after"], LevelOffers = (int?)token["levelOffers"] ?? 0,
             NoticeOnly = (bool?)token["noticeOnly"] ?? false,
+            Progression = token["progression"] is JArray p && p.Count > 0 ? (JArray)p.DeepClone() : null,
+            VictoryReceipt = token["victoryReceipt"] is JObject v ? (JObject)v.DeepClone() : null,
         };
     }
 
@@ -272,6 +291,8 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS run.derivedStatRuleSnapshot.rules: the rule table the run was born with.</summary>
         public JObject DerivedStatRules { get; set; }
         public Core2LevelLedger Level { get; set; } = new Core2LevelLedger();
+        /// <summary>JS run.skills: the class and weapon track ledgers (phase 10), in the order tracks were first paid.</summary>
+        public Dictionary<string, Core2SkillRow> Skills { get; set; } = new Dictionary<string, Core2SkillRow>(StringComparer.Ordinal);
         public int LevelUps { get; set; }
         public int LevelPoints { get; set; }
 
@@ -291,6 +312,10 @@ namespace AshenSpire.Domain.Core2
         public List<Core2RunCard> Deck { get; set; } = new List<Core2RunCard>();
         public List<Core2RunCard> Sideboard { get; set; } = new List<Core2RunCard>();
         public List<string> CollectedCardIds { get; set; } = new List<string>();
+        /// <summary>JS run.editMintCounter: the last `edit:N` instance id the deck editor minted (null until it mints).</summary>
+        public int? EditMintCounter { get; set; }
+        /// <summary>JS run.armorySeen: carried item ids and armour refs the player has looked at in the Armoury (null: never opened).</summary>
+        public List<string> ArmorySeen { get; set; }
         public List<string> Relics { get; set; } = new List<string>();
         /// <summary>Utility flasks carried (JS run.flasks [{ flaskId }]).</summary>
         public List<string> Flasks { get; set; } = new List<string>();

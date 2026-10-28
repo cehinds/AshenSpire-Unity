@@ -5,6 +5,8 @@
 // run is born with), the balance rows a run reads, the property rules a run's carriers mount, the boss destination
 // labels, the run-scoped equipment mod fields, the damage-source rules a card face reads and the Smith's tier ladder.
 // The other run tables are already typed on Core2Content (routes, rewards, shops, rests, unlocks, encounters, events).
+// Phase 9 adds `deck` (the deck editor's rules, the equipment schools, each class's Adept training and catalogue) and
+// `equipment` (the armoury balance); phase 10 adds `skill` (the skill tracks and their curves).
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,6 +44,15 @@ namespace AshenSpire.Domain.Core2
         public JObject ModFields { get; }
         public JObject Faces { get; }
         public IReadOnlyList<JObject> ItemUpgradeChanges { get; }
+        /// <summary>content/deckRules.js (defaults, singleCopy, equipmentEligibility…).</summary>
+        public JObject DeckRules { get; }
+        /// <summary>The card-domain tags an armament or armour carries, less the universal ones (deckCardEquipmentEligible).</summary>
+        public IReadOnlyList<string> EquipmentSchools { get; }
+        /// <summary>balance.equipment as a loadout change reads it (storageSlots, allowChangesInCombat, the found rule).</summary>
+        public JObject EquipmentBalance { get; }
+        /// <summary>balance.skill: tracks, the weapon/focus curve (xp), the class curve (classXp), flatEvery, pieceSchools.</summary>
+        public JObject Skill { get; }
+        private readonly JObject _adept;
         private readonly JObject _propertyRules;
         private readonly Dictionary<string, JObject> _armaments;
         private readonly Dictionary<string, JObject> _relics;
@@ -59,6 +70,12 @@ namespace AshenSpire.Domain.Core2
             Faces = (JObject)Raw["faces"] ?? new JObject();
             BossLabels = ((JObject)Raw["bossLabels"] ?? new JObject()).Properties().ToDictionary(p => p.Name, p => (string)p.Value, StringComparer.Ordinal);
             ItemUpgradeChanges = ((JArray)Raw["itemUpgradeChanges"] ?? new JArray()).OfType<JObject>().ToList();
+            var deck = (JObject)Raw["deck"] ?? throw new InvalidDataException(Path + ": deck is required (phase 9)");
+            DeckRules = (JObject)deck["rules"];
+            EquipmentSchools = Core2Json.Strings(deck["equipmentSchools"]);
+            _adept = (JObject)deck["adept"] ?? new JObject();
+            EquipmentBalance = (JObject)Raw["equipment"] ?? throw new InvalidDataException(Path + ": equipment is required (phase 9)");
+            Skill = (JObject)Raw["skill"] ?? throw new InvalidDataException(Path + ": skill is required (phase 10)");
             var classes = new Dictionary<string, Core2ClassBirth>(StringComparer.Ordinal);
             foreach (var row in ((JObject)Raw["classes"] ?? new JObject()).Properties())
             {
@@ -93,6 +110,10 @@ namespace AshenSpire.Domain.Core2
         public JObject Armour(string classId, string id) => Content.Armour.FirstOrDefault(a => a.Id == id && (string)a.Raw["classId"] == classId)?.Raw;
         public JObject PropertyRule(string tag) => _propertyRules[tag] as JObject ?? throw new KeyNotFoundException("Unknown property tag " + tag);
         public JObject Module(string id) => Content.Profile["modules"]?[id] as JObject;
+        /// <summary>The class's Adept training row (JS activeAdeptTraining: id, label, kind), or null.</summary>
+        public JObject AdeptTraining(string classId) => _adept[classId ?? ""]?["training"] as JObject;
+        /// <summary>The class's compiled Adept catalogue (JS collectedAdeptCardIds before the collection filter).</summary>
+        public IReadOnlyList<string> AdeptCatalogue(string classId) => Core2Json.Strings(_adept[classId ?? ""]?["catalogue"]);
 
         /// <summary>JS carrierRules: each tag's rule, kept only when every tag it requires is held and none it excludes is.</summary>
         public List<JObject> CarrierRules(IReadOnlyList<string> tags)

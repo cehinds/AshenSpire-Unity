@@ -74,6 +74,7 @@ static class RunReplay
             ["loadout"] = new JObject { ["sets"] = save["loadout"]["sets"], ["active"] = save["loadout"]["active"], ["storage"] = save["loadout"]["storage"], ["boughtArmour"] = save["loadout"]["boughtArmour"] },
             ["itemUpgradeLevels"] = save["itemUpgradeLevels"], ["seatOrder"] = new JArray(run.SeatOrder), ["history"] = save["history"], ["seenEvents"] = new JArray(run.SeenEvents),
             ["lastEncounters"] = new JArray(run.LastEncounters), ["bossesBeaten"] = new JArray(run.BossesBeaten), ["fightsWon"] = run.FightsWon,
+            ["skills"] = Core2RunSave.SkillsJson(run.Skills),
             ["rng"] = rng == null ? JValue.CreateNull() : Counters(rng),
         };
     }
@@ -382,6 +383,8 @@ static class RunReplay
             pendingFight["result"] = settlement.Result;
             pendingFight["xp"] = settlement.Xp.ToJson();
             pendingFight["levelUps"] = settlement.Award.LevelUps;
+            pendingFight["progression"] = settlement.Progression.DeepClone();
+            pendingFight["victoryReceipt"] = settlement.VictoryReceipt?.DeepClone() ?? JValue.CreateNull();
             pendingFight["run"] = View(data, s.Run, s.Rng);
         };
         void PlayFight()
@@ -423,8 +426,11 @@ static class RunReplay
             var step = pendingFight;
             session.FinishFight();
             var ordered = new JObject();
-            foreach (var key in new[] { "kind", "nodeId", "encounterId", "pool", "hpMult", "start", "result", "turns", "enemies", "xp", "levelUps", "run" }) ordered[key] = step[key];
+            foreach (var key in new[] { "kind", "nodeId", "encounterId", "pool", "hpMult", "start", "result", "turns", "enemies", "xp", "levelUps", "progression", "victoryReceipt", "run" }) ordered[key] = step[key];
             steps.Add(ordered);
+            // The spoils show the victory receipt, then the level notices, each acknowledged once (a notice-only spoils then ends the run).
+            if (session.RewardStage == "victoryReceipt") session.AcknowledgeVictoryReceipt();
+            if (session.RewardStage == "levelNotices") session.AcknowledgeLevelNotices();
         }
         void TakeRewards()
         {

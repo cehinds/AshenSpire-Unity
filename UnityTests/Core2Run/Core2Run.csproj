@@ -7,6 +7,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="RunReplay.cs" />
     <Compile Include="Checks.cs" />
+    <Compile Include="ProgressReplay.cs" />
+    <Compile Include="ProgressChecks.cs" />
     <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Core2/**/*.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>

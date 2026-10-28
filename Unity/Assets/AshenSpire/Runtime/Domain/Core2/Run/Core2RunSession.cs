@@ -14,6 +14,15 @@
 //   showRest                      the visit heals on arrival; Smith and Level Up once each
 //   showEvent                     choices committed through the quest door; a startCombat effect fights after Continue
 //   advanceAct                    act + 1, full HP, a new map on the next seat
+// Phase 9 and 10 (Core2RunDeck, Core2RunArmoury, Core2RunSkills, Core2ProfileSave):
+//   onCombatEnd (configured)      class and used-weapon XP settled once (settleConfiguredSkillProgression), level notices
+//                                 (skillLevelNotices), character XP only while progression.characterLevels is on, the
+//                                 victory receipt; a defeat with notices, and the final victory, open a notice-only spoils
+//   showGameProfileReward         the victory receipt, then the level notices, each acknowledged once, then the offer;
+//                                 a notice-only spoils ends the run when both are acknowledged
+//   showArmoury / showDeckEditor  looking clears the Armoury glow; Replace / Unequip re-stamp the deck; the deck editor
+//                                 session; both refused while a fight is unresolved (armouryRules editingLocked)
+//   claimGameProfileRewardToDeck  a won card straight into the deck
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -42,9 +51,21 @@ namespace AshenSpire.Domain.Core2
         public Core2FightSettlement LastSettlement { get; private set; }
         /// <summary>The last committed event choice (its result text and any fight it opened).</summary>
         public Core2EventReceipt LastEvent { get; private set; }
+        /// <summary>The profile's progression settings (characterLevels and the class/weapon XP multipliers).</summary>
+        public Core2ProgressionRules Rules { get; set; }
+        /// <summary>The player's Deck settings the editor and "Add to deck" read.</summary>
+        public Core2DeckSettings DeckSettings { get; set; }
+        /// <summary>The skill XP the fight in progress has earned so far (JS combat.skillXp.player).</summary>
+        public Core2SkillXpRecorder FightSkillXp { get; private set; }
 
-        private Core2RunSession(Core2RunData data, Core2Run run, Core2Rng rng) { Data = data; Run = run; Rng = rng; }
+        private Core2RunSession(Core2RunData data, Core2Run run, Core2Rng rng)
+        {
+            Data = data; Run = run; Rng = rng;
+            Rules = Core2ProgressionRules.From(data);
+            DeckSettings = Core2DeckSettings.From(data);
+        }
         private int _staminaDeficit;
+        private Core2DeckEdit _deckEdit;
 
         /// <summary>A new run (JS newRun + startClimb): created, the seat order drawn, the act 1 map built.</summary>
         public static Core2RunSession Start(Core2RunData data, string classId, uint seed, Core2UnlockLedger ledger = null, string runId = null, bool ignoreUnlocks = false)
@@ -199,6 +220,9 @@ namespace AshenSpire.Domain.Core2
             var fight = Fight;
             _staminaDeficit = 0;
             fight.OnEvent += ev => { if (ev.Type == "playerTurnStart") _staminaDeficit = Math.Max(0, fight.Player.MaxStamina - fight.Player.Stamina); };
+            // JS attachSkillXp: the skill hooks listen on the fight's bus; the run is paid once, when the fight is settled.
+            var skills = FightSkillXp = new Core2SkillXpRecorder(Data, Run, fight);
+            fight.OnEvent += skills.Handle;
             // The run adopts the fight's stream (JS: rng.restoreCounters(entryRng.getCounters()); combat.rng = rng).
             Rng = Fight.Rng;
         }
@@ -214,17 +238,25 @@ namespace AshenSpire.Domain.Core2
             Fight = null;
             Core2RunFights.End(Data, Run, fight, _staminaDeficit);
             var victory = fight.Result == "victory";
+            // The skill tracks are paid here, once, win or loss (settleConfiguredSkillProgression), before character XP.
+            var xpBefore = Core2RunSkills.XpBefore(Run);
+            var skill = Core2RunSkills.Settle(Data, Run, FightSkillXp?.Receipt() ?? new List<KeyValuePair<string, int>>(), victory, pool, Rules);
+            skill.UsedArmaments.AddRange(FightSkillXp?.UsedArmaments ?? new List<string>());
+            var progression = Core2RunSkills.LevelNotices(Data, skill.Awards, skill.UsedArmaments);
+            FightSkillXp = null;
             var enemies = fight.Enemies.Select(e => new Core2XpEnemy { EnemyId = e.EnemyId, Defeated = !e.Alive || e.Hp <= 0, Level = e.Level, MaxHp = e.MaxHp, DamageMult = FightScale.Damage }).ToList();
             var xp = Core2RunProgression.CombatXp(Data, victory, pool, enemies);
-            var award = Core2RunProgression.AwardLevelXp(Data, Run, xp.Total);
-            var settlement = new Core2FightSettlement { Result = fight.Result, Pool = pool, EncounterId = (string)encounter["id"], Xp = xp, Award = award };
+            // JS: a configured run whose profile has character levels off banks no character XP (its earned points stay claimable).
+            var award = Core2RunProgression.AwardLevelXp(Data, Run, Rules.CharacterLevels ? xp.Total : 0);
+            var settlement = new Core2FightSettlement { Result = fight.Result, Pool = pool, EncounterId = (string)encounter["id"], Xp = xp, Award = award, Skill = skill, Progression = progression };
             LastSettlement = settlement;
             if (!victory)
             {
                 Run.Hp = 0;
                 Run.CombatEntered = null;
                 OnFightSettled?.Invoke(this, settlement);
-                FinishRun(false);
+                if (progression.Count > 0) BeginNotices("defeat", progression, null);
+                else FinishRun(false);
                 Checkpoint();
                 return Screen;
             }
@@ -236,9 +268,15 @@ namespace AshenSpire.Domain.Core2
             settlement.Cinders = cinders;
             var boss = pool == "boss";
             if (boss) foreach (var id in Core2Json.Strings(encounter["enemies"])) if (!Run.BossesBeaten.Contains(id)) Run.BossesBeaten.Add(id);
+            // The receipt reflects the settled (rate-scaled) awards, never raw combat XP.
+            var victoryReceipt = settlement.VictoryReceipt = new JObject
+            {
+                ["title"] = Core2RunSkills.VictoryTitle(Content, encounter), ["xpBefore"] = xpBefore,
+                ["xpGains"] = Core2RunSkills.XpGains(null, skill.Awards, award.Gained),
+            };
             OnFightSettled?.Invoke(this, settlement);
-            if (boss && Run.ActNumber >= Content.Routes.Acts) FinishRun(true);
-            else BeginReward("combat", boss ? "advanceAct" : "map", award.LevelUps);
+            if (boss && Run.ActNumber >= Content.Routes.Acts) BeginNotices("victory", progression, victoryReceipt);
+            else BeginReward("combat", boss ? "advanceAct" : "map", award.LevelUps, progression, victoryReceipt);
             Checkpoint();
             return Screen;
         }
@@ -279,19 +317,84 @@ namespace AshenSpire.Domain.Core2
 
         // ---- rewards -----------------------------------------------------------------------------------------------
 
-        private void BeginReward(string source, string after, int levelOffers)
+        private void BeginReward(string source, string after, int levelOffers, JArray progression = null, JObject victoryReceipt = null)
         {
             var offerId = Run.ActNumber + ":" + Run.MapNodeId + ":" + source;
             Core2RunRewards.Offer(Data, Run, Rng, offerId, source);
-            Run.PendingReward = new Core2PendingReward { OfferId = offerId, Source = source, After = after, LevelOffers = levelOffers };
+            Run.PendingReward = new Core2PendingReward { OfferId = offerId, Source = source, After = after, LevelOffers = levelOffers,
+                Progression = progression != null && progression.Count > 0 ? progression : null, VictoryReceipt = victoryReceipt };
         }
 
-        public Core2RewardOffer CurrentOffer => Run.PendingReward == null ? null : Run.RewardOffers[Run.PendingReward.OfferId];
+        /// <summary>JS beginGameProfileReward({ noticeOnly }): the receipt and notices with no offer; with neither, straight on.</summary>
+        private void BeginNotices(string after, JArray progression, JObject victoryReceipt)
+        {
+            if ((progression == null || progression.Count == 0) && victoryReceipt == null) { LeaveNotices(after); return; }
+            Run.PendingReward = new Core2PendingReward { OfferId = Run.ActNumber + ":" + Run.MapNodeId + ":combat", Source = "combat", After = after, NoticeOnly = true,
+                Progression = progression != null && progression.Count > 0 ? progression : null, VictoryReceipt = victoryReceipt };
+        }
+
+        private void LeaveNotices(string after)
+        {
+            Run.PendingReward = null;
+            if (after == "victory") FinishRun(true);
+            else if (after == "defeat") FinishRun(false);
+            else if (after == "advanceAct") AdvanceAct();
+        }
+
+        /// <summary>
+        /// What the spoils screen shows now (JS showGameProfileReward): "victoryReceipt", then "levelNotices", then "offer";
+        /// null when no spoils are pending. A notice-only spoils has no offer stage.
+        /// </summary>
+        public string RewardStage
+        {
+            get
+            {
+                var pending = Run.PendingReward;
+                if (pending == null || Screen != Core2Screen.Reward) return null;
+                if (pending.VictoryReceipt != null) return "victoryReceipt";
+                if (pending.Progression != null && pending.Progression.Count > 0) return "levelNotices";
+                return pending.NoticeOnly ? null : "offer";
+            }
+        }
+
+        private void RequireStage(string stage)
+        {
+            Require(Core2Screen.Reward);
+            if (RewardStage != stage) throw new InvalidOperationException("The spoils show " + (RewardStage ?? "nothing") + ", not " + stage);
+        }
+
+        /// <summary>After an acknowledgement: a notice-only spoils with nothing left to show leads on (JS showGameProfileReward).</summary>
+        private void AfterAcknowledge()
+        {
+            var pending = Run.PendingReward;
+            if (pending.NoticeOnly && pending.VictoryReceipt == null && (pending.Progression == null || pending.Progression.Count == 0)) LeaveNotices(pending.After);
+            Checkpoint();
+        }
+
+        /// <summary>JS acknowledgeVictoryReceipt: the receipt's XP was paid already; it is shown once.</summary>
+        public Core2Screen AcknowledgeVictoryReceipt()
+        {
+            RequireStage("victoryReceipt");
+            Run.PendingReward.VictoryReceipt = null;
+            AfterAcknowledge();
+            return Screen;
+        }
+
+        /// <summary>JS acknowledgeSkillLevelNotices: only actual crossings were persisted; they are shown once.</summary>
+        public Core2Screen AcknowledgeLevelNotices()
+        {
+            RequireStage("levelNotices");
+            Run.PendingReward.Progression = null;
+            AfterAcknowledge();
+            return Screen;
+        }
+
+        public Core2RewardOffer CurrentOffer => Run.PendingReward == null || Run.PendingReward.NoticeOnly ? null : Run.RewardOffers[Run.PendingReward.OfferId];
 
         /// <summary>Take one option of the current offer (Inspect is the option's data; nothing else is collected).</summary>
         public Core2RewardOption TakeReward(int index)
         {
-            Require(Core2Screen.Reward);
+            RequireStage("offer");
             var draft = Core2RunSave.Clone(Run);
             var option = Core2RunRewards.Claim(Data, draft, Run.PendingReward.OfferId, index);
             Core2RunSave.CopyInto(draft, Run);
@@ -302,7 +405,7 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS showGameProfileReward Continue: the next level offer, else the map or the next act.</summary>
         public Core2Screen ContinueReward()
         {
-            Require(Core2Screen.Reward);
+            RequireStage("offer");
             var pending = Run.PendingReward;
             Run.PendingReward = null;
             if (pending.LevelOffers > 0)
@@ -322,6 +425,70 @@ namespace AshenSpire.Domain.Core2
             Run.ActNumber += 1; Run.Floor = 0; Run.MapNodeId = null; Run.Path = new List<string>(); Run.LastEncounters = new List<string>();
             Run.Hp = Run.MaxHp;
             Run.MapGraph = Core2ActMap.Build(Data, Rng, Core2ActMap.SeatAt(Run), Core2ActMap.Tier(Data, Run.ActNumber), Run.History);
+        }
+
+        /// <summary>JS rewardDeckAddRefusal: '' when the offered card may go straight into the deck, else notCard, full or limit.</summary>
+        public string RewardDeckAddRefusal(int index)
+        {
+            RequireStage("offer");
+            return Core2RunDeck.RewardDeckAddRefusal(Data, Run, Run.PendingReward.OfferId, index, DeckSettings);
+        }
+
+        /// <summary>JS claimGameProfileRewardToDeck: claim the card (once) and add it to the deck; a refusal changes nothing.</summary>
+        public Core2RewardOption TakeRewardToDeck(int index)
+        {
+            RequireStage("offer");
+            var option = Core2RunDeck.ClaimRewardToDeck(Data, Run, Run.PendingReward.OfferId, index, DeckSettings);
+            Checkpoint();
+            return option;
+        }
+
+        // ---- the Armoury and the deck editor (phase 9) -------------------------------------------------------------
+
+        /// <summary>JS editingLocked: equipment and deck edits wait while a fight is unresolved.</summary>
+        public bool EditingLocked => Core2RunArmoury.EditingLocked(Data, Fight);
+
+        private void RequireUnlocked()
+        {
+            if (Run.Finish != null) throw new InvalidOperationException("The run has finished");
+            if (EditingLocked) throw new InvalidOperationException(Core2RunArmoury.CombatChangeDisabled);
+        }
+
+        /// <summary>JS armouryHasNew: the Armoury glows for a find not yet looked at.</summary>
+        public bool ArmouryHasNew => Core2RunArmoury.HasNew(Data, Run);
+
+        /// <summary>JS showArmoury: looking clears the glow (persisted); returns every position with its Inspect data.</summary>
+        public List<Core2ArmouryPosition> OpenArmoury()
+        {
+            RequireUnlocked();
+            var positions = Core2RunArmoury.Positions(Data, Run);
+            Core2RunArmoury.MarkSeen(Run);
+            Checkpoint();
+            return positions;
+        }
+
+        public List<Core2ArmouryPosition> ArmouryPositions() => Core2RunArmoury.Positions(Data, Run);
+        public List<string> ReplaceCandidates(string slotId) => Core2RunArmoury.ReplaceCandidates(Data, Run, slotId);
+
+        /// <summary>Armoury Replace: put an owned piece in a cell (the replaced armament goes to storage). Null on success, else why.</summary>
+        public Core2ArmouryRefusal Equip(string slotId, int setIndex, string itemId)
+        {
+            if (Run.Finish != null) throw new InvalidOperationException("The run has finished");
+            var refusal = Core2RunArmoury.Equip(Data, Run, slotId, setIndex, itemId, Fight);
+            if (refusal == null) Checkpoint();
+            return refusal;
+        }
+
+        /// <summary>Armoury Unequip: the piece leaves the cell (an armament to storage). Null on success, else why.</summary>
+        public Core2ArmouryRefusal Unequip(string slotId, int setIndex) => Equip(slotId, setIndex, null);
+
+        /// <summary>JS showDeckEditor / openDeckEdit: refused while a fight is unresolved, or when the Armoury has no deck door.</summary>
+        public Core2DeckEdit OpenDeckEdit()
+        {
+            RequireUnlocked();
+            if (!Core2RunArmoury.OpensDeckEditor(Data, DeckSettings)) throw new InvalidOperationException("Deck editing is disabled by the current settings");
+            if (_deckEdit != null && !_deckEdit.Closed) throw new InvalidOperationException("A deck edit is already open");
+            return _deckEdit = new Core2DeckEdit(Data, Run, DeckSettings, Checkpoint);
         }
 
         // ---- shops -------------------------------------------------------------------------------------------------
@@ -344,7 +511,7 @@ namespace AshenSpire.Domain.Core2
         public List<string> RestServices() => Core2RunRest.OpenServices(Data, Run);
         public List<Core2SmithCandidate> SmithCandidates() => Core2RunRest.SmithPlan(Data, Run);
         public void Smith(string itemRef) { Require(Core2Screen.Rest); Core2RunRest.Commit(Data, Run, "smith", itemRef: itemRef); Checkpoint(); }
-        public void LevelUp(string attributeId) { Require(Core2Screen.Rest); Core2RunRest.Commit(Data, Run, "levelUp", attributeId: attributeId); Checkpoint(); }
+        public void LevelUp(string attributeId) { Require(Core2Screen.Rest); Core2RunRest.Commit(Data, Run, "levelUp", attributeId: attributeId, characterLevels: Rules.CharacterLevels); Checkpoint(); }
         public void LeaveRest() { Require(Core2Screen.Rest); Run.RestVisitId = null; Checkpoint(); }
 
         // ---- events ------------------------------------------------------------------------------------------------
@@ -394,5 +561,11 @@ namespace AshenSpire.Domain.Core2
         public Core2XpReceipt Xp { get; set; }
         public Core2LevelAward Award { get; set; }
         public int Cinders { get; set; }
+        /// <summary>The class and weapon XP this fight paid (phase 10).</summary>
+        public Core2SkillSettlement Skill { get; set; }
+        /// <summary>The level notices this fight earned (JS skillLevelNotices rows).</summary>
+        public JArray Progression { get; set; }
+        /// <summary>A won fight's receipt: { title, xpBefore, xpGains }.</summary>
+        public JObject VictoryReceipt { get; set; }
     }
 }
