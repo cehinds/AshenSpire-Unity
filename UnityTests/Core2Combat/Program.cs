@@ -1,4 +1,4 @@
-// Core 2 combat domain checks (SPEC.md §0.9 phases 5a-5c) for rules the JS oracle families do not reach.
+// Core 2 combat domain checks (SPEC.md §0.9 phases 5a-5c and 7) for rules the JS oracle families do not reach.
 // Run from the repository root: dotnet run --project UnityTests/Core2Combat [-- <repo root>]
 // Every expected value below is worked from the JS function cited next to it (at the SPEC §0.2 pin) and the
 // exported Core 2 data; the oracle replays live in UnityTests/Core2Content.
@@ -562,7 +562,185 @@ try
     var after = Core2EnemyInspector.Inspect(shown, shownWisp);
     var started = shown.Events.Where(e => e.Type == "enemyMoveStarted").ToList();
     Check(after.History.SequenceEqual(started.Select(e => (string)e.Data["moveId"])), "history lists the moves that started, oldest first");
-    Check(started.Count == 0 || (after.Last != null && after.Last.PaidSp == (int?)started.Last().Data["totalSp"]), "last played carries its paid SP receipt");
+    Check(started.Count == 0 || (after.Last != null && after.Last.PaidSp == (int?)started.Last().Data["actionPreview"]["totalSp"]), "last played carries its paid SP receipt");
+
+    // ---- Phase 7: the reaction window and stack (JS combatReactions.js, enemyReactions.js) -------------------------
+    // Fights start from the reaction-fights oracle's recorded players (the run layer is phase 8). The hold policy is the
+    // oracle's: keep trait:reaction cards for the enemy turn, play the first affordable other card, then End Turn.
+    var reactionCases = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(root, "UnityTests", "Core2Content", "Oracles", "reaction-fights.json")))["cases"];
+    Core2Fight ReactionFight(int index)
+    {
+        var input = (JObject)reactionCases[index]["input"];
+        return Core2Fight.Create(content, Core2FightSetup.FromJson((JObject)input["start"]), ((JArray)input["enemyIds"]).Select(t => (string)t).ToList(), (uint)(int)input["seed"]);
+    }
+    bool Held(Core2CardInstance card) => content.Card(card.CardId).Tags.Contains("trait:reaction");
+    // Plays this turn's cards; returns true when a play stopped on an offer.
+    bool PlayTurn(Core2Fight fight, Action beforePlay = null)
+    {
+        for (var guard = 0; guard < 20 && fight.Result == null && fight.PendingReaction == null; guard++)
+        {
+            var target = fight.Enemies.FirstOrDefault(e => e.Alive);
+            var played = false;
+            foreach (var card in fight.Hand.Where(c => !Held(c)).ToList())
+            {
+                Core2Costs costs;
+                try { costs = fight.CardCosts(card.InstanceId); } catch (InvalidOperationException) { continue; }
+                if (costs.Sp > fight.Player.Stamina || costs.Mp > fight.Player.Mana) continue;
+                foreach (var targetId in new[] { target?.Id, null })
+                {
+                    beforePlay?.Invoke();
+                    try { fight.PlayCard(card.InstanceId, targetId); played = true; break; } catch (InvalidOperationException) { }
+                }
+                if (played) break;
+            }
+            if (!played) break;
+        }
+        return fight.PendingReaction != null;
+    }
+    // Plays and ends turns, answering Back, until an offer is open on the enemy turn.
+    Core2Fight UntilEnemyOffer(int index)
+    {
+        var fight = ReactionFight(index);
+        for (var turn = 0; turn < 30 && fight.Result == null; turn++)
+        {
+            while (PlayTurn(fight)) fight.ChooseReaction(fight.PendingReaction.Id, null);
+            if (fight.Result != null) break;
+            fight.EndTurn();
+            if (fight.PendingReaction != null && fight.Phase == "enemy") return fight;
+        }
+        return fight;
+    }
+
+    var offered = UntilEnemyOffer(0);
+    var pending = offered.PendingReaction;
+    Check(pending != null && offered.Phase == "enemy" && offered.ReactionPaused, "an enemy contact against the player pauses the enemy phase with an offer");
+    Check(pending.Options.Count > 0 && pending.Options.All(o => content.Card(o.CardId).Tags.Contains("trait:reaction")), "only trait:reaction cards are offered");
+    Check(pending.Id.StartsWith(pending.GroupKey + ":player:", StringComparison.Ordinal), "the offer is keyed by the incoming contact and the seat");
+    var eventsAtPause = offered.Events.Count;
+    var handAtPause = offered.Hand.Select(c => c.InstanceId).ToList();
+    var spAtPause = offered.Player.Stamina;
+    Check(Throws<InvalidOperationException>(() => offered.PlayCard(offered.Hand[0].InstanceId)), "no card can be played while the offer is pending");
+    Check(Throws<InvalidOperationException>(() => offered.EndTurn()), "End Turn waits for the pending offer");
+    Check(Throws<InvalidOperationException>(() => offered.SetReactions(false)), "the Reaction switch changes only between actions on the player turn");
+    Check(Throws<InvalidOperationException>(() => offered.ChooseReaction("stale-offer", null)), "a stale offer id is refused");
+    Check(Throws<InvalidOperationException>(() => offered.ChooseReaction(pending.Id, "no-such-option")), "an option that was not offered is refused");
+    Check(offered.PendingReaction == pending && offered.Events.Count == eventsAtPause && offered.Player.Stamina == spAtPause
+        && offered.Hand.Select(c => c.InstanceId).SequenceEqual(handAtPause), "a refused answer changes nothing (offer, events, SP, hand)");
+    var option = pending.Options[0];
+    offered.ChooseReaction(pending.Id, option.Id);
+    var chosen = offered.Events.Skip(eventsAtPause).ToList();
+    var stackedAt = chosen.FindIndex(e => e.Type == "combatReactionStacked");
+    var paidAt = chosen.FindIndex(e => e.Type == "cardPlayed" && (string)e.Data["cardInstanceId"] == option.Play.CardInstanceId);
+    var contactAt = chosen.FindIndex(e => e.Type == "attackHit" || e.Type == "attackMissed");
+    Check(stackedAt >= 0 && paidAt > stackedAt && (contactAt < 0 || paidAt < contactAt), "the chosen card is stacked, then paid and played before the paused contact goes on");
+    Check(!offered.Hand.Any(c => c.InstanceId == option.Play.CardInstanceId), "the reaction card left the hand");
+    Equal((int?)chosen[paidAt].Data["staminaSpent"], option.StaminaCost, "the reaction paid exactly the offered price");
+    Check(chosen.Count(e => e.Type == "cardPlayed" && (string)e.Data["cardInstanceId"] == option.Play.CardInstanceId) == 1, "the reaction is paid once");
+
+    var declined = UntilEnemyOffer(0);
+    var declineAt = declined.Events.Count;
+    var declineHand = declined.Hand.Select(c => c.InstanceId).ToList();
+    var declineSp = declined.Player.Stamina;
+    declined.ChooseReaction(declined.PendingReaction.Id, null);
+    var afterBack = declined.Events.Skip(declineAt).ToList();
+    Check(afterBack.First().Type == "combatReactionChosen" && afterBack.First().Data["cardInstanceId"].Type == JTokenType.Null, "Back answers the offer with no card");
+    Check(!afterBack.TakeWhile(e => e.Type != "attackHit" && e.Type != "attackMissed").Any(e => e.Type == "cardPlayed" || e.Type == "staminaSpent"), "Back spends nothing before the contact resumes");
+    Check(declined.Phase != "enemy" || declined.PendingReaction != null || declined.Result != null, "Back resumes the enemy phase");
+    Check(declineHand.Where(id => declined.Hand.Any(c => c.InstanceId == id) || declined.Discard.Any(c => c.InstanceId == id) || declined.Draw.Any(c => c.InstanceId == id)).Count() == declineHand.Count,
+        "Back keeps every offered card (they return with the hand at the round's end)");
+
+    var switchedOff = ReactionFight(0);
+    switchedOff.SetReactions(false);
+    Check(!switchedOff.ReactionsEnabled, "the Reaction switch turns optional prompts off");
+    while (PlayTurn(switchedOff)) switchedOff.ChooseReaction(switchedOff.PendingReaction.Id, null);
+    var offStart = switchedOff.Events.Count;
+    switchedOff.EndTurn();
+    Check(switchedOff.PendingReaction == null, "with reactions off the enemy phase never pauses");
+    Check(switchedOff.Events.Skip(offStart).Any(e => e.Type == "combatReactionUnavailable" && (string)e.Data["reason"] == "switchOff"), "a held reaction card is reported unavailable: Reactions are off");
+
+    // Enemy reactions: Gilded Knight's Gilded Guard (playerAction, minIncoming 8) pays its SP when it is stacked.
+    var knight = ReactionFight(1);
+    var knightStamina = 0; var knightChecked = false;
+    for (var turn = 0; turn < 10 && knight.Result == null && !knightChecked; turn++)
+    {
+        while (PlayTurn(knight, () => knightStamina = knight.Enemies[0].Stamina))
+        {
+            var entry = knight.ReactionStack?.Entries.FirstOrDefault(e => e.Side == "enemy");
+            if (entry != null && !knightChecked)
+            {
+                knightChecked = true;
+                Equal(entry.MoveId, "gildedGuard", "Gilded Knight answers a heavy player hit with Gilded Guard");
+                Equal(knight.Enemies[0].Stamina, knightStamina - entry.SpPayment.Sp, "the enemy pays the reaction move's SP when it is stacked");
+                Equal(knight.PendingReaction.SourceId, "e1", "the player is offered against the stacked enemy reaction");
+                Equal(knight.Enemies[0].CombatReactionTurn, knight.Turn, "one enemy reaction per combat turn is recorded");
+            }
+            knight.ChooseReaction(knight.PendingReaction.Id, null);
+        }
+        if (knight.Result == null && !knightChecked) { knight.EndTurn(); while (knight.PendingReaction != null) knight.ChooseReaction(knight.PendingReaction.Id, null); }
+    }
+    Check(knightChecked, "a playerAction window stacked an enemy reaction in the Gilded Knight fight");
+    Check(knight.Events.Any(e => e.Type == "enemyMoveStarted" && (bool?)e.Data["reaction"] == true), "the stacked enemy reaction resolves (enemyMoveStarted reaction: true)");
+
+    // ---- Phase 7: Auto (JS autoCombatPolicy.js chooseReaction; reactions only) ----------------------------------------
+    var matchupTable = rules.StanceMatchups;
+    Core2PerceivedIntent Seen(string maneuver) => new() { Hidden = false, Revealed = true, Maneuver = maneuver };
+    var hiddenIntent = new Core2PerceivedIntent { Hidden = true, Revealed = false };
+    var noPicks = new Dictionary<string, int>();
+    Equal(Core2AutoCombat.Choose(matchupTable, Seen("attack"), null, noPicks, new[] { "defend", "counter" }), 1, "Auto picks the Counter that beats a perceived Attack");
+    Equal(Core2AutoCombat.Choose(matchupTable, Seen("smash"), null, noPicks, new[] { "counter" }), 0, "a Counter beats a perceived Smash");
+    Equal(Core2AutoCombat.Choose(matchupTable, Seen("sweep"), "counter", noPicks, new[] { "counter" }), -1, "Auto declines a Counter into a perceived Sweep (the Sweep beats it)");
+    Equal(Core2AutoCombat.Choose(matchupTable, hiddenIntent, "defend", noPicks, new[] { "counter", "defend" }), 1, "an unread intent falls back to the last stance");
+    Equal(Core2AutoCombat.Choose(matchupTable, hiddenIntent, null, noPicks, new[] { "defend", "counter" }), -1, "with nothing to go on, Auto answers Back");
+    Equal(Core2AutoCombat.Choose(matchupTable, hiddenIntent, null, new Dictionary<string, int> { ["defend"] = 2 }, new[] { "counter", "defend" }), 1, "manual picks teach Auto");
+    Equal(Core2AutoCombat.PerceivedManeuver(new Core2PerceivedIntent { Stance = "countering" }), "counter", "a stance word is read as its maneuver");
+    Equal(Core2AutoCombat.PerceivedManeuver(new Core2PerceivedIntent { Revealed = false, Maneuver = "attack" }), null, "an unrevealed intent is unknown to Auto");
+    var tally = new Core2ManualReactionPicks();
+    tally.Record("defending"); tally.Record("defend"); tally.Record(null);
+    Equal(tally.Snapshot()["defend"], 2, "manual picks are tallied by maneuver");
+    var auto = UntilEnemyOffer(3);
+    var answer = Core2AutoCombat.Answer(auto);
+    Check(answer == null || auto.PendingReaction.Options.Any(o => o.Id == answer), "Auto answers with an offered option or Back");
+    var autoFrom = auto.Events.Count;
+    var autoPlay = answer == null ? null : auto.PendingReaction.Options.First(o => o.Id == answer).Play.CardInstanceId;
+    auto.ChooseReaction(auto.PendingReaction.Id, answer);
+    var autoPlayed = auto.Events.Skip(autoFrom).Where(e => e.Type == "cardPlayed").Select(e => (string)e.Data["cardInstanceId"]).ToList();
+    Check(autoPlayed.All(id => id == autoPlay) && autoPlayed.Count <= 1, "Auto plays only the reaction it chose, and nothing on Back");
+
+    // ---- Phase 7: the combat log model (JS combatLog.js, combatLogModal.js, CombatToolsModel.js) ----------------------
+    var emptyView = Core2CombatLog.View(content, new List<Core2LogEntry>(), detailed: false, legend: true);
+    Check(emptyView.Select(r => r.Kind).SequenceEqual(new[] { "legend", "empty" }) && emptyView[1].Text == "Actions will appear here as the round unfolds.", "an empty log draws the legend and the empty note");
+    var logEntries = Core2CombatLog.Entries(content, offered.Events, offered.Enemies);
+    var compact = Core2CombatLog.View(content, logEntries, detailed: false, legend: false);
+    var full = Core2CombatLog.View(content, logEntries, detailed: true, legend: true);
+    Check(compact.First().Kind == "heading" && compact.First().Text == "Round 1", "the log opens with the Round 1 heading");
+    Check(compact.Where(r => r.Kind == "heading").Select(r => r.Text).Distinct().Count() == compact.Count(r => r.Kind == "heading"), "one heading per round");
+    Check(!compact.Any(r => r.Kind == "detail") && full.Any(r => r.Kind == "detail"), "full detail adds the damage receipt lines; compact has none");
+    Equal(full.Count(r => r.Kind == "entry"), compact.Count(r => r.Kind == "entry"), "full detail and compact list the same entries");
+    Check(logEntries.All(e => e.Segments.Where(s => s.Side != null).All(s => s.Side == "player" ? s.ActorId == "player" : offered.Enemies.Any(en => en.Id == s.ActorId))), "named actors carry their side");
+    Check(logEntries.Any(e => e.Text.StartsWith("Forsaken played ", StringComparison.Ordinal)), "the player's plays are logged as Forsaken");
+    Check(!logEntries.Any(e => e.Text.Contains("intent")), "the log never names an unstarted intent");
+    Equal(Core2CombatLog.DetailToggleLabel(content, false), "Full detail", "compact log offers Full detail");
+    Equal(Core2CombatLog.DetailToggleLabel(content, true), "Compact log", "full detail offers Compact log");
+    Check(Core2CombatLog.Sizes(content).SequenceEqual(new[] { "Small", "Medium", "Large" }) && Core2CombatLog.DefaultSize(content) == "Medium", "log sizes Small/Medium/Large, opening at Medium");
+    var desk = new[] { "Small", "Medium", "Large" }.ToDictionary(s => s, s => Core2CombatLog.Height(s, 220, 800, 560, 60), StringComparer.Ordinal);
+    Check(desk["Small"] == 110 && desk["Medium"] == 400 && desk["Large"] == 492, "Small is half a card, Medium half the viewport, Large the space below the menu");
+    Equal(Core2CombatLog.SnapSize(300, desk, Core2CombatLog.Sizes(content)), "Medium", "a drag snaps to the nearest size");
+    Check(Core2CombatLog.Palette(content, "#ffffff", "red") == ("#ffffff", "#ff8d83"), "a readable name color is kept; an invalid one falls back");
+
+    // ---- Phase 7: pacing settings (JS actionPacing.json, autoCombatPolicy.js, animationPace.js, settings.js) ----------
+    var pacing = new Core2CombatPacing(content);
+    Equal(pacing.StepPauseMs, 500.0, "pause between steps defaults to 500 ms");
+    Equal(pacing.AnimationStepMs, 390.0, "animation step defaults to 390 ms");
+    Check(pacing.MobileFast == (250.0, 195.0), "the mobile-fast preset is 250 ms / 195 ms");
+    Equal(pacing.AutoCombatSpeed, 1.5, "Auto runs at ×1.5 by default");
+    Check(!pacing.AutoCombatDefault, "Auto is off by default");
+    Check(!pacing.OneTapPlayDefault, "one-tap play is off by default (a tap selects, it never plays)");
+    Equal((string)pacing.Changes("combatStepPause", 750)["combatPacingPreset"], "custom", "editing the pause returns the preset to Custom");
+    Equal((int)pacing.Changes("combatPacingPreset", "mobile-fast")["animationStepDuration"], 195, "choosing mobile-fast writes its values");
+    Check(Math.Abs(pacing.Pace("normal", new JObject { ["autoCombat"] = true }, false).GapMs - 500 / 1.5) < 1e-9, "Auto shortens each step by its ×1.5");
+    Equal(pacing.Pace("instant", new JObject(), false).Scale, 0.0, "Instant waits nothing");
+    Equal(pacing.Pace("normal", new JObject(), true).GapMs, 0.0, "Reduced motion waits nothing");
+    Equal(pacing.Resolve(new JObject { ["combatStepPause"] = 9999 }).DelayMs, 2000.0, "the pause is bounded to 2000 ms");
 }
 catch (Exception error)
 {

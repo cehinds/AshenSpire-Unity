@@ -164,6 +164,8 @@ namespace AshenSpire.Domain.Core2
         public bool Available { get; set; }
         public int AdvanceSp { get; set; }
         public List<Core2RangeTarget> Targets { get; set; } = new List<Core2RangeTarget>();
+        /// <summary>JS accepted plan rootId: the action group's root key (a reserved Counter return binds to it).</summary>
+        public string RootId { get; set; }
     }
 
     public static class Core2Range

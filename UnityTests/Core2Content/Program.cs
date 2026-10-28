@@ -7,8 +7,8 @@
 // 3. The JS oracle fixtures (Oracles/*.json, tools/oracle-js-core2.mjs) come from the same commit
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
 //    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
-//    families (matchups, Counter returns) and 5c families (enemy SP planning, whole scripted fights)
-//    are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
+//    families (matchups, Counter returns), 5c families (enemy SP planning, whole scripted fights) and
+//    phase 7 families (fights with reactions on, their combat log, Auto and pacing) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
 //    no replay yet would be reported PENDING with its reason.
 using System.Text;
 using System.Text.RegularExpressions;
@@ -157,9 +157,12 @@ try
         ["counter-return"] = null,
         ["enemy-planning"] = null,
         ["scripted-fights"] = null,
+        ["reaction-fights"] = null,
+        ["combat-log"] = null,
+        ["combat-automation"] = null,
     };
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
-    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the nine oracle families");
+    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the twelve oracle families");
     Func<Core2Content, JObject, OracleReplay.Result> Cases(Func<Core2Content, JArray, OracleReplay.Result> replay) => (c, data) => replay(c, (JArray)data["cases"]);
     var replays = new Dictionary<string, Func<Core2Content, JObject, OracleReplay.Result>>
     {
@@ -171,7 +174,11 @@ try
         ["counter-return"] = Cases(OracleReplay.CounterReturn),
         ["enemy-planning"] = OracleReplay.EnemyPlanning,
         ["scripted-fights"] = OracleReplay.ScriptedFights,
+        ["reaction-fights"] = OracleReplay.ReactionFights,
+        ["combat-log"] = OracleReplay.CombatLog,
+        ["combat-automation"] = Cases(OracleReplay.CombatAutomation),
     };
+    OracleReplay.OraclesFolder = Full(Oracles);
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));
     var classIds = new HashSet<string>(content.Classes.Select(c => c.Id));
     foreach (var name in fixtures)

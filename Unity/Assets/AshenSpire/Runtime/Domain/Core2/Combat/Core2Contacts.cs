@@ -15,7 +15,7 @@
 //   src/engine/counterRule.js             counterBlockBonus, counterReturnForReceipt, counterReturnSpent
 //   src/engine/combatEngagement.js        authorizeCounterRange (a return's own Advance, paid by the defender, quoted in
 //                                         the incoming contact's frozen engagement; unaffordable → no return, defense kept)
-// Reactions offered between contacts (paid hand Counters, enemy reactions) are phase 7; a paid serial can be passed in.
+// The live fight offers reactions between contacts (Core2FightReactions.cs); a Counter paid as one passes its serial in.
 using System;
 using System.Collections.Generic;
 using System.Linq;
