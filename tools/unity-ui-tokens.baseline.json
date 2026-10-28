@@ -1,0 +1,15 @@
+{
+  "_": "Raw-value budget per grandfathered USS sheet (tools/unity-ui-tokens.mjs). Counts may only fall; new sheets are not listed and have a budget of 0.",
+  "sheets": {
+    "Unity/Assets/AshenSpire/Resources/EnemyTelegraphs.uss": 60,
+    "Unity/Assets/AshenSpire/Resources/Expedition.uss": 243,
+    "Unity/Assets/AshenSpire/Resources/OriginalAccessibility.uss": 27,
+    "Unity/Assets/AshenSpire/Resources/OriginalCards.uss": 203,
+    "Unity/Assets/AshenSpire/Resources/OriginalCombat.uss": 368,
+    "Unity/Assets/AshenSpire/Resources/OriginalCreation.uss": 132,
+    "Unity/Assets/AshenSpire/Resources/OriginalPalette.uss": 11,
+    "Unity/Assets/AshenSpire/Resources/OriginalTheme.uss": 179,
+    "Unity/Assets/AshenSpire/Resources/PlayerComponents.uss": 101,
+    "Unity/Assets/AshenSpire/Resources/RunSummary.uss": 82
+  }
+}

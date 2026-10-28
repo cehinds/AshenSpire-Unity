@@ -30,7 +30,9 @@ namespace AshenSpire.Presentation
         }
         internal static void Scene(VisualElement surface, string key)
         {
-            var host = surface.ClassListContains("app") ? surface : surface.GetFirstAncestorOfType<ScrollView>()?.parent;
+            // The router screen hosts its scene art (behind its scroll region or fixed body); a legacy
+            // `.app` root without a router keeps the art on itself.
+            var host = surface.ClassListContains("app") ? surface : ScreenRouter.ScreenOf(surface) ?? surface.GetFirstAncestorOfType<ScrollView>()?.parent;
             if (host == null) return;
             var previous = host.Q<Image>("player-component-scene");
             if (previous != null && previous.userData as string == key) return;

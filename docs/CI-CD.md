@@ -65,7 +65,13 @@ are documented in [Archive hosting](Unity-Archive-Hosting.md).
   (`UnityEngine.Modules` 2021.3 from NuGet plus `UnityTests/RuntimeCheck/Unity6Shims.cs`
   for newer UI Toolkit types). Any compiler error fails it except the listed
   Unity 6 gaps (`MeshGenerationContext.painter2D`). It proves the code compiles,
-  not that it behaves in the editor.
+  not that it behaves in the editor. Last, `node tools/unity-ui-tokens.mjs --check`
+  verifies the JS UI snapshot (`GameContent/Unity/JsUi`, refreshed with
+  `--import <js-checkout>`) against its manifest, that the generated
+  `Resources/Generated/JsTokens.uss` and `Runtime/Presentation/Generated/JsUiTokens.g.cs`
+  are current, that both PanelSettings assets use the JS reference sizes, and the
+  USS raw-value lint (new sheets use `--js-*` tokens only; older sheets have a
+  budget in `tools/unity-ui-tokens.baseline.json` that may only fall).
 - **unity-license** + **unity-build** — only if `unity` changed. See
   [GameCI](#gameci-unity-builds-in-ci).
 - A new commit on the same PR cancels the older run of this workflow.

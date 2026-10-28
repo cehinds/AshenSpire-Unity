@@ -23,7 +23,8 @@ namespace AshenSpire.Presentation
                 var prefix = image.name?.StartsWith("native-enemy-art-") == true ? "native-enemy-art-" : "coop-enemy-art-";
                 if (image.name?.StartsWith(prefix) != true) continue;
                 var bounds = image.worldBound;
-                _enemyPositions[image.name.Substring(prefix.Length)] = new Rect(_root.WorldToLocal(bounds.position), bounds.size);
+                // Base-layer coordinates: the defeated copy is drawn over the next screen in that layer.
+                _enemyPositions[image.name.Substring(prefix.Length)] = new Rect(_router.BaseLayer.WorldToLocal(bounds.position), bounds.size);
             }
         }
         private void EnemyDeaths(IEnumerable<JToken> events)
@@ -39,7 +40,7 @@ namespace AshenSpire.Presentation
                 image.style.position = Position.Absolute;
                 image.style.left = bounds.x; image.style.top = bounds.y;
                 image.style.width = bounds.width; image.style.height = bounds.height;
-                _root.Add(image);
+                _router.BaseLayer.Add(image);
                 PresentationTrace("enemy.death", "started");
                 _enemyDeaths.Add(FeelTween.Run(image, motion.DurationMs,
                     ms => { image.style.opacity = (float)motion.SampleAt(FeelProperty.Opacity, ms); FeelDriver.Place(image, 0, (float)motion.SampleAt(FeelProperty.Y, ms), (float)motion.SampleAt(FeelProperty.Scale, ms)); },

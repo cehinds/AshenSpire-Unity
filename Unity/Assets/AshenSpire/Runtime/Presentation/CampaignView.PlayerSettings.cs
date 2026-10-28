@@ -386,7 +386,7 @@ namespace AshenSpire.Presentation
         {
             var slider = new SliderInt(label + " · " + value + "%", min, max) { name = id, value = value };
             slider.AddToClassList("setting");
-            slider.style.minHeight = Mathf.Max(52, ViewportLayout.MinimumTouchHeight(_displayHeight));
+            slider.style.minHeight = Mathf.Max(52, ViewportLayout.MinimumTouchHeight(_displayScale));
             slider.RegisterValueChangedCallback(e => { slider.label = label + " · " + e.newValue + "%"; changed(e.newValue); Changed(); });
             _body.Add(slider);
             return slider;
