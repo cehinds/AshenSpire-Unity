@@ -123,10 +123,18 @@ namespace AshenSpire.Presentation.Core2
             return map;
         }
 
-        private double NowMs => Time.realtimeSinceStartupAsDouble * 1000.0;
+        // The screen's own clock: real time that stops while the interruption cover is up (Core2Screens.IsInterrupted), so
+        // Auto, beats and holds neither run behind the cover nor rush to catch up after the player returns.
+        private double _clockMs, _lastRealMs = -1;
+        private double NowMs => _clockMs;
 
         private void Tick()
         {
+            var real = Time.realtimeSinceStartupAsDouble * 1000.0;
+            var delta = _lastRealMs < 0 ? 0 : Math.Max(0, real - _lastRealMs);
+            _lastRealMs = real;
+            if (Core2Screens.IsInterrupted) return;
+            _clockMs += Math.Min(delta, 250);
             if (_controller == null || _root?.panel == null) return;
             _controller.Tick(NowMs);
             TickEndTurnHold();
