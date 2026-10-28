@@ -230,16 +230,23 @@ namespace AshenSpire.Domain.Core2
         public string NodeId { get; set; }
         public string EncounterId { get; set; }
         public Dictionary<string, int> Counters { get; set; }
+        /// <summary>The flask inventory at entry: a fight spends from its own copy in JS (combat.player), so a restart gives it back.</summary>
+        public Core2FlaskCharges FlaskCharges { get; set; }
+        public List<string> Flasks { get; set; }
         public JObject ToJson()
         {
             var row = new JObject { ["nodeId"] = NodeId, ["encounterId"] = EncounterId };
             if (Counters != null) row["counters"] = Core2RunJson.Counters(Counters);
+            if (FlaskCharges != null) row["flaskCharges"] = FlaskCharges.ToJson();
+            if (Flasks != null) row["flasks"] = new JArray(Flasks);
             return row;
         }
         public static Core2CombatEntry FromJson(JToken token) => token == null || token.Type == JTokenType.Null ? null : new Core2CombatEntry
         {
             NodeId = (string)token["nodeId"], EncounterId = (string)token["encounterId"],
             Counters = token["counters"] is JObject c ? c.Properties().ToDictionary(p => p.Name, p => (int)p.Value, StringComparer.Ordinal) : null,
+            FlaskCharges = token["flaskCharges"] is JObject fc ? Core2FlaskCharges.FromJson(fc) : null,
+            Flasks = token["flasks"] is JArray f ? Core2Json.Strings(f).ToList() : null,
         };
     }
 

@@ -80,9 +80,17 @@ static class Core2RunChecks
         // A save taken mid-fight resumes into the same fight, restarted from its entry checkpoint.
         var fighting = Core2RunSession.Start(data, "reaver", 9);
         fighting.Travel(fighting.TravelOptions()[0]);
+        var hpFlasksAtEntry = fighting.Run.FlaskCharges.HpCurrent;
+        fighting.UseFlask("hp");
         var resumedFight = Core2RunSession.Resume(data, Core2RunSave.Deserialize(content, Core2RunSave.Serialize(content, fighting.Run)));
         equal(resumedFight.Screen, Core2Screen.Fight, "save: a save taken in a fight resumes into the fight");
         equal(resumedFight.FightEncounter?["id"]?.ToString(), fighting.FightEncounter?["id"]?.ToString(), "save: the resumed fight is the same encounter");
+        equal(resumedFight.Run.FlaskCharges.HpCurrent, hpFlasksAtEntry, "save: a restarted fight gives back the flasks drunk in it");
+        // An event that chose a fight but was saved before Continue reopens the event, not the fight.
+        var eventSave = Core2RunSave.Deserialize(content, Core2RunSave.Serialize(content, fighting.Run));
+        eventSave.OpenEvent = data.Content.Events.First().Id; eventSave.OpenEventChosen = true;
+        eventSave.CombatEntered = new Core2CombatEntry { NodeId = eventSave.MapNodeId, EncounterId = fighting.Run.CombatEntered.EncounterId };
+        equal(Core2RunSession.Resume(data, eventSave).Screen, Core2Screen.Event, "save: an event's chosen fight waits for Continue after a reload");
 
         // ---- rest: arrive healed once, each service once per visit ---------------------------------------------------------
         var rest = Core2RunSession.Start(data, "reaver", 12).Run;
