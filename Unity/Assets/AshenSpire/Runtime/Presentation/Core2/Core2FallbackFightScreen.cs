@@ -96,7 +96,7 @@ namespace AshenSpire.Presentation.Core2
         private void ToggleAuto()
         {
             if (_auto != null) { _auto.Pause(); _auto = null; Draw(); return; }
-            _auto = _host.schedule.Execute(() => Act(_fight.AutoTurn)).Every(500);
+            _auto = _host.schedule.Execute(() => { if (!Core2Screens.IsInterrupted) Act(_fight.AutoTurn); }).Every(500);
             Draw();
         }
     }

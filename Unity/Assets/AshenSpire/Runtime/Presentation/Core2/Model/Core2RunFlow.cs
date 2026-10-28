@@ -107,10 +107,12 @@ namespace AshenSpire.Presentation.Core2
             return Accept();
         }
 
-        /// <summary>Persist the run (JS persist). A finished run is not saved: its slot is cleared once it is recorded.</summary>
+        /// <summary>Persist the run (JS persist). A finished run is not saved: its slot is cleared once it is recorded. While a
+        /// deck edit is open the run holds provisional piles (Confirm validates, Cancel restores), so the slot keeps the last
+        /// committed state until the edit closes.</summary>
         public void Save()
         {
-            if (Session == null || Slot < 0 || Session.Run.Finish != null) return;
+            if (Session == null || Slot < 0 || Session.Run.Finish != null || DeckEdit != null) return;
             Slots.Save(Slot, Session.Run, _now());
         }
 

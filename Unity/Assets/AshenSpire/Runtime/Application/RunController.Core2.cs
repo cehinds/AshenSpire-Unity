@@ -41,6 +41,7 @@ namespace AshenSpire.Application
         private void InitCore2(string channel)
         {
             _core2Channel = channel;
+            Core2Screens.Interrupted = () => _interruption != null && _interruption.IsInterrupted;
             _view.NativeRequested += NewCore2;
             _view.NativeContinueRequested += ContinueCore2;
             _view.NativeQuickStartRequested += QuickStartCore2;

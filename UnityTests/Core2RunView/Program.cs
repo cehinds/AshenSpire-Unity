@@ -350,7 +350,8 @@ try
     foreach (var line in pending) Console.WriteLine("PENDING: " + line);
 
     // ---- 3. the deck editor --------------------------------------------------------------------------------------
-    var deckFlow = new Core2RunFlow(data, new Core2SaveSlots(new Core2MemoryStorage(), content, "deck"), Now);
+    var deckStorage = new Core2MemoryStorage();
+    var deckFlow = new Core2RunFlow(data, new Core2SaveSlots(deckStorage, content, "deck"), Now);
     Check(deckFlow.Begin("reaver", "DECK1", 0) == null, "a run for the deck editor");
     Check(deckFlow.OpenDeckEdit() == null, "the deck editor opens on the map");
     var desk = new Core2DeckEditorModel(deckFlow);
@@ -363,6 +364,10 @@ try
     Check(desk.Status.StartsWith("Added "), "the desk says what it added");
     Check(desk.Undo() && deckFlow.Session.Run.Deck.Count == count, "Undo takes it back");
     while (deckFlow.Session.Run.Deck.Count >= 10) desk.Remove(deckFlow.Session.Run.Deck.Last().InstanceId);
+    deckFlow.Save(); // a lifecycle save (backgrounded, closed) while the edit is open
+    var reloaded = new Core2RunFlow(data, new Core2SaveSlots(deckStorage, content, "deck"), Now);
+    reloaded.Continue(0);
+    Equal(reloaded.Session?.Run.Deck.Count, count, "a save while the deck editor is open keeps the last committed deck");
     var refusal = desk.Accept();
     Equal(refusal, "Your deck has 9 cards; it needs at least 10.", "Accept below the minimum is refused in the JS words");
     Dump("deck-editor", desk);
