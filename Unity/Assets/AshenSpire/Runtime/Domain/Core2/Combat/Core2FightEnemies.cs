@@ -78,12 +78,13 @@ namespace AshenSpire.Domain.Core2
             var grants = !Core2Stances.SameStance(entity, carrier) ? Core2Stances.EntryBonuses(Rules, carrier) : null;
             var name = Core2Stances.ConfiguredStance(carrier);
             var mirrored = Core2Stances.MirroredManeuver(carrier) != null;
+            var previous = entity.Stance;
             entity.Stance = Rules.StanceInclude.Contains(name)
                 ? new Core2Stance(name, mirrored ? "spell" : carrier?.Profile?.Camp ?? "physical", carrier?.Profile?.Range ?? "melee", mirrored)
                 : new Core2Stance("neutral", "physical", "melee");
             if (grants != null && grants.Precision > 0) ApplyStatus(entity, "precision", Core2Accuracy.PrecisionEntryGrant(Rules, entity, grants.Precision), entity, tags ?? carrier?.Tags);
             if (grants != null && grants.Evade > 0 && !(carrier?.AppliedStatuses.Contains("evade") ?? false)) ApplyStatus(entity, "evade", grants.Evade, entity);
-            entity.ConcurrentStances.Clear();
+            RememberCombatStance(entity, previous);
             Emit("combatStanceChanged", new JObject { ["targetId"] = entity.Id, ["maneuver"] = entity.Stance.Maneuver });
         }
 
@@ -193,6 +194,8 @@ namespace AshenSpire.Domain.Core2
                 if (enemy.PlannedMoves?.Count == 0) enemy.PlanDue = false;
                 if (enemy.Alive)
                 {
+                    EndEnemyBurdens(enemy);
+                    ProposalTurn(enemy, "end");
                     FireOwnerHooks(enemy, "ownerTurnEnd");
                     DrainQueue();
                     if (Result != null) return;
@@ -214,8 +217,10 @@ namespace AshenSpire.Domain.Core2
             DecayAtTurnStart(enemy);
             enemy.Stamina = Math.Max(0, enemy.MaxStamina - enemy.PendingStaminaLoss);
             enemy.PendingStaminaLoss = 0;
+            BeginEnemyBurdens(enemy);
             enemy.ActorIntentRevealed = true;
             Emit("enemyActorTurnStarted", new JObject { ["sourceId"] = enemy.Id, ["enemyId"] = enemy.EnemyId, ["moveId"] = enemy.PendingMove?.MoveId ?? enemy.Intent?.MoveId });
+            ProposalTurn(enemy, "start");
             FireOwnerHooks(enemy, "ownerTurnStart");
             DrainQueue();
             if (Result != null || !enemy.Alive) return;
@@ -284,6 +289,7 @@ namespace AshenSpire.Domain.Core2
                 return "refused";
             }
             enemy.Stamina = available - (prepaid != null ? required : spCost);
+            if (!AllowBurdenMove(enemy, spCost, move)) return "blocked";
             var start = new JObject { ["sourceId"] = enemy.Id, ["enemyId"] = enemy.EnemyId, ["moveId"] = moveId, ["kind"] = move["intent"],
                 ["actionPreview"] = new JObject { ["spCost"] = spCost, ["totalSp"] = spCost + advance } };
             Core2Knowledge.Resolve(enemy);

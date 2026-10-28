@@ -143,6 +143,15 @@ namespace AshenSpire.Domain.Core2
             copy.Statuses = Statuses.ToDictionary(p => p.Key, p => p.Value.Clone(), StringComparer.Ordinal);
             copy.ConcurrentStances = new List<Core2Stance>(ConcurrentStances);
             copy.Counter = Counter?.Clone();
+            // Ability riders, burdens and intent reveals change as cards play: a preview copy (Candidate) gets its own.
+            copy.AbilityRiders = AbilityRiders?.Clone();
+            copy.BurdenPiles = BurdenPiles == null ? null : new Core2BurdenPiles
+            {
+                Draw = Core2CardInstance.CloneAll(BurdenPiles.Draw), Hand = Core2CardInstance.CloneAll(BurdenPiles.Hand),
+                Discard = Core2CardInstance.CloneAll(BurdenPiles.Discard), Exhaust = Core2CardInstance.CloneAll(BurdenPiles.Exhaust),
+                Budget = BurdenPiles.Budget, Tax = BurdenPiles.Tax,
+            };
+            copy.IntentRevealedUntil = new Dictionary<string, int>(IntentRevealedUntil, StringComparer.Ordinal);
             CloneFightState(copy);
             return copy;
         }

@@ -35,8 +35,10 @@ namespace AshenSpire.Domain.Core2
         public string TargetId { get; set; }
         /// <summary>A Counter's return route: advance (pay the Advance its return needs) or throw; null for other cards.</summary>
         public string RangeRoute { get; set; }
+        /// <summary>JS play intent choice: the maneuver an enterStance choose: 'maneuver' card enters.</summary>
+        public string Choice { get; set; }
         public Core2ReactionPlay Clone() => (Core2ReactionPlay)MemberwiseClone();
-        public bool SameAs(Core2ReactionPlay other) => other != null && other.CardInstanceId == CardInstanceId && other.TargetId == TargetId && other.RangeRoute == RangeRoute;
+        public bool SameAs(Core2ReactionPlay other) => other != null && other.CardInstanceId == CardInstanceId && other.TargetId == TargetId && other.RangeRoute == RangeRoute && other.Choice == Choice;
     }
 
     /// <summary>One card the player may react with (JS pendingReaction.options[]): its price is what playing it pays.</summary>
@@ -164,6 +166,7 @@ namespace AshenSpire.Domain.Core2
         /// </summary>
         public void ChooseReaction(string offerId, string optionId)
         {
+            RequireNoCardChoice();
             if (Result != null) throw new InvalidOperationException("Combat is over");
             AnswerReaction(Seat, offerId, optionId);
             ResumeEnemyTurn();
@@ -764,8 +767,8 @@ namespace AshenSpire.Domain.Core2
             var map = new Dictionary<Core2Combatant, Core2Combatant>();
             copy.Player = Player.Clone(); map[Player] = copy.Player;
             foreach (var enemy in Enemies) { var clone = enemy.Clone(); map[enemy] = clone; copy.Enemies.Add(clone); }
-            copy.Draw = new List<Core2CardInstance>(Draw); copy.Hand = new List<Core2CardInstance>(Hand);
-            copy.Discard = new List<Core2CardInstance>(Discard); copy.Exhaust = new List<Core2CardInstance>(Exhaust);
+            copy.Draw = Core2CardInstance.CloneAll(Draw); copy.Hand = Core2CardInstance.CloneAll(Hand);
+            copy.Discard = Core2CardInstance.CloneAll(Discard); copy.Exhaust = Core2CardInstance.CloneAll(Exhaust);
             foreach (var pair in _triggerState) copy._triggerState[pair.Key] = pair.Value;
             foreach (var id in _phasesFired) copy._phasesFired.Add(id);
             copy._mounts.AddRange(_mounts);

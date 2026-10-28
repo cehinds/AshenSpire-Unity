@@ -21,6 +21,8 @@
 //   scripted-fights whole fights under a fixed play policy and seed                  (phase 5 complete)
 //   reaction-fights whole fights with reactions on: offers, answers (first, Back, Auto), enemy reactions (phase 7)
 //   combat-log      combatLogEntries and the drawn view (legend, Round N, full-detail receipt lines)  (phase 7)
+//   content-coverage short fights with the relics and cards whose ops, predicates, formulas and status rules the content
+//                   coverage port added (UnityTests/Core2Content ContentCoverage.cs is the static scan beside it)
 //   combat-automation chooseReaction, resolveCombatAutomation, combatPacingChanges, actionPacing, log sizes (phase 7)
 //   run-creation, run-maps, card-faces, reward-offers, shop-stock, rest-outcomes, level-up, scripted-runs,
 //   scripted-runs-auto: the phase 8 run layer; adept-entitlements, deck-edits, armoury: phase 9; skill-progression:
@@ -312,7 +314,9 @@ function fightStart(combat, runOverride = null) {
       // Where the ratings come from (attributes, each worn piece): the damage receipt's per-source rating lines (phase 7 log).
       ratingSources: (p.ratingSources || []).map(row => ({name: row.name ?? null, kind: row.kind ?? null, sourceId: row.sourceId ?? null, slot: row.slot ?? null,
         ar: row.ar || 0, pr: row.pr || 0})),
-      ...(p.classUnequipped ? {classUnequipped: true} : {})},
+      ...(p.classUnequipped ? {classUnequipped: true} : {}),
+      // The skill ledger the progression predicates read (createRunCombat skills: run.skills), when the run has any.
+      ...(Object.keys(run.skills || {}).length ? {skills: Object.fromEntries(Object.entries(run.skills).map(([id, row]) => [id, {level: row.level || 0}]))} : {})},
     deck: run.deck.map(card => ({instanceId: card.instanceId, cardId: card.cardId})),
     primaryWeaponRange: primary?.range || 'melee',
     // Each deck card's face as the player's gear resolves it (combatCardTactics.js tacticalCarrier: the damage type the
@@ -634,6 +638,115 @@ family('combat-automation', 'phase 7', 'Auto (reactions only): the chooser\'s pi
   ['src/model/autoCombatPolicy.js chooseReaction/perceivedManeuver/resolveCombatAutomation/combatPacingChanges', 'src/ui/animationPace.js actionPacing',
     'src/ui/models/CombatToolsModel.js combatLogHeight/combatLogSnapSize/combatLogDragScale', 'src/ui/models/CombatLogPaletteModel.js combatLogPalette'], automation,
   {defaults: {actionPacing: {motion: ACTION_PACING, behavior: AUTOMATION_DEFAULTS}, logSizes: COMBAT_LOG_SIZES, logDefaultSize: COMBAT_LOG_DEFAULT_SIZE}});
+
+// ── content coverage (the ops, predicates, formulas and status rules ported for full Core 2 content) ─────────────
+// Short whole fights in which the player carries the relics, or plays the cards, whose behaviour the content-coverage
+// port added: each run is built as reactive() builds it, then its relics and deck are replaced before the fight is
+// made (createRunCombat mounts the relics' property rules and resolves the cards' faces), so fightStart() records
+// them as any start. The play policy is reactive()'s, plus: a card that asks for a maneuver (enterStance choose) is
+// played with 'smash', and a chosen-card selection (moveCards / modifyCards selection: choose) takes the first
+// candidates in pile order. The digest is fuzzDigest's, with the piles, the fight's cinders and every combatant's
+// statuses at the end.
+const COVERAGE_CHOICE = 'smash';
+function coverageFight({classId, seed, enemyIds, relics = [], deck, policy = 'off', maxTurns = 12}) {
+  const run = createRunState({registries, classId, seed, profileMeta: ALL_UNLOCKED});
+  run.relics = [...relics];
+  run.deck = deck.map((cardId, index) => ({instanceId: `c${index + 1}`, cardId, upgraded: false}));
+  const combat = createRunCombat({registries, run, rng: createRng(seed), enemyIds});
+  runOf.set(combat, run);
+  const start = fightStart(combat);
+  if (policy === 'off') dispatch(combat, {type: 'setReactions', enabled: false});
+  const offers = [], turns = [], choices = [];
+  let turn = 0;
+  const settle = () => {
+    for (let i = 0; i < 50 && (combat.pendingReaction || combat.pendingCardChoice); i++) {
+      if (combat.pendingCardChoice) {
+        const pending = combat.pendingCardChoice;
+        const ids = pending.candidateIds.slice(0, pending.count);
+        choices.push(`${turn} ${pending.cardId} ${pending.effect.op} ${pending.effect.from}>${pending.effect.to ?? '-'} ${ids.join(',')}`);
+        dispatch(combat, {type: 'chooseCards', cardInstanceIds: ids});
+      } else answerOffer(combat, policy, offers, turn);
+    }
+  };
+  for (turn = 1; turn <= maxTurns && !combat.result; turn++) {
+    settle();
+    const plays = [];
+    for (let guard = 0; guard < 20 && !combat.result; guard++) {
+      const target = combat.enemies.find(e => e.alive);
+      let played = null;
+      for (const card of combat.piles.hand) {
+        if (reactionTrait(card.cardId)) continue;
+        let costs; try { costs = cardPlayCosts(combat, card.instanceId); } catch { continue; }
+        if ((costs.stamina || 0) > (combat.player.stamina || 0) || (costs.mana || 0) > (combat.player.mana || 0)) continue;
+        const plan = cardChoicePlan(combat, card.instanceId);
+        const choice = plan ? {choice: COVERAGE_CHOICE} : {};
+        for (const targetId of [target?.id, undefined]) {
+          try { dispatch(combat, {type: 'playCard', cardInstanceId: card.instanceId, ...(targetId ? {targetId} : {}), ...choice}); played = card.cardId; break; } catch { /* not playable this way */ }
+        }
+        if (played) break;
+      }
+      if (!played) break;
+      plays.push(played); settle();
+    }
+    const snapshot = {turn, plays, player: {hp: combat.player.hp, block: combat.player.block || 0, stamina: combat.player.stamina, mana: combat.player.mana, stance: combat.player.combatStance?.maneuver ?? null},
+      enemies: combat.enemies.map(e => ({enemyId: e.enemyId, hp: e.hp, block: e.block || 0, poise: e.persistentPoise?.value ?? null, stamina: e.stamina ?? null, intent: e.intent?.moveId ?? null, alive: e.alive}))};
+    if (!combat.result) { dispatch(combat, {type: 'endTurn'}); settle(); }
+    snapshot.after = {playerHp: combat.player.hp, enemyHp: combat.enemies.map(e => e.hp), hand: combat.piles.hand.map(card => card.cardId)};
+    turns.push(snapshot);
+  }
+  const types = {};
+  for (const event of combat.eventLog) types[event.type] = (types[event.type] || 0) + 1;
+  const statuses = entity => Object.entries(entity.statuses || {}).filter(([, row]) => (row?.stacks || row?.meter?.value || 0) > 0)
+    .map(([id, row]) => `${id}:${row.stacks || row.meter?.value || 0}`).sort().join(',') || '-';
+  const digest = fuzzDigest({result: combat.result ?? null, turns, offers,
+    damageDealt: combat.eventLog.filter(e => e.type === 'damageDealt').map(e => ({source: e.sourceId, target: e.targetId, amount: e.amount, blocked: e.blocked ?? 0})),
+    eventCounts: Object.fromEntries(Object.entries(types).sort()), eventTypes: combat.eventLog.map(event => event.type).join(' '),
+    rngCounters: Object.fromEntries(Object.entries(combat.rng.getCounters()).sort())});
+  digest.choices = choices;
+  digest.end = [`piles ${combat.piles.draw.length}/${combat.piles.hand.length}/${combat.piles.discard.length}/${combat.piles.exhaust.length}`,
+    `cinders ${combat.proposalRewards?.cinders ?? 0}`, `player ${statuses(combat.player)}`, ...combat.enemies.map(e => `${e.id} ${statuses(e)}`)];
+  return {start, expected: digest};
+}
+const {cardChoicePlan} = await load('src/engine/combat.js');
+const S = 'core.strike';
+const coverageInputs = [
+  // relics: gainEnergy (the seven the brief names), everyNthCardThisCombat, randomEnemy, the crimsonBlight stacks formula
+  {classId: 'reaver', seed: 31, enemyIds: ['wyrmAspirant'], relics: ['crackedLantern', 'pearlOfSagacity', 'azureSigil', 'wyrmHeart'], deck: [S, S, 'core.defend', 'core.defend', 'base.draw', S, 'core.smash', S]},
+  {classId: 'reaver', seed: 32, enemyIds: ['gildedKnight', 'graveWisp'], relics: ['ashOfRemembrance', 'cinderOfTheFallen', 'emberwickCharm', 'carrionTalon'], deck: [S, S, S, 'core.defend', 'core.sweep', S, S, 'core.smash']},
+  {classId: 'reaver', seed: 36, enemyIds: ['briarHermit', 'stitchedHound'], relics: ['wrathCoil', 'curedHide'], deck: [S, S, 'core.defend', S, S, 'core.smash', S, S]},
+  {classId: 'rogue', seed: 33, enemyIds: ['briarHermit'], relics: ['ivoryComb', 'sentinelsOath', 'twinnedArmor', 'blightTouchedIdol', 'flayersCenser'], deck: [S, 'core.defend', S, 'base.draw', S, 'core.evade', S, 'base.stat-buff']},
+  {classId: 'herald', seed: 34, enemyIds: ['livingArmor', 'stitchedHound'], relics: ['progression-cinderbound-crown', 'progression-ossuary-prayer-wheel', 'sacrificialKnife', 'crimsonCovenant', 'progression-whisperglass-die', 'progression-cracked-war-anvil'], deck: [S, S, 'core.heraldSpecial', S, 'core.smash', 'core.defend', S, S]},
+  {classId: 'starseer', seed: 35, enemyIds: ['charredColossus'], relics: ['progression-moonwell-lens', 'progression-nightglass-rosary', 'progression-fragment-of-the-third-sky', 'starstoneShard', 'progression-purse-of-borrowed-shadows'], deck: ['core.starseerSpecial', 'core.cantrip', 'core.manaSurge', 'core.starseerSpecial', 'core.cantrip', S, 'core.defend', S]},
+  // every other relic with a trigger, six to a fight
+  {classId: 'reaver', seed: 37, enemyIds: ['gildedKnight', 'stitchCrab'], relics: ['ashenGrip', 'blessedDew', 'bloodiedTalisman', 'bloodstainedChalice', 'carrionMorsel', 'crownOfStitches'], deck: [S, S, 'core.defend', S, 'core.smash', S, 'core.sweep', S]},
+  {classId: 'rogue', seed: 38, enemyIds: ['briarHermit'], relics: ['cutpursesCoin', 'emberIdol', 'fellWardenBrand', 'forsakenMedallion', 'forsakenWarflag', 'gildedTear'], deck: [S, S, 'core.defend', S, 'core.evade', S, 'core.smash', S]},
+  {classId: 'herald', seed: 39, enemyIds: ['livingArmor', 'graveWisp'], relics: ['goldFigurine', 'goldboughSapling', 'goldenSprout', 'goldleafCharm', 'gravetendersBell', 'hollowedHorn'], deck: [S, 'core.defend', S, 'core.heraldSpecial', S, 'core.smash', S, 'base.exhaust']},
+  {classId: 'starseer', seed: 40, enemyIds: ['wyrmAspirant'], relics: ['howlingStandard', 'kindlingCharm', 'lodestarShard', 'moonlitVial', 'progression-ember-alms-bowl', 'progression-emberjaw-token'], deck: ['core.starseerSpecial', S, 'core.cantrip', 'core.defend', S, 'core.manaSurge', S, 'core.smash']},
+  {classId: 'reaver', seed: 51, enemyIds: ['charredColossus'], relics: ['radiantAegis', 'titansCinder', 'travelersWhetstone', 'vigilantHalo', 'vowOfVengeance', 'wardenHorn'], deck: [S, 'core.defend', S, 'core.smash', S, 'core.defend', S, 'core.counter']},
+  {classId: 'rogue', seed: 52, enemyIds: ['chainScavenger', 'stitchedHound'], relics: ['wardensLantern', 'warhorn', 'watchmansBadge', 'waxenSeal', 'whetstoneFragment', 'whetstonePouch'], deck: [S, 'core.defend', S, 'core.evade', 'core.sweep', S, 'base.exhaust', S]},
+  // card zones: move, transform, modify, hide, the cinders a card earns
+  {classId: 'reaver', seed: 41, enemyIds: ['briarHermit'], deck: ['base.shuffle-hand', 'base.scout', 'base.shuffle-deck', S, 'base.recall-choose', S, 'base.exhaust-choose', 'core.defend', 'base.transmute', S]},
+  {classId: 'starseer', seed: 42, enemyIds: ['wyrmAspirant'], deck: ['base.transform', 'base.recover-exile', 'base.hide-cards', S, 'base.modify-card-stance', 'base.modify-card-range', S, 'core.defend', 'base.exhaust', S]},
+  // stances: enterStance (forced, chosen), inStance, a stance variant, many forms, paid variants
+  {classId: 'reaver', seed: 43, enemyIds: ['briarHermit'], deck: ['base.force-stance', 'base.attack-then-defend', 'base.immediate-stance-transition', 'base.conditional-damage-bonus', S, 'base.current-stance-variant', 'base.multi-stance', 'core.smash', S]},
+  {classId: 'starseer', seed: 44, enemyIds: ['gildedKnight'], deck: ['base.paid-resource-variant', 'base.multi-stance', 'core.counter', 'core.defend', 'base.attack-then-defend', 'core.sweep', S, S], policy: 'first'},
+  // burdens and Read Intent
+  {classId: 'starseer', seed: 45, enemyIds: ['wyrmAspirant'], deck: ['base.restrained', 'base.status-card-stagger', 'base.status-card-paralyze', 'base.reveal-opponent-hand', S, S, 'core.defend', S]},
+  // status rules (proposalStatusRules): debuffs on the enemy, protections and riders on the player
+  {classId: 'starseer', seed: 46, enemyIds: ['charredColossus'], deck: ['base.weak', 'base.charm', 'base.bind', 'base.foresight', S, 'core.defend', S, 'base.perception-untargetable']},
+  {classId: 'rogue', seed: 47, enemyIds: ['briarHermit'], deck: ['base.evade', 'base.intangible', 'base.mirrors', 'base.retain-block', S, 'core.defend', S, 'base.extra-shield'], policy: 'first'},
+  {classId: 'reaver', seed: 48, enemyIds: ['gildedKnight', 'chainScavenger'], deck: ['base.extra-weapon', 'base.auto-counter', 'base.auto-sweep', 'base.reflect', S, 'core.defend', S, 'core.smash']},
+  // card metrics and formulas, X targets, linked spells, allies, generated cards
+  {classId: 'herald', seed: 49, enemyIds: ['wyrmAspirant'], deck: ['base.scale-negative-status', 'base.weak', 'base.scale-damage-taken', 'base.growth-per-type', 'base.damage-per-use', 'base.cost-per-use', S, 'base.damage-per-use', 'base.cost-per-use']},
+  {classId: 'starseer', seed: 50, enemyIds: ['livingArmor', 'stitchCrab'], deck: ['base.pay-x-effect', 'base.pay-x-targets', 'base.one-use-scroll', 'base.gain-resource', 'base.buff-ally', 'base.drain-allies', S, 'base.break-poise', 'base.generate-smash']},
+];
+const coverageCases = coverageInputs.map(input => {
+  const {start, expected} = coverageFight(input);
+  return {input: {...input, policy: input.policy ?? 'off', choice: COVERAGE_CHOICE, start}, expected};
+});
+family('content-coverage', 'content coverage', 'Short whole fights carrying the relics or playing the cards whose behaviour the content-coverage port added (gainEnergy, card zones and choices, stances, burdens, Read Intent, linked spells, card charges and metrics, the base-card status rules), digested as fuzz-fights are plus the piles, cinders and statuses at the end.',
+  ['src/engine/actions.js runOpcode', 'src/engine/triggers.js evalPredicate', 'src/model/formulas.js evaluate', 'src/engine/abilityRiders.js', 'src/engine/cardZones.js', 'src/engine/enemyBurdens.js',
+    'src/model/proposalStatusRules.js', 'src/engine/proposalStatusRuntime.js', 'src/engine/combat.js doPlayCard/dispatch chooseCards'], coverageCases);
 
 // ── run layer (phase 8) ──────────────────────────────────────────────────────────────────────
 await runFamilies({js, family, plain, fightStart, settle, ALL_UNLOCKED, CLASSES});

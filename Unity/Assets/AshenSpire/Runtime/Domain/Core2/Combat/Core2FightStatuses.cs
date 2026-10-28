@@ -105,11 +105,13 @@ namespace AshenSpire.Domain.Core2
         private void CheckProcFill(Core2Combatant entity, string id, JObject proc, Core2StatusInstance inst, Core2Combatant source)
         {
             if (inst.Stacks < inst.MeterMax) return;
+            // JS killReceipt: the statuses before the burst reset the meter, and the status's source.
+            var killReceipt = (CloneStatuses(entity), source?.Id);
             inst.Stacks = 0;
             var pct = (int)Math.Floor(entity.MaxHp * (double)proc["burstPercent"] / 100);
             var burst = Math.Max((int)proc["burstMin"], Math.Min((int)proc["burstMax"], pct));
             Emit("procBurst", new JObject { ["targetId"] = entity.Id, ["status"] = id, ["amount"] = burst, ["threshold"] = inst.MeterMax });
-            void Enq(JObject effect) => Enqueue(new Core2FightAction { Effect = effect, Source = entity, Owner = entity, Target = entity });
+            void Enq(JObject effect) => Enqueue(new Core2FightAction { Effect = effect, Source = entity, Owner = entity, Target = entity, KillReceipt = killReceipt });
             Enq(new JObject { ["op"] = "loseHp", ["target"] = "self", ["amount"] = burst, ["cause"] = "proc:" + id });
             if (((int?)proc["poiseDamage"] ?? 0) > 0 && entity.Side == Core2Side.Enemy) Enq(new JObject { ["op"] = "poiseDamage", ["amount"] = proc["poiseDamage"] });
             if ((bool?)proc["stagger"] == true && entity.Side == Core2Side.Enemy) Enq(new JObject { ["op"] = "stagger" });

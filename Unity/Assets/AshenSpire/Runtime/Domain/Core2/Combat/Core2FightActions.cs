@@ -85,6 +85,8 @@ namespace AshenSpire.Domain.Core2
         public int ContactIndex = -1;
         public Dictionary<string, Core2GroupTarget> RootTargets;
         public Dictionary<int, bool> Gates = new Dictionary<int, bool>();
+        /// <summary>JS proposalTargetDecisions: each target's resolved status-rule targeting, once per root (shared by its contacts).</summary>
+        public Dictionary<string, Core2ProposalPlan> ProposalDecisions = new Dictionary<string, Core2ProposalPlan>(StringComparer.Ordinal);
         public Core2RangePlan RangePlan;
         /// <summary>JS group.kind: an enemy reaction plan's move intent (enemyMoveStarted kind).</summary>
         public string Kind;
@@ -98,8 +100,25 @@ namespace AshenSpire.Domain.Core2
     {
         private static bool IsHostileTarget(string target) => target == "enemy" || target == "allEnemies" || target == "otherEnemies" || target == "randomEnemy" || target == "player";
 
-        /// <summary>JS resolveRawTargets for one action.</summary>
-        private List<Core2Combatant> ResolveTargets(Core2FightAction action, string spec)
+        /// <summary>
+        /// JS resolveTargets: the raw targets, less the ones this action's group missed; an allEnemies effect of a card with a
+        /// targetLimit (an X-cost reach) keeps only the first targetLimit of them.
+        /// </summary>
+        private List<Core2Combatant> ResolveTargets(Core2FightAction action, string spec, Core2Rng rng = null)
+        {
+            // JS rangeTargetsFor: the targets the range plan committed (or an inherited hook's sampled ones) come first.
+            var committed = RangeTargetsFor(action);
+            if (committed != null) return committed;
+            var targets = ResolveRawTargets(action, spec, rng);
+            var group = action.Group;
+            var eligible = group == null ? targets : targets.Where(e => !(group.Targets.TryGetValue(e.Id, out var row) && row.Receipt?.Avoided == true)).ToList();
+            if (spec == "allEnemies" && action.Card?.TargetLimit != null)
+                eligible = eligible.Take(Math.Max(0, (int)Eval(action, action.Card.TargetLimit, eligible.Count))).ToList();
+            return eligible;
+        }
+
+        /// <summary>JS resolveRawTargets for one action (the closed target set).</summary>
+        private List<Core2Combatant> ResolveRawTargets(Core2FightAction action, string spec, Core2Rng rng = null)
         {
             switch (spec)
             {
@@ -117,20 +136,21 @@ namespace AshenSpire.Domain.Core2
                     var named = (string)action.Event?.Data["targetId"];
                     return Enemies.Where(e => e.Alive && e != action.Target && e.Id != named).ToList();
                 }
+                case "randomEnemy":
+                {
+                    var living = Enemies.Where(e => e.Alive).ToList();
+                    return living.Count > 0 ? new List<Core2Combatant> { (rng ?? Rng).Pick("misc", living) } : new List<Core2Combatant>();
+                }
+                case "allAllies": return new[] { Player }.Where(p => p != null && p.Alive).ToList();
+                case "ally":
+                {
+                    // JS: the aimed living teammate; solo (no pick) falls back to the source.
+                    var t = action.Target;
+                    if (t != null && t.Side == Core2Side.Player && t != action.Source && t.Alive) return new List<Core2Combatant> { t };
+                    return new[] { action.Source }.Where(e => e != null).ToList();
+                }
             }
-            throw new NotSupportedException("Effect target '" + spec + "' is not ported");
-        }
-
-        /// <summary>A formula value for an action (JS evalNum): numbers, add/mul and the evadeStackGain metric.</summary>
-        private double Eval(Core2FightAction action, JToken value, double fallback)
-        {
-            if (value == null || value.Type == JTokenType.Null) return fallback;
-            return Core2Formula.Evaluate(value, (metric, of) =>
-            {
-                var entity = of == "self" || of == "owner" || of == null ? action.Source : action.Target;
-                if (metric == "evadeStackGain") return Core2Accuracy.EvadeStackGain(Rules, entity);
-                throw new NotSupportedException("Formula metric '" + metric + "' is not ported");
-            });
+            throw new InvalidOperationException("Unknown effect target '" + spec + "'");
         }
 
         // ---------------------------------------------------------------------------------------------------------------
@@ -156,7 +176,17 @@ namespace AshenSpire.Domain.Core2
             var group = new Core2ActionGroup { Source = source, Carrier = carrier, EnemyMoveStart = enemyMoveStart, CounterReturn = counterReturn };
             group.Key = group.RootKey = CombatKey + ":" + (++_expansionSerial);
             group.RangePlan = AcceptRange(source, actions, carrier, charge ?? (!prepaidRange && counterReturn == null), acceptedPlan);
-            if (group.RangePlan != null) group.RangePlan.RootId = group.RootKey;
+            if (group.RangePlan != null)
+            {
+                group.RangePlan.RootId = group.RootKey;
+                // JS acceptRangeActions: the accepted plan and its envelope (rooted at the group) ride the carrier.
+                if (group.RangePlan.Lineage != null && carrier != null)
+                {
+                    group.RangePlan.Lineage.RootId = group.RootKey;
+                    carrier.RangeLineage = group.RangePlan.Lineage;
+                    carrier.RangePlan = group.RangePlan;
+                }
+            }
             var plans = new Dictionary<Core2FightAction, List<List<(string Key, int Index)>>>();
             for (var index = 0; index < actions.Count; index++)
             {
@@ -166,7 +196,7 @@ namespace AshenSpire.Domain.Core2
                 var op = (string)eff["op"];
                 var targeted = IsHostileTarget((string)eff["target"]) || op == "removeStatus" || op == "loseHp" || op == "stagger";
                 if (!targeted && op != "damage" && op != "buildup" && op != "applyStatus" && op != "poiseDamage" && op != "wardDamage") continue;
-                if (eff["oncePerTurn"] != null || eff["if"] != null && op == "damage") throw new NotSupportedException("A conditional or once-per-turn contact is not ported");
+                if (eff["oncePerTurn"] != null) throw new InvalidOperationException("Core 2 content carries no once-per-turn contact (oncePerTurn)");
                 var repeat = Math.Max(0, (int)Math.Floor(Eval(action, eff["repeat"], 1)));
                 var hits = op == "damage" ? Math.Max(0, (int)Math.Floor(Eval(action, eff["hits"], 1))) : 1;
                 var batches = new List<List<(string, int)>>();
@@ -181,8 +211,12 @@ namespace AshenSpire.Domain.Core2
                         var key = entity.Id;
                         if (!group.Targets.TryGetValue(key, out var row)) group.Targets[key] = row = new Core2GroupTarget { Entity = entity };
                         var profile = (action.Card ?? carrier)?.Profile?.Clone() ?? new Core2CombatProfile();
-                        var baseAmount = Eval(action, eff["amount"] ?? eff["stacks"], 1);
-                        var amount = op == "damage" ? Core2Damage.Receipt(Rules, source, entity, (int)Math.Floor(baseAmount), action.Card ?? carrier, HitOptions(source, entity, action.Card ?? carrier, group.RangePlan, null)).Raw : 0;
+                        var baseAmount = Eval(action, eff["amount"] ?? eff["stacks"], 1, entity);
+                        var attackBase = (int)Math.Floor(baseAmount) + action.ChargeDamageEffect + (h == 0 ? action.ChargeDamage : 0);
+                        var planCarrier = action.Card ?? carrier;
+                        var planOptions = op == "damage" ? HitOptions(source, entity, planCarrier, group.RangePlan, null) : null;
+                        if (planOptions != null) planOptions.StatusRules = value => ProposalHitPlan(source, entity, value, planCarrier).Amount;
+                        var amount = op == "damage" ? Core2Damage.Receipt(Rules, source, entity, attackBase, planCarrier, planOptions).Raw : 0;
                         var plan = new Core2ContactPlan { Profile = profile, Amount = amount };
                         if (group.RangePlan != null) plan.RangeContactId = index + ":" + r + ":" + h + ":" + (source?.Side == Core2Side.Enemy ? "player:player" : "enemy:" + entity.Id);
                         if (op != "damage") { plan.Effect = op == "poiseDamage" || op == "wardDamage" ? "impact" : "status"; plan.Pressure = baseAmount; }
@@ -234,6 +268,8 @@ namespace AshenSpire.Domain.Core2
                     sequence.Add(targets);
                     var effect = (JObject)action.Effect.DeepClone(); effect["hits"] = 1; effect["repeat"] = 1;
                     var unit = Clone(action); unit.Effect = effect; unit.ContactIndex = sequence.Count - 1; unit.ContactEffectIndex = effectIndex; unit.ContactEffectFirst = index == 0;
+                    if (index > 0) { unit.ChargeDamage = 0; unit.ChargeBreak = 0; }
+                    if (action.RangeSiteBatches != null) unit.RangeSiteBatches = new List<List<(Core2Combatant, string)>> { index < action.RangeSiteBatches.Count ? action.RangeSiteBatches[index] : new List<(Core2Combatant, string)>() };
                     unit.ContactRefs = refs;
                     var completion = Clone(unit); completion.Effect = new JObject { ["op"] = "completeCombatAction" }; completion.ContactCompletion = true;
                     queued.Add(unit); queued.Add(completion);
@@ -265,6 +301,9 @@ namespace AshenSpire.Domain.Core2
             TriggeredBy = a.TriggeredBy, Event = a.Event, Group = a.Group, ContactIndex = a.ContactIndex, ContactCompletion = a.ContactCompletion,
             GroupCompletion = a.GroupCompletion, ContactEffectFirst = a.ContactEffectFirst, ContactEffectIndex = a.ContactEffectIndex,
             CounterReaction = a.CounterReaction, EnergySpent = a.EnergySpent, ManaSpent = a.ManaSpent, ContactRefs = a.ContactRefs.ToList(),
+            StaminaSpent = a.StaminaSpent, AbilityBefore = a.AbilityBefore, OrdinalThisCombat = a.OrdinalThisCombat, Choice = a.Choice, LinkedDepth = a.LinkedDepth,
+            KillReceipt = a.KillReceipt, RangeTargetBatches = a.RangeTargetBatches, RangeSiteBatches = a.RangeSiteBatches, ChargeDamage = a.ChargeDamage, ChargeDamageEffect = a.ChargeDamageEffect, ChargeBreak = a.ChargeBreak,
+            ChargeBlock = a.ChargeBlock, ChargeHeal = a.ChargeHeal, ChargeBuildup = a.ChargeBuildup,
         };
 
         /// <summary>JS activateCombatContact: entering a new contact index makes its targets the group's and resets its begin state.</summary>
@@ -336,13 +375,14 @@ namespace AshenSpire.Domain.Core2
             if (action.CounterReaction && (!action.Source.Alive || action.CounterInterrupted)) return;
             var eff = action.Effect;
             if (eff["if"] is JObject cond && action.ContactEffectFirst && !Predicate(cond, action.Owner ?? action.Source, action.Target, action.Event, action)) return;
-            if (eff["oncePerTurn"] != null) throw new NotSupportedException("oncePerTurn effects are not ported");
+            if (eff["oncePerTurn"] != null) throw new InvalidOperationException("Core 2 content carries no once-per-turn effect (oncePerTurn)");
             if (group?.Contacts != null && action.ContactEffectFirst) group.Gates[action.ContactEffectIndex] = true;
             var repeat = (int)Math.Floor(Eval(action, eff["repeat"], 1));
             for (var r = 0; r < repeat; r++)
             {
+                action.ExecRepeat = r;
                 WithAction(action, () => RunOpcode(action, eff));
-                if (Result != null) return;
+                if (Result != null || HasCardChoice) return;
             }
         }
 
@@ -363,28 +403,39 @@ namespace AshenSpire.Domain.Core2
                     var hits = Math.Max(0, (int)Math.Floor(Eval(action, eff["hits"], 1)));
                     for (var h = 0; h < hits; h++)
                     {
+                        action.RangeHitIndex = h;
                         var targets = action.Group?.Targets.Values.Where(r => r.Contacts.Count > 0).Select(r => r.Entity).ToList() ?? ResolveTargets(action, (string)eff["target"]);
                         if (action.Group == null) targets = ResolveTargets(action, (string)eff["target"]);
+                        // JS: a card's targetLimit caps an allEnemies hit's targets.
+                        if ((string)eff["target"] == "allEnemies" && action.Card?.TargetLimit != null)
+                            targets = targets.Take(Math.Max(0, (int)Eval(action, action.Card.TargetLimit, targets.Count))).ToList();
+                        var first = targets.FirstOrDefault();
                         foreach (var t in targets)
                         {
                             if (!t.Alive) continue;
-                            var amount = (int)Math.Floor(Eval(action, eff["amount"], 0));
+                            var bonus = action.ChargeDamageEffect + (h == 0 && t == first ? action.ChargeDamage : 0);
+                            var amount = (int)Math.Floor(Eval(action, eff["amount"], 0, t)) + bonus;
                             ApplyAttackDamage(action, action.Source, t, amount);
+                            // JS: a break charge drains the first target's Poise after the first hit.
+                            if (h == 0 && t == first && t.Alive && action.ChargeBreak > 0) DrainPoise(null, t, action.ChargeBreak);
                         }
                     }
                     break;
                 }
                 case "block":
-                    foreach (var t in ResolveTargets(action, (string)eff["target"])) GainBlock(t, (int)Math.Floor(Eval(action, eff["amount"], 0)), action.Card);
+                    foreach (var t in ResolveTargets(action, (string)eff["target"])) GainBlock(t, (int)Math.Floor(Eval(action, eff["amount"], 0, t)) + action.ChargeBlock, action.Card);
                     break;
                 case "gainBarrier":
-                    foreach (var t in ResolveTargets(action, (string)eff["target"])) GainBlock(t, (int)Math.Floor(Eval(action, eff["amount"], 0)), action.Card);
+                    foreach (var t in ResolveTargets(action, (string)eff["target"])) GainBlock(t, (int)Math.Floor(Eval(action, eff["amount"], 0, t)) + action.ChargeBlock, action.Card);
                     break;
                 case "applyStatus":
                     foreach (var t in StatusTargets(action, eff))
                     {
-                        var stacks = (int)Math.Floor(Eval(action, eff["stacks"], 1));
-                        ApplyStatus(t, (string)eff["status"], stacks, action.Source, action.Card?.Tags);
+                        // JS: the authored stacks, the Spell-stance bonus and a buildup charge.
+                        var authored = (int)Math.Floor(Eval(action, eff["stacks"], 1, t));
+                        var stacks = authored + SpellAuthoredStatusBonus(action, authored) + action.ChargeBuildup;
+                        ApplyStatus(t, (string)eff["status"], stacks, action.Source, Core2Json.Strings(eff["tags"]).Concat(action.Card?.Tags ?? new List<string>()).ToList());
+                        ProposalThreshold(t);
                         var row = action.Group?.Targets.TryGetValue(t.Id, out var r) == true ? r : null;
                         if (row?.Receipt != null) row.Receipt.StatusAccepted += stacks;
                     }
@@ -398,12 +449,8 @@ namespace AshenSpire.Domain.Core2
                         if (eff["chance"] != null && eff["chance"].Type != JTokenType.Null
                             && !(bool)RollStatusChance((double)eff["chance"], (bool?)eff["advantage"] ?? false, (bool?)eff["disadvantage"] ?? false, "statusPressure")["success"]) continue;
                         var authored = Eval(action, eff["amount"], 0, t);
-                        // JS ashenBlightSpellBuildup (Cinder Sight) adds 1 only for an Ashen Blight owner's Fire/Frost/Lightning
-                        // Burn/Frost/Paralysis buildup; enemies carry no Blight, and no Core 2 card builds those statuses.
-                        if (action.Source?.Side == Core2Side.Player && (action.Card?.Profile?.School == "fire" || action.Card?.Profile?.School == "frost" || action.Card?.Profile?.School == "lightning")
-                            && ((string)eff["status"] == "burn" || (string)eff["status"] == "frost" || (string)eff["status"] == "paralysis"))
-                            throw new NotSupportedException("Ashen Blight Cinder Sight buildup (ashenBlightSpellBuildup) is not ported");
-                        var pressure = ApplyStatusPressure(t, (string)eff["status"], authored + SpellAuthoredStatusBonus(action, authored), action.Source,
+                        // JS ashenBlightSpellBuildup (Cinder Sight) adds 1 only for an Ashen Blight owner; no Core 2 combatant carries Ashen Blight.
+                        var pressure = ApplyStatusPressure(t, (string)eff["status"], authored + SpellAuthoredStatusBonus(action, authored) + action.ChargeBuildup, action.Source,
                             (string)eff["camp"] ?? action.Card?.Profile?.Camp, action.Group?.Key ?? Turn + ":" + (action.Card?.InstanceId ?? "effect"), (string)eff["recoveryProfile"]);
                         var row = action.Group?.Targets.TryGetValue(t.Id, out var r) == true ? r : null;
                         if (row?.Receipt != null)
@@ -415,14 +462,17 @@ namespace AshenSpire.Domain.Core2
                     break;
                 case "removeStatus":
                     foreach (var t in ResolveTargets(action, (string)eff["target"]))
-                        RemoveStatus(t, (string)eff["status"], eff["amount"] != null ? Math.Max(0, (int)Math.Floor(Eval(action, eff["amount"], 0))) : (int?)null, "consumed");
+                    {
+                        RemoveStatus(t, (string)eff["status"], eff["amount"] != null ? Math.Max(0, (int)Math.Floor(Eval(action, eff["amount"], 0, t))) : (int?)null, "consumed");
+                        TrimCombatStances(t);
+                    }
                     break;
                 case "poiseDamage":
                     foreach (var t in ResolveTargets(action, (string)eff["target"]))
                     {
                         var row = action.Group?.Targets.TryGetValue(t.Id, out var r) == true ? r : null;
                         if (row?.Receipt?.Avoided == true) continue;
-                        var authored = Eval(action, eff["amount"], 0);
+                        var authored = Eval(action, eff["amount"], 0, t);
                         var amount = action.Card?.Profile?.CounterReturnAttack == true ? Math.Max(0, (int)Math.Floor(authored))
                             : (int)Math.Ceiling(authored * MatchupPoiseMultiplier(action.Card, t) * StancePressureMultiplier(action.Source, t, action.Card, row?.Receipt?.CounterAttack));
                         // JS dealPoiseDamage(ctx, t, amount): the drain names no source (its break event carries none).
@@ -475,16 +525,96 @@ namespace AshenSpire.Domain.Core2
                     break;
                 case "loseHp":
                     foreach (var t in ResolveTargets(action, (string)eff["target"]))
-                        LoseHp(t, (int)Math.Floor(Eval(action, eff["amount"], 0, t)), (string)eff["cause"] ?? "effect", action.Source);
+                    {
+                        // JS: the death receipt is the action's (a proc burst's), else the target's statuses now and the source.
+                        var receipt = action.KillReceipt ?? (CloneStatuses(t), action.Source?.Id);
+                        LoseHp(t, Math.Max(0, (int)Math.Floor(Eval(action, eff["amount"], 0, t))), (string)eff["cause"] ?? "effect", action.Source, receipt);
+                    }
                     break;
                 case "heal":
                     foreach (var t in ResolveTargets(action, (string)eff["target"]))
                     {
-                        var nominal = Eval(action, eff["amount"], 0);
+                        // JS: the unfloored amount (evalRaw), floored once; the heal charge; then the status healing plan.
+                        var nominal = EvalRaw(action, eff["amount"], 0, t);
                         var amount = Math.Max(0, (int)Math.Floor(nominal));
-                        Heal(t, (int)Math.Floor(amount * Core2Stances.StanceEffectiveness(Rules, action.Source, action.Card)));
+                        var healing = ProposalHealing(t, (int)Math.Floor((amount + action.ChargeHeal) * Core2Stances.StanceEffectiveness(Rules, action.Source, action.Card)), (string)eff["damageType"], action.Card);
+                        if (healing.Damage > 0) LoseHp(t, healing.Damage, "healingInversion", null, null);
+                        Heal(t, healing.Healing);
                     }
                     break;
+                case "gainEnergy":
+                {
+                    // JS: the player's SP pool, unbounded; `funded` already paid the card's own price.
+                    var n = Math.Max(0, (int)Eval(action, eff["amount"], 1) - ((int?)eff["funded"] ?? 0));
+                    Player.Stamina += n;
+                    Emit("energyGained", new JObject { ["amount"] = n });
+                    break;
+                }
+                case "grantCardCharge":
+                    foreach (var t in ResolveTargets(action, (string)eff["target"]))
+                        GrantAbilityCharge(t, eff, field => eff[field] == null ? 0 : Math.Max(0, (int)Eval(action, eff[field], 0, t)));
+                    break;
+                case "castLinkedSpell":
+                {
+                    // JS: the linked card's effects run as this action's, its card the linked definition over the carrier.
+                    if (action.LinkedDepth >= 8) throw new InvalidOperationException("Linked spell recursion exceeds bound");
+                    var linked = Content.Card((string)eff["card"]);
+                    var carrier = action.Card?.Clone() ?? new Core2Carrier();
+                    carrier.Id = linked.Id; carrier.Type = linked.Type; carrier.Tags = linked.Tags.ToList(); carrier.KindIds = Core2Json.Strings(linked.Raw["kindIds"]).ToList();
+                    foreach (var effect in linked.Effects.OfType<JObject>())
+                    {
+                        var next = Clone(action); next.Effect = effect; next.Card = carrier; next.LinkedDepth = action.LinkedDepth + 1;
+                        Enqueue(next);
+                    }
+                    break;
+                }
+                case "addBurden":
+                    foreach (var enemy in ResolveTargets(action, (string)eff["target"]))
+                    {
+                        if (enemy.Side != Core2Side.Enemy) throw new InvalidOperationException("Burden targets enemies only");
+                        AddEnemyBurden(enemy, (string)eff["card"], (int)Eval(action, eff["count"], 1), (string)eff["pile"] ?? "draw");
+                    }
+                    break;
+                case "revealIntent":
+                    foreach (var enemy in ResolveTargets(action, (string)eff["target"]))
+                    {
+                        if (enemy.Side != Core2Side.Enemy) continue;
+                        var until = Turn + Math.Max(1, Math.Min(10, (int)Eval(action, eff["amount"], 1)));
+                        enemy.IntentRevealedUntil[Seat] = until;
+                        Emit("intentRevealed", new JObject { ["targetId"] = enemy.Id, ["ownerId"] = Seat, ["until"] = until });
+                    }
+                    break;
+                case "moveCards":
+                case "modifyCards":
+                    MoveCards(action, (int)Eval(action, eff["amount"], 1));
+                    break;
+                case "enterStance":
+                {
+                    // JS actions.js 'enterStance' (the maneuver form; the configured profile's setProfileStance): the chosen or
+                    // authored maneuver as a stance-triggering carrier for each target.
+                    var maneuver = (string)eff["maneuver"] ?? ((string)eff["choose"] == "maneuver" ? action.Choice : null);
+                    if (maneuver == null && eff["maneuver"] == null && (string)eff["choose"] != "maneuver")
+                        throw new InvalidOperationException("enterStance names a registry stance; Core 2 stances are maneuvers");
+                    if (!Maneuvers.Contains(maneuver ?? "")) throw new InvalidOperationException("Choose a valid maneuver");
+                    foreach (var entity in ResolveTargets(action, (string)eff["target"] ?? "self"))
+                    {
+                        var carrier = action.Card?.Clone() ?? new Core2Carrier();
+                        carrier.Profile ??= new Core2CombatProfile();
+                        carrier.Profile.Maneuver = maneuver; carrier.Profile.StanceTrigger = null; carrier.Profile.StanceTriggerDisabled = false;
+                        carrier.Profile.Range ??= "melee"; carrier.Profile.Camp ??= "physical";
+                        carrier.FixCoreSameStance = null;
+                        SetProfileStance(entity, carrier, null);
+                    }
+                    break;
+                }
+                case "addCinders":
+                {
+                    // JS: a fight has no run context; the cinders wait on the fight (proposalRewards) and settle at its end.
+                    var amount = Math.Max(0, (int)Eval(action, eff["amount"], 0));
+                    RewardCinders += amount;
+                    Emit("cindersChanged", new JObject { ["amount"] = amount, ["total"] = RewardCinders, ["combatReward"] = true });
+                    break;
+                }
                 case "moveEngagement":
                 {
                     if (Range == null || !Range.Policy.Enabled) break;
@@ -499,19 +629,8 @@ namespace AshenSpire.Domain.Core2
                     foreach (var t in ResolveTargets(action, (string)eff["target"])) if (t.Side == Core2Side.Enemy) StaggerEnemy(t, null);
                     break;
                 default:
-                    throw new NotSupportedException("Opcode '" + op + "' is not ported to the Core 2 fight");
+                    throw new InvalidOperationException("Unknown opcode '" + op + "'");
             }
-        }
-
-        private double Eval(Core2FightAction action, JToken value, double fallback, Core2Combatant target)
-        {
-            if (value is JObject row && (string)row["f"] == "stacks")
-            {
-                var of = (string)row["of"];
-                var entity = of == "owner" || of == "self" ? action.Owner ?? action.Source : target;
-                return entity?.StatusStacks((string)row["status"]) ?? 0;
-            }
-            return Eval(action, value, fallback);
         }
 
         /// <summary>JS plannedStatusTargets: a status effect lands on its planned targets that the action did not miss.</summary>
@@ -531,6 +650,13 @@ namespace AshenSpire.Domain.Core2
         private Core2HitOptions HitOptions(Core2Combatant source, Core2Combatant target, Core2Carrier carrier, Core2RangePlan plan, string rangeContactId)
         {
             var options = new Core2HitOptions();
+            if (source != null && target != null)
+            {
+                // JS proposalTargetPlan (preview): the attacker's accuracy rules and an unavoidable hit; the defensive stance.
+                var proposal = ProposalTargetPlan(source, target, carrier, false);
+                options.AccuracyDelta = proposal.AccuracyDelta; options.Unavoidable = proposal.Unavoidable;
+                if (StanceCapacity(target) > 1) options.DefendingStance = DefensiveCombatStance(target, carrier);
+            }
             if (Range == null || source == null || target == null) return options;
             var rangeSource = RangeSourceFor(source, carrier, Core2Range.ActorKey(target));
             options.Contact = Core2Range.HitContact(Range, Core2Range.ActorKey(source), rangeSource, plan, rangeContactId, _rangeContext);
@@ -552,12 +678,18 @@ namespace AshenSpire.Domain.Core2
         {
             if (Range == null || source == null) return null;
             if (acceptedPlan != null) return ChargeRange(source, acceptedPlan, charge);
-            return ChargeRange(source, QuoteRangeActions(source, actions, carrier, _rangeContext), charge);
+            return ChargeRange(source, QuoteRangeActions(source, actions, carrier, _rangeContext, preview: false), charge);
         }
 
-        /// <summary>JS quoteRangeActions (route advance): one contact per hostile effect hit on each living opponent, priced in <paramref name="context"/>.</summary>
-        private Core2RangePlan QuoteRangeActions(Core2Combatant source, List<Core2FightAction> actions, Core2Carrier carrier, Core2RangePlan context)
+        /// <summary>
+        /// JS quoteRangeActions (route advance): one contact per hostile effect hit on each living opponent, plus the envelope's
+        /// rider contacts, priced in <paramref name="context"/>. A preview samples random targets on a detached copy of the RNG;
+        /// an acceptance samples them once and commits them to the actions (rangeTargetBatches, rangeSiteBatches).
+        /// </summary>
+        private Core2RangePlan QuoteRangeActions(Core2Combatant source, List<Core2FightAction> actions, Core2Carrier carrier, Core2RangePlan context, bool preview = true)
         {
+            var rng = preview ? new Core2Rng(Rng.Seed, Rng.Counters()) : Rng;
+            var saved = actions.Select(a => a.RangeTargetBatches).ToList();
             var contacts = new List<Core2RangeSource>();
             for (var index = 0; index < actions.Count; index++)
             {
@@ -567,8 +699,12 @@ namespace AshenSpire.Domain.Core2
                 if (op != "damage" && op != "applyStatus" && op != "buildup" && op != "poiseDamage" && op != "wardDamage" && op != "loseHp" && op != "stagger" && op != "arcaneBuildup") continue;
                 var repeats = Math.Max(0, (int)Math.Floor(Eval(action, eff["repeat"], 1)));
                 var hits = op == "damage" ? Math.Max(0, (int)Math.Floor(Eval(action, eff["hits"], 1))) : 1;
+                var batches = new List<List<Core2Combatant>>();
                 for (var r = 0; r < repeats; r++) for (var h = 0; h < hits; h++)
-                    foreach (var target in ResolveTargets(action, (string)eff["target"]))
+                {
+                    var resolved = ResolveTargets(action, (string)eff["target"], rng);
+                    batches.Add(resolved);
+                    foreach (var target in resolved)
                         if (target.Alive && source.Side != target.Side)
                         {
                             var key = Core2Range.ActorKey(target);
@@ -576,8 +712,15 @@ namespace AshenSpire.Domain.Core2
                             contact.ContactId = index + ":" + r + ":" + h + ":" + key;
                             contacts.Add(contact);
                         }
+                }
+                action.RangeTargetBatches = batches;
             }
-            return Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", context);
+            Core2RangeLineage lineage;
+            try { lineage = ExtendRangeEnvelope(source, actions, contacts, preview, carrier, rng); }
+            finally { if (preview) for (var i = 0; i < actions.Count; i++) actions[i].RangeTargetBatches = saved[i]; }
+            var plan = Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", context);
+            plan.Lineage = lineage;
+            return plan;
         }
 
         /// <summary>
@@ -594,6 +737,7 @@ namespace AshenSpire.Domain.Core2
             var tags = actions.SelectMany(a => Core2Json.Strings(a.Effect["tags"])).ToList();
             var range = tags.FirstOrDefault(t => t.StartsWith("range:", StringComparison.Ordinal))?.Substring(6) ?? "melee";
             var carrier = new Core2Carrier { Profile = new Core2CombatProfile { Range = range } };
+            foreach (var action in actions) action.Card = carrier;
             var quoted = QuoteRangeActions(source, actions, carrier, null);
             if (quoted.Targets.Count == 0) return actions;
             var available = source.Stamina;
@@ -606,7 +750,12 @@ namespace AshenSpire.Domain.Core2
                 });
                 return actions.Where(a => !RangeHostileOps.Contains((string)a.Effect["op"] ?? "")).ToList();
             }
-            ChargeRange(source, quoted, true);
+            // JS: the accepted trigger is its own root (the serial shared with action groups), quoted outside any reaction context.
+            var rootId = CombatKey + ":trigger:" + (++_expansionSerial);
+            var accepted = ChargeRange(source, QuoteRangeActions(source, actions, carrier, null, preview: false), true);
+            accepted.RootId = rootId;
+            carrier.RangePlan = accepted;
+            if (accepted.Lineage != null) { accepted.Lineage.RootId = rootId; carrier.RangeLineage = accepted.Lineage; }
             return actions;
         }
 
@@ -628,7 +777,7 @@ namespace AshenSpire.Domain.Core2
                     Emit("energySpent", new JObject { ["amount"] = extra }); Emit("staminaSpent", new JObject { ["amount"] = extra });
                 }
             }
-            return new Core2RangePlan { SourceKey = plan.SourceKey, Route = plan.Route, Available = plan.Available, AdvanceSp = plan.AdvanceSp, Targets = plan.Targets, RootId = plan.RootId };
+            return new Core2RangePlan { SourceKey = plan.SourceKey, Route = plan.Route, Available = plan.Available, AdvanceSp = plan.AdvanceSp, Targets = plan.Targets, RootId = plan.RootId, Lineage = plan.Lineage };
         }
 
         /// <summary>JS beginExpandedAction → beginTacticalAction (configured, FixCore) for every present target of the current contact.</summary>
@@ -737,8 +886,46 @@ namespace AshenSpire.Domain.Core2
             var tactical = row?.Receipt;
             if (tactical?.Avoided == true) return 0;
             var carrier = action.Card ?? group?.Carrier;
-            var options = HitOptions(source, target, carrier, group?.RangePlan, null);
-            if (tactical == null)
+            // JS applyAttackDamage: the status rules' targeting is resolved once per play (or contact sequence) and target —
+            // a veil's perception roll and an evade roll on `misc` — and its stack changes queued; a miss there avoids the hit.
+            var decisions = group?.ProposalDecisions ?? (action.ProposalDecisions ??= new Dictionary<string, Core2ProposalPlan>(StringComparer.Ordinal));
+            if (!decisions.TryGetValue(target.Id, out var targetPlan))
+            {
+                targetPlan = ProposalTargetPlan(source, target, carrier, true);
+                decisions[target.Id] = targetPlan;
+                ApplyProposalPlan(new Core2ProposalPlan { StatusChanges = targetPlan.StatusChanges }, source, target, carrier);
+            }
+            if (!targetPlan.Allowed || targetPlan.Avoided)
+            {
+                Emit("proposalHitAvoided", new JObject { ["sourceId"] = source?.Id, ["targetId"] = target.Id, ["perception"] = !targetPlan.Allowed });
+                return 0;
+            }
+            var rawOptions = HitOptions(source, target, carrier, group?.RangePlan ?? carrier?.RangePlan, carrier?.RangeEdgeId != null ? InheritedContactId(action, target) : null);
+            var raw = Core2Damage.Receipt(Rules, source, target, baseDamage, carrier, rawOptions).Raw;
+            var statusPlan = ProposalHitPlan(source, target, raw, carrier);
+            var hpBefore = target.Hp;
+            var eventStart = Events.Count;
+            var amount = statusPlan.Healing > 0 ? 0 : ApplyProfileDamage(action, source, target, baseDamage, carrier, row, tactical);
+            if (statusPlan.Healing > 0) Heal(target, statusPlan.Healing);
+            var connected = Events.Skip(eventStart).Any(e => e.Type == "damageDealt" && (string)e.Data["targetId"] == target.Id);
+            if (statusPlan.Healing > 0 || raw > 0 && connected)
+            {
+                // JS: the plan's jobs copy the hit's carrier, a planned contact's expansionContact (its roll) included.
+                var jobCarrier = carrier?.Clone() ?? new Core2Carrier();
+                if (row != null) jobCarrier.ContactResolved = true;
+                ApplyProposalPlan(statusPlan, source, target, jobCarrier);
+                ProposalAfterHit(source, target, raw, Math.Max(0, hpBefore - target.Hp), jobCarrier);
+            }
+            return amount;
+        }
+
+        /// <summary>JS applyProfileDamage: the configured damage receipt applied to Block, Poise and HP.</summary>
+        private int ApplyProfileDamage(Core2FightAction action, Core2Combatant source, Core2Combatant target, int baseDamage, Core2Carrier carrier, Core2GroupTarget row, Core2TacticalReceipt tactical)
+        {
+            var group = action.Group;
+            var options = HitOptions(source, target, carrier, group?.RangePlan ?? carrier?.RangePlan, carrier?.RangeEdgeId != null ? InheritedContactId(action, target) : null);
+            options.StatusRules = value => ProposalHitPlan(source, target, value, carrier).Amount;
+            if (tactical == null && carrier?.ContactResolved != true)
             {
                 var hit = ResolveHit(source, target, carrier, options);
                 if (hit != null && !hit.Hit) return 0;
@@ -845,14 +1032,14 @@ namespace AshenSpire.Domain.Core2
             return spent;
         }
 
-        /// <summary>JS matchupPoiseMultiplier (expansion): a physical Attack into a Smash or Casting stance gains preparedPoiseMultiplier.</summary>
+        /// <summary>JS matchupPoiseMultiplier (expansion): a physical Attack into a Smash or Casting stance gains preparedPoiseMultiplier (combatExpansionMatchups.attack, exported in mechanics.json counterRules).</summary>
         private double MatchupPoiseMultiplier(Core2Carrier carrier, Core2Combatant target)
         {
             var profile = carrier?.Profile;
             if (profile == null || carrier.CombatReaction || profile.Camp != "physical" || profile.Maneuver != "attack") return 1;
             var stance = target?.Stance?.Maneuver;
             if (stance != "smash" && stance != "casting") return 1;
-            throw new NotSupportedException("preparedPoiseMultiplier (combatExpansionMatchups.attack) is not exported");
+            return (double)Content.Mechanics["counterRules"]["preparedPoiseMultiplier"];
         }
 
         /// <summary>JS stancePressureMultiplier: Smash into Defend/Casting ×smashMultiplier, Counter into Attack/Smash ×counterMultiplier, Sweep into Counter, then stance mitigation.</summary>
@@ -882,7 +1069,7 @@ namespace AshenSpire.Domain.Core2
                 ? Math.Max(0, (int)Math.Floor((baseBlock + Core2Statuses.RatingValue(Rules, entity, "dr") * Rules.DefenseRatingWeight) * Core2Stances.StanceEffectiveness(Rules, entity, card)))
                 : 0;
             entity.Block += amount;
-            if (amount > 0 && card != null && entity.Poise != null && entity.Poise.Value < entity.Poise.Max)
+            if (amount > 0 && card?.Id != null && entity.Poise != null && entity.Poise.Value < entity.Poise.Max)
             {
                 var before = entity.Poise.Value;
                 entity.Poise.Value = Math.Min(entity.Poise.Max, entity.Poise.Value + amount);
@@ -894,16 +1081,20 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>JS applyLoseHp: direct HP loss, no defenses.</summary>
-        private int LoseHp(Core2Combatant target, int amount, string cause, Core2Combatant source)
+        private int LoseHp(Core2Combatant target, int amount, string cause, Core2Combatant source, (Dictionary<string, Core2StatusInstance> StatusesBefore, string SourceId)? death = null)
         {
             if (target == null || !target.Alive) return 0;
             var n = Math.Max(0, amount);
             if (n == 0) return 0;
             target.Hp -= n;
             Emit("hpLost", new JObject { ["targetId"] = target.Id, ["amount"] = n, ["cause"] = cause });
-            AfterHpChange(target, source);
+            AfterHpChange(target, source, death);
             return n;
         }
+
+        /// <summary>A detached copy of an entity's statuses (JS structuredClone(t.statuses), a death receipt's targetStatusesBefore).</summary>
+        private static Dictionary<string, Core2StatusInstance> CloneStatuses(Core2Combatant entity) =>
+            entity.Statuses.ToDictionary(p => p.Key, p => p.Value.Clone(), StringComparer.Ordinal);
 
         /// <summary>JS applyHeal: up to max HP; the healed event fires even at full HP.</summary>
         private int Heal(Core2Combatant target, int amount)
@@ -918,13 +1109,19 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>JS afterHpChange: a combatant at 0 HP dies (enemyDied for an enemy); phases check HP thresholds.</summary>
-        private void AfterHpChange(Core2Combatant target, Core2Combatant source)
+        private void AfterHpChange(Core2Combatant target, Core2Combatant source, (Dictionary<string, Core2StatusInstance> StatusesBefore, string SourceId)? death = null)
         {
+            if (target.Hp > 0) ProposalThreshold(target);
             if (target.Hp <= 0 && target.Alive)
             {
                 target.Hp = 0;
                 target.Alive = false;
-                if (target.Side == Core2Side.Enemy) Emit("enemyDied", new JObject { ["targetId"] = target.Id, ["enemyId"] = target.EnemyId, ["sourceId"] = source?.Id });
+                if (target.Side == Core2Side.Enemy)
+                {
+                    // JS ...death: a death receipt names its source (and the statuses before the blow).
+                    var data = new JObject { ["targetId"] = target.Id, ["enemyId"] = target.EnemyId, ["sourceId"] = death.HasValue ? death.Value.SourceId : source?.Id };
+                    Emit("enemyDied", data, death?.StatusesBefore);
+                }
             }
             CheckPhases();
         }

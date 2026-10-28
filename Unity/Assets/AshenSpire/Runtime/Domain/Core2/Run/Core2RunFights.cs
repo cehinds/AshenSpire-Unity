@@ -199,6 +199,7 @@ namespace AshenSpire.Domain.Core2
                 Deck = run.Deck.Select(c => new Core2CardInstance { InstanceId = c.InstanceId, CardId = c.CardId }).ToList(),
                 PropertyRules = Core2RunGear.PropertyCarriers(data, run), PrimaryWeaponRange = PrimaryWeaponRange(data, run),
                 EnemyHpMult = enemyHpMult, RatingSources = ratings.Sources,
+                SkillLevels = run.Skills.ToDictionary(p => p.Key, p => p.Value.Level, StringComparer.Ordinal),
             };
             foreach (var cardId in run.Deck.Select(c => c.CardId).Distinct())
             {
@@ -274,6 +275,9 @@ namespace AshenSpire.Domain.Core2
                 ["ratingSources"] = new JArray(setup.RatingSources.Select(row => new JObject
                     { ["name"] = row.Name, ["kind"] = row.Kind, ["sourceId"] = row.SourceId, ["slot"] = row.Slot, ["ar"] = row.Ar, ["pr"] = row.Pr })),
             };
+            // The skill ledger the progression predicates read (createRunCombat skills: run.skills), when the run has any.
+            if (setup.SkillLevels.Count > 0)
+                player["skills"] = new JObject(setup.SkillLevels.Select(p => new JProperty(p.Key, new JObject { ["level"] = p.Value })));
             return new JObject
             {
                 ["player"] = player, ["deck"] = new JArray(setup.Deck.Select(c => new JObject { ["instanceId"] = c.InstanceId, ["cardId"] = c.CardId })),
@@ -303,6 +307,8 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS runCombatEnd for a Core 2 run: the pools the fight leaves behind (max SP and energy included) return to the run.</summary>
         public static void End(Core2RunData data, Core2Run run, Core2Fight fight, int staminaDeficit = 0)
         {
+            // JS runCombatEnd: the cinders a card earned in the fight (proposalRewards) settle once.
+            if (!fight.RewardCindersSettled) { run.Cinders += Math.Max(0, fight.RewardCinders); fight.RewardCindersSettled = true; }
             // The fight's equipment deficits: HP and MP as the run carried them in, SP as the last turn start left it.
             run.EquipmentPoolDeficits = new Dictionary<string, int>(StringComparer.Ordinal)
             {

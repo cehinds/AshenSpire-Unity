@@ -105,7 +105,7 @@ namespace AshenSpire.Domain.Core2
             if (fight == null) throw new ArgumentNullException(nameof(fight));
             if (enemy == null || enemy.Side != Core2Side.Enemy) throw new ArgumentException("Inspect needs an enemy of this fight", nameof(enemy));
             var def = fight.Content.Enemy(enemy.EnemyId);
-            var view = Core2Knowledge.Project(enemy);
+            var view = Core2Knowledge.Project(enemy, fight.Turn);
             var inspection = new Core2EnemyInspection
             {
                 EnemyInstanceId = enemy.Id, EnemyId = enemy.EnemyId, Name = def.Name, Intent = view,

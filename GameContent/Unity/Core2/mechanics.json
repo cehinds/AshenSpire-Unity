@@ -289,7 +289,8 @@
     ]
    }
   },
-  "maxReturnsPerCycle": 1
+  "maxReturnsPerCycle": 1,
+  "preparedPoiseMultiplier": 1.5
  },
  "actionCosts": {
   "table": {
@@ -306,6 +307,13 @@
    "constitution": 0.25,
    "wisdom": 0.2,
    "intelligence": 0.2
+  },
+  "enemyBlightShift": {
+   "intelligence": -2,
+   "wisdom": -2,
+   "dexterity": -2,
+   "strength": 2,
+   "constitution": 2
   }
  },
  "statusControl": {

@@ -138,14 +138,17 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>
-        /// JS previewIntent behind knowledgeIntentProjection: an exact read, an acting enemy or a Staggered intent shows the
+        /// JS previewIntent behind knowledgeIntentProjection: a Read Intent reveal (when the fight's turn is given), an exact
+        /// read, an acting enemy or a Staggered intent shows the
         /// move; a failed read shows "?" with the action serial and nothing else (JS concealKnowledgeIntent).
         /// </summary>
-        public static Core2IntentView Project(Core2Combatant enemy)
+        public static Core2IntentView Project(Core2Combatant enemy, int? turn = null)
         {
             var intent = enemy?.Intent ?? new Core2Intent { Kind = "unknown" };
             var action = enemy?.KnowledgeAction;
-            var exact = enemy != null && (enemy.ActorIntentRevealed || intent.Kind == "staggered" || PerceptionRead(enemy));
+            // JS proposalIntentRevealUntil (a Read Intent card, revealIntent): the seat reads the move exactly until the turn it names.
+            var revealed = enemy != null && turn != null && enemy.IntentRevealedUntil.TryGetValue(Core2Fight.Seat, out var until) && until > turn.Value;
+            var exact = enemy != null && (revealed || enemy.ActorIntentRevealed || intent.Kind == "staggered" || PerceptionRead(enemy));
             if (!exact)
                 return new Core2IntentView { Hidden = true, Label = "?", KnowledgeRead = "unknown", ActionSerial = action?.Serial ?? 0, Kind = "unknown", Stance = "unknown" };
             return new Core2IntentView

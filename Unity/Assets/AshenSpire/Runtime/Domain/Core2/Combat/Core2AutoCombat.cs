@@ -145,7 +145,7 @@ namespace AshenSpire.Domain.Core2
             var enemy = fight.Enemies.FirstOrDefault(row => row.Id == pending.SourceId);
             if (inputs.Intent == null && enemy != null && enemy.Alive)
             {
-                var view = Core2Knowledge.Project(enemy);
+                var view = Core2Knowledge.Project(enemy, fight.Turn);
                 inputs.Intent = view.Hidden ? new Core2PerceivedIntent { Hidden = true, Revealed = false, Stance = view.Stance }
                     : new Core2PerceivedIntent { Hidden = false, Revealed = true, Maneuver = enemy.Intent?.Profile?.Maneuver, Stance = view.Stance };
             }

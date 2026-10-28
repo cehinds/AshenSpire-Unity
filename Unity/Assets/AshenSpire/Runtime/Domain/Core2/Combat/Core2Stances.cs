@@ -140,7 +140,7 @@ namespace AshenSpire.Domain.Core2
     /// What is played or performed: a card (JS resolved card def) or an enemy move carrier (JS enemyMoveCarrier).
     /// The pricing fields are the card's authored costs; the profile is its combat identity.
     /// </summary>
-    public sealed class Core2Carrier
+    public sealed partial class Core2Carrier
     {
         public string Id { get; set; }
         /// <summary>attack, skill, power, spell… (JS def.type).</summary>
@@ -179,6 +179,10 @@ namespace AshenSpire.Domain.Core2
         public int ReactionDepth { get; set; }
         /// <summary>JS carrier.rangeCounterReservation: a Counter played as a reaction reserved (and paid) its return's range plan.</summary>
         public Core2CounterReservation RangeCounterReservation { get; set; }
+        /// <summary>JS projectCardBehavior's unplayable: a spent playLimit.</summary>
+        public bool Unplayable { get; set; }
+        /// <summary>JS def.targetLimit: how many of an allEnemies effect's targets the card reaches (a formula, e.g. SP spent).</summary>
+        public JToken TargetLimit { get; set; }
 
         /// <summary>A copy with its own profile and lists.</summary>
         public Core2Carrier Clone()
@@ -207,7 +211,7 @@ namespace AshenSpire.Domain.Core2
                 XCost = card.XCost,
                 BaseSp = costs?["sp"] != null ? (int)costs["sp"] : raw["staminaCost"] != null ? card.StaminaCost : card.XCost ? 0 : card.Cost,
                 BaseMp = costs?["mp"] != null ? (int)costs["mp"] : card.ManaCost,
-                DamageSchool = Core2Json.OptionalString(raw, "damageSchool"),
+                DamageSchool = Core2Json.OptionalString(raw, "damageSchool"), TargetLimit = raw["targetLimit"],
                 AppliedStatuses = card.Effects.OfType<JObject>().Where(e => (string)e["op"] == "applyStatus" && e["status"] != null).Select(e => (string)e["status"]).ToList(),
             };
             carrier.Profile = Core2Stances.CombatProfileFor(carrier.Id, carrier.Tags, raw);
