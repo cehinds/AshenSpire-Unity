@@ -316,6 +316,15 @@
     "modules": 39,
     "schemas": 30
    }
+  },
+  {
+   "bytes": 5823,
+   "path": "ui/combat.json",
+   "sha256": "7292eedd71f326758574bb15af509ef4a4dad7e4a00b2d749af82c339c0f2494",
+   "tables": {
+    "settings": 11,
+    "strings": 16
+   }
   }
  ],
  "gaps": [],

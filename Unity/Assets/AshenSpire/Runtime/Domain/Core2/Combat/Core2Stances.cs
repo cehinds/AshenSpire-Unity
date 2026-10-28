@@ -173,6 +173,12 @@ namespace AshenSpire.Domain.Core2
         public string CounterRequiredRange { get; set; }
         /// <summary>JS carrier.combatReaction: a reaction-made hit (a return, a rider); it never arms or answers a Counter.</summary>
         public bool CombatReaction { get; set; }
+        /// <summary>JS carrier.instanceId: the hand card this carrier was played from (a player-card root); null for a move.</summary>
+        public string InstanceId { get; set; }
+        /// <summary>JS carrier.reactionDepth: played as a reaction (1), or an enemy reaction's stack depth; 0 for an ordinary action. No window opens on it.</summary>
+        public int ReactionDepth { get; set; }
+        /// <summary>JS carrier.rangeCounterReservation: a Counter played as a reaction reserved (and paid) its return's range plan.</summary>
+        public Core2CounterReservation RangeCounterReservation { get; set; }
 
         /// <summary>A copy with its own profile and lists.</summary>
         public Core2Carrier Clone()

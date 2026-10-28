@@ -83,14 +83,29 @@ namespace AshenSpire.Domain.Core2
         public void PlayCard(string instanceId, string targetId = null)
         {
             if (Result != null) throw new InvalidOperationException("Combat is over");
-            if (Phase != "player") throw new InvalidOperationException("Cards can only be played on the player turn");
+            RequireNoPendingReaction();
+            DoPlayCard(new Core2ReactionPlay { CardInstanceId = instanceId, TargetId = targetId });
+        }
+
+        /// <summary>
+        /// JS doPlayCard: the one play path, on the player turn or as a reaction (JS ctx._reactionPlaying, any phase). A
+        /// reaction play is a reaction carrier (no window opens on it); a Counter played as a reaction to an incoming
+        /// contact also pays and reserves its return's Advance (JS paidCounterRange). A card whose own root waits on an
+        /// enemy reaction window stays unresolved until the root resumes (JS deferRootPlay).
+        /// </summary>
+        private void DoPlayCard(Core2ReactionPlay play)
+        {
+            var instanceId = play.CardInstanceId; var targetId = play.TargetId;
+            if (Phase != "player" && !_reactionPlaying) throw new InvalidOperationException("Cards can only be played on the player turn");
             var p = Player;
             var index = Hand.FindIndex(c => c.InstanceId == instanceId);
             if (index < 0) throw new InvalidOperationException("Card '" + instanceId + "' is not in hand");
             var instance = Hand[index];
             var card = Content.Card(instance.CardId);
-            if (Core2Json.Strings(card.Raw["keywords"]).Contains("unplayable")) throw new InvalidOperationException("'" + card.Name + "' is unplayable");
+            if (Core2Json.Strings(card.Raw["keywords"]).Contains("unplayable")) throw new Core2PlayRefusedException("'" + card.Name + "' is unplayable", null, 0, 0, "unplayable");
             var carrier = CardCarrier(instance);
+            carrier.InstanceId = instance.InstanceId;
+            if (_reactionPlaying) carrier.ReactionDepth = 1;
             var costs = Core2Pricing.CardCosts(Ctx, p, Core2Carrier.FromCard(card));
             var effects = CardEffects(card, costs);
             var counter = carrier.Profile?.Maneuver == "counter";
@@ -122,6 +137,13 @@ namespace AshenSpire.Domain.Core2
             var kind = CardKind(card);
             Emit("cardPreparing", new JObject { ["cardInstanceId"] = instance.InstanceId, ["cardId"] = instance.CardId, ["cardType"] = kind, ["cardTags"] = new JArray(card.Tags), ["sourceId"] = p.Id, ["targetId"] = target?.Id });
             DrainQueue();
+            var counterRange = PaidCounterRange(p, carrier, costs, play.RangeRoute ?? "advance");
+            if (counterRange != null)
+            {
+                costs = counterRange.Value.Costs;
+                carrier.RangeCounterReservation = counterRange.Value.Reservation;
+                Core2Pools.RequireAffordable(p, costs);
+            }
             p.Stamina -= costs.Sp;
             if (costs.Sp > 0 || carrier.XCost) Emit("energySpent", new JObject { ["amount"] = costs.Sp });
             p.Mana -= costs.Mp;
@@ -154,7 +176,41 @@ namespace AshenSpire.Domain.Core2
                 ["targetId"] = target?.Id, ["energySpent"] = costs.Sp + advance, ["manaSpent"] = costs.Mp, ["staminaSpent"] = costs.Sp + advance,
             });
             DrainQueue();
+            // An enemy reaction window on this card's own root: it resolves when the root resumes.
+            if (DeferRootPlay()) return;
             FinishPlay();
+        }
+
+        /// <summary>
+        /// JS paidCounterRange: a Counter played as a reaction to an incoming contact quotes its return against that attacker
+        /// in the contact's frozen engagement; the return's Advance joins the card's price now and the plan is reserved for
+        /// the return (it pays nothing more). Refused when the route cannot reach.
+        /// </summary>
+        private (Core2Costs Costs, Core2CounterReservation Reservation)? PaidCounterRange(Core2Combatant source, Core2Carrier carrier, Core2Costs baseCosts, string route)
+        {
+            if (Range == null || _rangeIncoming == null || !_reactionPlaying || carrier.Profile?.Maneuver != "counter") return null;
+            var incoming = _rangeIncoming.Value;
+            var target = new[] { Player }.Concat(Enemies).FirstOrDefault(entity => Core2Range.ActorKey(entity) == incoming.SourceKey)
+                ?? throw new Core2PlayRefusedException("The incoming attacker is unavailable", "range", 0, 0);
+            var returnCarrier = carrier.Clone();
+            returnCarrier.Profile.CounterReturnAttack = true;
+            var key = Core2Range.ActorKey(target);
+            // JS quoteCounterReturn: the return's damage and Poise contacts against the attacker.
+            var contacts = new List<Core2RangeSource>();
+            for (var index = 0; index < 2; index++)
+            {
+                var contact = RangeSourceFor(source, returnCarrier, key);
+                contact.ContactId = index + ":0:0:" + key;
+                contacts.Add(contact);
+            }
+            var plan = Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, route, _rangeContext);
+            if (!plan.Available) throw new Core2PlayRefusedException("The selected Counter return cannot reach its attacker", "range", 0, 0);
+            var costs = Core2Range.AddRangeCosts(baseCosts, plan);
+            plan.RootId = incoming.RootId + ":return:" + incoming.ContactId + ":" + (carrier.InstanceId ?? carrier.Id);
+            return (costs, new Core2CounterReservation
+            {
+                SourceKey = plan.SourceKey, TargetKey = incoming.SourceKey, IncomingRootId = incoming.RootId, ContactId = incoming.ContactId, RangePlan = plan,
+            });
         }
 
         /// <summary>The Advance SP an action's hostile contacts need from the player's range state (JS quoteRangeActions, advance route).</summary>
@@ -179,7 +235,7 @@ namespace AshenSpire.Domain.Core2
                             contacts.Add(contact);
                         }
             }
-            var plan = Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance");
+            var plan = Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", _rangeContext);
             available = plan.Available;
             return plan.AdvanceSp;
         }

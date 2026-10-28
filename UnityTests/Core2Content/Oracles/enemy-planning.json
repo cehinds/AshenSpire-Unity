@@ -47,6 +47,24 @@
     "relicIds": [
      "forsakenMedallion",
      "ashenGrip"
+    ],
+    "ratingSources": [
+     {
+      "name": "Attributes",
+      "kind": "attribute",
+      "sourceId": null,
+      "slot": null,
+      "ar": 4,
+      "pr": 1
+     },
+     {
+      "name": "Greatsword",
+      "kind": "equipment",
+      "sourceId": "armament/greatsword",
+      "slot": "rightHand",
+      "ar": 1,
+      "pr": 0
+     }
     ]
    },
    "deck": [
@@ -316,6 +334,24 @@
     "relicIds": [
      "forsakenMedallion",
      "ashenGrip"
+    ],
+    "ratingSources": [
+     {
+      "name": "Attributes",
+      "kind": "attribute",
+      "sourceId": null,
+      "slot": null,
+      "ar": 4,
+      "pr": 1
+     },
+     {
+      "name": "Greatsword",
+      "kind": "equipment",
+      "sourceId": "armament/greatsword",
+      "slot": "rightHand",
+      "ar": 1,
+      "pr": 0
+     }
     ]
    },
    "deck": [

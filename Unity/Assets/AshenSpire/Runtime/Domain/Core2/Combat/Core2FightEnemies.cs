@@ -91,57 +91,83 @@ namespace AshenSpire.Domain.Core2
         // The enemy phase (JS enemyPhase)
         // ================================================================================================================
 
+        /// <summary>JS combat.reactionCursor: where a paused enemy phase resumes (the acting enemy and its stage).</summary>
+        private bool _cursorActive;
+        private int _cursorIndex;
+        /// <summary>start (its owner turn start), payload (its head move) or drain (its queue, then its follow-ups).</summary>
+        private string _cursorStage = "start";
+
+        /// <summary>
+        /// JS enemyPhase with its reaction cursor: the turn start, then each living enemy in roster order — its owner turn
+        /// start, its head move (or a charge resolving), the queue, its saved plan's follow-ups, its owner turn end — and
+        /// the turn end. A reaction offer pauses it after a drain; called again it resumes at the cursor.
+        /// </summary>
         private void EnemyPhase()
         {
-            Phase = "enemy";
-            FollowTrace.Clear();
-            Emit("enemyTurnStart", new JObject { ["turn"] = Turn });
-            foreach (var e in Enemies.Where(e => e.Alive))
+            if (!_cursorActive)
             {
-                e.Block = 0;
-                ClearCounter(e);
-                e.Barrier = 0;
-                StartTacticalTurn(e);
-            }
-            DrainQueue();
-            if (Result != null) return;
-            foreach (var enemy in Enemies.ToList())
-            {
-                if (Result != null) return;
-                if (!enemy.Alive) continue;
-                EnemyOwnerTurnStart(enemy);
-                if (Result != null) return;
-                if (!enemy.Alive) continue;
-                if (enemy.SkipNextTurn)
+                Phase = "enemy";
+                FollowTrace.Clear();
+                Emit("enemyTurnStart", new JObject { ["turn"] = Turn });
+                foreach (var e in Enemies.Where(e => e.Alive))
                 {
-                    if (enemy.PendingMove == null) Core2Knowledge.Cancel(enemy);
-                    enemy.SkipNextTurn = false;
-                    enemy.PlanDue = false;
-                }
-                else if (enemy.PendingMove != null)
-                {
-                    enemy.PlanDue = false;
-                    if (Turn >= enemy.PendingMove.ResolveOnTurn)
-                    {
-                        var pending = enemy.PendingMove;
-                        enemy.PendingMove = null;
-                        ExecuteMovePayload(enemy, pending.MoveId, pending);
-                    }
-                }
-                else if (enemy.Intent?.MoveId != null)
-                {
-                    var raw = EnemyDef(enemy).Move(enemy.Intent.MoveId).Raw;
-                    if (raw["delay"] != null && raw["delay"].Type != JTokenType.Null)
-                    {
-                        enemy.PlanDue = false;
-                        enemy.PlannedMoves = new List<Core2PlannedMove>();
-                        StartDelayedMove(enemy, enemy.Intent.MoveId);
-                    }
-                    else ExecuteMovePayload(enemy, enemy.Intent.MoveId, null);
+                    e.Block = 0;
+                    ClearCounter(e);
+                    e.Barrier = 0;
+                    StartTacticalTurn(e);
                 }
                 DrainQueue();
                 if (Result != null) return;
-                // The saved plan's follow-ups play in order after the head; a stagger during the turn ends it.
+                _cursorActive = true; _cursorIndex = 0; _cursorStage = "start";
+            }
+            for (; _cursorIndex < Enemies.Count; _cursorIndex++, _cursorStage = "start")
+            {
+                var enemy = Enemies[_cursorIndex];
+                if (Result != null) return;
+                if (!enemy.Alive) continue;
+                if (_cursorStage == "start")
+                {
+                    EnemyOwnerTurnStart(enemy);
+                    if (Result != null) return;
+                    if (!enemy.Alive) continue;
+                    _cursorStage = "payload";
+                }
+                if (_cursorStage == "payload")
+                {
+                    _cursorStage = "drain";
+                    if (enemy.SkipNextTurn)
+                    {
+                        if (enemy.PendingMove == null) Core2Knowledge.Cancel(enemy);
+                        enemy.SkipNextTurn = false;
+                        enemy.PlanDue = false;
+                    }
+                    else if (enemy.PendingMove != null)
+                    {
+                        enemy.PlanDue = false;
+                        if (Turn >= enemy.PendingMove.ResolveOnTurn)
+                        {
+                            var pending = enemy.PendingMove;
+                            enemy.PendingMove = null;
+                            ExecuteMovePayload(enemy, pending.MoveId, pending);
+                        }
+                    }
+                    else if (enemy.Intent?.MoveId != null)
+                    {
+                        var raw = EnemyDef(enemy).Move(enemy.Intent.MoveId).Raw;
+                        if (raw["delay"] != null && raw["delay"].Type != JTokenType.Null)
+                        {
+                            enemy.PlanDue = false;
+                            enemy.PlannedMoves = new List<Core2PlannedMove>();
+                            StartDelayedMove(enemy, enemy.Intent.MoveId);
+                        }
+                        else ExecuteMovePayload(enemy, enemy.Intent.MoveId, null);
+                    }
+                }
+                DrainQueue();
+                if (ReactionPaused) return;
+                if (Result != null) return;
+                // The saved plan's follow-ups play in order after the head; each leaves the plan before it runs, so a
+                // reaction pause resumes at the next one. A stagger during the turn ends it.
                 while (enemy.Alive && enemy.PlanDue && enemy.PendingMove == null && enemy.PlannedMoves?.Count > 0)
                 {
                     if (enemy.SkipNextTurn) { enemy.PlanDue = false; break; }
@@ -160,6 +186,7 @@ namespace AshenSpire.Domain.Core2
                     }
                     else traced.Outcome = ExecuteMovePayload(enemy, next.MoveId, null) ?? "played";
                     DrainQueue();
+                    if (ReactionPaused) return;
                     if (Result != null) return;
                 }
                 if (enemy.PlannedMoves?.Count == 0) enemy.PlanDue = false;
@@ -173,6 +200,7 @@ namespace AshenSpire.Domain.Core2
             }
             Emit("enemyTurnEnd", new JObject { ["turn"] = Turn });
             DrainQueue();
+            _cursorActive = false;
         }
 
         /// <summary>
@@ -247,7 +275,8 @@ namespace AshenSpire.Domain.Core2
                 return "refused";
             }
             enemy.Stamina = available - (prepaid != null ? required : spCost);
-            var start = new JObject { ["sourceId"] = enemy.Id, ["enemyId"] = enemy.EnemyId, ["moveId"] = moveId, ["kind"] = move["intent"], ["spCost"] = spCost, ["totalSp"] = spCost + advance };
+            var start = new JObject { ["sourceId"] = enemy.Id, ["enemyId"] = enemy.EnemyId, ["moveId"] = moveId, ["kind"] = move["intent"],
+                ["actionPreview"] = new JObject { ["spCost"] = spCost, ["totalSp"] = spCost + advance } };
             Core2Knowledge.Resolve(enemy);
             if (prepaid != null)
             {

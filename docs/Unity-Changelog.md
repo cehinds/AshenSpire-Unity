@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.38.0 · build 41 · 2026-10-28
+
+- Core 2 phase 7: the reaction window and stack with enemy reactions, Auto (reactions only), the combat log model and the pacing settings, as an engine-free domain checked against JS oracles (not wired into gameplay)
+
 ## 0.0.37.0 · build 40 · 2026-10-26
 
 - Core 2 phase 5c: enemy SP pools, live budget planning with the multi-hit floor, Perception and follow-up concealment, enemy inspection data and an engine-free fight loop that replays the scripted-fight oracles

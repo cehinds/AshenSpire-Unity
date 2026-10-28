@@ -12,8 +12,8 @@
 //                                  announces relicTriggered after it fires), maybeFire (once / limitPerTurn),
 //                                  fireOwnerHooks (status hooks on ownerTurnStart / ownerTurnEnd), checkPhases
 //   src/engine/gameProfileCombat.js refreshProfileRound (cards.roundShuffle entireDeck: every card back, one shuffle)
-// Reactions are phase 7: a Core 2 fight here runs with the player's reactions switched off (JS setReactions false), so
-// each incoming contact is announced (combatContactPrepared) and reported unavailable (combatReactionUnavailable).
+// Reactions (phase 7, Core2FightReactions.cs) pause the queue before an incoming contact begins: the drain returns with
+// an offer pending, and ChooseReaction resumes it (the enemy phase keeps its cursor, JS reactionCursor).
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -79,6 +79,8 @@ namespace AshenSpire.Domain.Core2
         public Dictionary<string, Core2CardFace> Cards { get; set; } = new Dictionary<string, Core2CardFace>(StringComparer.Ordinal);
         public List<Core2PropertyCarrier> PropertyRules { get; set; } = new List<Core2PropertyCarrier>();
         public string PrimaryWeaponRange { get; set; } = "melee";
+        /// <summary>Where the player's ratings come from (JS ratingSources), for the damage receipt; built by the run layer (phase 8).</summary>
+        public List<Core2RatingSource> RatingSources { get; set; } = new List<Core2RatingSource>();
 
         public static Core2FightSetup FromJson(JObject start)
         {
@@ -97,6 +99,8 @@ namespace AshenSpire.Domain.Core2
                 PrimaryWeaponRange = (string)start["primaryWeaponRange"] ?? "melee",
                 Deck = ((JArray)start["deck"]).OfType<JObject>().Select(c => new Core2CardInstance { InstanceId = (string)c["instanceId"], CardId = (string)c["cardId"] }).ToList(),
             };
+            foreach (var row in (player["ratingSources"] as JArray ?? new JArray()).OfType<JObject>())
+                setup.RatingSources.Add(new Core2RatingSource { Name = (string)row["name"], Kind = (string)row["kind"], SourceId = (string)row["sourceId"], Slot = (string)row["slot"], Ar = (double?)row["ar"] ?? 0, Pr = (double?)row["pr"] ?? 0 });
             foreach (var card in (start["cards"] as JObject ?? new JObject()).Properties())
             {
                 var source = card.Value["rangeSource"] as JObject;
@@ -159,6 +163,8 @@ namespace AshenSpire.Domain.Core2
         public bool CounterInterrupted { get; set; }
         public int EnergySpent { get; set; }
         public int ManaSpent { get; set; }
+        /// <summary>JS meta.expansionContacts (flattened): the planned contacts this action makes, as (target row key, contact index).</summary>
+        public List<(string Key, int Index)> ContactRefs { get; set; } = new List<(string, int)>();
     }
 
     public sealed partial class Core2Fight
@@ -191,19 +197,21 @@ namespace AshenSpire.Domain.Core2
         public int KnowledgeSerial { get; set; }
         /// <summary>JS combat.followTrace: per enemy, each follow-up's own read and outcome this enemy phase.</summary>
         public Dictionary<string, List<Core2FollowTrace>> FollowTrace { get; } = new Dictionary<string, List<Core2FollowTrace>>(StringComparer.Ordinal);
-        /// <summary>The player's reaction switch (JS player.reactionsEnabled); reactions themselves are phase 7.</summary>
+        /// <summary>The player's Reaction switch (JS player.reactionsEnabled): on by default; off offers nothing (armed Counters still answer).</summary>
         public bool ReactionsEnabled { get; set; } = true;
 
         private readonly List<Core2FightAction> _queue = new List<Core2FightAction>();
+        /// <summary>A planning sink (JS ctx.enqueue redirected by pushEnemyReaction): queued actions go here instead.</summary>
+        private List<Core2FightAction> _sink;
         private readonly Dictionary<string, (int Fires, int Turn, int TurnFires)> _triggerState = new Dictionary<string, (int, int, int)>(StringComparer.Ordinal);
         private int _expansionSerial;
         private int _pendingExpansionActions;
         private int _commands;
         private int _generatedCards; // JS combat._idCounter (nextInstanceId: gen1, gen2, ...)
 
-        private Core2Fight(Core2Content content, Core2CombatContext ctx, uint seed)
+        private Core2Fight(Core2Content content, Core2CombatContext ctx, uint seed, Core2Rng rng = null)
         {
-            Content = content; Ctx = ctx; Seed = seed; Rng = new Core2Rng(seed);
+            Content = content; Ctx = ctx; Seed = seed; Rng = rng ?? new Core2Rng(seed);
         }
 
         public Core2Enemy EnemyDef(Core2Combatant enemy) => Content.Enemy(enemy.EnemyId);
@@ -251,6 +259,7 @@ namespace AshenSpire.Domain.Core2
             foreach (var r in setup.Ratings) p.Ratings[r.Key] = r.Value;
             p.Attributes = new Dictionary<string, int>(setup.Attributes, StringComparer.Ordinal);
             p.BaseEvasionBonus = setup.BaseEvasionBonus; p.BasePrecisionBonus = setup.BasePrecisionBonus;
+            p.RatingSources = setup.RatingSources.ToList();
             foreach (var enemy in fight.Enemies)
             {
                 var def = fight.EnemyDef(enemy);
@@ -296,6 +305,9 @@ namespace AshenSpire.Domain.Core2
         private Core2FightAction _currentAction;
         private int _emitDepth;
 
+        /// <summary>A payload value meaning JS undefined: the key is dropped after labelling (JS `...payload` with key: undefined).</summary>
+        internal const string Undefined = "\u0000undefined";
+
         /// <summary>JS emitEvent: label the event with the current action, log it, then scan the triggers listening for it.</summary>
         public Core2FightEvent Emit(string type, JObject payload)
         {
@@ -312,6 +324,13 @@ namespace AshenSpire.Domain.Core2
             if (action?.Preparing == true) { if (data["preparing"] == null) data["preparing"] = true; }
             else if (action?.MoveId != null && data["moveId"] == null) data["moveId"] = action.MoveId;
             if (action?.TriggeredBy != null && data["triggeredBy"] == null) data["triggeredBy"] = action.TriggeredBy.DeepClone();
+            // A C# null string becomes a JSON null (JS writes null), never a null-valued string token; a JS undefined
+            // (a payload key that erases a label) leaves the key out.
+            foreach (var p in data.Properties().ToList())
+            {
+                if (p.Value is JValue v && v.Value == null && v.Type != JTokenType.Null) p.Value = JValue.CreateNull();
+                else if (p.Value is JValue u && u.Type == JTokenType.String && (string)u == Undefined) p.Remove();
+            }
             var ev = new Core2FightEvent { Type = type, Data = data };
             Events.Add(ev);
             OnEvent?.Invoke(ev);
@@ -460,17 +479,20 @@ namespace AshenSpire.Domain.Core2
         // The queue (JS drainQueue / endCheck / finishCombat)
         // ================================================================================================================
 
-        public void Enqueue(Core2FightAction action) => _queue.Add(action);
+        public void Enqueue(Core2FightAction action) { if (_sink != null) _sink.Add(action); else _queue.Add(action); }
 
-        /// <summary>JS drainQueue: run every queued action in order, checking the end after each.</summary>
+        /// <summary>
+        /// JS drainQueue: run every queued action in order, checking the end after each. A reaction window opening before
+        /// the head (an offer pending, or a played reaction holding the queue) returns with the head still queued.
+        /// </summary>
         private void DrainQueue()
         {
             var guard = 0;
             while (_queue.Count > 0)
             {
                 if (++guard > 1000) throw new InvalidOperationException("Action queue did not drain (possible infinite trigger loop)");
+                if (BeforeReactionAction(_queue[0])) return;
                 var action = _queue[0];
-                BeforeReactionAction(action);
                 _queue.RemoveAt(0);
                 StartQueuedEnemy(action);
                 ExecuteAction(action);
@@ -492,8 +514,7 @@ namespace AshenSpire.Domain.Core2
         {
             Result = result;
             Phase = "ended";
-            _queue.Clear();
-            _pendingExpansionActions = 0;
+            FinishReactions();
             Emit("combatEnd", new JObject { ["victory"] = result == "victory" });
             _queue.Clear();
         }
@@ -506,6 +527,7 @@ namespace AshenSpire.Domain.Core2
         private void StartPlayerTurn()
         {
             Ctx.Turn += 1;
+            EnemyReactionRolls.Clear();
             Phase = "player";
             var p = Player;
             DecayAtTurnStart(p);
@@ -533,20 +555,22 @@ namespace AshenSpire.Domain.Core2
             if (entity.Stance?.ExpiresOnOwnerCycle is int expiry && entity.OwnerCycle >= expiry) entity.Stance = null;
         }
 
-        /// <summary>JS doEndTurn → completeEndTurn: the player's turn end, the enemy phase, then the round refresh and the next turn.</summary>
+        /// <summary>
+        /// JS doEndTurn → completeEndTurn: the player's turn end (the hand stays until the enemy phase's reactions are
+        /// over), the enemy phase, then the hand cleanup, new intents and the next turn (finishReactionPhase). A reaction
+        /// offer pauses the enemy phase; ChooseReaction resumes it.
+        /// </summary>
         public void EndTurn()
         {
             if (Result != null) throw new InvalidOperationException("Combat is over");
+            RequireNoPendingReaction();
             if (Phase != "player") throw new InvalidOperationException("Not the player turn");
             EndPlayerTurn();
             if (Result != null) return;
+            _reactionHandCleanup = true;
             EnemyPhase();
-            if (Result != null) return;
-            // JS finishReactionPhase (reactions in use): the deferred hand cleanup, then new intents and the next turn.
-            FinishPlayerHand();
-            if (Result != null) return;
-            RollIntents(false);
-            StartPlayerTurn();
+            if (ReactionPaused || Result != null) return;
+            FinishReactionPhase();
         }
 
         /// <summary>JS endPlayerTurn: the end event and owner hooks, then temporary Precision expires (FixCore turn-end decay).</summary>

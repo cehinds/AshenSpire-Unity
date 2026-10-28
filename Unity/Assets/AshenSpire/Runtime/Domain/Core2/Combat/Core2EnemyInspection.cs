@@ -172,7 +172,7 @@ namespace AshenSpire.Domain.Core2
             if (last != null)
             {
                 var receipt = fight.Events.LastOrDefault(e => e.Type == "enemyMoveStarted" && (string)e.Data["sourceId"] == enemy.Id && (string)e.Data["moveId"] == lastMoveId);
-                inspection.Last = new Core2InspectedPlay { Card = last, PaidSp = receipt == null ? (int?)null : (int?)receipt.Data["totalSp"] ?? (int?)receipt.Data["spCost"] };
+                inspection.Last = new Core2InspectedPlay { Card = last, PaidSp = receipt == null ? (int?)null : (int?)receipt.Data["actionPreview"]?["totalSp"] ?? (int?)receipt.Data["actionPreview"]?["spCost"] };
             }
             return inspection;
         }
