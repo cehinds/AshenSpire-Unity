@@ -164,6 +164,18 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 r
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
   shard. `Core2Run` runs in the rules shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
+- **Combat screen (phases 6 and 7):** `Runtime/Presentation/Core2/Combat` registers the Core 2 fight screen
+  (`ICore2FightScreen`). The UI Toolkit files are `Core2CombatScreen*.cs`; everything they show comes from plain C#
+  view models beside them (`Core2CombatController`: commands, beats, Auto, the fight-over report;
+  `Core2CombatViewModel`, `Core2CombatBeats`, `Core2CombatDisplay`, `Core2CombatLogDrawer`, `Core2CombatText`).
+  Styles: `Resources/Core2Ui/Core2Combat.uss` (tokens only) and `Core2CombatTokens.uss` (every value, with its JS
+  source). `Core2FightPreview` (domain) adds read-only questions: the intent's HP range and per-hit damage, a play
+  check on a detached copy, a card's hit chance and its face numbers. `UnityTests/Core2CombatView` drives real fights
+  through the controller against `js-combat-view-oracle.json` (regenerate with
+  `node UnityTests/Core2CombatView/js-combat-view-oracle.mjs ../AshenSpire`; CI runs its `--check` in the fast gate and
+  the suite in the presentation shard). `node tools/core2-combat-art.mjs ../AshenSpire [--check]` writes
+  `Resources/Core2Ui/card-art.json` and checks the reused `Art/js1815` files against the pinned build's art cache
+  (it needs `.art-cache/ashenspire-hd-assets-v24`, so it is a local check).
 
 ## The CI door: a tool's silence is not its success (#12)
 

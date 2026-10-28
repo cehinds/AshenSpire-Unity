@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.43.0 · build 46 · 2026-10-28
+
+- Core 2 combat screen: the JS combat layout, reactions, Auto, combat log and pacing
+
 ## 0.0.42.0 · build 45 · 2026-10-28
 
 - Integration base for the Core 2 screens: the phase 2 UI foundation (JS wide/narrow PanelSettings, ScreenRouter layers, generated JS UI tokens, Inter and Liberation Serif) merged onto the Core 2 domain stack
