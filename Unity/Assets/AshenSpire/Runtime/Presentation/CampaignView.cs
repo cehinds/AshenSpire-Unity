@@ -27,6 +27,10 @@ namespace AshenSpire.Presentation
         private VisualElement _body;
         private ScrollView _scroll;
         private readonly ScreenRouter _router;
+        /// <summary>The layered shell the Core 2 run host (Core2/Core2RunHost) shows its screens through.</summary>
+        public ScreenRouter Router => _router;
+        /// <summary>The app root (layout classes, sheets) the Core 2 screens style and measure against.</summary>
+        public VisualElement Root => _root;
         private UiLayout _layout;
         /// <summary>CSS px shown per panel px (JS zoom × Interface size); 1 until RunController measures.</summary>
         private double _displayScale = 1;

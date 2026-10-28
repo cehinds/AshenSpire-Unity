@@ -120,6 +120,10 @@ jobs:
         run: node tools/verdict.mjs -- node tools/export-js-core2.mjs js-pin --check
       - name: UnityTests/Core2Content/Oracles equal fresh JS oracles at the pin
         run: node tools/verdict.mjs -- node tools/oracle-js-core2.mjs js-pin --check
+      - name: UnityTests/Core2CombatView JS presentation oracle equals a fresh one at the pin
+        run: node tools/verdict.mjs -- node UnityTests/Core2CombatView/js-combat-view-oracle.mjs js-pin --check
+      - name: The Core 2 run screens' UI text table equals a fresh generation at the pin
+        run: node tools/verdict.mjs -- node tools/unity-core2-text.mjs js-pin --check
 
   domain-tests:
     name: Console tests (${{ matrix.shard }})
@@ -138,7 +142,7 @@ jobs:
           - shard: rules
             suites: 'Domain Parity CoopRun CoopRun:--policy Core2Combat Core2Run'
           - shard: presentation
-            suites: 'NativeFeedback CardText CardCosts HandRules SpriteStyles Viewport RendererPatch Interruption'
+            suites: 'NativeFeedback CardText CardCosts HandRules SpriteStyles Viewport RendererPatch Interruption Core2CombatView Core2RunView'
           - shard: map-and-data
             suites: 'MapShape MapKnowledge MapViewport Authoring:TestResults/Authoring/checks.json Balance:GameContent/Unity/campaign.json,TestResults/Balance/campaign.json Core2Content'
           - shard: features

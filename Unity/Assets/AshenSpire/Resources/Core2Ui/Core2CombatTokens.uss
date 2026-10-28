@@ -1,0 +1,204 @@
+/* Core2CombatTokens.uss — every length, colour and time the Core 2 combat screen (Core2Combat.uss) uses, as named tokens.
+   Units: 1 px = 1 JS CSS px at zoom 1 (ViewportLayout). Sources, unless a line says otherwise:
+     rects   scratchpad JS DOM dumps at the pin (build 1854): 1440x900 (zoom 1.2) and 390x844 (zoom 0.9), divided by
+             the zoom; desktop-04/portrait-04 parity shots (1280x720 zoom 0.99) cross-check them
+     card    src/content/card-layout.json (Generated/JsTokens --js-card-*): the 360x540 face, here as fractions
+     colours styles/base.css and styles/combat.css / kit.css (the --js-* tokens where the generator has them)
+   Combat.uss reads only var(--…) values; tools/unity-ui-tokens.mjs --check enforces that for it. */
+:root {
+    /* shared */
+    --c2c-hair: 1px;
+    --c2c-line: 2px;
+    --c2c-gap: 4px;
+    --c2c-gap-s: 2px;
+    --c2c-gap-l: 8px;
+    --c2c-radius: 3px;
+    --c2c-radius-l: 6px;
+    --c2c-outline: 1px;
+    /* bands (wide 1200x750 panel at 1440x900) */
+    --c2c-heart: 14px;
+    --c2c-cinders-top: 56px;
+    --c2c-top-h: 71px;
+    --c2c-top-pad: 13px;
+    --c2c-hp-text: 13px;
+    --c2c-hp-rule-h: 2px;
+    --c2c-hp-rule-left: 66px;
+    --c2c-hp-rule-right: 140px;
+    --c2c-relic-size: 21px;
+    --c2c-relic-gap: 2px;
+    --c2c-relic-top: 46px;
+    --c2c-door-size: 37px;
+    --c2c-door-gap: 4px;
+    --c2c-ribbon-w: 150px;
+    --c2c-ribbon-h: 14px;
+    --c2c-ribbon-text: 8px;
+    --c2c-cinders-text: 11px;
+    /* battlefield */
+    --c2c-field-top: 79px;
+    --c2c-field-bottom: 300px;
+    --c2c-fighter-w: 150px;
+    --c2c-figure-h: 150px;
+    --c2c-player-figure-h: 165px;
+    --c2c-intent-value: 18px;
+    --c2c-intent-scope: 9px;
+    --c2c-intent-icon: 22px;
+    --c2c-hp-bar-h: 8px;
+    --c2c-hp-value: 12px;
+    --c2c-badge: 13px;
+    --c2c-badge-text: 9px;
+    --c2c-status: 16px;
+    --c2c-hit-badge: 26px;
+    --c2c-lane-h: 1px;
+    --c2c-select-ring: 2px;
+    /* hand (desktop footer cards: card-layout 2:3 at w4a-combat desktopFooter scale) */
+    --c2c-card-w: 156px;
+    --c2c-card-h: 234px;
+    --c2c-hand-h: 246px;
+    --c2c-hand-bottom: 78px;
+    --c2c-card-title: 14px;
+    --c2c-card-rules: 13px;
+    --c2c-card-tags: 10px;
+    --c2c-card-cost: 19px;
+    --c2c-card-mana: 16px;
+    --c2c-card-key: 9px;
+    --c2c-card-key-size: 14px;
+    --c2c-card-lift: -18px;
+    --c2c-card-sigil: 13px;
+    --c2c-card-dim: 0.55;
+    /* footer */
+    --c2c-footer-h: 92px;
+    --c2c-footer-pad: 17px;
+    --c2c-orb-size: 84px;
+    --c2c-orb-value: 22px;
+    --c2c-orb-label: 7px;
+    --c2c-pip: 9px;
+    --c2c-pile-w: 53px;
+    --c2c-pile-h: 66px;
+    --c2c-pile-text: 9px;
+    --c2c-pile-count: 11px;
+    --c2c-end-w: 267px;
+    --c2c-end-h: 67px;
+    --c2c-end-text: 20px;
+    --c2c-end-key: 7px;
+    --c2c-potions-w: 70px;
+    --c2c-potions-h: 46px;
+    /* tools row */
+    --c2c-tools-bottom: 112px;
+    --c2c-tools-text: 12px;
+    --c2c-switch-w: 64px;
+    --c2c-switch-h: 18px;
+    --c2c-switch-text: 10px;
+    --c2c-check: 13px;
+    /* log drawer */
+    --c2c-log-small: 117px;
+    --c2c-log-medium: 260px;
+    --c2c-log-large: 470px;
+    --c2c-log-w: 420px;
+    --c2c-log-text: 12px;
+    --c2c-log-heading: 12px;
+    /* modal */
+    --c2c-modal-w: 570px;
+    --c2c-modal-pad: 13px;
+    --c2c-modal-title: 18px;
+    --c2c-modal-eyebrow: 10px;
+    --c2c-modal-text: 13px;
+    --c2c-option-w: 135px;
+    --c2c-option-h: 86px;
+    --c2c-button-h: 37px;
+    --c2c-inspector-w: 520px;
+    --c2c-tooltip-w: 300px;
+    /* fx */
+    --c2c-float: 22px;
+    --c2c-float-small: 14px;
+    --c2c-float-big: 30px;
+    --c2c-float-huge: 36px;
+    --c2c-callout: 16px;
+    --c2c-banner: 26px;
+    --c2c-rise: -40px;
+    --c2c-float-ms: 900ms;
+    --c2c-lunge: 24px;
+    --c2c-lunge-back: -24px;
+    --c2c-flinch: 6px;
+    --c2c-fade-ms: 150ms;
+    /* colours (styles/combat.css, kit.css at the pin) */
+    --c2c-ink: rgb(253, 246, 230);
+    --c2c-ink-soft: rgb(231, 220, 192);
+    --c2c-intent-red: rgb(232, 74, 74);
+    --c2c-intent-green: rgb(127, 217, 127);
+    --c2c-hp-fill: rgb(164, 60, 53);
+    --c2c-hp-track: rgba(0, 0, 0, 0.6);
+    --c2c-hp-trim: rgb(255, 211, 77);
+    --c2c-block-silver: rgb(198, 208, 220);
+    --c2c-ward-purple: rgb(140, 92, 196);
+    --c2c-barrier-blue: rgb(80, 150, 230);
+    --c2c-poise-gold: rgb(255, 211, 77);
+    --c2c-poise-bg: rgb(73, 58, 18);
+    --c2c-evade-bg: rgb(32, 36, 42);
+    --c2c-band: rgba(20, 16, 12, 0.88);
+    --c2c-band-line: rgba(201, 162, 39, 0.35);
+    --c2c-scrim: rgba(0, 0, 0, 0.55);
+    --c2c-modal-bg: rgb(26, 21, 15);
+    --c2c-modal-line: rgb(122, 98, 52);
+    --c2c-option-bg: rgb(33, 27, 20);
+    --c2c-option-sel: rgb(201, 162, 39);
+    --c2c-button-bg: rgb(43, 35, 26);
+    --c2c-switch-on: rgb(73, 120, 54);
+    --c2c-switch-off: rgb(133, 46, 40);
+    --c2c-switch-knob: rgb(214, 175, 54);
+    --c2c-lane: rgba(232, 220, 192, 0.18);
+    --c2c-target: rgba(191, 53, 53, 0.45);
+    --c2c-hit-neutral: rgb(255, 255, 255);
+    --c2c-hit-good: rgb(127, 217, 127);
+    --c2c-hit-bad: rgb(232, 74, 74);
+    --c2c-text-shadow: rgba(0, 0, 0, 0.9);
+    --c2c-card-title-ink: rgb(243, 232, 201);
+    --c2c-card-rules-ink: rgb(41, 31, 22);
+    --c2c-card-tags-ink: rgb(239, 208, 154);
+    --c2c-card-cost-ink: rgb(255, 245, 210);
+    --c2c-card-glow: rgba(140, 190, 255, 0.85);
+    --c2c-log-player: rgb(127, 196, 255);
+    --c2c-log-enemy: rgb(255, 141, 131);
+    --c2c-log-bg: rgba(17, 14, 10, 0.94);
+    --c2c-dmg: rgb(255, 92, 72);
+    --c2c-heal: rgb(127, 217, 127);
+    --c2c-buff: rgb(184, 165, 255);
+}
+/* The narrow (phone) layout: 430-wide panel at 390x844 (zoom 0.9). */
+.c2c-narrow {
+    --c2c-top-h: 70px;
+    --c2c-hp-rule-right: 112px;
+    --c2c-ribbon-w: 132px;
+    --c2c-field-top: 100px;
+    --c2c-field-bottom: 330px;
+    --c2c-fighter-w: 101px;
+    --c2c-figure-h: 104px;
+    --c2c-player-figure-h: 110px;
+    --c2c-intent-value: 17px;
+    --c2c-intent-scope: 8px;
+    --c2c-intent-icon: 18px;
+    --c2c-card-w: 128px;
+    --c2c-card-h: 192px;
+    --c2c-hand-h: 200px;
+    --c2c-hand-bottom: 112px;
+    --c2c-card-title: 11px;
+    --c2c-card-rules: 11px;
+    --c2c-card-tags: 8px;
+    --c2c-card-cost: 16px;
+    --c2c-card-mana: 13px;
+    --c2c-footer-h: 89px;
+    --c2c-footer-pad: 8px;
+    --c2c-orb-size: 71px;
+    --c2c-orb-value: 19px;
+    --c2c-pile-w: 56px;
+    --c2c-pile-h: 60px;
+    --c2c-end-w: 107px;
+    --c2c-end-h: 84px;
+    --c2c-end-text: 14px;
+    --c2c-potions-w: 64px;
+    --c2c-tools-bottom: 92px;
+    --c2c-tools-text: 12px;
+    --c2c-log-w: 414px;
+    --c2c-modal-w: 400px;
+    --c2c-option-w: 116px;
+    --c2c-inspector-w: 400px;
+}

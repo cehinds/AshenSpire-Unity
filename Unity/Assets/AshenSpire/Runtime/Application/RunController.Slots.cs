@@ -54,7 +54,7 @@ namespace AshenSpire.Application
                 if (outcome != OriginalLegacyMigration.AlreadyDone) Debug.Log("ASHENSPIRE_SAVE_MIGRATION " + outcome);
             }
             catch (Exception error) { Debug.LogWarning("The earlier native save was not moved into slot 1: " + error.Message); }
-            _view.SlotsRequested += ShowSaveSlots;
+            // The title's Load opens the Core 2 slots (RunController.Core2.cs); the 0.5.5 slot list is no longer offered.
             _view.WebImportRequested += ShowWebImport;
         }
         private static bool Loadable(OriginalSaveSlotInfo slot) => slot.State == OriginalSaveSlotState.Ready || slot.State == OriginalSaveSlotState.RecoveredBackup;
