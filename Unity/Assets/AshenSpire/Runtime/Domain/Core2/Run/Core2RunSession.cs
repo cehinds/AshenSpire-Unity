@@ -127,6 +127,7 @@ namespace AshenSpire.Domain.Core2
         public Core2Screen Travel(string nodeId)
         {
             Require(Core2Screen.Map);
+            RequireNoOpenDeckEdit();
             if (!TravelOptions().Contains(nodeId)) throw new InvalidOperationException("Node '" + nodeId + "' cannot be reached from here");
             var node = Run.MapGraph.Node(nodeId);
             Run.MapNodeId = nodeId;
@@ -212,6 +213,7 @@ namespace AshenSpire.Domain.Core2
             FightEncounter = encounter;
             FightScale = Core2RunFights.EncounterScale(Data, Run, encounter);
             var setup = FightSetup = Core2RunFights.BuildSetup(Data, Run, FightScale.Hp);
+            setup.OrderedDraw = DeckSettings?.PlayInDeckOrder == true;
             // JS createRunCombat enemyDamageMult: a boss's tier damage scale reaches each enemy's move damage.
             setup.EnemyDamageMult = FightScale.Damage;
             var key = Run.Seed.ToString(CultureInfo.InvariantCulture) + "/" + Run.ActNumber + "/" + Run.Floor + "/" + (Run.MapNodeId ?? string.Join(",", Core2Json.Strings(encounter["enemies"])));
@@ -482,6 +484,12 @@ namespace AshenSpire.Domain.Core2
         /// <summary>Armoury Unequip: the piece leaves the cell (an armament to storage). Null on success, else why.</summary>
         public Core2ArmouryRefusal Unequip(string slotId, int setIndex) => Equip(slotId, setIndex, null);
 
+        /// <summary>The deck editor is a modal outside combat: travel and an event's fight wait until it is confirmed or cancelled.</summary>
+        private void RequireNoOpenDeckEdit()
+        {
+            if (_deckEdit != null && !_deckEdit.Closed) throw new InvalidOperationException("Confirm or cancel the open deck edit first");
+        }
+
         /// <summary>JS showDeckEditor / openDeckEdit: refused while a fight is unresolved, or when the Armoury has no deck door.</summary>
         public Core2DeckEdit OpenDeckEdit()
         {
@@ -541,6 +549,7 @@ namespace AshenSpire.Domain.Core2
         {
             Require(Core2Screen.Event);
             if (!Run.OpenEventChosen) throw new InvalidOperationException("Choose a response first");
+            if (Run.CombatEntered != null) RequireNoOpenDeckEdit();
             Run.OpenEvent = null; Run.OpenEventChosen = false;
             if (Run.CombatEntered != null)
             {

@@ -23,6 +23,24 @@ static class Core2ProgressChecks
         session.SettleFightAsWon();
         check(!session.EditingLocked, "lock: a resolved fight unlocks edits (the spoils may open the editor)");
 
+        // An editor opened on the map is a modal: travel into a fight waits until it closes.
+        var modal = Core2RunSession.Start(data, "reaver", 43);
+        var openEdit = modal.OpenDeckEdit();
+        check(throws(() => modal.Travel(modal.TravelOptions()[0])), "lock: travel is refused while a deck edit is open");
+        equal(modal.Screen, Core2Screen.Map, "lock: a refused travel leaves the run on the map");
+        openEdit.Cancel();
+        modal.Travel(modal.TravelOptions()[0]);
+        equal(modal.Screen, Core2Screen.Fight, "lock: travel proceeds once the edit is closed");
+
+        // Play in deck order (JS createCombat orderedDraw): the fight draws the run's deck in order, Innate cards first.
+        var ordered = Core2RunSession.Start(data, "reaver", 43);
+        ordered.DeckSettings = Core2DeckSettings.From(data, new JObject { ["playInDeckOrder"] = true });
+        var runOrder = ordered.Run.Deck.Select(c => c.InstanceId).ToList();
+        ordered.Travel(ordered.TravelOptions()[0]);
+        var drawn = ordered.Fight.Hand.Concat(ordered.Fight.Draw).Select(c => c.InstanceId).ToList();
+        bool Innate(string id) => Core2Json.Strings(content.Card(ordered.Run.Deck.First(c => c.InstanceId == id).CardId).Raw["keywords"]).Contains("innate");
+        check(drawn.SequenceEqual(runOrder.Where(Innate).Concat(runOrder.Where(id => !Innate(id)))), "deck order: under Play in deck order the fight draws the run's deck order");
+
         // ---- the spoils stages ---------------------------------------------------------------------------------------
         equal(session.RewardStage, "victoryReceipt", "spoils: the victory receipt shows first");
         var receipt = session.Run.PendingReward.VictoryReceipt;

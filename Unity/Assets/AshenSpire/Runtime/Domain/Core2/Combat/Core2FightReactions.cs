@@ -759,7 +759,7 @@ namespace AshenSpire.Domain.Core2
             var copy = new Core2Fight(Content, Ctx.Clone(), Seed, Rng.Detached())
             {
                 Setup = Setup, CombatKey = CombatKey, Range = Range, HandMax = HandMax, KnowledgeSerial = KnowledgeSerial, ReactionsEnabled = ReactionsEnabled, Result = Result,
-                _expansionSerial = _expansionSerial, _commands = _commands, _generatedCards = _generatedCards,
+                _expansionSerial = _expansionSerial, _commands = _commands, _generatedCards = _generatedCards, _drawOrder = _drawOrder,
             };
             var map = new Dictionary<Core2Combatant, Core2Combatant>();
             copy.Player = Player.Clone(); map[Player] = copy.Player;
