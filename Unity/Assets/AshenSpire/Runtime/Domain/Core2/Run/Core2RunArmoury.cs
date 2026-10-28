@@ -315,6 +315,9 @@ namespace AshenSpire.Domain.Core2
             {
                 var resolved = Core2EnemyStats.ResolveGearItem(gear, settings, ((int?)gear["rank"] ?? 1) + position.Tier);
                 foreach (var key in Core2EnemyStats.GearKeys) position.Values[key] = resolved.Values.TryGetValue(key, out var v) ? v : 0;
+                // JS equipmentCard: a weapon's tier adds weaponARPerTier AR on top of its pool (the rating receipt's rule).
+                if (!armour && position.Kind != "shield")
+                    position.Values["ar"] += position.Tier * ((int?)data.Module("equipment")?["upgradeBonuses"]?["weaponARPerTier"] ?? 0);
                 foreach (var grant in ((gear["grantedCards"] as JArray) ?? new JArray()).OfType<JObject>())
                     for (var i = 0; i < (int)grant["copies"]; i++) position.GrantedCards.Add((string)grant["card"]);
             }

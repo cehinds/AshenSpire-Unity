@@ -41,6 +41,15 @@ static class Core2ProgressChecks
         bool Innate(string id) => Core2Json.Strings(content.Card(ordered.Run.Deck.First(c => c.InstanceId == id).CardId).Raw["keywords"]).Contains("innate");
         check(drawn.SequenceEqual(runOrder.Where(Innate).Concat(runOrder.Where(id => !Innate(id)))), "deck order: under Play in deck order the fight draws the run's deck order");
 
+        // Inspect matches the Smith preview and the rating receipt: a weapon's tier adds weaponARPerTier AR (JS equipmentCard).
+        var smithRun = Core2RunSession.Start(data, "reaver", 44).Run;
+        smithRun.MapNodeId = smithRun.MapGraph.NodeList.First(n => n.Type == "shrine").Id;
+        Core2RunRest.Begin(data, smithRun);
+        var weaponPlan = Core2RunRest.SmithPlan(data, smithRun).First(c => c.ItemRef.StartsWith("armament/") && c.ItemKind != "shield" && c.Stats.ContainsKey("ar"));
+        Core2RunRest.Commit(data, smithRun, "smith", itemRef: weaponPlan.ItemRef);
+        var inspected = Core2RunArmoury.Positions(data, smithRun).First(p => p.ItemRef == weaponPlan.ItemRef);
+        equal(inspected.Values["ar"], weaponPlan.Stats["ar"].After, "armoury: Inspect shows a Smithed weapon's AR as the Smith preview does (tier AR included)");
+
         // ---- the spoils stages ---------------------------------------------------------------------------------------
         equal(session.RewardStage, "victoryReceipt", "spoils: the victory receipt shows first");
         var receipt = session.Run.PendingReward.VictoryReceipt;
