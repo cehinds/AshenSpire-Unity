@@ -1,8 +1,10 @@
 // Core2FallbackFightScreen.cs — the minimal fight the run host mounts while Core2Screens.FightScreenFactory is null.
 // Its only job is to keep a Core 2 run playable end to end: the enemies' HP, the hand (play a card at the first living
-// enemy), End turn and Auto (Core2FallbackFight). It is deliberately not the combat screen: that is the combat phase's
-// (Presentation/Core2/Combat*), registered through the factory, and replaces this one with no change to the host.
+// enemy), End turn and Auto (Core2FallbackFight), and the two card choices as small doors (a card's maneuver, JS
+// cardChoiceModal; a pending chosen-card selection, JS discardChoiceModal), which Auto answers itself. It is
+// deliberately not the combat screen: that is the combat phase's (Presentation/Core2/Combat*), registered through the factory, and replaces this one with no change to the host.
 using System;
+using System.Linq;
 using AshenSpire.Domain.Core2;
 using UnityEngine.UIElements;
 
@@ -22,13 +24,24 @@ namespace AshenSpire.Presentation.Core2
             _fight = new Core2FallbackFight(session);
             _onFightOver = onFightOver;
             Core2Ui.Style(host);
+            // Escape cancels a maneuver choice (JS cardChoiceModal: Escape plays nothing).
+            host.RegisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
             Draw();
+        }
+
+        private void OnKey(KeyDownEvent e)
+        {
+            if (e.keyCode != UnityEngine.KeyCode.Escape || _fight?.ManeuverPick == null) return;
+            _fight.CancelManeuver();
+            Draw();
+            e.StopPropagation();
         }
 
         public void Unmount()
         {
             _auto?.Pause();
             _auto = null;
+            _host?.UnregisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
             _host?.Clear();
             _host = null;
         }
@@ -89,7 +102,41 @@ namespace AshenSpire.Presentation.Core2
             foot.Add(Core2Ui.Btn("fallback-end-turn", "End Turn", () => Act(() => _fight.EndTurn()), "c2-btn-primary", _auto == null));
             screen.Add(foot);
             _host.Add(screen);
+            if (_fight.ManeuverPick != null) { ChoiceDoor(screen); return; }
+            if (_fight.CardChoice != null && _auto == null) { CardDoor(screen); return; }
             Core2Ui.FocusFirst(screen, _auto == null ? null : "fallback-auto");
+        }
+
+        /// <summary>The maneuver a card asks before it plays (JS cardChoiceModal): a button per maneuver, Cancel plays nothing.</summary>
+        private void ChoiceDoor(VisualElement screen)
+        {
+            var (scrim, _, _, body, foot) = Core2Ui.Door(_fight.ManeuverCardName, Core2Text.T("cardChoice.stanceTitle"));
+            foreach (var (id, name) in _fight.ManeuverOptions())
+            {
+                var choice = id;
+                body.Add(Core2Ui.Btn("fallback-maneuver-" + id, name, () => Act(() => _fight.ChooseManeuver(choice))));
+            }
+            foot.Add(Core2Ui.Btn("fallback-maneuver-cancel", Core2Text.T("common.cancel"), () => { _fight.CancelManeuver(); Draw(); }));
+            screen.Add(scrim);
+            Core2Ui.InertBehindTopDoor(screen);
+            Core2Ui.FocusFirst(scrim);
+        }
+
+        /// <summary>The pending chosen-card selection (JS discardChoiceModal): toggle candidates, Confirm selection at exactly N.</summary>
+        private void CardDoor(VisualElement screen)
+        {
+            var pending = _fight.CardChoice;
+            var (scrim, _, _, body, foot) = Core2Ui.Door(_fight.CardChoiceCardName, _fight.CardChoiceTitle, _fight.Picked.Count + " / " + pending.Count);
+            foreach (var (instanceId, name, picked) in _fight.CardChoiceOptions())
+            {
+                var id = instanceId;
+                var order = _fight.Picked.ToList().IndexOf(id);
+                body.Add(Core2Ui.Btn("fallback-choice-" + id, (picked ? (order + 1) + ". " : "") + name, () => { _fight.ToggleCardChoice(id); Draw(); }, picked ? "is-selected" : ""));
+            }
+            foot.Add(Core2Ui.Btn("fallback-choice-confirm", Core2Text.T("combat.cards.choose.confirm"), () => Act(() => _fight.ConfirmCardChoice()), "c2-btn-primary", _fight.CardChoiceReady));
+            screen.Add(scrim);
+            Core2Ui.InertBehindTopDoor(screen);
+            Core2Ui.FocusFirst(scrim);
         }
 
         /// <summary>Auto plays one turn every half second until the fight ends or the player stops it.</summary>

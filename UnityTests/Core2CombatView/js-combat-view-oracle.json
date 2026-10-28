@@ -6239,6 +6239,2847 @@
    "eventDigest": "072874fbbb5894c44aefca1e"
   }
  ],
+ "choiceFights": [
+  {
+   "input": {
+    "classId": "reaver",
+    "seed": 41,
+    "enemyIds": [
+     "briarHermit"
+    ]
+   },
+   "steps": [
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardMoved",
+        "cardMoved",
+        "cardMoved",
+        "cardMoved",
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c6",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c6",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c4 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "statusPressure",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "statusRecoveryRolled"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c2 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Scout",
+      "title": "Choose 3 cards",
+      "prompt": "Choose cards from draw for draw. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 3,
+      "ordered": true,
+      "candidates": [
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       },
+       {
+        "instanceId": "c9",
+        "name": "Transmute"
+       },
+       {
+        "instanceId": "c7",
+        "name": "Chosen Exhaust"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c8,c9,c7",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardMoved",
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c10 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c1 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardMoved",
+        "cardMoved",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared",
+        "combatReactionUnavailable"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "poiseBroken",
+        "combatStanceChanged",
+        "statusApplied",
+        "playerStaggered",
+        "statusApplied",
+        "statusGaugeFilled",
+        "statusPressure",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "hpLost",
+        "statusRecoveryRolled"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c4 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "poiseBroken",
+        "combatStanceChanged",
+        "statusApplied",
+        "enemyStaggered",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 4,
+       "types": [
+        "cardPreparing",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c1",
+        "name": "Hand Shuffle"
+       },
+       {
+        "instanceId": "c5",
+        "name": "Recall"
+       },
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c1",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Recall",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from discard for hand. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c7",
+        "name": "Chosen Exhaust"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c4",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted",
+        "enemyMoveUnavailable",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "hpLost",
+        "statusRemoved",
+        "statusRecoveryRolled"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       },
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c5",
+        "name": "Recall"
+       },
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c8",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c10 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Recall",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from discard for hand. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c7",
+        "name": "Chosen Exhaust"
+       },
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c7",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c4",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "statusPressure",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "statusRecoveryRolled"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Recall",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from discard for hand. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c3",
+        "name": "Deck Shuffle"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c3",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c2",
+        "name": "Scout"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c10",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c2 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Scout",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from draw for draw. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": true,
+      "candidates": [
+       {
+        "instanceId": "c9",
+        "name": "Transmute"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c9",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackMissed",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "statusRecoveryRolled"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c2 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Recall",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from discard for hand. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c2",
+        "name": "Scout"
+       },
+       {
+        "instanceId": "c3",
+        "name": "Deck Shuffle"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c2",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c2 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 3,
+       "types": [
+        "cardPreparing",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Chosen Exhaust",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for exhaust. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c9",
+        "name": "Transmute"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c9",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardExhausted",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "combatEnd"
+       ]
+      }
+     ],
+     "door": null,
+     "result": "defeat"
+    }
+   ]
+  },
+  {
+   "input": {
+    "classId": "starseer",
+    "seed": 42,
+    "enemyIds": [
+     "wyrmAspirant"
+    ]
+   },
+   "steps": [
+    {
+     "command": "play c10 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c7 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c1 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 7,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "manaSpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Transform",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for hand. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": true,
+      "candidates": [
+       {
+        "instanceId": "c9",
+        "name": "Exhaust"
+       },
+       {
+        "instanceId": "c3",
+        "name": "Conceal"
+       },
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       },
+       {
+        "instanceId": "c6",
+        "name": "Extend"
+       },
+       {
+        "instanceId": "c5",
+        "name": "Reframe"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c9",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardMoved",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "statusApplied",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared",
+        "combatReactionUnavailable"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "act",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackMissed",
+        "combatEngagementMoved",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "statusApplied",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c9 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c4 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 7,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "manaSpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "statusApplied"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Conceal",
+      "title": "Choose 2 cards",
+      "prompt": "Choose cards from hand for undefined. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 2,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       },
+       {
+        "instanceId": "c2",
+        "name": "Exile Recovery"
+       },
+       {
+        "instanceId": "c1",
+        "name": "Transform"
+       },
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c5",
+        "name": "Reframe"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c8,c2",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardModified",
+        "cardModified",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "poiseBroken",
+        "combatStanceChanged",
+        "statusApplied",
+        "playerStaggered",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "statusExpired",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "statusRemoved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Reframe",
+      "title": "Choose 1 cards",
+      "prompt": "Choose cards from hand for undefined. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 1,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c9",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c1",
+        "name": "Transform"
+       },
+       {
+        "instanceId": "c3",
+        "name": "Conceal"
+       },
+       {
+        "instanceId": "c6",
+        "name": "Extend"
+       },
+       {
+        "instanceId": "c7",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c9",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardModified",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c9 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "combatStanceChanged",
+        "statusApplied",
+        "enemyStaggered",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "statusApplied",
+        "statusApplied",
+        "combatStanceChanged",
+        "enemyMoveUnavailable",
+        "statusExpired",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged",
+        "cardMoved",
+        "cardMoved"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c2 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 7,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "manaSpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c9 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "poiseBroken",
+        "combatStanceChanged",
+        "statusApplied",
+        "enemyStaggered",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 7,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "manaSpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "statusApplied"
+       ]
+      }
+     ],
+     "door": {
+      "eyebrow": "Conceal",
+      "title": "Choose 2 cards",
+      "prompt": "Choose cards from hand for undefined. Selected order is used from top to bottom.",
+      "confirm": "Confirm selection",
+      "close": "Choose later",
+      "count": 2,
+      "ordered": false,
+      "candidates": [
+       {
+        "instanceId": "c8",
+        "name": "Defend"
+       },
+       {
+        "instanceId": "c10",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c7",
+        "name": "Strike"
+       },
+       {
+        "instanceId": "c5",
+        "name": "Reframe"
+       },
+       {
+        "instanceId": "c4",
+        "name": "Strike"
+       }
+      ]
+     },
+     "result": null
+    },
+    {
+     "command": "choose c8,c10",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardModified",
+        "cardModified",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": true,
+       "lead": 0,
+       "types": [
+        "combatContactPrepared"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "attack",
+       "banner": null,
+       "prepared": true,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyMoveStarted",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "combatEnd"
+       ]
+      }
+     ],
+     "door": null,
+     "result": "defeat"
+    }
+   ]
+  },
+  {
+   "input": {
+    "classId": "reaver",
+    "seed": 43,
+    "enemyIds": [
+     "briarHermit"
+    ]
+   },
+   "steps": [
+    {
+     "command": "play c1 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 7,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "manaSpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackMissed",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c8 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "poiseBroken",
+        "combatStanceChanged",
+        "statusApplied",
+        "enemyStaggered",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "endTurn",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": null,
+       "kind": null,
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnEnd",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "ENEMY TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyTurnStart",
+        "statusRemoved",
+        "statusExpired"
+       ]
+      },
+      {
+       "actorId": "e1",
+       "kind": "reveal",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "enemyActorTurnStarted",
+        "enemyMoveUnavailable",
+        "enemyTurnEnd",
+        "deckShuffled",
+        "combatStanceChanged"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "draw",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn",
+        "cardDrawn"
+       ]
+      },
+      {
+       "actorId": null,
+       "kind": "banner",
+       "banner": "YOUR TURN",
+       "prepared": false,
+       "telegraph": false,
+       "lead": 0,
+       "types": [
+        "playerTurnStart"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c4 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 6,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c3 - attack",
+     "picker": {
+      "instanceId": "c3",
+      "eyebrow": "Flowing Transition",
+      "title": "Choose a stance",
+      "closeLabel": "Cancel Flowing Transition",
+      "cancel": "Cancel",
+      "options": [
+       {
+        "id": "attack",
+        "name": "Attack",
+        "text": "attack",
+        "disabled": false
+       },
+       {
+        "id": "smash",
+        "name": "Smash",
+        "text": "smash",
+        "disabled": false
+       },
+       {
+        "id": "defend",
+        "name": "Defend",
+        "text": "defend",
+        "disabled": false
+       },
+       {
+        "id": "sweep",
+        "name": "Sweep",
+        "text": "sweep",
+        "disabled": false
+       },
+       {
+        "id": "counter",
+        "name": "Counter",
+        "text": "counter",
+        "disabled": false
+       },
+       {
+        "id": "casting",
+        "name": "Casting",
+        "text": "casting",
+        "disabled": false
+       },
+       {
+        "id": "evade",
+        "name": "Evade",
+        "text": "evade",
+        "disabled": false
+       }
+      ]
+     },
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "act",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 4,
+       "types": [
+        "cardPreparing",
+        "statusApplied",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "statusApplied",
+        "combatStanceChanged",
+        "cardResolved"
+       ]
+      }
+     ],
+     "door": null,
+     "result": null
+    },
+    {
+     "command": "play c5 e1 -",
+     "picker": null,
+     "beats": [
+      {
+       "actorId": "player",
+       "kind": "attack",
+       "banner": null,
+       "prepared": false,
+       "telegraph": false,
+       "lead": 5,
+       "types": [
+        "cardPreparing",
+        "energySpent",
+        "staminaSpent",
+        "combatStanceChanged",
+        "combatStanceChanged",
+        "cardPlayed",
+        "attackHit",
+        "damageDealt",
+        "hpLost",
+        "enemyDied",
+        "cardResolved",
+        "combatEnd"
+       ]
+      }
+     ],
+     "door": null,
+     "result": "victory"
+    }
+   ]
+  }
+ ],
  "hotkeys": [
   {
    "key": "1",

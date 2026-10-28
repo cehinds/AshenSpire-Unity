@@ -9,7 +9,11 @@
 //                              answerReaction (manual picks teach Auto), showPendingReaction, scheduleAutoCombat (an
 //                              offer waits one gap, then Auto answers; it never plays cards or ends the turn), the
 //                              selection and one-tap play rules, the key handler (cardHotkeyAction, E, Escape),
-//                              onEnd after the fight's end delay
+//                              onEnd after the fight's end delay; showPendingDiscard (a pending chosen-card selection
+//                              opens its door after the beats end, every other command reopens it instead of acting,
+//                              chooseCards plays the rest of the card as new beats); playCard's cardChoicePlan step (a
+//                              card that offers a choice opens openCardChoiceModal first; the pick plays it, Cancel
+//                              plays nothing)
 //   src/model/autoCombatPolicy.js resolveCombatAutomation, chooseReaction (Core2AutoCombat)
 //   src/ui/animationPace.js    actionPacing (Core2CombatPacing.Pace)
 using System;
@@ -102,6 +106,7 @@ namespace AshenSpire.Presentation.Core2
         {
             Session = Session, Fight = Fight, Display = Display, Selected = Selected, Busy = Busy, Auto = Settings.Auto,
             ReactionSelected = ReactionSelected, CardArt = CardArt, FlaskArmed = ArmedFlask != null,
+            CardChoiceOpen = CardChoiceOpen, CardChoiceSelected = CardChoiceSelected, ManeuverPick = ManeuverPick, CardChoiceDeferred = CardChoiceDeferred,
         });
 
         public Core2ActionPace Pace() => Pacing.Pace(Settings.AnimSpeed, Settings.Values, Settings.ReducedMotion);
@@ -111,9 +116,92 @@ namespace AshenSpire.Presentation.Core2
         // ================================================================================================================
 
         /// <summary>Card, End Turn, flask and switch commands are open: idle, the player's turn, no offer pending, fight on.</summary>
-        public bool CanAct => !Busy && Fight.Result == null && Fight.PendingReaction == null && Fight.Phase == "player";
+        public bool CanAct => !Busy && Fight.Result == null && Fight.PendingReaction == null && !Fight.HasCardChoice && ManeuverPick == null && Fight.Phase == "player";
 
         private bool Refuse(string why) { LastRefusal = why; Changed?.Invoke(); return false; }
+
+        /// <summary>
+        /// JS: playCard, endTurn and useFlask first ask hasCardChoice and, while a choice is pending, open its door instead
+        /// (showPendingDiscard). True when the command was turned into that (refused as "pendingCardChoice").
+        /// </summary>
+        private bool ReopenCardChoice()
+        {
+            if (!Fight.HasCardChoice || Busy || Fight.Result != null) return false;
+            _cardChoiceDeferred = false;
+            Refuse("pendingCardChoice");
+            return true;
+        }
+
+        // ================================================================================================================
+        // The card choices (JS showPendingDiscard → openDiscardChoiceModal; playCard → openCardChoiceModal)
+        // ================================================================================================================
+
+        private bool _cardChoiceDeferred;
+        private readonly List<string> _cardChoiceSelected = new List<string>();
+        private string _maneuverTarget;
+
+        /// <summary>The chosen-card door is up: a choice is pending, its beats have played, and Choose later has not put it off.</summary>
+        public bool CardChoiceOpen => Fight.HasCardChoice && !Busy && Fight.Result == null && !_cardChoiceDeferred;
+        /// <summary>A pending choice put off with Choose later: End Turn (pointer, key or pad) reopens its door, so a player with no
+        /// hand card left to tap always has a way back.</summary>
+        public bool CardChoiceDeferred => Fight.HasCardChoice && _cardChoiceDeferred && !Busy && Fight.Result == null;
+        /// <summary>The door's picks in pick order (JS selected Set).</summary>
+        public IReadOnlyList<string> CardChoiceSelected => _cardChoiceSelected;
+        /// <summary>The hand card whose maneuver choice is open (JS openCardChoiceModal), or null.</summary>
+        public string ManeuverPick { get; private set; }
+
+        /// <summary>A tile in the chosen-card door: picked again it is dropped; past the count nothing more is taken.</summary>
+        public bool ToggleCardChoice(string instanceId)
+        {
+            var pending = Fight.PendingCardChoice;
+            if (!CardChoiceOpen || pending == null || !pending.CandidateIds.Contains(instanceId)) return Refuse("noCardChoice");
+            if (_cardChoiceSelected.Remove(instanceId)) { Changed?.Invoke(); return true; }
+            if (_cardChoiceSelected.Count >= pending.Count) return Refuse("cardChoiceFull");
+            _cardChoiceSelected.Add(instanceId);
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>Confirm selection: only at exactly the asked count; the card's remaining effects then play as new beats.</summary>
+        public bool ConfirmCardChoice()
+        {
+            var pending = Fight.PendingCardChoice;
+            if (!CardChoiceOpen || pending == null) return Refuse("noCardChoice");
+            if (_cardChoiceSelected.Count != pending.Count) return Refuse("chooseExactly");
+            var ids = _cardChoiceSelected.ToList();
+            return Dispatch(() => Fight.ChooseCards(ids));
+        }
+
+        /// <summary>Choose later (the door's close, Escape): the door closes, the fight stays paused, the picks are dropped.</summary>
+        public void DeferCardChoice()
+        {
+            if (!Fight.HasCardChoice) return;
+            _cardChoiceDeferred = true;
+            _cardChoiceSelected.Clear();
+            Changed?.Invoke();
+        }
+
+        /// <summary>A maneuver tile: the door closes and the card plays with that choice (at the target it was aimed at).</summary>
+        public bool ChooseManeuver(string choice)
+        {
+            var instanceId = ManeuverPick;
+            if (instanceId == null) return Refuse("noManeuverChoice");
+            IReadOnlyList<string> options;
+            try { options = Fight.CardChoiceOptions(instanceId); }
+            catch (InvalidOperationException error) { ManeuverPick = null; return Refuse(error.Message); }
+            if (options == null || !options.Contains(choice)) return Refuse("noSuchChoice");
+            var target = _maneuverTarget;
+            ManeuverPick = null; _maneuverTarget = null;
+            return PlayCard(instanceId, target, choice);
+        }
+
+        /// <summary>Cancel or Escape on the maneuver choice: nothing plays and the card stays in hand.</summary>
+        public void CancelManeuver()
+        {
+            if (ManeuverPick == null) return;
+            ManeuverPick = null; _maneuverTarget = null;
+            Changed?.Invoke();
+        }
 
         // ================================================================================================================
         // Selection and targeting (JS selected / armSelf / oneTapPlays)
@@ -122,6 +210,7 @@ namespace AshenSpire.Presentation.Core2
         /// <summary>A tap or click on a hand card: select it; tapping the selected card plays it when its target is unambiguous.</summary>
         public bool TapCard(string instanceId)
         {
+            if (ReopenCardChoice()) return false;
             if (!CanAct) return Refuse("busy");
             if (!Fight.Hand.Any(c => c.InstanceId == instanceId)) return Refuse("notInHand");
             var target = UnambiguousTarget(instanceId, out var ambiguous);
@@ -163,6 +252,7 @@ namespace AshenSpire.Presentation.Core2
         /// <summary>JS openPotions → a targeted flask: one living enemy takes it at once, otherwise it waits for a target.</summary>
         public bool ArmFlask(int slot)
         {
+            if (ReopenCardChoice()) return false;
             if (!CanAct) return Refuse("busy");
             var living = Fight.Enemies.Where(e => e.Alive).ToList();
             if (living.Count == 1) return UseFlask(null, slot, living[0].Id);
@@ -190,15 +280,34 @@ namespace AshenSpire.Presentation.Core2
         // Commands (the only ways the fight is changed)
         // ================================================================================================================
 
-        public bool PlayCard(string instanceId, string targetId = null)
+        /// <summary>
+        /// Play a hand card. A card that offers a choice (Core2Fight.CardChoiceOptions: enterStance choose 'maneuver') and is
+        /// played without one opens the maneuver choice instead (JS playCard → openCardChoiceModal); ChooseManeuver then plays it
+        /// at the same target with the pick.
+        /// </summary>
+        public bool PlayCard(string instanceId, string targetId = null, string choice = null)
         {
+            if (ReopenCardChoice()) return false;
             if (!CanAct) return Refuse("busy");
+            if (choice == null && Fight.Hand.Any(c => c.InstanceId == instanceId))
+            {
+                IReadOnlyList<string> options;
+                try { options = Fight.CardChoiceOptions(instanceId); }
+                catch (InvalidOperationException error) { return Refuse(error.Message); }
+                if (options != null)
+                {
+                    ManeuverPick = instanceId; _maneuverTarget = targetId;
+                    Changed?.Invoke();
+                    return true;
+                }
+            }
             Selected = null;
-            return Dispatch(() => Fight.PlayCard(instanceId, targetId));
+            return Dispatch(() => Fight.PlayCard(instanceId, targetId, choice));
         }
 
         public bool EndTurn()
         {
+            if (ReopenCardChoice()) return false;
             if (!CanAct) return Refuse("busy");
             Selected = null;
             return Dispatch(() => Fight.EndTurn());
@@ -209,6 +318,7 @@ namespace AshenSpire.Presentation.Core2
 
         public bool UseFlask(string chargeKind, int slot = -1, string targetId = null)
         {
+            if (ReopenCardChoice()) return false;
             if (!CanAct) return Refuse("busy");
             if (Session == null) return Refuse("noRun");
             Selected = null;
@@ -246,6 +356,7 @@ namespace AshenSpire.Presentation.Core2
         {
             var offer = Fight.PendingReaction;
             if (offer == null || Busy) return Refuse("noOffer");
+            if (ReopenCardChoice()) return false;
             if (manual && optionId != null)
             {
                 var option = offer.Options.FirstOrDefault(o => o.Id == optionId);
@@ -271,6 +382,9 @@ namespace AshenSpire.Presentation.Core2
                 return false;
             }
             LastRefusal = null;
+            // A new command settles any earlier choice: a fresh pending choice opens its door afresh, with no picks.
+            _cardChoiceDeferred = false;
+            _cardChoiceSelected.Clear();
             Display = before;
             var events = Fight.Events.Skip(start).ToList();
             Timeline = Core2CombatBeats.Plan(events, Content, Core2BeatTiming.From(Pace(), _windup), MaxHp);
@@ -324,7 +438,7 @@ namespace AshenSpire.Presentation.Core2
                 }
             }
             if (Timeline != null) return;
-            if (_autoAt != null && NowMs >= _autoAt.Value && Fight.PendingReaction?.Id == _autoOffer && Settings.Auto)
+            if (_autoAt != null && NowMs >= _autoAt.Value && Fight.PendingReaction?.Id == _autoOffer && Settings.Auto && !Fight.HasCardChoice)
             {
                 _autoAt = null;
                 var answer = Core2AutoCombat.Answer(Fight, Picks.Snapshot());
@@ -347,7 +461,9 @@ namespace AshenSpire.Presentation.Core2
                 if (_fightOverAt == null && !FightOverReported) _fightOverAt = NowMs + _fightEndDelayMs * (Pace().Scale > 0 ? 1 : 0);
                 return;
             }
-            var offer = Fight.PendingReaction;
+            // Auto answers offers only, and never while a card choice is pending (JS showPendingReaction and the auto
+            // answer both wait on hasCardChoice): the choice is the player's, and the clock arms Auto again after it.
+            var offer = Fight.HasCardChoice ? null : Fight.PendingReaction;
             if (offer != null && Settings.Auto)
             {
                 if (_autoOffer != offer.Id) { _autoOffer = offer.Id; _autoAt = NowMs + Math.Max(50, Pace().GapMs); }
@@ -365,7 +481,17 @@ namespace AshenSpire.Presentation.Core2
         /// </summary>
         public bool Key(string key)
         {
-            if (key == "Escape") { Cancel(); return true; }
+            if (key == "Escape")
+            {
+                // The open door first: Escape cancels the maneuver choice (nothing plays) or puts the chosen-card door off.
+                if (ManeuverPick != null) CancelManeuver();
+                else if (CardChoiceOpen) DeferCardChoice();
+                else Cancel();
+                return true;
+            }
+            if (ManeuverPick != null || CardChoiceOpen) return false; // the door's own controls take every other key
+            // JS: E and a card key reach endTurn / playCard, which reopen a put-off choice instead of acting.
+            if (Fight.HasCardChoice && (key == "e" || key == "E" || Core2CardHotkey.For(key, false, Fight.Hand.Count, 0) != null)) return ReopenCardChoice();
             if (Fight.PendingReaction != null || Busy || Fight.Result != null || Fight.Phase != "player") return false;
             if (key == "e" || key == "E") return !EndTurnNeedsHold && EndTurn();
             var living = Fight.Enemies.Where(e => e.Alive).ToList();

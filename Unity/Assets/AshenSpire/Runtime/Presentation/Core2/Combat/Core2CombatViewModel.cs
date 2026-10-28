@@ -10,6 +10,9 @@
 //   src/ui/components/combatActionRow.js   the footer (SP orb, DRAW, Discard/Exhaust, End Turn · E · HOLD, Potions)
 //   src/ui/components/combatTools.js       the Reaction and Auto switches ("enabled"/"disabled")
 //   src/ui/components/reactionChoiceModal.js openReactionChoiceModal, committedReactionStack, reactionStackEntryName
+//   src/ui/components/discardChoiceModal.js  openDiscardChoiceModal as screens/combat.js showPendingDiscard opens it for a
+//                                          pendingCardChoice (title, prompt, Confirm selection, Choose later, ordered picks)
+//   src/ui/components/cardChoiceModal.js   openCardChoiceModal over model/cardChoices.js cardChoice (the maneuver choice)
 //   src/ui/components/combatantInspector.js + models/CombatantInspectorSections.js the enemy inspector's sections
 //   src/model/secondbeat.js (endTurn row)  End Turn holds while a card is still playable, else a tap ends the turn
 //   src/model/environmentArt.js            regionForRun (the seat's region), the scenery index hash
@@ -39,6 +42,14 @@ namespace AshenSpire.Presentation.Core2
         public bool FlaskArmed { get; set; }
         /// <summary>Card id → card painting resource (Resources/Core2Ui/card-art.json).</summary>
         public IReadOnlyDictionary<string, string> CardArt { get; set; }
+        /// <summary>The chosen-card door is open (a pending choice the player has not put off with Choose later).</summary>
+        public bool CardChoiceOpen { get; set; }
+        /// <summary>The door's picks, in pick order.</summary>
+        public IReadOnlyList<string> CardChoiceSelected { get; set; }
+        /// <summary>The hand card whose maneuver choice is open, or null.</summary>
+        public string ManeuverPick { get; set; }
+        /// <summary>A card choice put off with Choose later: End Turn stays live to reopen its door.</summary>
+        public bool CardChoiceDeferred { get; set; }
     }
 
     public static class Core2CombatViewModel
@@ -88,7 +99,7 @@ namespace AshenSpire.Presentation.Core2
                 PlayerTurn = !display.EnemySide, TurnRibbon = Core2CombatText.TurnRibbon(display.EnemySide), Result = fight.Result,
                 Backdrop = run == null ? SceneArt + "pale-marches-1" : Backdrop(i.Session),
                 Targeting = i.Selected != null && fight.CardTargetsEnemy(i.Selected) ? i.Selected : null,
-                InputLocked = i.Busy || fight.PendingReaction != null || fight.Result != null || fight.Phase != "player",
+                InputLocked = i.Busy || fight.PendingReaction != null || fight.HasCardChoice || i.ManeuverPick != null || fight.Result != null || fight.Phase != "player",
             };
             var player = display[fight.Player.Id];
             model.Top = new Core2CombatTopBand
@@ -107,7 +118,70 @@ namespace AshenSpire.Presentation.Core2
             }
             model.Hand = Hand(fight, display, i);
             model.Footer = Footer(i, display, model.Hand);
-            if (fight.PendingReaction != null && !i.Busy && fight.Result == null) model.Reaction = Reaction(fight, i.ReactionSelected);
+            // JS showPendingReaction waits while a card choice is pending: the chosen-card door comes first.
+            if (fight.HasCardChoice && !i.Busy && fight.Result == null) { if (i.CardChoiceOpen) model.CardChoice = CardChoice(fight, i.CardChoiceSelected); }
+            else if (fight.PendingReaction != null && !i.Busy && fight.Result == null) model.Reaction = Reaction(fight, i.ReactionSelected);
+            if (i.ManeuverPick != null && !i.Busy) model.ManeuverChoice = ManeuverChoice(fight, i.ManeuverPick);
+            return model;
+        }
+
+        // ================================================================================================================
+        // The card choices
+        // ================================================================================================================
+
+        /// <summary>
+        /// JS showPendingDiscard for a pendingCardChoice → openDiscardChoiceModal: the resolving card's name, "Choose {count}
+        /// cards", "Choose cards from {from} for {to}. …" (JS passes effect.to as it is, so a modifyCards choice, which names no
+        /// destination, reads "for undefined"), Confirm selection enabled at exactly count picks, Choose later to close.
+        /// </summary>
+        public static Core2CardChoiceModalModel CardChoice(Core2Fight fight, IReadOnlyList<string> selected)
+        {
+            var pending = fight.PendingCardChoice;
+            if (pending == null) return null;
+            var effect = pending.Effect;
+            var from = (string)effect["from"];
+            var to = (string)effect["to"];
+            var model = new Core2CardChoiceModalModel
+            {
+                Eyebrow = fight.Content.HasCard(pending.CardId) ? fight.Content.Card(pending.CardId).Name : pending.CardId,
+                Title = Core2CombatText.T("combat.cards.choose.title", ("count", pending.Count)),
+                Prompt = Core2CombatText.T("combat.cards.choose.prompt", ("from", from ?? "undefined"), ("to", to ?? "undefined")),
+                ConfirmLabel = Core2CombatText.T("combat.cards.choose.confirm"), CloseLabel = Core2CombatText.T("combat.discard.later"),
+                Count = pending.Count, Ordered = from == to,
+            };
+            foreach (var card in pending.Candidates)
+            {
+                var name = fight.Content.HasCard(card.CardId) ? fight.Content.Card(card.CardId).Name : card.CardId;
+                var row = new Core2ReactionOptionModel { Id = card.InstanceId, Name = name, CardId = card.CardId, InstanceId = card.InstanceId };
+                try { row.Summary = string.Join(" · ", FaceLines(fight, card)); }
+                catch (Exception) { row.Summary = ""; } // JS: a summary that throws leaves a name-only tile
+                model.Options.Add(row);
+            }
+            if (selected != null) model.Selected = selected.Where(id => pending.CandidateIds.Contains(id)).Distinct().Take(pending.Count).ToList();
+            model.ConfirmEnabled = model.Selected.Count == pending.Count;
+            return model;
+        }
+
+        /// <summary>
+        /// JS playCard → openCardChoiceModal({ plan: cardChoicePlan }): the card's name as the eyebrow, "Choose a stance", one
+        /// tile per maneuver ("Attack" … "Evade", its id as the line; JS marks the stance already held " (active)" and disables
+        /// it, which a Core 2 maneuver never is: the maneuver form leaves player.stanceId unset), and Cancel.
+        /// </summary>
+        public static Core2ManeuverChoiceModel ManeuverChoice(Core2Fight fight, string instanceId)
+        {
+            var instance = fight.Hand.FirstOrDefault(c => c.InstanceId == instanceId);
+            if (instance == null) return null;
+            IReadOnlyList<string> options;
+            try { options = fight.CardChoiceOptions(instanceId); }
+            catch (InvalidOperationException) { return null; }
+            if (options == null) return null;
+            var name = fight.Content.Card(instance.CardId).Name;
+            var model = new Core2ManeuverChoiceModel
+            {
+                InstanceId = instanceId, Eyebrow = name, Title = Core2CombatText.T("cardChoice.stanceTitle"),
+                CloseLabel = Core2CombatText.T("common.cancel") + " " + name, CancelLabel = Core2CombatText.T("common.cancel"),
+            };
+            foreach (var id in options) model.Options.Add(new Core2ManeuverOptionModel { Id = id, Name = Core2CombatText.Capitalize(id), Text = id });
             return model;
         }
 
@@ -436,14 +510,14 @@ namespace AshenSpire.Presentation.Core2
         {
             var fight = i.Fight;
             var playable = hand.Any(c => c.Playable);
-            var canAct = !i.Busy && fight.Result == null && fight.PendingReaction == null && fight.Phase == "player";
+            var canAct = !i.Busy && fight.Result == null && fight.PendingReaction == null && !fight.HasCardChoice && i.ManeuverPick == null && fight.Phase == "player";
             var footer = new Core2CombatFooterModel
             {
                 Sp = display.Sp, MaxSp = display.MaxSp, Mp = display.Mp, MaxMp = display.MaxMp, Draw = display.Draw, Discard = display.Discard, Exhaust = display.Exhaust,
                 DrawLabel = Core2CombatText.T("js.actionRow.draw"),
                 DiscardLabel = Core2CombatText.T("combat.discard") + " " + display.Discard, ExhaustLabel = Core2CombatText.T("combat.exhaust") + " " + display.Exhaust,
                 EndTurnLabel = Core2CombatText.T("combat.endTurn"), EndTurnKey = Core2CombatText.T("js.actionRow.endTurnKey"),
-                EndTurnNeedsHold = playable, EndTurnHint = Core2CombatText.T("js.actionRow.hold"), EndTurnEnabled = canAct,
+                EndTurnNeedsHold = playable, EndTurnHint = Core2CombatText.T("js.actionRow.hold"), EndTurnEnabled = canAct || i.CardChoiceDeferred,
                 ReactionsEnabled = fight.ReactionsEnabled, Auto = i.Auto, ReactionSwitchEnabled = canAct,
             };
             footer.ReactionState = Core2CombatText.T(fight.ReactionsEnabled ? "combat.reactions.enabled" : "combat.reactions.disabled");

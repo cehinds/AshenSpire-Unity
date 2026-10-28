@@ -3,7 +3,7 @@
 // models and the console suite read it; nothing here touches UnityEngine.
 //
 // JS at the pin:
-//   content/source/uiStrings.csv     combat.*, common.*, hud.cinders, potions.run.title (the copy below)
+//   content/source/uiStrings.csv     combat.*, common.*, cardChoice.*, hud.cinders, potions.run.title (the copy below)
 //   src/ui/screens/combat.js         the turn ribbon ("Player Turn" / "Enemy Turn"), cardHotkeyAction
 //   src/ui/components/combatActionRow.js  the footer labels (DRAW, Discard N, Exhaust N, Potions, End Turn · E · HOLD)
 using System;
@@ -41,6 +41,13 @@ namespace AshenSpire.Presentation.Core2
             ["combat.reaction.mp"] = "{amount} MP",
             ["combat.reaction.stack"] = "On the stack",
             ["combat.reaction.resolve"] = "Resolve",
+            ["combat.cards.choose.title"] = "Choose {count} cards",
+            ["combat.cards.choose.prompt"] = "Choose cards from {from} for {to}. Selected order is used from top to bottom.",
+            ["combat.cards.choose.confirm"] = "Confirm selection",
+            ["combat.discard.later"] = "Choose later",
+            ["cardChoice.stanceTitle"] = "Choose a stance",
+            ["common.choose"] = "Choose",
+            ["common.cancel"] = "Cancel",
             ["common.back"] = "Back",
             ["common.close"] = "Close",
             ["combat.callout.hit"] = "Hit",

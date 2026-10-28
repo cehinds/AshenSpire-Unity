@@ -92,19 +92,28 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>
-        /// Would PlayCard(<paramref name="instanceId"/>, <paramref name="targetId"/>) be accepted now? Null when it would; else
-        /// the refusal. The play is tried on a detached copy of the fight (JS candidateState), so this fight is untouched.
+        /// Would PlayCard(<paramref name="instanceId"/>, <paramref name="targetId"/>, <paramref name="choice"/>) be accepted now?
+        /// Null when it would; else the refusal. The play is tried on a detached copy of the fight (JS candidateState), so this
+        /// fight is untouched. A card that offers a choice (CardChoiceOptions) and is checked without one is tried with its first
+        /// option: the screen asks the choice before it plays (JS playCard → openCardChoiceModal), so the hand reads the card
+        /// as playable when some choice would play it. A pending chosen-card selection refuses every play, as PlayCard does.
         /// </summary>
-        public Core2PlayCheck CheckPlay(string instanceId, string targetId = null)
+        public Core2PlayCheck CheckPlay(string instanceId, string targetId = null, string choice = null)
         {
             if (Result != null) return new Core2PlayCheck { Reason = "other", Message = "Combat is over" };
             if (PendingReaction != null) return new Core2PlayCheck { Reason = "other", Message = "Answer the pending reaction first" };
+            if (HasCardChoice) return new Core2PlayCheck { Reason = "other", Message = "Choose the cards to discard before taking another action" };
             if (Phase != "player") return new Core2PlayCheck { Reason = "other", Message = "Cards can only be played on the player turn" };
+            if (choice == null && Hand.Any(c => c.InstanceId == instanceId))
+            {
+                try { choice = CardChoiceOptions(instanceId)?.FirstOrDefault(); }
+                catch (InvalidOperationException error) { return new Core2PlayCheck { Reason = "other", Message = error.Message }; }
+            }
             var candidate = Candidate();
             candidate.ReactionsEnabled = false;
             try
             {
-                candidate.DoPlayCard(new Core2ReactionPlay { CardInstanceId = instanceId, TargetId = targetId });
+                candidate.DoPlayCard(new Core2ReactionPlay { CardInstanceId = instanceId, TargetId = targetId, Choice = choice });
                 return null;
             }
             catch (Core2PlayRefusedException refused) { return new Core2PlayCheck { Reason = refused.Reason ?? "other", Resource = refused.Resource, Message = refused.Message }; }
