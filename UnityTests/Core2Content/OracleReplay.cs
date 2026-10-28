@@ -399,6 +399,7 @@ static class OracleReplay
             for (var guard = 0; guard < 20 && fight.Result == null; guard++)
             {
                 var target = fight.Enemies.FirstOrDefault(e => e.Alive);
+                ProbePreviews(fight, target);
                 string played = null;
                 foreach (var card in fight.Hand.ToList())
                 {
@@ -682,6 +683,42 @@ static class OracleReplay
         return result;
     }
 
+    /// <summary>Preview purity: every CheckPlay / hit preview / intent projection the combat screen makes; a leak is one that changed the live fight.</summary>
+    public static int PreviewProbes, PreviewLeaks;
+    public static readonly List<string> PreviewLeakNotes = new List<string>();
+    private static string FightSignature(Core2Fight f)
+    {
+        string Cards(IEnumerable<Core2CardInstance> cards) => string.Join(",", cards.Select(c => c.CardId + "#" + c.InstanceId + (c.Changes == null ? "" : c.Changes.ToString(Newtonsoft.Json.Formatting.None))));
+        string Entity(Core2Combatant e) => e.Id + " hp" + e.Hp + " sp" + e.Stamina + " mp" + e.Mana + " b" + e.Block + " "
+            + string.Join(",", e.Statuses.Where(p => p.Value.Stacks != 0).Select(p => p.Key + ":" + p.Value.Stacks).OrderBy(x => x, StringComparer.Ordinal))
+            + " riders" + Newtonsoft.Json.JsonConvert.SerializeObject(e.AbilityRiders)
+            + " reveal" + string.Join(",", e.IntentRevealedUntil.Select(p => p.Key + ":" + p.Value))
+            + " burdens" + (e.BurdenPiles == null ? "-" : Cards(e.BurdenPiles.Draw) + "|" + Cards(e.BurdenPiles.Hand) + "|" + Cards(e.BurdenPiles.Discard) + "|" + Cards(e.BurdenPiles.Exhaust));
+        return string.Join("\n", new[] { Cards(f.Draw), Cards(f.Hand), Cards(f.Discard), Cards(f.Exhaust), Entity(f.Player) }
+            .Concat(f.Enemies.Select(Entity)).Concat(f.Rng.Counters().OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => p.Key + "=" + p.Value)));
+    }
+    private static void ProbePreviews(Core2Fight fight, Core2Combatant target)
+    {
+        if (fight.PendingReaction != null || fight.PendingCardChoice != null) return;
+        var before = FightSignature(fight);
+        foreach (var card in fight.Hand.ToList())
+        {
+            foreach (var targetId in new[] { target?.Id, null }) fight.CheckPlay(card.InstanceId, targetId);
+            if (target != null) fight.PreviewCardHit(card.InstanceId, target.Id);
+        }
+        foreach (var enemy in fight.Enemies.Where(e => e.Alive)) { fight.ProjectIntent(enemy); fight.IntentHitDamages(enemy); }
+        PreviewProbes++;
+        var after = FightSignature(fight);
+        if (after == before) return;
+        PreviewLeaks++;
+        if (PreviewLeakNotes.Count < 3)
+        {
+            var b = before.Split('\n'); var a = after.Split('\n');
+            var i = Enumerable.Range(0, Math.Min(a.Length, b.Length)).FirstOrDefault(k => a[k] != b[k]);
+            PreviewLeakNotes.Add("turn " + fight.Turn + ": " + b[i] + "  ->  " + a[i]);
+        }
+    }
+
     public static (JObject Expected, Core2Fight Fight) ReactionFight(Core2Content content, JObject input, int maxTurns = 30, JArray choices = null)
     {
         var fight = Core2Fight.Create(content, Core2FightSetup.FromJson((JObject)input["start"]), ((JArray)input["enemyIds"]).Select(t => (string)t).ToList(), (uint)(int)input["seed"]);
@@ -740,6 +777,7 @@ static class OracleReplay
             for (var guard = 0; guard < 20 && fight.Result == null; guard++)
             {
                 var target = fight.Enemies.FirstOrDefault(e => e.Alive);
+                ProbePreviews(fight, target);
                 string played = null;
                 foreach (var card in fight.Hand.ToList())
                 {

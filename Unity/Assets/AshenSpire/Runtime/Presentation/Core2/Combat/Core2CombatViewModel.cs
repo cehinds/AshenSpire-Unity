@@ -215,7 +215,7 @@ namespace AshenSpire.Presentation.Core2
 
         public static Core2IntentBadge Intent(Core2Fight fight, Core2Combatant enemy)
         {
-            var view = Core2Knowledge.Project(enemy);
+            var view = Core2Knowledge.Project(enemy, fight.Turn);
             var intent = enemy.Intent ?? new Core2Intent { Kind = "unknown" };
             var badge = new Core2IntentBadge();
             badge.FollowUps = view.Hidden ? new List<string>() : Core2Knowledge.RemainingFollowUps(fight, enemy, (enemy.PlannedMoves ?? new List<Core2PlannedMove>()).Select(m => m.MoveId).ToList())
@@ -296,7 +296,7 @@ namespace AshenSpire.Presentation.Core2
         public static Core2DamageReadModel DamageRead(Core2Fight fight, Core2Combatant enemy, (int Index, int Count)? contact)
         {
             var intent = enemy?.Intent;
-            if (intent?.Damage == null || Core2Knowledge.Project(enemy).Hidden) return null;
+            if (intent?.Damage == null || Core2Knowledge.Project(enemy, fight.Turn).Hidden) return null;
             var projected = fight.ProjectIntent(enemy, contact.HasValue ? 1 : (int?)null);
             // Each hit's damage as it meets the player's defenses (JS previewDamageHits hitDamages).
             var damages = fight.IntentHitDamages(enemy, contact.HasValue ? 1 : (int?)null) ?? new List<int> { intent.Damage.Value };
@@ -523,7 +523,7 @@ namespace AshenSpire.Presentation.Core2
                 if (enemyEntry != null) model.Threat = StackEntryName(fight, enemyEntry);
                 else
                 {
-                    var view = Core2Knowledge.Project(source);
+                    var view = Core2Knowledge.Project(source, fight.Turn);
                     var move = view.Hidden || view.MoveId == null ? null : (string)fight.EnemyDef(source).Move(view.MoveId)?.Raw["name"] ?? Core2CombatText.Words(view.MoveId);
                     model.Threat = move == null ? fight.EnemyDef(source).Name : fight.EnemyDef(source).Name + ": " + move;
                 }

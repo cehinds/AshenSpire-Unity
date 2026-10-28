@@ -38,6 +38,10 @@ namespace AshenSpire.Domain.Core2
     {
         /// <summary>JS card.proposalChanges: maneuver, range, retain (with retainUntilTurn) a modifyCards effect gave this card.</summary>
         public JObject Changes { get; set; }
+
+        /// <summary>A separate instance (same id): a preview copy's modifyCards or transform must not touch the live card.</summary>
+        public Core2CardInstance Clone() => new Core2CardInstance { InstanceId = InstanceId, CardId = CardId, Changes = (JObject)Changes?.DeepClone() };
+        public static List<Core2CardInstance> CloneAll(IEnumerable<Core2CardInstance> cards) => cards.Select(c => c.Clone()).ToList();
     }
 
     public sealed partial class Core2Fight

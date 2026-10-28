@@ -52,7 +52,7 @@ namespace AshenSpire.Domain.Core2
         public Core2DamageRange ProjectIntent(Core2Combatant enemy, int? hits)
         {
             if (enemy == null || enemy.Side != Core2Side.Enemy || !enemy.Alive || Player == null) return null;
-            var view = Core2Knowledge.Project(enemy);
+            var view = Core2Knowledge.Project(enemy, Turn);
             var intent = enemy.Intent;
             if (view.Hidden || intent == null || intent.Kind == "staggered" || intent.Damage == null || intent.MoveId == null) return null;
             var raw = Content.Enemy(enemy.EnemyId).Move(intent.MoveId)?.Raw;
@@ -74,7 +74,7 @@ namespace AshenSpire.Domain.Core2
         {
             if (enemy == null || enemy.Side != Core2Side.Enemy || !enemy.Alive || Player == null) return null;
             var intent = enemy.Intent;
-            if (Core2Knowledge.Project(enemy).Hidden || intent == null || intent.Kind == "staggered" || intent.Damage == null || intent.MoveId == null) return null;
+            if (Core2Knowledge.Project(enemy, Turn).Hidden || intent == null || intent.Kind == "staggered" || intent.Damage == null || intent.MoveId == null) return null;
             var raw = Content.Enemy(enemy.EnemyId).Move(intent.MoveId)?.Raw;
             if (raw == null) return null;
             var carrier = Core2EnemyMoves.Carrier(Rules, raw, intent.MoveId);
@@ -141,7 +141,7 @@ namespace AshenSpire.Domain.Core2
                 if (precision > 0) Core2Statuses.Apply(Ctx, source, "precision", precision);
             }
             var seen = target;
-            if (Core2Knowledge.Project(target).Hidden)
+            if (Core2Knowledge.Project(target, Turn).Hidden)
             {
                 seen = target.Clone();
                 seen.Stance = new Core2Stance("neutral", "physical", "melee");

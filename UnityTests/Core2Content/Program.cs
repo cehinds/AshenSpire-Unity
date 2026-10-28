@@ -248,6 +248,10 @@ try
         else if (expectedFamilies.TryGetValue(family, out var reason) && reason != null)
             pending.Add(family + " (" + cases.Count + " cases): " + reason);
     }
+    // Preview purity: the replays probe CheckPlay, PreviewCardHit, ProjectIntent and IntentHitDamages before every play;
+    // none may change the live fight (piles, card changes, ability riders, statuses, reveals, burdens, RNG counters).
+    foreach (var note in OracleReplay.PreviewLeakNotes) Console.Error.WriteLine("FAIL: preview leak " + note);
+    Check(OracleReplay.PreviewProbes > 100 && OracleReplay.PreviewLeaks == 0, "previews leave the live fight untouched (" + OracleReplay.PreviewProbes + " probes, " + OracleReplay.PreviewLeaks + " leaks)");
 }
 catch (Exception error)
 {

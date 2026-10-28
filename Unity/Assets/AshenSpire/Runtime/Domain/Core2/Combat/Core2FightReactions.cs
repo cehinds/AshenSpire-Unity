@@ -767,8 +767,8 @@ namespace AshenSpire.Domain.Core2
             var map = new Dictionary<Core2Combatant, Core2Combatant>();
             copy.Player = Player.Clone(); map[Player] = copy.Player;
             foreach (var enemy in Enemies) { var clone = enemy.Clone(); map[enemy] = clone; copy.Enemies.Add(clone); }
-            copy.Draw = new List<Core2CardInstance>(Draw); copy.Hand = new List<Core2CardInstance>(Hand);
-            copy.Discard = new List<Core2CardInstance>(Discard); copy.Exhaust = new List<Core2CardInstance>(Exhaust);
+            copy.Draw = Core2CardInstance.CloneAll(Draw); copy.Hand = Core2CardInstance.CloneAll(Hand);
+            copy.Discard = Core2CardInstance.CloneAll(Discard); copy.Exhaust = Core2CardInstance.CloneAll(Exhaust);
             foreach (var pair in _triggerState) copy._triggerState[pair.Key] = pair.Value;
             foreach (var id in _phasesFired) copy._phasesFired.Add(id);
             copy._mounts.AddRange(_mounts);
