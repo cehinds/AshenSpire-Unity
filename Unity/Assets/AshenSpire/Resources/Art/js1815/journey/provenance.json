@@ -1,0 +1,285 @@
+{
+  "reference": "cehinds/AshenSpire dev 0029e160 (build 0.7.1.1815)",
+  "pack": "hd-assets-v23/high",
+  "tool": "tools/import-js1815-journey-art.mjs",
+  "reused": {
+    "relicCoins": "Art/js1815/combat/relics/<relicId>",
+    "figures": "Art/js1815/combat/player/<class>-ready, Art/js1815/combat/enemies/<enemy>-idle",
+    "hudButtons": "Art/js1815/combat/footer/button-armoury, button-menu",
+    "goldIcons": "Art/js1815/ui/icon-*"
+  },
+  "assets": [
+    {
+      "resource": "Art/js1815/journey/icon-skill",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "326bc402680bde8ef377af719bc56450546559efc87ccc0543cd2a464a23b70e",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/skill.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/skill.svg",
+          "sha256": "8a449efbc704887affd6dabc79408acf63250b64d9e1e7bf54e4eb886abb6925"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/icon-progression",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "dece8926e6f791584ed9c136ad6516131fe4eb9bfbda108c60f73328ba82a823",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/progression.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/progression.svg",
+          "sha256": "28461dfb0c4730aa3b2e4243fbff10f10443f97c9cf1e09782bc7d219631f22b"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/icon-shield",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "039ff3c04078eefb151bdef7ae6a8188cbddd2ea294e1756ada61796e9f5d1dc",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/shield.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/shield.svg",
+          "sha256": "cb79788ba87fbb934a8be18d491fb3c0fecc4d701a219de4a0e03888c2886026"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/icon-controls",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "1109a8b9abd78c06776e2355521f1d6ebd36c4d171e5c730762c071429a2aa12",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/controls.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/controls.svg",
+          "sha256": "d76a290b2329edc9631bd6bd21969b718b2b40c85c6e60705d95fa60fbb18938"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/icon-unknown",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "06c12d55d6451d368863a7ab56fe931bd65dafff1ac63b0f75c8d5d890229398",
+      "note": "Engraved icon in --gold, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/unknown.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/unknown.svg",
+          "sha256": "cc9d5bba660d504797a5fa67acfec401b778b9450d51118cb5d84f2c6568e9a9"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/rest-hp",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "7de9c69fe64eb0108213b86b7e9da70b45b903207879c77761c0ab7d41feb865",
+      "note": "Recovery preview icon in --parchment, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/health.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/health.svg",
+          "sha256": "b54e961a7e345cc1d1d0dd4d77123ba03ca8b809a6881de18c3caf380e97aac4"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/rest-mp",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "8a8b148573f396cf9f637e0d6899e2044adbedbeffab39ddc0dce7c29899ee10",
+      "note": "Recovery preview icon in --parchment, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/mana.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/mana.svg",
+          "sha256": "93cb98e2a9781df669d4721a48d6ff6ee073303bb55c20bf341760255b1e7c19"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/rest-sp",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "e82fd466e78a94e13dc55e5a35a27502ed6430c66230776e4bce037b1aaf87ef",
+      "note": "Recovery preview icon in --parchment, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/stamina.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/stamina.svg",
+          "sha256": "b0968eda700d314d957fee539b3b6c2cdde1fe38d3cf7be710a09824767b6520"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/rest-flask-hp",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "f26c496e79d831ee22fdfde04a10a5fb0299fd743c5e50c3cfcc2e4af166516c",
+      "note": "Recovery preview icon in --parchment, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/flask-health.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/flask-health.svg",
+          "sha256": "c8e9c6507f96a7aac81ff88e4fbe8499085a6d546169b1fe99b8d4ccf4471edb"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/rest-flask-mp",
+      "size": [
+        96,
+        96
+      ],
+      "outputSha256": "9bf766c499292555b6d5c453cecadeed13cf0d412f5343a79d61bf2f73b722dc",
+      "note": "Recovery preview icon in --parchment, 96 px.",
+      "sources": [
+        {
+          "path": "assets/player-polish/ui/icons/flask-mana.svg",
+          "cache": ".art-cache/hd-assets-v23/high/assets/player-polish/ui/icons/flask-mana.svg",
+          "sha256": "e568411548f6dc1f0e232448e76b1e7af84e3c06a4055501d3bb23e79cc16fce"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-crimsonFlask",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "91583930b673a96394498cab8155924a459aac51b8475125ad7dc89c7e3f0df2",
+      "note": "Flask painting (flasks.crimsonFlask.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-crimson.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-crimson.webp",
+          "sha256": "6213059958c97bae1830c611d558e751440878b7067db9ada76400de8d6360d9"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-azureFlask",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "26853e446046a00d6bf52a1b5a9d284eae4ad7fba9c43e5ce3dc6b49121c6164",
+      "note": "Flask painting (flasks.azureFlask.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-azure.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-azure.webp",
+          "sha256": "73eeb1bed7126c58cc14c447c8b2147d834afe8f43cfb1141c8b94d5df62c5b4"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-flaskOfFerocity",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "f37e3ae589d2fff005782333baf9624d03b5f0258d4cb4e7ba509d23d8256504",
+      "note": "Flask painting (flasks.flaskOfFerocity.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-ferocity.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-ferocity.webp",
+          "sha256": "bebf5b6a07459bb3432b98dc3c9fc394a1e998b986294634d30df6d3016976dd"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-flaskOfStone",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "c7c55be7d193d889323e33dbdcc62a57ccbfd5c87418824089cb4ec7d223d4e1",
+      "note": "Flask painting (flasks.flaskOfStone.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-stone.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-stone.webp",
+          "sha256": "c93b9a67d4822aa201da670026b7aa3524f774436e43008d5a112dc363f89460"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-blightCoating",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "23641c706ae35a86f730abb40f51a49371606da95670b5c1a99c2d429503b6d4",
+      "note": "Flask painting (flasks.blightCoating.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-blight.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-blight.webp",
+          "sha256": "d08762aaf99de4cea6433f34b27bb5b21447ee8bd6bc2bb2cec982af4b110d8f"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-bloodUnction",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "7bf70c2eb5414a70642c487adde4c05c7f54c219d89f97037e72a7f440ce1d89",
+      "note": "Flask painting (flasks.bloodUnction.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-blood.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-blood.webp",
+          "sha256": "83f2315316d0b5c97017bb3c978a0aca8b246935b9d57c4265bdb1412aa04a29"
+        }
+      ]
+    },
+    {
+      "resource": "Art/js1815/journey/flask-wondrousDraught",
+      "size": [
+        128,
+        128
+      ],
+      "outputSha256": "91995db2b3bf85fd7a11bcc898c0b78bb915b86ae50ed8f712ea900e4d8eef8c",
+      "note": "Flask painting (flasks.wondrousDraught.artAsset), 128 px.",
+      "sources": [
+        {
+          "path": "assets/ui/flasks/flask-wondrous.webp",
+          "cache": ".art-cache/hd-assets-v23/high/assets/ui/flasks/flask-wondrous.webp",
+          "sha256": "0c39e9e574caf1972c342977594ad11a3e83aa47f2ebf2ce89b6026553085dfb"
+        }
+      ]
+    }
+  ]
+}

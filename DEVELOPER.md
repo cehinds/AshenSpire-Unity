@@ -37,6 +37,9 @@ node tools/oracle-js-core2.mjs ../AshenSpire           # writes UnityTests/Core2
 node tools/oracle-js-core2.mjs ../AshenSpire --check
 dotnet run --project UnityTests/Core2Content          # loads the export, checks it and the fixtures
 dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 run-layer oracles + focused checks
+node tools/unity-core2-text.mjs ../AshenSpire          # writes the run screens' UI text table (Presentation/Core2/Generated)
+node tools/unity-core2-text.mjs ../AshenSpire --check
+dotnet run --project UnityTests/Core2RunView          # plays whole seeded runs through the run screens' view models
 ```
 
 - **`GameContent/Unity/Core2/`** (generated; never edit): `profile.json` (the resolved profile
@@ -163,7 +166,8 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 r
   defaults, the combat log's sizes, palette and UI copy.
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
-  shard. `Core2Run` runs in the rules shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
+  shard. `Core2Run` runs in the rules shard, `Core2RunView` in the presentation shard, and the same JS checkout
+  checks `tools/unity-core2-text.mjs --check`. After a pin bump (SPEC §0.2 step 5), regenerate all three and commit them in the same PR.
 
 ## The CI door: a tool's silence is not its success (#12)
 

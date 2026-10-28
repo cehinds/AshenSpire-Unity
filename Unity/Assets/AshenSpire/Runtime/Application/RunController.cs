@@ -101,13 +101,11 @@ namespace AshenSpire.Application
                 _view.SettingsRequested += Settings;
                 _view.ReturnRequested += ReturnFromInterruption;
                 _view.FoundationRequested += OpenFoundation;
-                _view.NativeRequested += NewOriginal;
-                _view.NativeContinueRequested += ResumeOriginal;
-                _view.NativeQuickStartRequested += QuickStartOriginal;
                 _view.NativeHistoryRequested += ShowOriginalHistory;
                 _view.ProfileRequested += ShowOriginalProfile;
                 _view.CoopRequested += OpenCoop;
                 InitSaveSlots(channel); // RunController.Slots.cs: three run slots + legacy migration
+                InitCore2(channel); // RunController.Core2.cs: Begin / Quick start / Continue / Load start Core 2 runs
                 Menu();
                 ApplyPlayerWindowTitle();
                 const string welcomeKey = "AshenSpire.Unity.Welcome.v1";
@@ -263,7 +261,7 @@ namespace AshenSpire.Application
         private void Menu()
         {
             Save();
-            _view.NativeSaveAvailable = HasNativeSlotSave();
+            _view.NativeSaveAvailable = HasCore2Save(); // Continue resumes a Core 2 run; 0.5.5 saves are not offered
             _view.Title(_content, _saves.HasSave, TakeSlotNotice());
             _view.PersistenceNotice(_profileNotice);
             MusicTitle();
@@ -289,6 +287,7 @@ namespace AshenSpire.Application
                 _saves.Save(_session.State);
             SaveOriginalSlot();
             SaveOriginalProfile();
+            _core2Flow?.Save();
         }
         private void OnApplicationPause(bool paused)
         {
@@ -403,14 +402,11 @@ namespace AshenSpire.Application
                 return;
             var gamepad = GetComponent<GamepadDriver>();
             if (gamepad != null) gamepad.Navigator = null;
+            DisposeCore2();
             _view.Dispose();
             FlushMapView(); // Detaching the map freezes its final camera before shutdown.
             _view.ReturnRequested -= ReturnFromInterruption;
             _view.FoundationRequested -= OpenFoundation;
-            _view.NativeRequested -= NewOriginal;
-            _view.SlotsRequested -= ShowSaveSlots;
-            _view.NativeContinueRequested -= ResumeOriginal;
-            _view.NativeQuickStartRequested -= QuickStartOriginal;
             _view.NativeHistoryRequested -= ShowOriginalHistory;
             _view.ProfileRequested -= ShowOriginalProfile;
             _view.CoopRequested -= OpenCoop;
