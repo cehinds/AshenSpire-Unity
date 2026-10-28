@@ -88,6 +88,9 @@ namespace AshenSpire.Domain.Core2
         public string PrimaryWeaponRange { get; set; } = "melee";
         /// <summary>JS createCombat hpMult (main.js combatMods: the seat tier ratio, or a boss's tier scale): rolled HP × it, rounded.</summary>
         public double EnemyHpMult { get; set; } = 1;
+        /// <summary>JS createCombat orderedDraw (Play in deck order, SPEC §14.1): the deck is drawn in run order and an empty draw
+        /// pile takes the discard back in that order; the Core 2 round refresh (refreshProfileRound) still shuffles.</summary>
+        public bool OrderedDraw { get; set; }
         /// <summary>
         /// JS createCombat enemyDamageMult (main.js combatMods: a boss's tier damage scale, else 1), stamped on each enemy as
         /// damageMult: every authored move damage is round(damage × it), at least 1 (state.js enemyMoveDamage).
@@ -297,7 +300,9 @@ namespace AshenSpire.Domain.Core2
                 entity.Barrier = 0;
             }
             foreach (var mount in setup.PropertyRules) fight._mounts.Add(mount);
-            fight.Draw = fight.OrderedDrawPile(fight.Rng.Shuffle("shuffle", setup.Deck.Select(c => new Core2CardInstance { InstanceId = c.InstanceId, CardId = c.CardId })));
+            var deck = setup.Deck.Select(c => new Core2CardInstance { InstanceId = c.InstanceId, CardId = c.CardId }).ToList();
+            if (setup.OrderedDraw) fight._drawOrder = deck.Select(c => c.InstanceId).ToList();
+            fight.Draw = fight.OrderedDrawPile(setup.OrderedDraw ? deck : fight.Rng.Shuffle("shuffle", deck));
             fight.HandMax = Math.Max(0, fight.Rules.HandBase + p.Attribute(fight.Rules.HandAttribute));
             fight.Emit("combatStart", new JObject());
             foreach (var status in setup.StartStatuses)
@@ -310,6 +315,9 @@ namespace AshenSpire.Domain.Core2
 
         /// <summary>JS combatKey: seed/act/floor/node (the oracle fights are act 1, floor 0, keyed by their enemy ids).</summary>
         public string CombatKey { get; private set; }
+
+        /// <summary>JS combat.orderedDraw.order: the run's deck order under Play in deck order, else null.</summary>
+        private List<string> _drawOrder;
 
         /// <summary>JS orderedDrawPile: Innate cards to the top, otherwise the shuffled order.</summary>
         private List<Core2CardInstance> OrderedDrawPile(List<Core2CardInstance> pile)
@@ -697,10 +705,21 @@ namespace AshenSpire.Domain.Core2
                 if (Draw.Count == 0)
                 {
                     if (Discard.Count == 0) return;
-                    Draw.AddRange(Discard);
-                    Discard = new List<Core2CardInstance>();
-                    Draw = Rng.Shuffle("shuffle", Draw);
-                    Emit("deckShuffled", new JObject { ["size"] = Draw.Count });
+                    if (_drawOrder != null)
+                    {
+                        // JS returnDiscardInOrder (deckRules.js orderedReturn): deck order first, cards new to the fight after.
+                        var at = _drawOrder.Select((id, index) => (id, index)).ToDictionary(p => p.id, p => p.index, StringComparer.Ordinal);
+                        Draw.AddRange(Discard.Where(c => at.ContainsKey(c.InstanceId)).OrderBy(c => at[c.InstanceId]).Concat(Discard.Where(c => !at.ContainsKey(c.InstanceId))));
+                        Discard = new List<Core2CardInstance>();
+                        Emit("deckShuffled", new JObject { ["size"] = Draw.Count, ["ordered"] = true });
+                    }
+                    else
+                    {
+                        Draw.AddRange(Discard);
+                        Discard = new List<Core2CardInstance>();
+                        Draw = Rng.Shuffle("shuffle", Draw);
+                        Emit("deckShuffled", new JObject { ["size"] = Draw.Count });
+                    }
                 }
                 var card = Draw[0];
                 Draw.RemoveAt(0);

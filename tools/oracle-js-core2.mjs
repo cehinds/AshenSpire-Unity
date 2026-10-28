@@ -23,8 +23,8 @@
 //   combat-log      combatLogEntries and the drawn view (legend, Round N, full-detail receipt lines)  (phase 7)
 //   combat-automation chooseReaction, resolveCombatAutomation, combatPacingChanges, actionPacing, log sizes (phase 7)
 //   run-creation, run-maps, card-faces, reward-offers, shop-stock, rest-outcomes, level-up, scripted-runs,
-//   scripted-runs-auto: the phase 8 run layer (tools/js-core2-run.mjs names their JS functions; replayed by
-//   UnityTests/Core2Run)
+//   scripted-runs-auto: the phase 8 run layer; adept-entitlements, deck-edits, armoury: phase 9; skill-progression:
+//   phase 10 (tools/js-core2-run.mjs names their JS functions; replayed by UnityTests/Core2Run)
 import {join} from 'node:path';
 import {root, parseArgs, jsIdentity, requirePin, loadJs, toPlain, syncTree} from './js-core2-shared.mjs';
 import {runFamilies} from './js-core2-run.mjs';

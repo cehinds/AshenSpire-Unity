@@ -769,9 +769,10 @@ namespace AshenSpire.Domain.Core2
             target.Barrier = Math.Max(0, target.Barrier - receipt.BarrierMitigated);
             if (target.Poise != null) target.Poise.Value = Math.Max(0, target.Poise.Value - receipt.PoiseAbsorbed - receipt.PoiseDamage);
             target.Hp -= receipt.HpLoss;
+            // JS applyAttackDamage names the card a hit came from (carrier.instanceId): the skill hooks pay its piece's group.
             Emit("damageDealt", new JObject
             {
-                ["sourceId"] = source?.Id, ["targetId"] = target.Id, ["amount"] = receipt.Amount, ["blocked"] = receipt.Blocked, ["hpLoss"] = receipt.HpLoss,
+                ["sourceId"] = source?.Id, ["targetId"] = target.Id, ["cardInstanceId"] = carrier?.InstanceId ?? Undefined, ["amount"] = receipt.Amount, ["blocked"] = receipt.Blocked, ["hpLoss"] = receipt.HpLoss,
                 ["poiseAbsorbed"] = receipt.PoiseAbsorbed, ["poiseDamage"] = receipt.PoiseDamage, ["advantage"] = receipt.Advantage,
                 ["damageReceipt"] = receipt.ToJson(target.Id),
                 ["blockRemaining"] = target.Block, ["poiseRemaining"] = target.Poise?.Value, ["isAttack"] = true,
@@ -887,7 +888,8 @@ namespace AshenSpire.Domain.Core2
                 entity.Poise.Value = Math.Min(entity.Poise.Max, entity.Poise.Value + amount);
                 Emit("persistentPoiseChanged", new JObject { ["targetId"] = entity.Id, ["restored"] = entity.Poise.Value - before, ["value"] = entity.Poise.Value, ["max"] = entity.Poise.Max, ["source"] = "block-card" });
             }
-            Emit("blockGained", new JObject { ["targetId"] = entity.Id, ["amount"] = amount, ["total"] = entity.Block });
+            // JS gainBlock names the card that raised it (card.instanceId), for the skill hooks.
+            Emit("blockGained", new JObject { ["targetId"] = entity.Id, ["amount"] = amount, ["total"] = entity.Block, ["cardInstanceId"] = card?.InstanceId ?? Undefined });
             return amount;
         }
 

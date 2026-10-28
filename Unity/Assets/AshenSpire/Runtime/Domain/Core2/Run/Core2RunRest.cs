@@ -188,7 +188,9 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>JS commitGameProfileRest: one service on a draft (smith: itemRef; levelUp: attributeId), then a full heal.</summary>
-        public static void Commit(Core2RunData data, Core2Run run, string service, string itemRef = null, string attributeId = null)
+        /// <param name="characterLevels">The profile's progression.characterLevels (null reads the module); with it off, a point
+        /// the run already earned stays claimable (grandfathered), and Level Up is refused only when none waits.</param>
+        public static void Commit(Core2RunData data, Core2Run run, string service, string itemRef = null, string attributeId = null, bool? characterLevels = null)
         {
             var draft = Core2RunSave.Clone(run);
             var rules = data.Content.Rests;
@@ -196,8 +198,8 @@ namespace AshenSpire.Domain.Core2
             if (!draft.RestVisits.TryGetValue(draft.RestVisitId, out var visit) || (string)data.Module("rest")?["mode"] != "configured") throw new InvalidOperationException("Rest visit is unavailable or spent");
             if (!Core2Json.Strings(rules["services"]).Contains(service)) throw new InvalidOperationException("Unknown rest service '" + service + "'");
             if (AllServices(data) ? ServiceUsed(visit, service) : visit.Service != null) throw new InvalidOperationException("Rest visit is unavailable or spent");
-            var characterLevels = (bool?)data.Module("progression")?["characterLevels"] == true;
-            if (service == "levelUp" && !characterLevels && !(draft.Level.UnspentPoints > 0)) throw new InvalidOperationException("Character leveling is disabled for this profile");
+            var levels = characterLevels ?? (bool?)data.Module("progression")?["characterLevels"] == true;
+            if (service == "levelUp" && !levels && !(draft.Level.UnspentPoints > 0)) throw new InvalidOperationException("Character leveling is disabled for this profile");
             if (service == "levelUp")
             {
                 if (!Core2Run.AttributeIds.Contains(attributeId)) throw new InvalidOperationException("levelUp: '" + attributeId + "' is not an attribute id");

@@ -138,6 +138,16 @@ put('adapter/equipment.json', plain(equipment, 'equipment'), {armaments: equipme
 //   modFields        equipment mod fields with run scope (model/loadout.js runMods)
 //   faces            the damage-source rules a player card's face reads (content/combatRules.js fallbackSource and
 //                    equipmentSources; the unarmed basic profile)
+//   deck             (phase 9) the deck editor's rules (content/deckRules.js: setting defaults, bounds, equipment
+//                    eligibility tags), the equipment schools its eligibility gate reads (the card-domain tags any
+//                    armament or armour carries, model/deckRules.js deckCardEquipmentEligible), and per class the
+//                    Adept training (model/deckCopyLimit.js activeAdeptTraining) with its compiled training catalogue
+//                    (collectedAdeptCardIds before the collection filter: the data-only list JS compiles per class)
+//   equipment        (phase 9) the armoury balance a loadout change reads: storage slots, combat changes, the found
+//                    rule (persistence, drops.requireFound, basicTag)
+//   skill            (phase 10) the skill tracks (model/skills.js skillTracks: id, kind, label) and balance.skill's
+//                    curves and award sizes (weapon/focus track curve, class curve, perHit, perWinEquipped, killMult,
+//                    flatEvery); the card schools any armament carries (skill flat bonuses read them)
 {
   const {createRunState} = await js.load('src/model/state.js');
   const {bossDestinationLabel} = await js.load('src/model/bossDestinationLabels.js');
@@ -164,8 +174,32 @@ put('adapter/equipment.json', plain(equipment, 'equipment'), {armaments: equipme
     unarmed: (registries.equipment.basicCardProfiles || []).find(row => row.id === 'unarmedAttack') || null};
   // The Smith's tier ladder (model/itemUpgrades.js itemUpgradeRows/itemUpgradeTiers): authored rows per item and tier.
   const itemUpgradeChanges = (registries.equipment.itemUpgradeChanges || []).map(row => ({itemRef: row.itemRef, nextTier: row.nextTier, tag: row.tag, value: row.value}));
-  put('adapter/run.json', plain({classes: classRows, balance, propertyRules, bossLabels, modFields, faces, itemUpgradeChanges}, 'run'),
-    {classes: count(classRows), propertyRules: count(propertyRules), bossLabels: count(bossLabels), modFields: count(modFields), itemUpgradeChanges: itemUpgradeChanges.length});
+  // Phase 9: the deck editor's data and the Adept catalogue per class.
+  const {deckRules} = await js.load('src/content/deckRules.js');
+  const {tagService} = await js.load('src/model/tagService.js');
+  const {activeAdeptTraining, collectedAdeptCardIds} = await js.load('src/model/deckCopyLimit.js');
+  const schools = new Set(tagService(registries).inDomain('card').map(tag => tag.id));
+  const equipmentSchools = [...new Set([...(registries.equipment.armaments || []), ...(registries.equipment.armour || [])]
+    .flatMap(piece => piece.tags || []).filter(tag => schools.has(tag) && !deckRules.equipmentEligibility.universalTags.includes(tag)))].sort();
+  const adept = {};
+  for (const row of profile.content.classes) {
+    const run = createRunState({registries, classId: row.id, seed: 1, profileMeta: unlocked, runId: 'export'});
+    // The catalogue before the collection filter: every definition counts as collected here.
+    run.collectedCardIds = profile.content.cards.map(card => card.id);
+    adept[row.id] = {training: activeAdeptTraining(run), catalogue: collectedAdeptCardIds(run)};
+  }
+  const deck = {rules: deckRules, equipmentSchools, adept};
+  const eqBalance = registries.balance.equipment;
+  const equipment = {storageSlots: eqBalance.storageSlots, allowChangesInCombat: eqBalance.allowChangesInCombat === true, persistence: eqBalance.persistence ?? null,
+    basicTag: eqBalance.basicTag ?? '', requireFound: eqBalance.drops?.requireFound === true};
+  // Phase 10: the skill tracks and their curves.
+  const {skillTracks} = await js.load('src/model/skills.js');
+  const sb = registries.balance.skill;
+  const pieceSchools = [...new Set((registries.equipment.armaments || []).flatMap(piece => (piece.tags || []).filter(tag => schools.has(tag))))].sort();
+  const skill = {tracks: skillTracks(registries), xp: sb.xp, classXp: sb.class.xp, flatEvery: sb.flatEvery, pieceSchools};
+  put('adapter/run.json', plain({classes: classRows, balance, propertyRules, bossLabels, modFields, faces, itemUpgradeChanges, deck, equipment, skill}, 'run'),
+    {classes: count(classRows), propertyRules: count(propertyRules), bossLabels: count(bossLabels), modFields: count(modFields), itemUpgradeChanges: itemUpgradeChanges.length,
+      deck: count(deck), equipment: count(equipment), skill: count(skill)});
 }
 
 // Legacy cards the adapter tables name (event, relic and enemy-move grants), beyond the profile's own cards.

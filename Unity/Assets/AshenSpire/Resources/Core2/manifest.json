@@ -87,15 +87,18 @@
    }
   },
   {
-   "bytes": 64123,
+   "bytes": 67846,
    "path": "adapter/run.json",
-   "sha256": "80fec79d37694014c71db31f9c7e79da8b9de0a4fb85619961c7a5ca40b5eecd",
+   "sha256": "8d046a4e1eeca8874084a5c273db3631013f41783c2e0d0847bd00f7d5054b25",
    "tables": {
     "bossLabels": 10,
     "classes": 4,
+    "deck": 3,
+    "equipment": 5,
     "itemUpgradeChanges": 152,
     "modFields": 7,
-    "propertyRules": 69
+    "propertyRules": 69,
+    "skill": 5
    }
   },
   {

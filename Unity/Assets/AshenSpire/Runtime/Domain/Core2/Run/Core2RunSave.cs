@@ -33,7 +33,7 @@ namespace AshenSpire.Domain.Core2
             {
                 ["runId"] = run.RunId, ["seed"] = run.Seed, ["class"] = run.Class, ["attributeMode"] = run.AttributeMode, ["attributes"] = attributes,
                 ["derivedStatRuleSnapshot"] = new JObject { ["rules"] = run.DerivedStatRules?.DeepClone() },
-                ["level"] = run.Level.ToJson(), ["levelUps"] = run.LevelUps, ["levelPoints"] = run.LevelPoints,
+                ["level"] = run.Level.ToJson(), ["levelUps"] = run.LevelUps, ["levelPoints"] = run.LevelPoints, ["skills"] = SkillsJson(run.Skills),
                 ["hp"] = run.Hp, ["maxHp"] = run.MaxHp, ["mana"] = run.Mana, ["maxMana"] = run.MaxMana, ["stamina"] = run.Stamina, ["maxStamina"] = run.MaxStamina,
                 ["energyMax"] = run.EnergyMax, ["drawPerTurn"] = run.DrawPerTurn, ["maxHpAdjustment"] = run.MaxHpAdjustment,
                 ["equipmentPoolBonuses"] = Core2RunJson.IntMap(run.EquipmentPoolBonuses, new[] { "maxHp", "maxMana", "maxStamina" }),
@@ -41,6 +41,8 @@ namespace AshenSpire.Domain.Core2
                 ["cinders"] = run.Cinders,
                 ["deck"] = new JArray(run.Deck.Select(c => c.ToJson())), ["sideboard"] = new JArray(run.Sideboard.Select(c => c.ToJson())),
                 ["collectedCardIds"] = new JArray(run.CollectedCardIds), ["relics"] = new JArray(run.Relics),
+                ["editMintCounter"] = run.EditMintCounter.HasValue ? (JToken)run.EditMintCounter.Value : JValue.CreateNull(),
+                ["armorySeen"] = run.ArmorySeen == null ? JValue.CreateNull() : new JArray(run.ArmorySeen),
                 ["flasks"] = new JArray(run.Flasks.Select(id => new JObject { ["flaskId"] = id })), ["flaskCharges"] = run.FlaskCharges.ToJson(),
                 ["loadout"] = run.Loadout.ToJson(), ["itemUpgradeLevels"] = levels,
                 ["actNumber"] = run.ActNumber, ["floor"] = run.Floor, ["mapNodeId"] = run.MapNodeId, ["mapGraph"] = run.MapGraph?.ToJson(),
@@ -65,6 +67,9 @@ namespace AshenSpire.Domain.Core2
                 RunId = Str("runId"), Seed = row["seed"] == null ? 0u : (uint)(long)row["seed"], Class = Str("class"), AttributeMode = Str("attributeMode"),
                 Attributes = Map(row["attributes"]), DerivedStatRules = (row["derivedStatRuleSnapshot"] as JObject)?["rules"] as JObject,
                 Level = row["level"] is JObject level ? Core2LevelLedger.FromJson(level) : new Core2LevelLedger(), LevelUps = Int("levelUps"), LevelPoints = Int("levelPoints"),
+                Skills = row["skills"] is JObject skills ? skills.Properties().ToDictionary(p => p.Name, p => Core2SkillRow.FromJson(p.Value), StringComparer.Ordinal) : new Dictionary<string, Core2SkillRow>(StringComparer.Ordinal),
+                EditMintCounter = row["editMintCounter"] == null || row["editMintCounter"].Type == JTokenType.Null ? (int?)null : (int)row["editMintCounter"],
+                ArmorySeen = row["armorySeen"] is JArray seen ? Core2Json.Strings(seen).ToList() : null,
                 Hp = Int("hp"), MaxHp = Int("maxHp"), Mana = Int("mana"), MaxMana = Int("maxMana"), Stamina = Int("stamina"), MaxStamina = Int("maxStamina"),
                 EnergyMax = Int("energyMax"), DrawPerTurn = Int("drawPerTurn"), MaxHpAdjustment = Int("maxHpAdjustment"),
                 EquipmentPoolBonuses = row["equipmentPoolBonuses"] is JObject ? Map(row["equipmentPoolBonuses"]) : new Dictionary<string, int>(StringComparer.Ordinal) { ["maxHp"] = 0, ["maxMana"] = 0, ["maxStamina"] = 0 },
@@ -90,6 +95,13 @@ namespace AshenSpire.Domain.Core2
             foreach (var pair in ((row["gameProfileRewardOffers"] as JObject) ?? new JObject()).Properties()) run.RewardOffers[pair.Name] = Core2RewardOffer.FromJson(pair.Value);
             foreach (var pair in ((row["gameProfileRestVisits"] as JObject) ?? new JObject()).Properties()) run.RestVisits[pair.Name] = Core2RestVisit.FromJson(pair.Value);
             return run;
+        }
+
+        public static JObject SkillsJson(IReadOnlyDictionary<string, Core2SkillRow> skills)
+        {
+            var row = new JObject();
+            foreach (var pair in skills) row[pair.Key] = pair.Value.ToJson();
+            return row;
         }
 
         /// <summary>A deep copy (JS structuredClone of a run): what a refused transaction is tried on.</summary>

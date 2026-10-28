@@ -163,8 +163,9 @@ try
         ["combat-log"] = null,
         ["combat-automation"] = null,
     };
-    // Phase 8 run-layer families: checked for form here, replayed case by case by UnityTests/Core2Run.
-    var runFamilies = new[] { "run-creation", "run-maps", "card-faces", "reward-offers", "shop-stock", "rest-outcomes", "level-up", "scripted-runs", "scripted-runs-auto" };
+    // Phase 8, 9 and 10 run-layer families: checked for form here, replayed case by case by UnityTests/Core2Run.
+    var runFamilies = new[] { "run-creation", "run-maps", "card-faces", "reward-offers", "shop-stock", "rest-outcomes", "level-up", "scripted-runs", "scripted-runs-auto",
+        "adept-entitlements", "deck-edits", "armoury", "skill-progression" };
     foreach (var runFamily in runFamilies) expectedFamilies[runFamily] = null;
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
     Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the " + expectedFamilies.Count + " oracle families (" + runFamilies.Length + " replayed by UnityTests/Core2Run)");

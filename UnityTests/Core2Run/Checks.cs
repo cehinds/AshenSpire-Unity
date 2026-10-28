@@ -55,6 +55,10 @@ static class Core2RunChecks
         check((session.Fight.Rng.Counters().TryGetValue("misc", out var m2) ? m2 : 0) > misc, "flasks: the Wondrous Draught picks its two flasks on the misc stream");
         check(throws(() => session.UseFlask(slot: 0)), "flasks: an empty potion slot cannot be drunk");
         equal(session.SettleFightAsWon(), Core2Screen.Reward, "screens: a won fight opens its reward");
+        equal(session.RewardStage, "victoryReceipt", "spoils: a won fight shows its victory receipt first");
+        session.AcknowledgeVictoryReceipt();
+        if (session.RewardStage == "levelNotices") session.AcknowledgeLevelNotices();
+        equal(session.RewardStage, "offer", "spoils: the offer follows the acknowledged receipt");
         check(session.Run.Cinders > 0 && session.LastSettlement.Cinders > 0, "rewards: cinders are granted when the fight is won");
         check(session.CurrentOffer.Options.Count > 0, "rewards: the reward offers options");
         session.TakeReward(0);

@@ -3557,5 +3557,237 @@
    "tag": "card:guard:effect:block",
    "value": 3
   }
- ]
+ ],
+ "deck": {
+  "rules": {
+   "defaults": {
+    "deckEditing": true,
+    "deckEditingWhere": "free",
+    "deckMinSize": 10,
+    "deckMinUnlimited": false,
+    "deckMaxSize": 40,
+    "deckMaxUnlimited": true,
+    "playInDeckOrder": false,
+    "classSpellPowerCopies": 1
+   },
+   "singleCopy": {
+    "types": [
+     "power"
+    ],
+    "tags": [
+     "source:spell"
+    ]
+   },
+   "copyRange": {
+    "min": 1,
+    "max": 10
+   },
+   "sizeRange": {
+    "min": 0,
+    "max": 200
+   },
+   "where": [
+    "free",
+    "restOnly"
+   ],
+   "unlimitedCardIds": [
+    "strike",
+    "defend"
+   ],
+   "equipmentEligibility": {
+    "universalTags": [
+     "basic"
+    ],
+    "weaponTags": [
+     "blade",
+     "bow",
+     "ranged"
+    ]
+   }
+  },
+  "equipmentSchools": [
+   "ash",
+   "blade",
+   "blight",
+   "blood",
+   "bow",
+   "flourish",
+   "gorefire",
+   "guard",
+   "heavy",
+   "oath",
+   "pierce",
+   "precision",
+   "ranged",
+   "ritual",
+   "starstone",
+   "venom"
+  ],
+  "adept": {
+   "reaver": {
+    "training": {
+     "id": "training.basic",
+     "label": "Martial Adept",
+     "kind": "Basic"
+    },
+    "catalogue": [
+     "core.strike",
+     "core.defend",
+     "core.counter",
+     "core.smash",
+     "core.sweep",
+     "core.evade"
+    ]
+   },
+   "starseer": {
+    "training": {
+     "id": "training.graduate",
+     "label": "Magic Adept",
+     "kind": "Cantrip"
+    },
+    "catalogue": [
+     "core.cantrip"
+    ]
+   },
+   "rogue": {
+    "training": {
+     "id": "training.basic",
+     "label": "Martial Adept",
+     "kind": "Basic"
+    },
+    "catalogue": [
+     "core.strike",
+     "core.defend",
+     "core.counter",
+     "core.smash",
+     "core.sweep",
+     "core.evade"
+    ]
+   },
+   "herald": {
+    "training": {
+     "id": "training.graduate",
+     "label": "Magic Adept",
+     "kind": "Cantrip"
+    },
+    "catalogue": [
+     "core.cantrip"
+    ]
+   }
+  }
+ },
+ "equipment": {
+  "storageSlots": 8,
+  "allowChangesInCombat": true,
+  "persistence": "perRun",
+  "basicTag": "",
+  "requireFound": true
+ },
+ "skill": {
+  "tracks": [
+   {
+    "id": "item:blade",
+    "kind": "weapon",
+    "label": "Blade"
+   },
+   {
+    "id": "item:shield",
+    "kind": "weapon",
+    "label": "Shield"
+   },
+   {
+    "id": "item:magic-focus",
+    "kind": "focus",
+    "label": "Spellcraft"
+   },
+   {
+    "id": "armour:light",
+    "kind": "armour",
+    "label": "light armour"
+   },
+   {
+    "id": "armour:medium",
+    "kind": "armour",
+    "label": "medium armour"
+   },
+   {
+    "id": "armour:heavy",
+    "kind": "armour",
+    "label": "heavy armour"
+   },
+   {
+    "id": "combatManeuvers",
+    "kind": "ability",
+    "label": "Combat Maneuvers"
+   },
+   {
+    "id": "dualWield",
+    "kind": "dual",
+    "label": "Dual-wield"
+   },
+   {
+    "id": "class:reaver",
+    "kind": "class",
+    "label": "Reaver"
+   },
+   {
+    "id": "class:starseer",
+    "kind": "class",
+    "label": "Starseer"
+   },
+   {
+    "id": "class:rogue",
+    "kind": "class",
+    "label": "Rogue"
+   },
+   {
+    "id": "class:herald",
+    "kind": "class",
+    "label": "Herald"
+   }
+  ],
+  "xp": {
+   "base": 100,
+   "linear": false,
+   "multScaler": 1.3,
+   "growth": 1.995,
+   "roundTo": 5,
+   "maxLevel": 10,
+   "perHit": 5,
+   "perWinEquipped": 5,
+   "killMult": 1.5,
+   "impactPerXp": 5,
+   "evadeXp": 5,
+   "buildupPerXp": 5
+  },
+  "classXp": {
+   "base": 400,
+   "linear": false,
+   "multScaler": 1.3,
+   "growth": 1.224,
+   "roundTo": 5,
+   "maxLevel": 20,
+   "perWin": 5,
+   "bossKill": 10,
+   "perQuest": 5
+  },
+  "flatEvery": 5,
+  "pieceSchools": [
+   "basic",
+   "blade",
+   "blight",
+   "blood",
+   "bow",
+   "flourish",
+   "gorefire",
+   "guard",
+   "heavy",
+   "oath",
+   "pierce",
+   "precision",
+   "ranged",
+   "ritual",
+   "starstone"
+  ]
+ }
 }

@@ -149,6 +149,26 @@ namespace AshenSpire.Domain.Core2
             };
         }
 
+        /// <summary>
+        /// JS playCard (configured): the armament a card's damage (or a Counter's implicit return) is committed to, captured at
+        /// play from the range source (committedRangeSource: null when unarmed); a card with neither carries none (Has false)
+        /// and its skill XP group, if any, comes from the piece that granted it. Same source reading as <see cref="Face"/>.
+        /// </summary>
+        public static (bool Has, string Id) UsedArmament(Core2RunData data, Core2RunLoadout loadout, string classId, string cardId)
+        {
+            var def = data.Content.Card(cardId).Raw;
+            var face = Face(data, loadout, classId, cardId);
+            var damage = ((JArray)def["effects"] ?? new JArray()).OfType<JObject>().FirstOrDefault(e => (string)e["op"] == "damage");
+            var counter = (string)face["combatProfile"]["maneuver"] == "counter";
+            if (damage == null && !counter) return (false, null);
+            var rangeProfile = (JObject)face["combatProfile"].DeepClone();
+            if (damage?["combatProfile"] is JObject effectProfile) foreach (var p in effectProfile.Properties()) rangeProfile[p.Name] = p.Value.DeepClone();
+            var rangeAttack = AttackDescriptor(def, damage?["attack"] as JObject);
+            var rangeKind = rangeAttack.Source ?? ((string)rangeProfile["camp"] == "spell" ? "spell" : "weapon");
+            var rangePiece = rangeKind == "unarmed" ? null : Wielded(data, loadout, classId, rangeKind);
+            return (true, rangePiece == null ? null : (string)rangePiece["id"]);
+        }
+
         /// <summary>The primary weapon's range a fight starts the player at (JS initializeCombatRange: the first hand holding a weapon).</summary>
         public static string PrimaryWeaponRange(Core2RunData data, Core2Run run)
         {
