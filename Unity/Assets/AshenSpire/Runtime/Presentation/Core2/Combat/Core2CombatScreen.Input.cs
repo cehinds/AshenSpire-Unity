@@ -127,6 +127,10 @@ namespace AshenSpire.Presentation.Core2
             {
                 var selected = _controller.Selected;
                 if (selected == null) return; // a focused button or card takes Enter itself
+                // A focused control (an enemy to target, a card, a button) takes Confirm itself: the default target below is
+                // only for Enter with nothing focused, so the pad's chosen enemy is the one attacked.
+                if (e.target is VisualElement focused && focused != _root && focused.focusable && focused.panel == _root.panel
+                    && _root.Contains(focused)) return;
                 var target = _controller.UnambiguousTarget(selected, out var ambiguous);
                 if (!ambiguous) _controller.PlayCard(selected, target);
                 else _controller.TapEnemy(fight.Enemies.First(x => x.Alive).Id);
