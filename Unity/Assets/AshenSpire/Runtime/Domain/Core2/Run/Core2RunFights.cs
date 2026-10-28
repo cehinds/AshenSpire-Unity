@@ -195,7 +195,30 @@ namespace AshenSpire.Domain.Core2
                 };
             }
             foreach (var status in Core2RunGear.RunMods(data, run).StartStatuses) setup.StartStatuses.Add(new KeyValuePair<string, int>(status.Status, status.Stacks));
+            setup.PoiseMeterMax = PoiseMeterMax(data, run);
             return setup;
+        }
+
+        /// <summary>
+        /// JS playerPoiseThresholdReceipt (combat ratings off), the max createCombat stamps on the player's legacy Poise vessel
+        /// (stampPlayerPoiseMax; its value starts at 0): the run's derived-stat "poise" row at its level over the fight's
+        /// attributes, plus each worn armour piece's poiseThreshold, plus the relics' poiseThresholdAdd passives. A physical
+        /// status-pressure fill strains it (Core2FightStatuses ApplyStatusPressure).
+        /// </summary>
+        public static int PoiseMeterMax(Core2RunData data, Core2Run run)
+        {
+            var row = Core2DerivedStats.Row(run.DerivedStatRules, "poise");
+            var attribute = 0.0;
+            if (row != null)
+            {
+                var rule = (JObject)row.DeepClone();
+                if (rule["base"] == null || rule["base"].Type != JTokenType.Integer && rule["base"].Type != JTokenType.Float) rule["base"] = 0;
+                attribute = Core2DerivedStats.Value(rule, Core2RunGear.EffectiveAttributes(data, run), Math.Max(1, run.Level.Level), "poise");
+            }
+            var equipment = Core2RunGear.Worn(data, run.Loadout, run.Class).Where(p => (string)p.Row["kind"] == "armor")
+                .Sum(p => p.Row["poiseThreshold"]?.Type == JTokenType.Integer || p.Row["poiseThreshold"]?.Type == JTokenType.Float ? (double)p.Row["poiseThreshold"] : 0);
+            var relic = run.Relics.Sum(id => data.Relic(id)["passives"]?["poiseThresholdAdd"] is JValue v && (v.Type == JTokenType.Integer || v.Type == JTokenType.Float) ? (double)v : 0);
+            return (int)Math.Floor(attribute + equipment + relic);
         }
 
         /// <summary>The setup as the JS oracle records it (fightStart): the player, the deck, the faces and the property rules.</summary>
@@ -227,6 +250,7 @@ namespace AshenSpire.Domain.Core2
                 ["attributes"] = Ints(setup.Attributes), ["ratings"] = Ints(setup.Ratings), ["level"] = setup.Level, ["baseEvasionBonus"] = setup.BaseEvasionBonus,
                 ["basePrecisionBonus"] = setup.BasePrecisionBonus, ["poise"] = new JObject { ["max"] = setup.PoiseMax, ["value"] = setup.PoiseMax },
                 ["handSize"] = Math.Max(0, 4 + (setup.Attributes.TryGetValue("intelligence", out var intelligence) ? intelligence : 0)), ["relicIds"] = new JArray(setup.RelicIds),
+                ["poiseMeter"] = setup.PoiseMeterMax > 0 ? new JObject { ["value"] = setup.PoiseMeterValue, ["max"] = setup.PoiseMeterMax } : JValue.CreateNull(),
                 ["ratingSources"] = new JArray(setup.RatingSources.Select(row => new JObject
                     { ["name"] = row.Name, ["kind"] = row.Kind, ["sourceId"] = row.SourceId, ["slot"] = row.Slot, ["ar"] = row.Ar, ["pr"] = row.Pr })),
             };

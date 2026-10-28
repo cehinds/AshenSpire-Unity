@@ -360,11 +360,8 @@ static class RunReplay
     }
 
     /// <summary>Combat-domain discrepancies the run layer cannot fix: case key → the step and field where it shows.</summary>
-    static readonly Dictionary<string, (int Step, string Path, string Reason)> KnownCombatGaps = new()
-    {
-        ["auto:starseer:4040"] = (24, "$.run.stamina", "JS charges an Advance SP when a relic trigger (flayersCenser playerTurnStart applyStatus to allEnemies) "
-            + "targets an out-of-range enemy (combatEngagement acceptRangeActions); Core2Fight triggers do not pay range costs"),
-    };
+    /// None at the pin: the relic-trigger Advance cost (auto starseer 4040) is ported (Core2Fight AcceptIndependentTrigger).
+    static readonly Dictionary<string, (int Step, string Path, string Reason)> KnownCombatGaps = new();
 
     /// <summary>Fields of a JS step that are presentation receipts rather than state: dropped before comparing.</summary>
     static JToken Strip(JToken step)

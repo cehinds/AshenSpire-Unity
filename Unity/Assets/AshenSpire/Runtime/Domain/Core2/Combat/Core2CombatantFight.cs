@@ -105,6 +105,8 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS matchingStanceCardMultiplier: 0.25 while the last accepted carrier matched the stance, else 0.</summary>
         public double MatchingStanceCardMultiplier { get; set; }
         public int MaxHpRolled { get; set; }
+        /// <summary>JS enemy.damageMult (createCombat enemyDamageMult: a boss's tier damage scale): authored move damage × it.</summary>
+        public double DamageMult { get; set; } = 1;
         /// <summary>JS statusControl.lastRecoveryCycle: the owner cycle whose status recovery already rolled.</summary>
         public int LastRecoveryCycle { get; set; } = -1;
 

@@ -88,6 +88,11 @@ namespace AshenSpire.Domain.Core2
         public string PrimaryWeaponRange { get; set; } = "melee";
         /// <summary>JS createCombat hpMult (main.js combatMods: the seat tier ratio, or a boss's tier scale): rolled HP × it, rounded.</summary>
         public double EnemyHpMult { get; set; } = 1;
+        /// <summary>
+        /// JS createCombat enemyDamageMult (main.js combatMods: a boss's tier damage scale, else 1), stamped on each enemy as
+        /// damageMult: every authored move damage is round(damage × it), at least 1 (state.js enemyMoveDamage).
+        /// </summary>
+        public double EnemyDamageMult { get; set; } = 1;
         /// <summary>JS createCombat playerStatuses (runMods startStatuses of worn gear): applied to the player after combatStart.</summary>
         public List<KeyValuePair<string, int>> StartStatuses { get; set; } = new List<KeyValuePair<string, int>>();
         /// <summary>Where the player's ratings come from (JS ratingSources), for the damage receipt; built by the run layer (phase 8).</summary>
@@ -261,7 +266,7 @@ namespace AshenSpire.Domain.Core2
                 if (setup.EnemyHpMult != 1) hp = Math.Max(1, (int)Math.Floor(hp * setup.EnemyHpMult + 0.5));
                 fight.Enemies.Add(new Core2Combatant
                 {
-                    Id = "e" + (i + 1), Side = Core2Side.Enemy, EnemyId = def.Id, Hp = hp, MaxHp = hp, MaxHpRolled = hp,
+                    Id = "e" + (i + 1), Side = Core2Side.Enemy, EnemyId = def.Id, Hp = hp, MaxHp = hp, MaxHpRolled = hp, DamageMult = setup.EnemyDamageMult,
                     HasLevelProfile = def.Raw["levelProfile"] is JObject, RangeKey = "enemy:e" + (i + 1),
                 });
                 fight.Emit("enemySpawned", new JObject { ["targetId"] = "e" + (i + 1), ["enemyId"] = def.Id });
@@ -413,8 +418,14 @@ namespace AshenSpire.Domain.Core2
             if (trigger["if"] is JObject predicate && !Predicate(predicate, owner, target, ev, null)) { _triggerState[key] = st; return false; }
             st.Fires += 1; st.TurnFires += 1;
             _triggerState[key] = st;
-            foreach (var effect in (trigger["do"] as JArray ?? new JArray()).OfType<JObject>())
-                Enqueue(new Core2FightAction { Effect = effect, Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } });
+            var actions = (trigger["do"] as JArray ?? new JArray()).OfType<JObject>()
+                .Select(effect => new Core2FightAction { Effect = effect, Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } })
+                .ToList();
+            // JS inheritedRangeAction: an event raised by the owner's own range-planned action (its card's committed lineage)
+            // carries a rangeOrigin, and the trigger rides that plan; any other trigger is quoted on its own.
+            var parent = _currentAction;
+            var inherited = parent != null && owner != null && parent.Source == owner && parent.Group?.RangePlan != null;
+            foreach (var action in inherited ? actions : AcceptIndependentTrigger(owner, actions, key)) Enqueue(action);
             return true;
         }
 
@@ -620,6 +631,19 @@ namespace AshenSpire.Domain.Core2
             FireOwnerHooks(p, "ownerTurnEnd");
             DrainQueue();
             if (Result != null) return;
+            // JS: each card still in hand fires its authored onTurnEndInHand effects (Guilt: lose 1 HP) before the hand goes.
+            var inHandFired = false;
+            foreach (var card in Hand.ToList())
+            {
+                if (!(Content.Card(card.CardId).Raw["onTurnEndInHand"] is JArray hook) || hook.Count == 0) continue;
+                foreach (var effect in hook.OfType<JObject>()) Enqueue(new Core2FightAction { Effect = effect, Source = p, Owner = p, Target = p });
+                inHandFired = true;
+            }
+            if (inHandFired)
+            {
+                DrainQueue();
+                if (Result != null) return;
+            }
             DecayAtTurnEnd(p);
             p.StaminaSpentThisTurn = 0;
             EndControlTurn(p);

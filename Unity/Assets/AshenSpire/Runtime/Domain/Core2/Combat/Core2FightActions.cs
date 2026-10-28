@@ -552,6 +552,12 @@ namespace AshenSpire.Domain.Core2
         {
             if (Range == null || source == null) return null;
             if (acceptedPlan != null) return ChargeRange(source, acceptedPlan, charge);
+            return ChargeRange(source, QuoteRangeActions(source, actions, carrier, _rangeContext), charge);
+        }
+
+        /// <summary>JS quoteRangeActions (route advance): one contact per hostile effect hit on each living opponent, priced in <paramref name="context"/>.</summary>
+        private Core2RangePlan QuoteRangeActions(Core2Combatant source, List<Core2FightAction> actions, Core2Carrier carrier, Core2RangePlan context)
+        {
             var contacts = new List<Core2RangeSource>();
             for (var index = 0; index < actions.Count; index++)
             {
@@ -571,8 +577,41 @@ namespace AshenSpire.Domain.Core2
                             contacts.Add(contact);
                         }
             }
-            return ChargeRange(source, Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", _rangeContext), charge);
+            return Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", context);
         }
+
+        /// <summary>
+        /// JS acceptIndependentTrigger (combatRangeLineage.js): a trigger with a hostile effect (a relic's playerTurnStart
+        /// Crimson Blight on ALL enemies) reaches its targets from its own spell source — the range its effect tags name
+        /// (range:*), else melee — quoted outside any reaction context. When the route cannot reach or the owner cannot pay
+        /// its Advance, combatRangeActionUnavailable is reported and only the trigger's non-hostile effects run; otherwise the
+        /// Advance is paid now (acceptRangeActions). Range-lineage inheritance (a trigger riding the range plan of the card
+        /// whose event fired it, inheritedRangeAction) is not ported: Core 2 starter content has no such trigger.
+        /// </summary>
+        private List<Core2FightAction> AcceptIndependentTrigger(Core2Combatant source, List<Core2FightAction> actions, string key)
+        {
+            if (Range == null || !Range.Policy.Enabled || source == null || !actions.Any(a => RangeHostileOps.Contains((string)a.Effect["op"] ?? ""))) return actions;
+            var tags = actions.SelectMany(a => Core2Json.Strings(a.Effect["tags"])).ToList();
+            var range = tags.FirstOrDefault(t => t.StartsWith("range:", StringComparison.Ordinal))?.Substring(6) ?? "melee";
+            var carrier = new Core2Carrier { Profile = new Core2CombatProfile { Range = range } };
+            var quoted = QuoteRangeActions(source, actions, carrier, null);
+            if (quoted.Targets.Count == 0) return actions;
+            var available = source.Stamina;
+            if (!quoted.Available || available < quoted.AdvanceSp)
+            {
+                Emit("combatRangeActionUnavailable", new JObject
+                {
+                    ["sourceId"] = source.Id, ["ownerId"] = "player", ["required"] = quoted.AdvanceSp, ["available"] = available,
+                    ["advanceSp"] = quoted.AdvanceSp, ["reason"] = "stamina", ["triggerKey"] = key,
+                });
+                return actions.Where(a => !RangeHostileOps.Contains((string)a.Effect["op"] ?? "")).ToList();
+            }
+            ChargeRange(source, quoted, true);
+            return actions;
+        }
+
+        private static readonly HashSet<string> RangeHostileOps = new HashSet<string>(StringComparer.Ordinal)
+            { "damage", "applyStatus", "buildup", "poiseDamage", "wardDamage", "loseHp", "stagger", "arcaneBuildup" };
 
         /// <summary>JS acceptRangeActions' acceptance: refuse an unreachable route, pay the Advance once (a prepaid plan pays nothing).</summary>
         private Core2RangePlan ChargeRange(Core2Combatant source, Core2RangePlan plan, bool charge)

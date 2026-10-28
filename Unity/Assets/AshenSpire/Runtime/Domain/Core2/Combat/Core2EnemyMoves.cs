@@ -243,9 +243,18 @@ namespace AshenSpire.Domain.Core2
             return output;
         }
 
-        /// <summary>JS enemyMoveDamage: the authored per-hit damage (a fight-wide damageMult is not used by Core 2 fights).</summary>
-        public static int? EnemyMoveDamage(Core2Combatant enemy, JObject move) =>
-            move["damage"] == null || move["damage"].Type == JTokenType.Null ? (int?)null : (int)move["damage"];
+        /// <summary>
+        /// JS enemyMoveDamage (state.js): the authored per-hit damage, scaled by the enemy's damageMult (a boss's tier damage
+        /// scale) when it is not 1 — Math.round(damage × mult), at least 1.
+        /// </summary>
+        public static int? EnemyMoveDamage(Core2Combatant enemy, JObject move)
+        {
+            if (move["damage"] == null || move["damage"].Type == JTokenType.Null) return null;
+            var damage = (double)move["damage"];
+            var mult = enemy?.DamageMult ?? 1;
+            if (mult == 1 || !(damage > 0)) return (int)damage;
+            return Math.Max(1, (int)Math.Floor(damage * mult + 0.5));
+        }
 
         private static readonly HashSet<string> HostileOps = new HashSet<string>(new[] { "damage", "applyStatus", "buildup", "poiseDamage", "wardDamage", "loseHp", "stagger", "arcaneBuildup" }, StringComparer.Ordinal);
 

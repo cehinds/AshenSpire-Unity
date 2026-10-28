@@ -181,6 +181,8 @@ namespace AshenSpire.Domain.Core2
             FightEncounter = encounter;
             FightScale = Core2RunFights.EncounterScale(Data, Run, encounter);
             var setup = FightSetup = Core2RunFights.BuildSetup(Data, Run, FightScale.Hp);
+            // JS createRunCombat enemyDamageMult: a boss's tier damage scale reaches each enemy's move damage.
+            setup.EnemyDamageMult = FightScale.Damage;
             var key = Run.Seed.ToString(CultureInfo.InvariantCulture) + "/" + Run.ActNumber + "/" + Run.Floor + "/" + (Run.MapNodeId ?? string.Join(",", Core2Json.Strings(encounter["enemies"])));
             Fight = Core2Fight.Create(Content, setup, Core2Json.Strings(encounter["enemies"]), Run.Seed, key, null, Rng.Counters());
             // JS combat.equipmentPoolDeficits.stamina: each player turn start records the SP a Stagger withheld.
