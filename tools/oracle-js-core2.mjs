@@ -19,8 +19,12 @@
 //   enemy-planning  enemyPlanActions, enemyMoveQuote, maxStamina per enemy           (phase 5c)
 //   damage-ranges   projectCombatIntent(...).projectedDamage, with its inputs        (phase 5a)
 //   scripted-fights whole fights under a fixed play policy and seed                  (phase 5 complete)
+//   run-creation, run-maps, card-faces, reward-offers, shop-stock, rest-outcomes, level-up, scripted-runs,
+//   scripted-runs-auto: the phase 8 run layer (tools/js-core2-run.mjs names their JS functions; replayed by
+//   UnityTests/Core2Run)
 import {join} from 'node:path';
 import {root, parseArgs, jsIdentity, requirePin, loadJs, toPlain, syncTree} from './js-core2-shared.mjs';
+import {runFamilies} from './js-core2-run.mjs';
 
 const USAGE = 'usage: node tools/oracle-js-core2.mjs <js-checkout> [--check] [--allow-unpinned]';
 const OUT = 'UnityTests/Core2Content/Oracles';
@@ -285,7 +289,7 @@ function settle(combat) { for (let i = 0; combat.pendingReaction && i < 50; i++)
 // What the run layer hands the fight (phase 8 builds it from the run): the player as createRunCombat stamped it, the deck
 // in run order (the shuffle reorders it), the property rules mounted for the player's relics, class card and gear
 // (engine/properties.js, balance values resolved), and the primary weapon's range (combatEngagement.js initializeCombatRange).
-function fightStart(combat) {
+function fightStart(combat, runOverride = null) {
   const p = combat.player;
   let primary = null;
   for (const hand of ['right', 'left']) {
@@ -295,7 +299,7 @@ function fightStart(combat) {
     }
     if (primary) break;
   }
-  const run = runOf.get(combat);
+  const run = runOverride || runOf.get(combat);
   return {
     player: {classId: p.classId, hp: run.hp, maxHp: run.maxHp, maxStamina: p.energyMax, mana: run.mana, maxMana: run.maxMana,
       attributes: p.attributes, ratings: p.ratings, level: combat.characterLevel ?? 1, baseEvasionBonus: p.baseEvasionBonus || 0,
@@ -361,6 +365,9 @@ const fights = [
   return {input: {...input, policy: 'reactions off; each turn play the first affordable card in hand order at the first living enemy, then End Turn', start}, expected}; });
 family('scripted-fights', 'phase 5 (all three PRs)', 'Whole Core 2 fights with fixed seeds and a fixed play policy: per-turn plays and pools, every damage event, event counts and final RNG counters.',
   ['src/engine/runCombat.js createRunCombat', 'src/engine/combat.js dispatch/cardPlayCosts'], fights);
+
+// ── run layer (phase 8) ──────────────────────────────────────────────────────────────────────
+await runFamilies({js, family, plain, fightStart, settle, ALL_UNLOCKED, CLASSES});
 
 // ── write ──────────────────────────────────────────────────────────────────────────────────────
 // One case per line: small files, readable diffs when the pin moves.

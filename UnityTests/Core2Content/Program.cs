@@ -9,7 +9,8 @@
 //    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
 //    families (matchups, Counter returns) and 5c families (enemy SP planning, whole scripted fights)
 //    are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
-//    no replay yet would be reported PENDING with its reason.
+//    no replay yet would be reported PENDING with its reason. The phase 8 run families are checked
+//    for form here and replayed by UnityTests/Core2Run.
 using System.Text;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain.Core2;
@@ -142,8 +143,8 @@ try
     Check(runtime.Contains("Resources.Load<TextAsset>") && runtime.Contains("Core2Content.Folder"), "Core2Resources reads the mirror through Resources.Load");
     var asmdef = JObject.Parse(Read("Unity/Assets/AshenSpire/Runtime/Domain/Core2/AshenSpire.Core2.asmdef"));
     Check((bool?)asmdef["noEngineReferences"] == true, "the Core 2 loader assembly is engine-free");
-    Check(!Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).Any(f => File.ReadAllText(f).Contains("using UnityEngine")), "no Core 2 loader or combat file uses UnityEngine");
-    Check(Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).All(f => File.Exists(f + ".meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Combat.meta")), "every Core 2 source file and folder has a Unity .meta");
+    Check(!Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).Any(f => File.ReadAllText(f).Contains("using UnityEngine")), "no Core 2 loader, combat or run file uses UnityEngine");
+    Check(Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).All(f => File.Exists(f + ".meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Combat.meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Run.meta")), "every Core 2 source file and folder has a Unity .meta");
 
     // ---- 3. JS oracle fixtures -------------------------------------------------------------
     var expectedFamilies = new Dictionary<string, string>
@@ -158,8 +159,11 @@ try
         ["enemy-planning"] = null,
         ["scripted-fights"] = null,
     };
+    // Phase 8 run-layer families: checked for form here, replayed case by case by UnityTests/Core2Run.
+    var runFamilies = new[] { "run-creation", "run-maps", "card-faces", "reward-offers", "shop-stock", "rest-outcomes", "level-up", "scripted-runs", "scripted-runs-auto" };
+    foreach (var runFamily in runFamilies) expectedFamilies[runFamily] = null;
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
-    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the nine oracle families");
+    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the " + expectedFamilies.Count + " oracle families (" + runFamilies.Length + " replayed by UnityTests/Core2Run)");
     Func<Core2Content, JObject, OracleReplay.Result> Cases(Func<Core2Content, JArray, OracleReplay.Result> replay) => (c, data) => replay(c, (JArray)data["cases"]);
     var replays = new Dictionary<string, Func<Core2Content, JObject, OracleReplay.Result>>
     {

@@ -61,9 +61,9 @@
    }
   },
   {
-   "bytes": 33796,
+   "bytes": 34999,
    "path": "adapter/events.json",
-   "sha256": "ccb24d8cbe1f2dfeac60511a6a4993220ef708be92ac66e89ecd33d87016508d",
+   "sha256": "282d86c507d346219fb0d787a4955ea88e7d8301748457dc2907cf667cc8d05f",
    "tables": {
     "events": 25,
     "questChains": 2,
@@ -84,6 +84,18 @@
    "sha256": "fd85f50abb4dd02241f89acd1d25824ede5c2657744f7313e1fcd81da4583b28",
    "tables": {
     "relics": 73
+   }
+  },
+  {
+   "bytes": 64123,
+   "path": "adapter/run.json",
+   "sha256": "80fec79d37694014c71db31f9c7e79da8b9de0a4fb85619961c7a5ca40b5eecd",
+   "tables": {
+    "bossLabels": 10,
+    "classes": 4,
+    "itemUpgradeChanges": 152,
+    "modFields": 7,
+    "propertyRules": 69
    }
   },
   {
