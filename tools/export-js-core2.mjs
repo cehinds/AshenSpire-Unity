@@ -114,12 +114,55 @@ const enemies = all(registries.enemies), encounters = all(registries.encounters)
 put('adapter/relics.json', plain(relics, 'relics'), {relics: relics.length});
 put('adapter/flasks.json', plain(flasks, 'flasks'), {flasks: flasks.length});
 put('adapter/statuses.json', plain({statuses, proposalStatusRules: bundle.proposalStatusRules}, 'statuses'), {statuses: statuses.length});
-put('adapter/events.json', plain({events, eventHistoryRequirements: bundle.eventHistoryRequirements, eventChoiceIds: bundle.eventChoiceIds, questChains: bundle.questChains, eventSpeakers: bundle.eventSpeakers, speakers: bundle.speakers}, 'events'),
+put('adapter/events.json', plain({events, eventHistoryRequirements: bundle.eventHistoryRequirements, eventChoiceIds: bundle.eventChoiceIds, eventChoiceHistoryRequirements: (await js.load('src/content/events.js')).eventChoiceHistoryRequirements, questChains: bundle.questChains, eventSpeakers: bundle.eventSpeakers, speakers: bundle.speakers}, 'events'),
   {events: events.length, questChains: count(bundle.questChains), speakers: count(bundle.speakers)});
 put('adapter/enemies.json', plain(enemies, 'enemies'), {enemies: enemies.length, moves: enemies.reduce((n, e) => n + Object.keys(e.moves || {}).length, 0)});
 put('adapter/encounters.json', plain({encounters, seats, mapConfigs: bundle.mapConfigs}, 'encounters'), {encounters: encounters.length, seats: seats.length, mapConfigs: count(bundle.mapConfigs)});
 const equipment = {armaments: registries.equipment.armaments, armour: registries.equipment.armour, slots: registries.equipment.slots};
 put('adapter/equipment.json', plain(equipment, 'equipment'), {armaments: equipment.armaments.length, armour: equipment.armour.length, slots: count(equipment.slots)});
+
+// Run layer (phase 8): what a Core 2 run reads from the legacy registries beyond the tables above.
+//   classes          the creation resolvers' output per class (JS createRunState with every class unlocked):
+//                    starting relics (startingRelic + kitRelic), the fixed loadout, the flask charge ledger and
+//                    the derived-stat rule snapshot the run is born with (its rows already fold the starting
+//                    relics' resource modifiers); plus the legacy class fields the run reads (maxHp, flask split,
+//                    the class card's property and scope tags)
+//   balance          the balance rows a run reads: starting cinders, cinder rewards, seat and boss tiers, the
+//                    character XP awards and curve, level-up policy, flask slots
+//   propertyRules    every property rule a run's relics, class card, armaments and armour can mount (tagging rows)
+//   bossLabels       each boss encounter's destination label (model/bossDestinationLabels.js)
+//   modFields        equipment mod fields with run scope (model/loadout.js runMods)
+//   faces            the damage-source rules a player card's face reads (content/combatRules.js fallbackSource and
+//                    equipmentSources; the unarmed basic profile)
+{
+  const {createRunState} = await js.load('src/model/state.js');
+  const {bossDestinationLabel} = await js.load('src/model/bossDestinationLabels.js');
+  const {combatRules} = await js.load('src/content/combatRules.js');
+  const unlocked = {gameProfileUnlocks: {[profile.id]: {completedRunIds: ['export-a', 'export-b', 'export-c']}}};
+  const classRows = {};
+  for (const row of profile.content.classes) {
+    const run = createRunState({registries, classId: row.id, seed: 1, profileMeta: unlocked, runId: 'export'});
+    const def = registries.classes.get(row.id);
+    classRows[row.id] = {maxHp: def.maxHp, startingFlaskAllocation: def.startingFlaskAllocation, startingRelic: def.startingRelic, kitRelic: def.kitRelic ?? null,
+      propertyTags: def.propertyTags || [], tags: def.tags || [],
+      birth: {attributes: run.attributes, relics: run.relics, loadout: run.loadout, flaskCharges: run.flaskCharges, cinders: run.cinders,
+        attributeMode: run.attributeMode, derivedStatRules: run.derivedStatRuleSnapshot.rules}};
+  }
+  const b = registries.balance;
+  const balance = {startingCinders: b.startingCinders, rewardCinders: b.rewards.cinders, seatTiers: b.seatTiers, bossTiers: b.bossTiers,
+    actsPerCycle: b.endless.actsPerCycle, flaskSlots: b.flaskSlots, xp: b.xp, level: b.level, levelUp: b.levelUp};
+  const tagIds = new Set();
+  for (const def of [...registries.relics.all(), ...registries.classes.all(), ...registries.equipment.armaments, ...registries.equipment.armour]) for (const tag of def.propertyTags || []) tagIds.add(tag);
+  const propertyRules = Object.fromEntries([...tagIds].sort().map(tag => [tag, registries.propertyRules.get(tag)]));
+  const bossLabels = Object.fromEntries(registries.encounters.all().filter(row => row.pool === 'boss').map(row => [row.id, bossDestinationLabel(registries, row.id)]));
+  const modFields = Object.fromEntries(Object.entries(registries.equipment.modFields || {}).filter(([, spec]) => spec.scope === 'run'));
+  const faces = {fallbackSource: combatRules.fallbackSource, equipmentSources: combatRules.equipmentSources,
+    unarmed: (registries.equipment.basicCardProfiles || []).find(row => row.id === 'unarmedAttack') || null};
+  // The Smith's tier ladder (model/itemUpgrades.js itemUpgradeRows/itemUpgradeTiers): authored rows per item and tier.
+  const itemUpgradeChanges = (registries.equipment.itemUpgradeChanges || []).map(row => ({itemRef: row.itemRef, nextTier: row.nextTier, tag: row.tag, value: row.value}));
+  put('adapter/run.json', plain({classes: classRows, balance, propertyRules, bossLabels, modFields, faces, itemUpgradeChanges}, 'run'),
+    {classes: count(classRows), propertyRules: count(propertyRules), bossLabels: count(bossLabels), modFields: count(modFields), itemUpgradeChanges: itemUpgradeChanges.length});
+}
 
 // Legacy cards the adapter tables name (event, relic and enemy-move grants), beyond the profile's own cards.
 const profileCardIds = new Set(profile.content.cards.map(card => card.id));

@@ -1,0 +1,3561 @@
+{
+ "classes": {
+  "reaver": {
+   "maxHp": 46,
+   "startingFlaskAllocation": {
+    "hp": 2,
+    "mana": 1
+   },
+   "startingRelic": "forsakenMedallion",
+   "kitRelic": "ashenGrip",
+   "propertyTags": [
+    "favored",
+    "oathKept"
+   ],
+   "tags": [
+    "blade",
+    "guard",
+    "blood",
+    "item:blade"
+   ],
+   "birth": {
+    "attributes": {
+     "strength": 2,
+     "dexterity": 1,
+     "constitution": 1,
+     "wisdom": 1,
+     "intelligence": 1
+    },
+    "relics": [
+     "forsakenMedallion",
+     "ashenGrip"
+    ],
+    "loadout": {
+     "sets": {
+      "rightHand": [
+       "greatsword",
+       null,
+       null
+      ],
+      "leftHand": [
+       null,
+       null,
+       null
+      ],
+      "armor": [
+       "default"
+      ],
+      "head": [
+       null
+      ],
+      "hands": [
+       null
+      ],
+      "feet": [
+       null
+      ],
+      "talisman": [
+       null,
+       null,
+       null
+      ]
+     },
+     "active": {
+      "rightHand": 0,
+      "leftHand": 0,
+      "armor": 0,
+      "head": 0,
+      "hands": 0,
+      "feet": 0,
+      "talisman": 0
+     },
+     "storage": [],
+     "creationArmourGrant": {
+      "classId": "reaver",
+      "id": "default"
+     }
+    },
+    "flaskCharges": {
+     "capacity": 3,
+     "base": 3,
+     "hp": 2,
+     "mana": 1,
+     "hpCurrent": 2,
+     "manaCurrent": 1,
+     "grown": {
+      "hp": 0,
+      "mana": 0
+     },
+     "granted": 0
+    },
+    "cinders": 20,
+    "attributeMode": "lean",
+    "derivedStatRules": {
+     "rulesetVersion": 7,
+     "defaults": {
+      "perLevel": 0
+     },
+     "rules": {
+      "energy": {
+       "base": 3,
+       "strength": 0.1,
+       "dexterity": 0.25,
+       "wisdom": 0.01,
+       "intelligence": 0.01,
+       "perLevel": 0.1
+      },
+      "draw": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "hp": {
+       "base": 61,
+       "constitution": 10,
+       "perLevel": 2
+      },
+      "stamina": {
+       "base": 3,
+       "dexterity": 0.25,
+       "constitution": 0.5,
+       "wisdom": 0.2,
+       "intelligence": 0.2,
+       "perLevel": 0.1
+      },
+      "mana": {
+       "base": 0,
+       "strength": 0.125,
+       "constitution": 0.25,
+       "wisdom": 1,
+       "intelligence": 0.125,
+       "perLevel": 0.2
+      },
+      "poise": {
+       "base": 1,
+       "constitution": 1,
+       "perLevel": 0
+      },
+      "openingHand": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "handSize": {
+       "base": 7,
+       "intelligence": 0.2,
+       "attributeBaseline": 4,
+       "min": 1,
+       "max": 20,
+       "perLevel": 0
+      },
+      "ar": {
+       "base": 0,
+       "strength": 1,
+       "perLevel": 0
+      },
+      "dr": {
+       "base": 0,
+       "dexterity": 1,
+       "perLevel": 0
+      },
+      "pr": {
+       "base": 0,
+       "intelligence": 1,
+       "perLevel": 0
+      },
+      "ward": {
+       "base": 1,
+       "wisdom": 1,
+       "perLevel": 0
+      }
+     }
+    }
+   }
+  },
+  "starseer": {
+   "maxHp": 36,
+   "startingFlaskAllocation": {
+    "hp": 1,
+    "mana": 2
+   },
+   "startingRelic": "starstoneShard",
+   "kitRelic": "lodestarShard",
+   "propertyTags": [
+    "favored",
+    "oathKept"
+   ],
+   "tags": [
+    "starstone",
+    "ranged",
+    "item:magic-focus"
+   ],
+   "birth": {
+    "attributes": {
+     "strength": 1,
+     "dexterity": 1,
+     "constitution": 1,
+     "wisdom": 1,
+     "intelligence": 2
+    },
+    "relics": [
+     "starstoneShard",
+     "lodestarShard"
+    ],
+    "loadout": {
+     "sets": {
+      "rightHand": [
+       "boneSceptre",
+       null,
+       null
+      ],
+      "leftHand": [
+       null,
+       null,
+       null
+      ],
+      "armor": [
+       "default"
+      ],
+      "head": [
+       null
+      ],
+      "hands": [
+       null
+      ],
+      "feet": [
+       null
+      ],
+      "talisman": [
+       null,
+       null,
+       null
+      ]
+     },
+     "active": {
+      "rightHand": 0,
+      "leftHand": 0,
+      "armor": 0,
+      "head": 0,
+      "hands": 0,
+      "feet": 0,
+      "talisman": 0
+     },
+     "storage": [],
+     "creationArmourGrant": {
+      "classId": "starseer",
+      "id": "default"
+     }
+    },
+    "flaskCharges": {
+     "capacity": 3,
+     "base": 3,
+     "hp": 1,
+     "mana": 2,
+     "hpCurrent": 1,
+     "manaCurrent": 2,
+     "grown": {
+      "hp": 0,
+      "mana": 0
+     },
+     "granted": 0
+    },
+    "cinders": 20,
+    "attributeMode": "lean",
+    "derivedStatRules": {
+     "rulesetVersion": 7,
+     "defaults": {
+      "perLevel": 0
+     },
+     "rules": {
+      "energy": {
+       "base": 3,
+       "strength": 0.1,
+       "dexterity": 0.25,
+       "wisdom": 0.01,
+       "intelligence": 0.01,
+       "perLevel": 0.1
+      },
+      "draw": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "hp": {
+       "base": 65,
+       "constitution": 10,
+       "perLevel": 2
+      },
+      "stamina": {
+       "base": 3,
+       "dexterity": 0.25,
+       "constitution": 0.5,
+       "wisdom": 0.2,
+       "intelligence": 0.2,
+       "perLevel": 0.1
+      },
+      "mana": {
+       "base": 2,
+       "strength": 0.125,
+       "constitution": 0.25,
+       "wisdom": 1,
+       "intelligence": 0.125,
+       "perLevel": 0.2
+      },
+      "poise": {
+       "base": 1,
+       "constitution": 1,
+       "perLevel": 0
+      },
+      "openingHand": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "handSize": {
+       "base": 7,
+       "intelligence": 0.2,
+       "attributeBaseline": 4,
+       "min": 1,
+       "max": 20,
+       "perLevel": 0
+      },
+      "ar": {
+       "base": 0,
+       "strength": 1,
+       "perLevel": 0
+      },
+      "dr": {
+       "base": 0,
+       "dexterity": 1,
+       "perLevel": 0
+      },
+      "pr": {
+       "base": 0,
+       "intelligence": 1,
+       "perLevel": 0
+      },
+      "ward": {
+       "base": 1,
+       "wisdom": 1,
+       "perLevel": 0
+      }
+     }
+    }
+   }
+  },
+  "rogue": {
+   "maxHp": 34,
+   "startingFlaskAllocation": {
+    "hp": 2,
+    "mana": 1
+   },
+   "startingRelic": "cutpursesCoin",
+   "kitRelic": "whetstonePouch",
+   "propertyTags": [
+    "favored",
+    "oathKept"
+   ],
+   "tags": [
+    "guile",
+    "flourish",
+    "item:blade"
+   ],
+   "birth": {
+    "attributes": {
+     "strength": 1,
+     "dexterity": 2,
+     "constitution": 1,
+     "wisdom": 1,
+     "intelligence": 1
+    },
+    "relics": [
+     "cutpursesCoin",
+     "whetstonePouch"
+    ],
+    "loadout": {
+     "sets": {
+      "rightHand": [
+       "dagger",
+       null,
+       null
+      ],
+      "leftHand": [
+       "dagger",
+       null,
+       null
+      ],
+      "armor": [
+       "default"
+      ],
+      "head": [
+       null
+      ],
+      "hands": [
+       null
+      ],
+      "feet": [
+       null
+      ],
+      "talisman": [
+       null,
+       null,
+       null
+      ]
+     },
+     "active": {
+      "rightHand": 0,
+      "leftHand": 0,
+      "armor": 0,
+      "head": 0,
+      "hands": 0,
+      "feet": 0,
+      "talisman": 0
+     },
+     "storage": [],
+     "creationArmourGrant": {
+      "classId": "rogue",
+      "id": "default"
+     }
+    },
+    "flaskCharges": {
+     "capacity": 3,
+     "base": 3,
+     "hp": 2,
+     "mana": 1,
+     "hpCurrent": 2,
+     "manaCurrent": 1,
+     "grown": {
+      "hp": 0,
+      "mana": 0
+     },
+     "granted": 0
+    },
+    "cinders": 20,
+    "attributeMode": "lean",
+    "derivedStatRules": {
+     "rulesetVersion": 7,
+     "defaults": {
+      "perLevel": 0
+     },
+     "rules": {
+      "energy": {
+       "base": 3,
+       "strength": 0.1,
+       "dexterity": 0.25,
+       "wisdom": 0.01,
+       "intelligence": 0.01,
+       "perLevel": 0.1
+      },
+      "draw": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "hp": {
+       "base": 51,
+       "constitution": 10,
+       "perLevel": 2
+      },
+      "stamina": {
+       "base": 3,
+       "dexterity": 0.25,
+       "constitution": 0.5,
+       "wisdom": 0.2,
+       "intelligence": 0.2,
+       "perLevel": 0.1
+      },
+      "mana": {
+       "base": 1,
+       "strength": 0.125,
+       "constitution": 0.25,
+       "wisdom": 1,
+       "intelligence": 0.125,
+       "perLevel": 0.2
+      },
+      "poise": {
+       "base": 1,
+       "constitution": 1,
+       "perLevel": 0
+      },
+      "openingHand": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "handSize": {
+       "base": 7,
+       "intelligence": 0.2,
+       "attributeBaseline": 4,
+       "min": 1,
+       "max": 20,
+       "perLevel": 0
+      },
+      "ar": {
+       "base": 0,
+       "strength": 1,
+       "perLevel": 0
+      },
+      "dr": {
+       "base": 0,
+       "dexterity": 1,
+       "perLevel": 0
+      },
+      "pr": {
+       "base": 0,
+       "intelligence": 1,
+       "perLevel": 0
+      },
+      "ward": {
+       "base": 1,
+       "wisdom": 1,
+       "perLevel": 0
+      }
+     }
+    }
+   }
+  },
+  "herald": {
+   "maxHp": 37,
+   "startingFlaskAllocation": {
+    "hp": 2,
+    "mana": 1
+   },
+   "startingRelic": "goldFigurine",
+   "kitRelic": "waxenSeal",
+   "propertyTags": [
+    "favored",
+    "oathKept"
+   ],
+   "tags": [
+    "ritual",
+    "oath",
+    "item:magic-focus"
+   ],
+   "birth": {
+    "attributes": {
+     "strength": 1,
+     "dexterity": 1,
+     "constitution": 1,
+     "wisdom": 2,
+     "intelligence": 1
+    },
+    "relics": [
+     "goldFigurine",
+     "waxenSeal"
+    ],
+    "loadout": {
+     "sets": {
+      "rightHand": [
+       "boneSceptre",
+       null,
+       null
+      ],
+      "leftHand": [
+       null,
+       null,
+       null
+      ],
+      "armor": [
+       "default"
+      ],
+      "head": [
+       null
+      ],
+      "hands": [
+       null
+      ],
+      "feet": [
+       null
+      ],
+      "talisman": [
+       null,
+       null,
+       null
+      ]
+     },
+     "active": {
+      "rightHand": 0,
+      "leftHand": 0,
+      "armor": 0,
+      "head": 0,
+      "hands": 0,
+      "feet": 0,
+      "talisman": 0
+     },
+     "storage": [],
+     "creationArmourGrant": {
+      "classId": "herald",
+      "id": "default"
+     }
+    },
+    "flaskCharges": {
+     "capacity": 3,
+     "base": 3,
+     "hp": 2,
+     "mana": 1,
+     "hpCurrent": 2,
+     "manaCurrent": 1,
+     "grown": {
+      "hp": 0,
+      "mana": 0
+     },
+     "granted": 0
+    },
+    "cinders": 20,
+    "attributeMode": "lean",
+    "derivedStatRules": {
+     "rulesetVersion": 7,
+     "defaults": {
+      "perLevel": 0
+     },
+     "rules": {
+      "energy": {
+       "base": 3,
+       "strength": 0.1,
+       "dexterity": 0.25,
+       "wisdom": 0.01,
+       "intelligence": 0.01,
+       "perLevel": 0.1
+      },
+      "draw": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "hp": {
+       "base": 51,
+       "constitution": 10,
+       "perLevel": 2
+      },
+      "stamina": {
+       "base": 3,
+       "dexterity": 0.25,
+       "constitution": 0.5,
+       "wisdom": 0.2,
+       "intelligence": 0.2,
+       "perLevel": 0.1
+      },
+      "mana": {
+       "base": 1,
+       "strength": 0.125,
+       "constitution": 0.25,
+       "wisdom": 1,
+       "intelligence": 0.125,
+       "perLevel": 0.2
+      },
+      "poise": {
+       "base": 1,
+       "constitution": 1,
+       "perLevel": 0
+      },
+      "openingHand": {
+       "base": 4,
+       "intelligence": 1,
+       "attributeBaseline": 0,
+       "min": 2,
+       "max": 10,
+       "perLevel": 0
+      },
+      "handSize": {
+       "base": 7,
+       "intelligence": 0.2,
+       "attributeBaseline": 4,
+       "min": 1,
+       "max": 20,
+       "perLevel": 0
+      },
+      "ar": {
+       "base": 0,
+       "strength": 1,
+       "perLevel": 0
+      },
+      "dr": {
+       "base": 0,
+       "dexterity": 1,
+       "perLevel": 0
+      },
+      "pr": {
+       "base": 0,
+       "intelligence": 1,
+       "perLevel": 0
+      },
+      "ward": {
+       "base": 1,
+       "wisdom": 1,
+       "perLevel": 0
+      }
+     }
+    }
+   }
+  }
+ },
+ "balance": {
+  "startingCinders": 20,
+  "rewardCinders": {
+   "normal": [
+    45,
+    75
+   ],
+   "elite": [
+    105,
+    150
+   ],
+   "boss": [
+    225,
+    270
+   ]
+  },
+  "seatTiers": {
+   "1": 1,
+   "2": 1.5,
+   "3": 1.9
+  },
+  "bossTiers": {
+   "1": {
+    "hp": 0.8,
+    "damage": 0.8
+   },
+   "2": {
+    "hp": 2.2,
+    "damage": 1.5
+   },
+   "3": {
+    "hp": 2.2,
+    "damage": 1.5
+   }
+  },
+  "actsPerCycle": 3,
+  "flaskSlots": 3,
+  "xp": {
+   "combatWin": 25,
+   "kill": {
+    "normal": 10,
+    "elite": 10,
+    "boss": 10
+   },
+   "killLevelMultiplier": 0.2,
+   "combatPowerMultiplier": 0.2,
+   "quest": 125
+  },
+  "level": {
+   "xp": {
+    "base": 200,
+    "linear": false,
+    "multScaler": 1.3,
+    "growth": 1.303,
+    "roundTo": 10
+   },
+   "maxLevelsPerFight": 0
+  },
+  "levelUp": {
+   "pointsPerLevel": 1,
+   "maxLevels": 20,
+   "pointsPerLevelMin": 1,
+   "pointsPerLevelMax": 20
+  }
+ },
+ "propertyRules": {
+  "ashOfRemembrance": {
+   "tag": "ashOfRemembrance",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    },
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "madness",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "ashenGrip": {
+   "tag": "ashenGrip",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "stanceEntered",
+     "limitPerTurn": 1,
+     "do": [
+      {
+       "op": "restoreStamina",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "azureSigil": {
+   "tag": "azureSigil",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "once": true,
+     "if": {
+      "p": "cardTypeIs",
+      "type": "skill"
+     },
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "blessedDew": {
+   "tag": "blessedDew",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "blightTouchedIdol": {
+   "tag": "blightTouchedIdol",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "crimsonBlight",
+       "stacks": 3
+      }
+     ]
+    }
+   ]
+  },
+  "bloodiedTalisman": {
+   "tag": "bloodiedTalisman",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "meterFilled",
+     "if": {
+      "p": "eventStatusIs",
+      "status": "bleed"
+     },
+     "do": [
+      {
+       "op": "loseHp",
+       "amount": 5
+      }
+     ]
+    }
+   ]
+  },
+  "bloodstainedChalice": {
+   "tag": "bloodstainedChalice",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "meterFilled",
+     "if": {
+      "p": "eventStatusIs",
+      "status": "bleed"
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "carrionMorsel": {
+   "tag": "carrionMorsel",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "carrionTalon": {
+   "tag": "carrionTalon",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "do": [
+      {
+       "op": "damage",
+       "target": "randomEnemy",
+       "amount": 6
+      }
+     ]
+    }
+   ]
+  },
+  "cinderOfTheFallen": {
+   "tag": "cinderOfTheFallen",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "madness",
+       "stacks": 1
+      }
+     ]
+    },
+    {
+     "on": "enemyDied",
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "crackedLantern": {
+   "tag": "crackedLantern",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "once": true,
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "crimsonCovenant": {
+   "tag": "crimsonCovenant",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "loseHp",
+       "target": "owner",
+       "amount": 5
+      }
+     ]
+    },
+    {
+     "on": "damageDealt",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "bleed",
+       "stacks": 2
+      }
+     ]
+    }
+   ]
+  },
+  "crownOfStitches": {
+   "tag": "crownOfStitches",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 2
+      }
+     ]
+    },
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "frail",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "curedHide": {
+   "tag": "curedHide",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "hpLost",
+     "once": true,
+     "if": {
+      "p": "eventTargetIsOwner"
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 5
+      }
+     ]
+    }
+   ]
+  },
+  "cutpursesCoin": {
+   "tag": "cutpursesCoin",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "prepared",
+       "stacks": {
+        "f": "add",
+        "args": [
+         1
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "venom",
+       "stacks": 2
+      }
+     ]
+    }
+   ]
+  },
+  "emberIdol": {
+   "tag": "emberIdol",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "damage",
+       "target": "allEnemies",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "emberwickCharm": {
+   "tag": "emberwickCharm",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "hpLost",
+     "once": true,
+     "if": {
+      "p": "eventTargetIsOwner"
+     },
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "favored": {
+   "tag": "favored",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "passives": {
+    "skillXpMult": 1.25
+   }
+  },
+  "fellWardenBrand": {
+   "tag": "fellWardenBrand",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyStaggered",
+     "do": [
+      {
+       "op": "draw",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "flayersCenser": {
+   "tag": "flayersCenser",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "allEnemies",
+       "status": "crimsonBlight",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "forsakenMedallion": {
+   "tag": "forsakenMedallion",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "poiseDamage",
+       "amount": 4
+      }
+     ]
+    }
+   ]
+  },
+  "forsakenWarflag": {
+   "tag": "forsakenWarflag",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "allEnemies",
+       "status": "weak",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "gildedTear": {
+   "tag": "gildedTear",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "once": true,
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "goldFigurine": {
+   "tag": "goldFigurine",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "healed",
+     "if": {
+      "p": "eventTargetIsOwner"
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "goldboughSapling": {
+   "tag": "goldboughSapling",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "if": {
+      "p": "not",
+      "pred": {
+       "p": "hasBlock",
+       "of": "owner"
+      }
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 4
+      }
+     ]
+    }
+   ]
+  },
+  "goldenSprout": {
+   "tag": "goldenSprout",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "goldleafCharm": {
+   "tag": "goldleafCharm",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "once": true,
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 4
+      }
+     ]
+    }
+   ]
+  },
+  "gravetendersBell": {
+   "tag": "gravetendersBell",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "do": [
+      {
+       "op": "draw",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "hollowedHorn": {
+   "tag": "hollowedHorn",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyStaggered",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "allEnemies",
+       "status": "vulnerable",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "howlingStandard": {
+   "tag": "howlingStandard",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyStaggered",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "ivoryComb": {
+   "tag": "ivoryComb",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "everyNthCardThisCombat",
+      "n": 8
+     },
+     "do": [
+      {
+       "op": "draw",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "kindlingCharm": {
+   "tag": "kindlingCharm",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "draw",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "lodestarShard": {
+   "tag": "lodestarShard",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "restoreMana",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "moonlitVial": {
+   "tag": "moonlitVial",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "oathKept": {
+   "tag": "oathKept",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "stanceEntered",
+     "if": {
+      "p": "eventSourceIsOwner"
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "stanceShifted",
+       "stacks": 1
+      }
+     ]
+    },
+    {
+     "on": "cardPreparing",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "oath"
+       },
+       {
+        "p": "not",
+        "pred": {
+         "p": "hasStatus",
+         "of": "owner",
+         "status": "stanceShifted"
+        }
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "overcharge": {
+   "tag": "overcharge",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your hits build Arcane Exposure faster.",
+   "passives": {
+    "exposureBuildupMult": 1.5
+   }
+  },
+  "pearlOfSagacity": {
+   "tag": "pearlOfSagacity",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "everyNthCardThisCombat",
+      "n": 6
+     },
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "progression-cinderbound-crown": {
+   "tag": "progression-cinderbound-crown",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first credited kill of an enemy with Bleed buildup each combat heals {heal} HP.",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "enemyKilledWithStatus",
+        "status": "bleed"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 4
+      }
+     ],
+     "once": true
+    }
+   ]
+  },
+  "progression-cracked-war-anvil": {
+   "tag": "progression-cracked-war-anvil",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first Heavy attack each turn deals {poiseDamage} additional Break damage.",
+   "triggers": [
+    {
+     "on": "cardPreparing",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "heavy"
+       },
+       {
+        "p": "cardTypeIs",
+        "type": "attack"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "grantCardCharge",
+       "target": "owner",
+       "key": "progression-cracked-war-anvil",
+       "cardType": "attack",
+       "break": 1
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-ember-alms-bowl": {
+   "tag": "progression-ember-alms-bowl",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first nonlethal HP offering each turn grants {block} Block after its payment.",
+   "triggers": [
+    {
+     "on": "hpOfferingPaid",
+     "if": {
+      "p": "eventSourceIsOwner"
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-emberjaw-token": {
+   "tag": "progression-emberjaw-token",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first Blade hit each combat applies {bleed} additional Bleed buildup.",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "blade"
+       },
+       {
+        "p": "eventIsAttack"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "bleed",
+       "stacks": 2
+      }
+     ],
+     "once": true
+    }
+   ]
+  },
+  "progression-fragment-of-the-third-sky": {
+   "tag": "progression-fragment-of-the-third-sky",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your third distinct Starstone card ID played in a turn grants {block} Block, once per turn.",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "starstone"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "distinctTagPlays",
+        "atLeast": 2,
+        "atMost": 2,
+        "tag": "starstone"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "sameCardPlays",
+        "atLeast": 0,
+        "atMost": 0,
+        "cardId": "event"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 5
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-moonwell-lens": {
+   "tag": "progression-moonwell-lens",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first Starstone spell each turn played after spending at least 2 Mana grants {block} Block.",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "starstone"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "source:spell"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "manaSpent",
+        "atLeast": 2
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-nightglass-rosary": {
+   "tag": "progression-nightglass-rosary",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "The second play of the same Starstone card ID in a turn restores {restoreMana} Mana, once per turn.",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "starstone"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "sameCardPlays",
+        "atLeast": 1,
+        "atMost": 1,
+        "cardId": "event"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "restoreMana",
+       "target": "owner",
+       "amount": 1
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-ossuary-prayer-wheel": {
+   "tag": "progression-ossuary-prayer-wheel",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Your first credited kill of an enemy with Crimson or Necrotic Blight buildup each combat restores {restoreMana} Mana.",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "any",
+        "preds": [
+         {
+          "p": "enemyKilledWithStatus",
+          "status": "crimsonBlight"
+         },
+         {
+          "p": "enemyKilledWithStatus",
+          "status": "necroticBlight"
+         }
+        ]
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "restoreMana",
+       "target": "owner",
+       "amount": 1
+      }
+     ],
+     "once": true
+    }
+   ]
+  },
+  "progression-purse-of-borrowed-shadows": {
+   "tag": "progression-purse-of-borrowed-shadows",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "After your first explicit discard each turn, gain {block} Block.",
+   "triggers": [
+    {
+     "on": "cardDiscarded",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "eventDiscardExplicit"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "discarded",
+        "atLeast": 1,
+        "snapshot": "current"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 2
+      }
+     ],
+     "limitPerTurn": 1
+    }
+   ]
+  },
+  "progression-whisperglass-die": {
+   "tag": "progression-whisperglass-die",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "If your first card in combat is a Blade attack, it deals +{chargeDamage} damage.",
+   "triggers": [
+    {
+     "on": "cardPreparing",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "cardTagIs",
+        "tag": "blade"
+       },
+       {
+        "p": "cardTypeIs",
+        "type": "attack"
+       },
+       {
+        "p": "turnMetric",
+        "metric": "cardPlaysCombat",
+        "atLeast": 0,
+        "atMost": 0
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "grantCardCharge",
+       "target": "owner",
+       "key": "progression-whisperglass-die",
+       "cardType": "attack",
+       "damage": 5
+      }
+     ],
+     "once": true
+    }
+   ]
+  },
+  "radiantAegis": {
+   "tag": "radiantAegis",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "if": {
+      "p": "hasBlock",
+      "of": "owner"
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 4
+      }
+     ]
+    }
+   ]
+  },
+  "resonance": {
+   "tag": "resonance",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Breaking a foe's Arcane Exposure builds {spreadPct}% of its threshold on every other foe.",
+   "triggers": [
+    {
+     "on": "arcaneBreak",
+     "if": {
+      "p": "eventSourceIsOwner"
+     },
+     "do": [
+      {
+       "op": "arcaneBuildup",
+       "target": "otherEnemies",
+       "pct": 50
+      }
+     ]
+    }
+   ]
+  },
+  "sacrificialKnife": {
+   "tag": "sacrificialKnife",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "bleed",
+       "stacks": 2
+      }
+     ]
+    }
+   ]
+  },
+  "sentinelsOath": {
+   "tag": "sentinelsOath",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "everyNthCardThisCombat",
+      "n": 12
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "siphon": {
+   "tag": "siphon",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Breaking a foe's Arcane Exposure restores {restoreMana} Mana, or {restoreMana.2} once your focus skill is mastered.",
+   "triggers": [
+    {
+     "on": "arcaneBreak",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "not",
+        "pred": {
+         "p": "skillLevelAtLeast",
+         "skill": "item:magic-focus",
+         "level": 7
+        }
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "restoreMana",
+       "target": "self",
+       "amount": 1
+      }
+     ]
+    },
+    {
+     "on": "arcaneBreak",
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "skillLevelAtLeast",
+        "skill": "item:magic-focus",
+        "level": 7
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "restoreMana",
+       "target": "self",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "staggerBreak": {
+   "tag": "staggerBreak",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Breaking a foe's Arcane Exposure deals {poiseDamage} Poise damage to it.",
+   "singleBreak": {
+    "triggers": [],
+    "passives": {
+     "magicalImpactAdd": 2
+    },
+    "textTemplate": "Spell hits gain {magicalImpactAdd} magical impact."
+   },
+   "triggers": [
+    {
+     "on": "arcaneBreak",
+     "if": {
+      "p": "eventSourceIsOwner"
+     },
+     "do": [
+      {
+       "op": "poiseDamage",
+       "amount": 6
+      }
+     ]
+    }
+   ]
+  },
+  "starstoneShard": {
+   "tag": "starstoneShard",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "starstoneCharge",
+       "stacks": {
+        "f": "add",
+        "args": [
+         1
+        ]
+       }
+      },
+      {
+       "op": "restoreMana",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "throw": {
+   "tag": "throw",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "Choose Throw to attack one extra band with the configured Precision penalty; retain the weapon."
+  },
+  "titansCinder": {
+   "tag": "titansCinder",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "travelersWhetstone": {
+   "tag": "travelersWhetstone",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "twinnedArmor": {
+   "tag": "twinnedArmor",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "cardPlayed",
+     "if": {
+      "p": "everyNthCardThisCombat",
+      "n": 10
+     },
+     "do": [
+      {
+       "op": "block",
+       "target": "owner",
+       "amount": 6
+      }
+     ]
+    }
+   ]
+  },
+  "vigilantHalo": {
+   "tag": "vigilantHalo",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyStaggered",
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 6
+      }
+     ]
+    }
+   ]
+  },
+  "vowOfVengeance": {
+   "tag": "vowOfVengeance",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "enemyDied",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 2
+      }
+     ]
+    }
+   ]
+  },
+  "wardenHorn": {
+   "tag": "wardenHorn",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "draw",
+       "amount": 1
+      }
+     ]
+    },
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "loseHp",
+       "target": "owner",
+       "amount": 2
+      }
+     ]
+    }
+   ]
+  },
+  "wardensLantern": {
+   "tag": "wardensLantern",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "hpLost",
+     "once": true,
+     "if": {
+      "p": "eventTargetIsOwner"
+     },
+     "do": [
+      {
+       "op": "draw",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  },
+  "warhorn": {
+   "tag": "warhorn",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "combatStart",
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "watchmansBadge": {
+   "tag": "watchmansBadge",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "if": {
+      "p": "not",
+      "pred": {
+       "p": "hasStatus",
+       "of": "owner",
+       "status": "weak"
+      }
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "target": "owner",
+       "status": "strength",
+       "stacks": 1
+      }
+     ]
+    }
+   ]
+  },
+  "waxenSeal": {
+   "tag": "waxenSeal",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "healed",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventTargetIsOwner"
+       },
+       {
+        "p": "healPositive"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "heal",
+       "target": "owner",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "whetstoneFragment": {
+   "tag": "whetstoneFragment",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "damage",
+       "amount": 4
+      }
+     ]
+    }
+   ]
+  },
+  "whetstonePouch": {
+   "tag": "whetstonePouch",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "damageDealt",
+     "once": true,
+     "if": {
+      "p": "all",
+      "preds": [
+       {
+        "p": "eventIsAttack"
+       },
+       {
+        "p": "eventSourceIsOwner"
+       },
+       {
+        "p": "hasStatus",
+        "of": "owner",
+        "status": "prepared"
+       }
+      ]
+     },
+     "do": [
+      {
+       "op": "applyStatus",
+       "status": "bleed",
+       "stacks": 2
+      }
+     ]
+    }
+   ]
+  },
+  "wrathCoil": {
+   "tag": "wrathCoil",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "hpLost",
+     "if": {
+      "p": "eventTargetIsOwner"
+     },
+     "do": [
+      {
+       "op": "damage",
+       "target": "randomEnemy",
+       "amount": 3
+      }
+     ]
+    }
+   ]
+  },
+  "wyrmHeart": {
+   "tag": "wyrmHeart",
+   "requires": [],
+   "excludes": [],
+   "textTemplate": "",
+   "triggers": [
+    {
+     "on": "playerTurnStart",
+     "do": [
+      {
+       "op": "gainEnergy",
+       "amount": 1
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "bossLabels": {
+  "bossOmen": "Fell Courtyard · The Fell Warden",
+  "bossBellKeeper": "Bellfoundry · The Bell Keeper",
+  "bossThornMatriarch": "Briar Sanctum · The Thorn Matriarch",
+  "a2_bossStitchedKing": "Stitched Throne · The Stitched King",
+  "a2_bossGlassRegent": "Hall of Mirrors · The Glass Regent",
+  "a2_bossMarrowOrganist": "Ossuary Organ Hall · The Marrow Organist",
+  "a3_bossRotValkyrie": "Ashen Crown · The Blighted Valkyrie",
+  "a3_bossFurnaceSaint": "Furnace Chapel · The Furnace Saint",
+  "a3_bossHollowAstronomer": "Eclipse Observatory · The Hollow Astronomer",
+  "a3_bossAshheartDragon": "Ashheart Caldera · The Ashheart Dragon"
+ },
+ "modFields": {
+  "strength": {
+   "field": "strength",
+   "scope": "run",
+   "apply": "startStatus",
+   "op": "",
+   "effTarget": "",
+   "status": "strength",
+   "label": "Strength",
+   "clause": "",
+   "blurb": "Strength you begin every fight with."
+  },
+  "dexterity": {
+   "field": "dexterity",
+   "scope": "run",
+   "apply": "startStatus",
+   "op": "",
+   "effTarget": "",
+   "status": "dexterity",
+   "label": "Dexterity",
+   "clause": "",
+   "blurb": "Dexterity you begin every fight with."
+  },
+  "regen": {
+   "field": "regen",
+   "scope": "run",
+   "apply": "startStatus",
+   "op": "",
+   "effTarget": "",
+   "status": "regen",
+   "label": "Regen",
+   "clause": "",
+   "blurb": "HP recovered at the start of each turn."
+  },
+  "maxHp": {
+   "field": "maxHp",
+   "scope": "run",
+   "apply": "maxHp",
+   "op": "",
+   "effTarget": "",
+   "status": "",
+   "label": "Max HP",
+   "clause": "",
+   "blurb": "Added to your maximum HP for the run."
+  },
+  "maxMana": {
+   "field": "maxMana",
+   "scope": "run",
+   "apply": "maxMana",
+   "op": "",
+   "effTarget": "",
+   "status": "",
+   "label": "Max Mana",
+   "clause": "",
+   "blurb": "Added to your maximum Mana for the run."
+  },
+  "maxStamina": {
+   "field": "maxStamina",
+   "scope": "run",
+   "apply": "maxStamina",
+   "op": "",
+   "effTarget": "",
+   "status": "",
+   "label": "Max Stamina",
+   "clause": "",
+   "blurb": "Added to your maximum Stamina for the run."
+  },
+  "swapCost": {
+   "field": "swapCost",
+   "scope": "run",
+   "apply": "swapCost",
+   "op": "",
+   "effTarget": "",
+   "status": "",
+   "label": "Swap cost",
+   "clause": "",
+   "blurb": "Changed cost to switch armament sets mid-fight."
+  }
+ },
+ "faces": {
+  "fallbackSource": {
+   "id": "unarmed",
+   "family": "natural",
+   "weight": 1,
+   "grip": "oneHand",
+   "damageType": "blunt",
+   "tags": [],
+   "buildup": []
+  },
+  "equipmentSources": {
+   "profileFamilies": {
+    "bladeAttack": "blade",
+    "daggerPierceAttack": "blade",
+    "bowPierceAttack": "bow",
+    "shieldAttack": "hammer",
+    "staffMagicAttack": "focus",
+    "sceptreArcaneAttack": "focus"
+   },
+   "itemFamilies": {
+    "warhammer": "hammer"
+   }
+  },
+  "unarmed": {
+   "id": "unarmedAttack",
+   "role": "attack",
+   "baseCardId": "strike",
+   "displayName": "Unarmed Strike",
+   "icon": "✊",
+   "damageSchool": "physical",
+   "exposureBuildupPerHit": 0,
+   "baseValue": 3,
+   "ratingId": "ar",
+   "cap": "",
+   "flavor": "Blow of the empty fist.\n\nThe last thing a Forsaken owns once the blade is broken and the cairn has kept it. No hamlet teaches it; it is learned the first winter a sword is traded for salt.\n\nA last resort, still yours.",
+   "mods": [],
+   "compatibility": "attack-v1",
+   "magicShare": "",
+   "tags": [
+    "basic",
+    "source:unarmed",
+    "delivery:melee",
+    "damage:blunt",
+    "camp:physical",
+    "maneuver:attack"
+   ],
+   "kindIds": [
+    "classification.basicCardProfile"
+   ]
+  }
+ },
+ "itemUpgradeChanges": [
+  {
+   "itemRef": "armament/straightSword",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/straightSword",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/straightSword",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/straightSword",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/straightSword",
+   "nextTier": 1,
+   "tag": "requirement:strength",
+   "value": -1
+  },
+  {
+   "itemRef": "armament/greatsword",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/greatsword",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/greatsword",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/greatsword",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/dagger",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/dagger",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/dagger",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/dagger",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/shortbow",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/shortbow",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/shortbow",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/shortbow",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/katana",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/katana",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/katana",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/katana",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/halberd",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/halberd",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/halberd",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/halberd",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/warhammer",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/warhammer",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/warhammer",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/warhammer",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/twinblade",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/twinblade",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/twinblade",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/twinblade",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/battleaxe",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/battleaxe",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/battleaxe",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/battleaxe",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/buckler",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/buckler",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/buckler",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/buckler",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/kiteShield",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/kiteShield",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/kiteShield",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/kiteShield",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/towerShield",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/towerShield",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/towerShield",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/towerShield",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/roundShield",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/roundShield",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/roundShield",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/roundShield",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/spikedShield",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/spikedShield",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/spikedShield",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/spikedShield",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/lantern",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/lantern",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/lantern",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/lantern",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/torch",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/torch",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/torch",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/torch",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/parryDagger",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/parryDagger",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/parryDagger",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/parryDagger",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/ashStaff",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/ashStaff",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/ashStaff",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/ashStaff",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/starstoneStaff",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/starstoneStaff",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/starstoneStaff",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/starstoneStaff",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/boneSceptre",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/boneSceptre",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/boneSceptre",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/boneSceptre",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/emberlightSceptre",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/emberlightSceptre",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/emberlightSceptre",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/emberlightSceptre",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/goldboughBranch",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/goldboughBranch",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/goldboughBranch",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/goldboughBranch",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/blightRod",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/blightRod",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/blightRod",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/blightRod",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/gorefireBrand",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/gorefireBrand",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/gorefireBrand",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/gorefireBrand",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armament/wyrmhornStaff",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/wyrmhornStaff",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/wyrmhornStaff",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/wyrmhornStaff",
+   "nextTier": 1,
+   "tag": "card:technique:effect:block",
+   "value": 2
+  },
+  {
+   "itemRef": "armor/reaver/default",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/default",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/vigil",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/vigil",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/oathsworn",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/oathsworn",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/warden",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/warden",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/default",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/default",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/eclipse",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/eclipse",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/starlit",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/starlit",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/astral",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/astral",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/default",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/default",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/ossuary",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/ossuary",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/emberhabit",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/emberhabit",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/pilgrim",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/herald/pilgrim",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/default",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/default",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/nightveil",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/nightveil",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/duelist",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/duelist",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/shadow",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/shadow",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "relic/curedHide",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "relic/curedHide",
+   "nextTier": 1,
+   "tag": "relic:passive:poise-threshold-add",
+   "value": 1
+  },
+  {
+   "itemRef": "relic/ancestralHorn",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "relic/ancestralHorn",
+   "nextTier": 1,
+   "tag": "relic:passive:power-cost-reduction",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/bastion",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/reaver/bastion",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/rimeweave",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/starseer/rimeweave",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/waywatcher",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armor/rogue/waywatcher",
+   "nextTier": 1,
+   "tag": "equipment:poise-threshold",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/frostSpear",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/frostSpear",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/frostSpear",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/cinderAxe",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/cinderAxe",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/cinderAxe",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/duskChime",
+   "nextTier": 1,
+   "tag": "upgrade:cost:smithing-stone",
+   "value": 1
+  },
+  {
+   "itemRef": "armament/duskChime",
+   "nextTier": 1,
+   "tag": "card:attack:effect:damage",
+   "value": 3
+  },
+  {
+   "itemRef": "armament/duskChime",
+   "nextTier": 1,
+   "tag": "card:guard:effect:block",
+   "value": 3
+  }
+ ]
+}
