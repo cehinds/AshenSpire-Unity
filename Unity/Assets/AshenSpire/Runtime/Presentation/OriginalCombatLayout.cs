@@ -25,12 +25,8 @@ namespace AshenSpire.Presentation
             // The map policy may already have established a bounded viewport.
             // Removing our class must not reset its height/scroll contract.
             if (!active && (!wasCombat || body.ClassListContains("map-screen"))) return;
-            var scroll = body.GetFirstAncestorOfType<ScrollView>();
-            if (scroll == null) return;
-            scroll.contentContainer.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
-            body.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
-            body.style.minHeight = 0; body.style.flexShrink = active ? 1 : 0;
-            if (active) scroll.scrollOffset = Vector2.zero;
+            // Combat is a fixed JS screen: the body leaves its screen's scroll region and fills the viewport.
+            ScreenRouter.SetFixed(body, active);
         }
         public static VisualElement Hud(JObject player, JObject run, int act, int turn, string className)
         {

@@ -1,4 +1,6 @@
 // CampaignView.cs — reusable touch controls render campaign snapshots and emit commands.
+// SHELL: ScreenRouter layers (base screen / overlay / toast); every Shell() is a new full-viewport
+// screen with its own scroll region. SetLayout receives the JS layout decision (ViewportLayout).
 // WIRING: native screens compose OriginalTitlePanel, OriginalCardView and OriginalCombatLayout.
 // MODIFY: native visuals in OriginalTheme/OriginalCards/OriginalCombat/OriginalCreation.uss.
 // Art lives in Resources/Art; legacy styles remain in Expedition.uss. No game rules or save writes.
@@ -24,6 +26,10 @@ namespace AshenSpire.Presentation
         private string _screenIdentity;
         private VisualElement _body;
         private ScrollView _scroll;
+        private readonly ScreenRouter _router;
+        private UiLayout _layout;
+        /// <summary>CSS px shown per panel px (JS zoom × Interface size); 1 until RunController measures.</summary>
+        private double _displayScale = 1;
         private Image _player;
         private Image _enemy;
         private string _heroArt;
@@ -31,7 +37,6 @@ namespace AshenSpire.Presentation
         private bool _reducedMotion;
         private bool _fast;
         private bool _muted;
-        private int _displayHeight = 900;
         private CampaignSession _session;
         private readonly CombatFeedback _feedback = new CombatFeedback();
         public OriginalMapViewServices MapView { get; } = new OriginalMapViewServices();
@@ -63,7 +68,7 @@ namespace AshenSpire.Presentation
             _fast = fast;
             _muted = muted;
             FeelDriver.Load(); FeelDriver.Configure(reducedMotion, fast); // F07 feel profile: all motion timing
-            MapView.DisplayScale = () => (double)_displayHeight / ViewportLayout.ReferenceHeight(_displayHeight);
+            MapView.DisplayScale = () => _displayScale;
             MapView.MinimumTapSize = () => _playerSettings?.MinimumTapSize ?? 44;
             MapView.SetMapSurface = SetMapSurface;
             MapView.Report = () => Report();
@@ -75,23 +80,40 @@ namespace AshenSpire.Presentation
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalCombat"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("OriginalAccessibility"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("PlayerComponents"));
+            _router = new ScreenRouter(root); // adds Generated/JsTokens + ScreenRouter sheets and the three layers
             root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
         private void OnGeometryChanged(GeometryChangedEvent change)
         {
-            _root.EnableInClassList("ui-wide", _root.contentRect.width >= 900);
+            // One decider (JS #24): once RunController has measured, wide/narrow comes from ViewportLayout.
+            _root.EnableInClassList("ui-wide", _layout != null ? !_layout.Narrow : _root.contentRect.width >= 900);
             Report();
         }
-        public void SetDisplayHeight(int height)
+        /// <summary>The JS layout decision for this viewport and the CSS px one panel px displays as.</summary>
+        public void SetLayout(UiLayout layout, double displayScale)
         {
-            _displayHeight = Math.Max(1, height);
+            _layout = layout;
+            _displayScale = displayScale > 0 && !double.IsInfinity(displayScale) ? displayScale : 1;
+            if (layout != null)
+            {
+                // JS data-layout / data-composition / data-short / data-form-factor, as root classes.
+                _root.EnableInClassList("layout-narrow", layout.Narrow);
+                _root.EnableInClassList("layout-wide", !layout.Narrow);
+                _root.EnableInClassList("ui-wide", !layout.Narrow);
+                _root.EnableInClassList("composition-short-wide", layout.Compact);
+                _root.EnableInClassList("layout-short", layout.Short);
+                foreach (var factor in new[] { "mobile", "tablet", "desktop", "widescreen" })
+                    _root.EnableInClassList("form-factor-" + factor, layout.FormFactor == factor);
+            }
             RefreshTouchTargets();
             foreach (var board in _root.Query<OriginalMapBoard>().ToList()) board.RefreshDisplayScale();
         }
+        /// <summary>Safe-area insets in panel px (RunController converts from screen pixels).</summary>
+        public void SetSafeArea(float top, float right, float bottom, float left) => _router.SetSafeArea(top, right, bottom, left);
         private void RefreshTouchTargets()
         {
             BindInterfaceSounds();
-            var minimum = ViewportLayout.MinimumTouchHeight(_displayHeight) * (_playerSettings?.MinimumTapSize ?? 44) / 44f;
+            var minimum = ViewportLayout.MinimumTouchHeight(_displayScale, _playerSettings?.MinimumTapSize ?? 44);
             foreach (var button in _root.Query<Button>().ToList())
             {
                 if (button.ClassListContains("map-node")) continue; // Map geometry delivers its own physical tap floor.
@@ -118,10 +140,13 @@ namespace AshenSpire.Presentation
             foreach (var board in _root.Query<OriginalMapBoard>().ToList()) board.CancelGesture();
             if (_interruptionCover == null)
             {
-                // Disable siblings (including fixed combat actions) without rebuilding:
-                // selection, scroll offset and unfinished input stay in their own views.
+                // Disable everything under the cover (the base screen with its fixed combat actions, open
+                // overlays, stray root children) without rebuilding: selection, scroll offset and
+                // unfinished input stay in their own views. The toast layer never takes input.
                 (_root.focusController?.focusedElement as VisualElement)?.Blur();
-                foreach (var child in _root.Children().ToList())
+                var covered = _root.Children().Where(child => child != _router.OverlayLayer && child != _router.ToastLayer)
+                    .Concat(_router.OverlayLayer.Children()).ToList();
+                foreach (var child in covered)
                 {
                     if (!child.enabledSelf) continue;
                     _interruptionDisabled.Add(child);
@@ -137,7 +162,7 @@ namespace AshenSpire.Presentation
                 _returnButton = Control("return-to-game", "Return to the game", () => ReturnRequested?.Invoke(), "primary");
                 panel.Add(_returnButton);
                 _interruptionCover.Add(panel);
-                _root.Add(_interruptionCover);
+                _router.OpenOverlay(_interruptionCover);
             }
             _returnButton.SetEnabled(canReturn);
             if (canReturn) _returnButton.Focus();
@@ -415,7 +440,7 @@ namespace AshenSpire.Presentation
             _body.AddToClassList("has-fixed-actions");
             actions.Add(play);
             actions.Add(Control("end-turn", "End turn", () => EndTurnRequested?.Invoke()));
-            _root.Add(actions);
+            _router.Screen.Add(actions); // screen chrome: leaves with the screen
         }
         private void Details(CampaignSession session, string title, string description)
         {
@@ -446,7 +471,7 @@ namespace AshenSpire.Presentation
             actions.AddToClassList("actions");
             _body.AddToClassList("has-fixed-actions");
             actions.Add(Control("inspection-back", "Return to combat", () => Render(session), "primary"));
-            _root.Add(actions);
+            _router.Screen.Add(actions);
             Report();
         }
         private void Reward(CampaignSession session)
@@ -563,17 +588,14 @@ namespace AshenSpire.Presentation
             var entering = _screenIdentity != identity; _screenIdentity = identity;
             _feedback.Cancel();
             _stage = null;
-            _root.Clear();
-            PlayerComponentArt.Scene(_root, "spire-vista");
+            // A new full-viewport screen replaces the old one in the base layer; overlays (the
+            // interruption cover) and toasts stay where they are.
+            _body = _router.Show(identity);
+            _scroll = _router.Scroll;
+            PlayerComponentArt.Scene(_router.Screen, "spire-vista");
             _player = null;
             _enemy = null;
-            _scroll = new ScrollView(ScrollViewMode.Vertical) { verticalScrollerVisibility = ScrollerVisibility.Hidden };
-            _scroll.AddToClassList("scroll");
-            _root.Add(_scroll);
             _scroll.verticalScroller.valueChanged += _ => Report(false);
-            _body = new VisualElement();
-            _body.AddToClassList("body");
-            _scroll.Add(_body);
             _body.Add(Text(title, "eyebrow"));
             _body.Add(Text(subtitle, "subtitle"));
             if (entering)
@@ -593,12 +615,10 @@ namespace AshenSpire.Presentation
         }
         private void SetMapSurface(bool active)
         {
-            if (_scroll == null || _body == null) return;
+            if (_body == null) return;
             _body.EnableInClassList("map-screen", active);
-            _scroll.contentContainer.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
-            _body.style.height = active ? new StyleLength(Length.Percent(100)) : new StyleLength(StyleKeyword.Auto);
-            _body.style.flexShrink = active ? 1 : 0;
-            if (active) _scroll.scrollOffset = Vector2.zero;
+            // The map is a fixed JS screen: the body leaves the scroll region and fills the viewport.
+            ScreenRouter.SetFixed(_body, active);
         }
         private Button AddButton(string id, string label, Action clicked, string style = null)
         {
@@ -613,7 +633,7 @@ namespace AshenSpire.Presentation
             result.AddToClassList("button");
             if (style != null)
                 result.AddToClassList(style);
-            result.style.minHeight = Mathf.Max(50, ViewportLayout.MinimumTouchHeight(_displayHeight));
+            result.style.minHeight = Mathf.Max(50, ViewportLayout.MinimumTouchHeight(_displayScale));
             return result;
         }
         private static Label Text(string value, string style)

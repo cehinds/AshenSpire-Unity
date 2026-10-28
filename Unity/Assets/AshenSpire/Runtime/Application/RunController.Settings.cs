@@ -5,8 +5,10 @@
 // touching the file system, so the shipped catalog is built exactly as before.
 // SAVE: AshenSpire.Settings.v1 (OriginalPlayerSettings.ToJson) plus the three legacy ints
 // AshenSpire.ReducedMotion / FastMotion / Muted, which older builds and code paths read.
-// APPLY: Interface size slider x UI size choice -> PanelSettings.scale (OriginalDisplayOptions.PanelScale,
-// re-fitted on screen changes, restored on disable); SFX/UI/music buses from
+// APPLY: ApplyPanelScale runs the JS layout decider (ViewportLayout.Resolve, CSS px) with the UI size as
+// its zoom cap (JS: a named size is a ceiling), picks the wide or narrow PanelSettings, and sets that
+// panel's scale so 1 panel px shows as zoom x Interface-size-slider CSS px. Re-fitted on screen
+// changes; both panels' scales are restored on disable. SFX/UI/music buses from
 // AudioBusLevels.From (Domain: master multiplied, mute -> 0, music off -> 0).
 // MODS: StreamingAssets/Mods via OriginalModDirectorySource on desktop and in the editor.
 // WebGL/Android use a build-generated resource containing those same validated pack files.
@@ -15,14 +17,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AshenSpire.Domain.Original;
+using AshenSpire.Presentation;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.UIElements;
 namespace AshenSpire.Application
 {
     public sealed partial class RunController
     {
         private OriginalPlayerSettings _playerSettings;
-        private float _panelScaleBase = float.NaN;
+        private float _wideScaleBase = float.NaN, _narrowScaleBase = float.NaN;
+        private bool _ownsNarrowPanel;
         private OriginalModLoadResult _modResult;
         private bool _modsAttempted;
         private string _modNotice;
@@ -41,7 +46,6 @@ namespace AshenSpire.Application
                 _playerSettings.AnimationSpeed = quick ? OriginalPlayerSettings.LegacyFastAnimationSpeed : 1;
             }
             if (_diagnosticsEnabled) foreach (var note in notes) Debug.Log("ASHENSPIRE_SETTINGS " + note);
-            if (_panelSettings != null) _panelScaleBase = _panelSettings.scale;
             _view.PlayerSettings = _playerSettings;
             _view.ContentModStatus = ModStatus();
             _view.PlayerSettingsChanged += SavePlayerSettings;
@@ -59,8 +63,7 @@ namespace AshenSpire.Application
                 _view.InterfaceSoundRequested -= PlayInterfaceSound;
                 _view.SoundPreviewRequested -= PreviewSound;
             }
-            // PanelSettings is a shared asset; never leave the player's size in it.
-            if (_panelSettings != null && !float.IsNaN(_panelScaleBase)) _panelSettings.scale = _panelScaleBase;
+            RestorePanels();
         }
         private void ApplyPlayerSettings()
         {
@@ -76,19 +79,67 @@ namespace AshenSpire.Application
             _music?.SetMuted(_playerSettings.Muted);
             if (!_playerSettings.Muted) _music?.ApplySettings(100, levels.MusicPercent, levels.MusicOn);
         }
-        /// <summary>Interface size slider × UI size (Domain OriginalDisplayOptions.PanelScale). The panel scales with
-        /// the screen height (match 1), so at multiplier 1 it is referenceHeight tall and width × referenceHeight / height
-        /// wide; L and XL are capped against that. Called on settings change, on load and when the screen changes.</summary>
+        /// <summary>The narrow panel (a runtime copy of the wide one when the scene has none) and the scales to restore.</summary>
+        private void PreparePanels()
+        {
+            if (_panelSettings == null) return;
+            if (_narrowPanelSettings == null)
+            {
+                _narrowPanelSettings = Instantiate(_panelSettings);
+                _narrowPanelSettings.name = "ExpeditionPanelNarrow (runtime)";
+                _narrowPanelSettings.referenceResolution = new Vector2Int((int)JsUiTokens.UiScale.NarrowWidth, (int)JsUiTokens.UiScale.NarrowHeight);
+                _ownsNarrowPanel = true;
+            }
+            _wideScaleBase = _panelSettings.scale; _narrowScaleBase = _narrowPanelSettings.scale;
+        }
+        /// <summary>PanelSettings are shared assets: never leave the player's size or a swapped panel behind.</summary>
+        private void RestorePanels()
+        {
+            if (_panelSettings != null && !float.IsNaN(_wideScaleBase)) _panelSettings.scale = _wideScaleBase;
+            if (_narrowPanelSettings != null && !float.IsNaN(_narrowScaleBase)) _narrowPanelSettings.scale = _narrowScaleBase;
+            if (_ownsNarrowPanel && _narrowPanelSettings != null)
+            {
+                var document = GetComponent<UIDocument>();
+                if (document != null && document.panelSettings == _narrowPanelSettings) document.panelSettings = _panelSettings;
+                Destroy(_narrowPanelSettings); _narrowPanelSettings = null; _ownsNarrowPanel = false;
+            }
+        }
+        /// <summary>
+        /// The JS layout decision (src/main.js applyUiScale), in CSS px: ViewportLayout.Resolve picks wide or
+        /// narrow and the zoom, with the UI size as the zoom's cap (Auto uncapped). The matching PanelSettings
+        /// (Scale With Screen Size at the JS reference size) gets scale = zoom × slider / its own fit, so one
+        /// panel px shows as zoom × slider CSS px — 1 USS px = 1 JS CSS px at the reference sizes. Safe-area
+        /// insets convert to panel px with the same factor. Called on load, on settings change and when the
+        /// screen, canvas or safe area changes.
+        /// </summary>
         private void ApplyPanelScale()
         {
-            if (_playerSettings == null || _panelSettings == null || float.IsNaN(_panelScaleBase)) return;
-            var height = Math.Max(1, Screen.height);
-            var referenceHeight = (double)_panelSettings.referenceResolution.y;
-            var logicalHeight = referenceHeight / _panelScaleBase;
-            var logicalWidth = Screen.width * referenceHeight / height / _panelScaleBase;
-            var scale = _panelScaleBase * (float)OriginalDisplayOptions.PanelScale(_playerSettings.UiScale, _playerSettings.UiSize, logicalWidth, logicalHeight);
-            if (_panelSettings.scale != scale) _panelSettings.scale = scale;
+            if (_panelSettings == null || float.IsNaN(_wideScaleBase)) return;
+            var devicePixels = DisplayViewport.DevicePixelRatio; // browser devicePixelRatio; dpi/160 on phones; 1 on desktop
+            var cssHeight = Math.Max(1, Screen.height) / devicePixels;
+            var cssWidth = Math.Max(1, Screen.width) / devicePixels;
+            var size = _playerSettings?.UiSize ?? "Auto";
+            var cap = string.Equals(size, "Auto", StringComparison.OrdinalIgnoreCase) ? double.PositiveInfinity : OriginalDisplayOptions.UiSizeFactor(size);
+            var layout = ViewportLayout.Resolve(cssWidth, cssHeight, cap);
+            // The numeric Interface size slider (Unity-only) multiplies the JS zoom; Auto adds no factor.
+            var slider = _playerSettings == null ? 1 : OriginalDisplayOptions.PanelScale(_playerSettings.UiScale, "Auto", 0, 0);
+            var panel = layout.Narrow && _narrowPanelSettings != null ? _narrowPanelSettings : _panelSettings;
+            var document = GetComponent<UIDocument>();
+            if (document != null && document.panelSettings != panel) document.panelSettings = panel; // AshenedSpire's wide/narrow swap
+            var fit = ViewportLayout.PanelFit(cssWidth, cssHeight, panel.referenceResolution.x, panel.referenceResolution.y, (int)panel.screenMatchMode, panel.match);
+            var displayScale = layout.Zoom * slider;
+            var scale = (float)(displayScale / Math.Max(1e-6, fit));
+            if (panel.scale != scale) panel.scale = scale;
+            _view?.SetLayout(layout, displayScale);
+            // Safe area: screen pixels -> panel px (physical px per panel px = displayScale × devicePixels).
+            var perPanel = (float)Math.Max(1e-6, displayScale * devicePixels);
+            var safe = Screen.safeArea;
+            _view?.SetSafeArea((Screen.height - safe.yMax) / perPanel, (Screen.width - safe.xMax) / perPanel, safe.yMin / perPanel, safe.xMin / perPanel);
+            if (_diagnosticsEnabled && (_lastLayout == null || !_lastLayout.SameAs(layout)))
+                Debug.Log("ASHENSPIRE_LAYOUT " + new Newtonsoft.Json.Linq.JObject { ["zoom"] = layout.Zoom, ["narrow"] = layout.Narrow, ["compact"] = layout.Compact, ["short"] = layout.Short, ["formFactor"] = layout.FormFactor, ["cssWidth"] = Math.Round(cssWidth, 1), ["cssHeight"] = Math.Round(cssHeight, 1), ["slider"] = slider }.ToString(Formatting.None));
+            _lastLayout = layout;
         }
+        private UiLayout _lastLayout;
         private void PlayInterfaceSound() => _audio?.PlayInterface();
         private void PreviewSound() => _audio?.Play("guard");
         private void SavePlayerSettings()
