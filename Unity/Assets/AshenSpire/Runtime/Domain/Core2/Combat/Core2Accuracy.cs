@@ -46,6 +46,10 @@ namespace AshenSpire.Domain.Core2
         public string RequiredRange { get; set; }
         /// <summary>The hit is one contact of an action whose Accuracy was rolled when it began (JS carrier.expansionContact): no second roll.</summary>
         public bool AccuracyResolved { get; set; }
+        /// <summary>JS profileDamageReceipt's 'status-rules' stage: the status rules' hit plan amount (proposalHitPlan), unrounded; null for none.</summary>
+        public Func<double, double> StatusRules { get; set; }
+        /// <summary>JS defensiveCombatStance: the stance a target with two or more active stances defends with; null reads its stance.</summary>
+        public Core2Stance DefendingStance { get; set; }
     }
 
     public sealed class Core2HitPreview

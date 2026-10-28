@@ -35,8 +35,10 @@ namespace AshenSpire.Domain.Core2
         public string TargetId { get; set; }
         /// <summary>A Counter's return route: advance (pay the Advance its return needs) or throw; null for other cards.</summary>
         public string RangeRoute { get; set; }
+        /// <summary>JS play intent choice: the maneuver an enterStance choose: 'maneuver' card enters.</summary>
+        public string Choice { get; set; }
         public Core2ReactionPlay Clone() => (Core2ReactionPlay)MemberwiseClone();
-        public bool SameAs(Core2ReactionPlay other) => other != null && other.CardInstanceId == CardInstanceId && other.TargetId == TargetId && other.RangeRoute == RangeRoute;
+        public bool SameAs(Core2ReactionPlay other) => other != null && other.CardInstanceId == CardInstanceId && other.TargetId == TargetId && other.RangeRoute == RangeRoute && other.Choice == Choice;
     }
 
     /// <summary>One card the player may react with (JS pendingReaction.options[]): its price is what playing it pays.</summary>
@@ -164,6 +166,7 @@ namespace AshenSpire.Domain.Core2
         /// </summary>
         public void ChooseReaction(string offerId, string optionId)
         {
+            RequireNoCardChoice();
             if (Result != null) throw new InvalidOperationException("Combat is over");
             AnswerReaction(Seat, offerId, optionId);
             ResumeEnemyTurn();

@@ -161,6 +161,21 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 r
   `actionPacing.json` (step pause, animation step, Auto speed, mobile-fast preset and bounds), the
   animation speed table, the Combat settings rows and Accessibility's `oneTapPlay` with their
   defaults, the combat log's sizes, palette and UI copy.
+- **Content coverage:** `UnityTests/Core2Content/ContentCoverage.cs` walks every Core 2 content row a run
+  can produce (core and base cards, adapter cards, gear grants, relic, gear and class property rules,
+  status hooks and procs, the enabled status rules of every status a walked effect can apply, enemy
+  moves and phases, flasks, events) and fails on any opcode, target, predicate, formula op, formula or
+  turn metric, trigger event, status-rule behaviour or semantic field the domain does not handle.
+  "Handled" is read from the C# source (the case labels of `RunOpcode`, `ResolveRawTargets`,
+  `Predicate`, `Node`, `Metric`, `AbilityMetric`, `Behaviors`, `Core2RunEvents.Execute` / `Predicate` /
+  `Number`, and the events the fight emits). What JS itself never runs in a Core 2 fight
+  (`stanceEntered`, `arcaneBreak` / `arcaneBuildup`, `hpOfferingPaid`, `meterFilled`) is refused by name
+  with a guard over the content that keeps the reason true, as are the few C# refusals left. The
+  `content-coverage` oracle family (tools/oracle-js-core2.mjs `coverageFight`) runs short fights that
+  carry every relic with a trigger and play the base cards (chosen cards take the first candidates, a
+  maneuver choice plays Smash); `OracleReplay.ContentCoverage` replays them. `mechanics.json` now also
+  carries `actionCosts.enemyBlightShift` and `counterRules.preparedPoiseMultiplier`, and a fight start
+  records the run's skill ledger (`player.skills`) when it has one.
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
   shard. `Core2Run` runs in the rules shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.

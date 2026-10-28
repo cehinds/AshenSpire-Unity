@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="OracleReplay.cs" />
+    <Compile Include="ContentCoverage.cs" />
     <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Core2/**/*.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>

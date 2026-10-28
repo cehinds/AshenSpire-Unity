@@ -36,6 +36,7 @@ namespace AshenSpire.Domain.Core2
         public void UseFlask(JObject flask, double amountMult = 1, string targetId = null)
         {
             if (Phase != "player" || Result != null) throw new InvalidOperationException("Flasks can only be used on the player turn");
+            RequireNoCardChoice();
             var p = Player;
             Core2Combatant target = null;
             if (targetId != null)

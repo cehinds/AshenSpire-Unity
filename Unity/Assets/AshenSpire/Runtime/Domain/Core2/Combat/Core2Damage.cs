@@ -144,7 +144,7 @@ namespace AshenSpire.Domain.Core2
             var attacking = Core2Stances.ConfiguredStance(carrier);
             // Stance capacity is 1 in Core 2 (no status grants a second stance), so the defending stance is the held one
             // (JS concurrentStances.js defensiveCombatStance with activeCombatStances of one row).
-            var defending = Core2Stances.ConfiguredStance(target?.Stance);
+            var defending = Core2Stances.ConfiguredStance(options?.DefendingStance ?? target?.Stance);
             var advantage = Core2Stances.StanceAdvantage(rules, attacking, defending);
             var flatReturn = carrier.Profile?.CounterReturnAttack == true;
             var share = MagicShare(rules, carrier);
@@ -186,6 +186,8 @@ namespace AshenSpire.Domain.Core2
             raw = Transition("matching-stance", "Matching stance effectiveness", raw, raw * stanceMultiplier, "offense", stanceMultiplier);
             if (!flatReturn && target != null && target.StatusStacks("vulnerable") > 0)
                 raw = Transition("vulnerable", "Vulnerable", raw, raw * rules.VulnerabilityMultiplier, "offense", rules.VulnerabilityMultiplier);
+            // JS: the status rules' hit plan (outgoing multipliers, caps) as the 'status-rules' stage, unrounded under FixCore.
+            if (options?.StatusRules != null && target != null && !flatReturn) raw = Transition("status-rules", "Other status modifiers", raw, options.StatusRules(raw));
             var defenseMultiplier = Core2Stances.StanceMitigationMultiplier(rules, attacking, defending, out var defenseAdvantage);
             var smashRule = advantage && attacking == "smash";
             // Core 2 Counter returns carry their advantage in the return itself (SPEC §17), so the chain does not multiply it again.

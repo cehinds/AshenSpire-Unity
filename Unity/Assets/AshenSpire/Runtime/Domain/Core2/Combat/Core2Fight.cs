@@ -22,7 +22,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AshenSpire.Domain.Core2
 {
-    public sealed class Core2CardInstance
+    public sealed partial class Core2CardInstance
     {
         public string InstanceId { get; set; }
         public string CardId { get; set; }
@@ -30,10 +30,14 @@ namespace AshenSpire.Domain.Core2
     }
 
     /// <summary>One event on the fight's bus (JS combat.eventLog row): its type and payload.</summary>
-    public sealed class Core2FightEvent
+    public sealed partial class Core2FightEvent
     {
         public string Type { get; set; }
         public JObject Data { get; set; }
+        /// <summary>JS event.abilityBefore: the player's ability ledger before the card that raised it was recorded (turnMetric reads it).</summary>
+        public Core2AbilityState AbilityBefore { get; set; }
+        /// <summary>JS enemyDied's targetStatusesBefore (a death receipt): the statuses the dead enemy held before the blow.</summary>
+        public Dictionary<string, Core2StatusInstance> TargetStatusesBefore { get; set; }
         public override string ToString() => Type + " " + Data.ToString(Newtonsoft.Json.Formatting.None);
     }
 
@@ -100,6 +104,8 @@ namespace AshenSpire.Domain.Core2
         public List<KeyValuePair<string, int>> StartStatuses { get; set; } = new List<KeyValuePair<string, int>>();
         /// <summary>Where the player's ratings come from (JS ratingSources), for the damage receipt; built by the run layer (phase 8).</summary>
         public List<Core2RatingSource> RatingSources { get; set; } = new List<Core2RatingSource>();
+        /// <summary>JS createRunCombat skills (a copy of run.skills): each track's level, which skillLevelAtLeast reads.</summary>
+        public Dictionary<string, int> SkillLevels { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
 
         public static Core2FightSetup FromJson(JObject start)
         {
@@ -119,6 +125,7 @@ namespace AshenSpire.Domain.Core2
                 PrimaryWeaponRange = (string)start["primaryWeaponRange"] ?? "melee",
                 Deck = ((JArray)start["deck"]).OfType<JObject>().Select(c => new Core2CardInstance { InstanceId = (string)c["instanceId"], CardId = (string)c["cardId"] }).ToList(),
             };
+            foreach (var skill in (player["skills"] as JObject ?? new JObject()).Properties()) setup.SkillLevels[skill.Name] = (int?)skill.Value["level"] ?? 0;
             foreach (var row in (player["ratingSources"] as JArray ?? new JArray()).OfType<JObject>())
                 setup.RatingSources.Add(new Core2RatingSource { Name = (string)row["name"], Kind = (string)row["kind"], SourceId = (string)row["sourceId"], Slot = (string)row["slot"], Ar = (double?)row["ar"] ?? 0, Pr = (double?)row["pr"] ?? 0 });
             foreach (var card in (start["cards"] as JObject ?? new JObject()).Properties())
@@ -183,6 +190,34 @@ namespace AshenSpire.Domain.Core2
         public bool CounterInterrupted { get; set; }
         public int EnergySpent { get; set; }
         public int ManaSpent { get; set; }
+        /// <summary>JS meta.staminaSpent (the formula ctx's staminaSpent).</summary>
+        public int StaminaSpent { get; set; }
+        /// <summary>JS meta.abilityBefore: the ledger before the card that queued this action was recorded (formula metricsBefore).</summary>
+        public Core2AbilityState AbilityBefore { get; set; }
+        /// <summary>JS meta.ordinalThisCombat: the card's play ordinal (everyNthCardThisCombat reads it before the counter).</summary>
+        public int? OrdinalThisCombat { get; set; }
+        /// <summary>JS meta.choice: the play's chosen option (enterStance choose: the maneuver).</summary>
+        public string Choice { get; set; }
+        /// <summary>JS meta.linkedDepth: how deep a castLinkedSpell chain is (bounded at 8).</summary>
+        public int LinkedDepth { get; set; }
+        /// <summary>JS meta.killReceipt: the death receipt a proc burst hands its HP loss (statuses before, the status's source).</summary>
+        public (Dictionary<string, Core2StatusInstance> StatusesBefore, string SourceId)? KillReceipt { get; set; }
+        /// <summary>JS meta.rangeTargetBatches: the targets each hit committed when its range plan was accepted.</summary>
+        public List<List<Core2Combatant>> RangeTargetBatches { get; set; }
+        /// <summary>JS meta.rangeSiteBatches: each hit's envelope sites (or an inherited hook's sampled targets and sites).</summary>
+        public List<List<(Core2Combatant Entity, string SiteId)>> RangeSiteBatches { get; set; }
+        /// <summary>JS meta.expansionExecutionRepeat / rangeHitIndex: the repeat and hit being executed.</summary>
+        public int ExecRepeat { get; set; }
+        public int RangeHitIndex { get; set; }
+        /// <summary>JS meta.proposalTargetDecisions for an ungrouped action.</summary>
+        public Dictionary<string, Core2ProposalPlan> ProposalDecisions { get; set; }
+        /// <summary>JS meta.abilityCharge*: the card-charge riders attachAbilityCharges put on this action.</summary>
+        public int ChargeDamage { get; set; }
+        public int ChargeDamageEffect { get; set; }
+        public int ChargeBreak { get; set; }
+        public int ChargeBlock { get; set; }
+        public int ChargeHeal { get; set; }
+        public int ChargeBuildup { get; set; }
         /// <summary>JS meta.expansionContacts (flattened): the planned contacts this action makes, as (target row key, contact index).</summary>
         public List<(string Key, int Index)> ContactRefs { get; set; } = new List<(string, int)>();
     }
@@ -219,6 +254,9 @@ namespace AshenSpire.Domain.Core2
         public Dictionary<string, List<Core2FollowTrace>> FollowTrace { get; } = new Dictionary<string, List<Core2FollowTrace>>(StringComparer.Ordinal);
         /// <summary>The player's Reaction switch (JS player.reactionsEnabled): on by default; off offers nothing (armed Counters still answer).</summary>
         public bool ReactionsEnabled { get; set; } = true;
+        /// <summary>JS combat.proposalRewards.cinders: cinders a card earned in this fight (addCinders), settled onto the run at its end.</summary>
+        public int RewardCinders { get; set; }
+        public bool RewardCindersSettled { get; set; }
 
         private readonly List<Core2FightAction> _queue = new List<Core2FightAction>();
         /// <summary>A planning sink (JS ctx.enqueue redirected by pushEnemyReaction): queued actions go here instead.</summary>
@@ -339,7 +377,10 @@ namespace AshenSpire.Domain.Core2
         internal const string Undefined = "\u0000undefined";
 
         /// <summary>JS emitEvent: label the event with the current action, log it, then scan the triggers listening for it.</summary>
-        public Core2FightEvent Emit(string type, JObject payload)
+        public Core2FightEvent Emit(string type, JObject payload) => Emit(type, payload, null, null);
+
+        /// <summary>Emit with the JS payload fields kept off the JSON data: a death receipt's statuses, a play's abilityBefore.</summary>
+        private Core2FightEvent Emit(string type, JObject payload, Dictionary<string, Core2StatusInstance> statusesBefore = null, Core2AbilityState before = null, Core2Carrier lifecycle = null)
         {
             var data = payload ?? new JObject();
             var action = _currentAction;
@@ -361,11 +402,16 @@ namespace AshenSpire.Domain.Core2
                 if (p.Value is JValue v && v.Value == null && v.Type != JTokenType.Null) p.Value = JValue.CreateNull();
                 else if (p.Value is JValue u && u.Type == JTokenType.String && (string)u == Undefined) p.Remove();
             }
-            var ev = new Core2FightEvent { Type = type, Data = data };
+            // JS emitEvent: a cardPlayed / cardResolved names the play's carrier (its lifecycle sites) when no action is running.
+            var lifecycleCarrier = (type == "cardPlayed" || type == "cardResolved") && action == null ? (lifecycle ?? _pendingPlay?.Carrier) : null;
+            if (lifecycleCarrier?.RangeLineage == null) lifecycleCarrier = null;
+            var ev = new Core2FightEvent { Type = type, Data = data, AbilityBefore = before ?? (action?.Card != null ? action.AbilityBefore : null), TargetStatusesBefore = statusesBefore,
+                RangeOrigin = EventRangeOrigin(type, data, action, lifecycleCarrier) };
             Events.Add(ev);
             OnEvent?.Invoke(ev);
+            RecordAbilityEvent(ev);
             if (++_emitDepth > 64) throw new InvalidOperationException("Trigger recursion exceeded 64 (event '" + type + "')");
-            try { ScanTriggers(ev); }
+            try { ScanTriggers(ev, action?.Card ?? lifecycleCarrier); }
             finally { _emitDepth--; }
             return ev;
         }
@@ -375,7 +421,7 @@ namespace AshenSpire.Domain.Core2
         /// every living combatant's status hooks, fire as they are found; a relic source announces relicTriggered after it
         /// fires. Enemy phases listening on a bus event fire last.
         /// </summary>
-        private void ScanTriggers(Core2FightEvent ev)
+        private void ScanTriggers(Core2FightEvent ev, Core2Carrier rangeCarrier = null)
         {
             if (Player == null) return;
             foreach (var mount in _mounts.OrderBy(m => m.SourceKey, StringComparer.Ordinal))
@@ -385,7 +431,7 @@ namespace AshenSpire.Domain.Core2
                     var trigger = mount.Triggers[i];
                     if ((string)trigger["on"] != ev.Type) continue;
                     var origin = new JObject { ["kind"] = mount.Kind, ["id"] = mount.Id };
-                    if (MaybeFire("property:player:" + mount.SourceKey + ":" + i, trigger, Player, ev, origin) && mount.Kind == "relic" && ev.Type != "relicTriggered")
+                    if (MaybeFire("property:player:" + mount.SourceKey + ":" + i, trigger, Player, ev, origin, rangeCarrier) && mount.Kind == "relic" && ev.Type != "relicTriggered")
                         Emit("relicTriggered", new JObject { ["relicId"] = mount.Id });
                 }
             }
@@ -397,7 +443,7 @@ namespace AshenSpire.Domain.Core2
                     var hooks = StatusHooks(statusId);
                     for (var i = 0; i < hooks.Count; i++)
                         if ((string)hooks[i]["on"] == ev.Type)
-                            MaybeFire("status:" + entity.Id + ":" + statusId + ":" + i, hooks[i], entity, ev, new JObject { ["kind"] = "status", ["id"] = statusId });
+                            MaybeFire("status:" + entity.Id + ":" + statusId + ":" + i, hooks[i], entity, ev, new JObject { ["kind"] = "status", ["id"] = statusId }, rangeCarrier);
                 }
             }
             foreach (var enemy in Enemies.Where(e => e.Alive).ToList())
@@ -415,7 +461,7 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>JS maybeFire: once / limitPerTurn gates, the trigger's predicate, then its effects are queued.</summary>
-        private bool MaybeFire(string key, JObject trigger, Core2Combatant owner, Core2FightEvent ev, JObject origin)
+        private bool MaybeFire(string key, JObject trigger, Core2Combatant owner, Core2FightEvent ev, JObject origin, Core2Carrier rangeCarrier = null)
         {
             _triggerState.TryGetValue(key, out var st);
             if (!_triggerState.ContainsKey(key)) st = (0, -1, 0);
@@ -426,14 +472,18 @@ namespace AshenSpire.Domain.Core2
             if (trigger["if"] is JObject predicate && !Predicate(predicate, owner, target, ev, null)) { _triggerState[key] = st; return false; }
             st.Fires += 1; st.TurnFires += 1;
             _triggerState[key] = st;
-            var actions = (trigger["do"] as JArray ?? new JArray()).OfType<JObject>()
-                .Select(effect => new Core2FightAction { Effect = effect, Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } })
-                .ToList();
-            // JS inheritedRangeAction: an event raised by the owner's own range-planned action (its card's committed lineage)
-            // carries a rangeOrigin, and the trigger rides that plan; any other trigger is quoted on its own.
-            var parent = _currentAction;
-            var inherited = parent != null && owner != null && parent.Source == owner && parent.Group?.RangePlan != null;
-            foreach (var action in inherited ? actions : AcceptIndependentTrigger(owner, actions, key)) Enqueue(action);
+            // JS maybeFire: each effect rides the envelope edge its event's site names (inheritedRangeAction), else the
+            // trigger is quoted on its own (acceptIndependentTrigger).
+            var effects = (trigger["do"] as JArray ?? new JArray()).OfType<JObject>().ToList();
+            var actions = new List<Core2FightAction>();
+            for (var effectIndex = 0; effectIndex < effects.Count; effectIndex++)
+            {
+                var action = new Core2FightAction { Effect = effects[effectIndex], Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } };
+                var inherited = owner == null ? null : InheritedRangeAction(key, owner, ev, effectIndex, rangeCarrier);
+                if (inherited != null) { action.Card = inherited.Value.Carrier; action.RangeSiteBatches = inherited.Value.Batches; }
+                actions.Add(action);
+            }
+            foreach (var action in actions.Any(a => a.Card?.RangeEdgeId != null) ? actions : AcceptIndependentTrigger(owner, actions, key)) Enqueue(action);
             return true;
         }
 
@@ -446,46 +496,157 @@ namespace AshenSpire.Domain.Core2
 
         public Core2Combatant Find(string id) => Player?.Id == id ? Player : Enemies.FirstOrDefault(e => e.Id == id);
 
-        /// <summary>JS evalPredicate for the predicates Core 2 property rules use.</summary>
+        /// <summary>
+        /// JS triggers.js evalPredicate (the closed set): owner, target, event and the acting action (its card and meta) as
+        /// the evaluation context. The co-op seat forms collapse to the one player entity.
+        /// </summary>
         private bool Predicate(JObject pred, Core2Combatant owner, Core2Combatant target, Core2FightEvent ev, Core2FightAction action)
         {
+            Core2Combatant Of(string of) => of switch
+            {
+                "player" => Player,
+                "self" => action?.Source ?? owner ?? Player,
+                "owner" => owner ?? action?.Source,
+                "enemy" or "target" => target,
+                _ => throw new InvalidOperationException("Predicate 'of' ref '" + of + "' is not resolvable (use self/owner/player/enemy/target)"),
+            };
+            var data = ev?.Data;
             switch ((string)pred["p"])
             {
                 case "all": return (pred["preds"] as JArray ?? new JArray()).OfType<JObject>().All(p => Predicate(p, owner, target, ev, action));
                 case "any": return (pred["preds"] as JArray ?? new JArray()).OfType<JObject>().Any(p => Predicate(p, owner, target, ev, action));
                 case "not": return !Predicate((JObject)pred["pred"], owner, target, ev, action);
-                case "eventIsAttack": return (bool?)ev?.Data["isAttack"] == true;
-                case "eventSourceIsOwner": return (string)ev?.Data["sourceId"] == owner?.Id;
-                case "eventTargetIsOwner": return (string)ev?.Data["targetId"] == owner?.Id;
-                case "healPositive": return ((int?)ev?.Data["amount"] ?? 0) > 0;
+                case "turnMetric":
+                {
+                    // JS: the owner's ledger as the action's (or event's) abilityBefore snapshot left it, unless snapshot 'current'.
+                    var entity = owner ?? action?.Source ?? Player;
+                    var cardId = (string)pred["cardId"] == "event" ? (string)data?["cardId"] ?? action?.Card?.Id : (string)pred["cardId"];
+                    var snapshot = (string)pred["snapshot"] == "current" ? null : action?.AbilityBefore ?? ev?.AbilityBefore;
+                    var value = AbilityMetric(entity, pred, cardId, snapshot);
+                    return (pred["atLeast"] == null || value >= (double)pred["atLeast"]) && (pred["atMost"] == null || value <= (double)pred["atMost"]);
+                }
+                case "chargeAvailable": return (owner ?? action?.Source ?? Player)?.AbilityRiders?.Charges.ContainsKey((string)pred["key"]) == true;
+                case "eventChargeConsumed": return ev?.Type == "cardChargeConsumed" && data?["keys"] is JArray keys && keys.Any(k => (string)k == (string)pred["key"]);
+                case "eventDiscardExplicit":
+                {
+                    var reason = (string)data?["reason"];
+                    return ev?.Type == "cardDiscarded" && (bool?)data["explicit"] == true && (reason == "effect" || reason == "chosen" || reason == "random");
+                }
+                case "enemyKilledWithStatus":
+                {
+                    // JS: the death receipt's statuses before the blow (a meter status reads its meter value).
+                    var status = (string)pred["status"];
+                    return ev?.Type == "enemyDied" && ev.TargetStatusesBefore != null && ev.TargetStatusesBefore.TryGetValue(status, out var row) && row.Stacks > 0;
+                }
+                case "resourcePaid":
+                {
+                    var paid = (string)pred["resource"] == "mana" ? action?.ManaSpent ?? 0 : action?.StaminaSpent ?? 0;
+                    return paid >= ((int?)pred["amount"] ?? 1);
+                }
+                case "inStance":
+                {
+                    // JS: any active combat stance with that maneuver (a Prepared one answers 'casting').
+                    var stance = (string)pred["stance"];
+                    return ActiveCombatStances(Player).Any(row => row.Maneuver == stance || row.Maneuver == "prepared" && stance == "casting");
+                }
                 case "hasStatus":
                 {
-                    var of = (string)pred["of"];
-                    var entity = of == "owner" || of == "self" || of == null ? owner : of == "target" ? target : of == "player" ? Player : owner;
-                    return (entity?.StatusStacks((string)pred["status"]) ?? 0) > 0;
+                    var atLeast = (int?)pred["atLeast"] ?? 1;
+                    if ((string)pred["of"] == "allEnemies") return Enemies.Any(e => e.Alive && StacksWithStance(e, (string)pred["status"]) >= atLeast);
+                    var entity = Of((string)pred["of"]);
+                    return entity != null && StacksWithStance(entity, (string)pred["status"]) >= atLeast;
                 }
                 case "hasBlock":
                 {
                     // JS triggers.js hasBlock (the relics Goldbough Sapling and Radiant Aegis a run can win): the entity holds Block.
-                    var of = (string)pred["of"];
-                    var entity = of == "owner" || of == "self" || of == null ? owner : of == "target" ? target : of == "player" ? Player : owner;
+                    var entity = Of((string)pred["of"]);
                     return entity != null && entity.Block > 0;
                 }
-                case "skillLevelAtLeast": return false;
+                case "hpBelowPct":
+                {
+                    var entity = Of((string)pred["of"]);
+                    return entity != null && entity.Hp <= entity.MaxHp * (double)pred["pct"] / 100;
+                }
+                case "firstCardThisTurn": return Player.CardsPlayedThisTurn == 0;
+                case "firstAttackThisCombat": return Player.AttacksPlayedThisCombat == 0;
                 case "cardTagIs":
                 {
                     // The action's card (its authored tags), else the event's card tags.
                     var tag = (string)pred["tag"];
                     if (action?.Card != null) return action.Card.Tags.Contains(tag);
-                    return ev?.Data["cardTags"] is JArray tags && tags.Any(t => (string)t == tag);
+                    return data?["cardTags"] is JArray tags && tags.Any(t => (string)t == tag);
                 }
-                case "resourcePaid":
+                case "cardTypeIs":
+                    // JS: the card's KIND (cardKind, its classification tag), else the event's cardType.
+                    if (action?.Card != null) return CarrierKind(action.Card) == (string)pred["type"];
+                    return data != null && (string)data["cardType"] == (string)pred["type"];
+                case "eventIsAttack": return (bool?)data?["isAttack"] == true;
+                case "hpDamagePositive": return ev?.Type == "damageDealt" && ((int?)data["amount"] ?? 0) > ((int?)data["blocked"] ?? 0);
+                case "healPositive": return ev?.Type == "healed" && ((int?)data["amount"] ?? 0) > 0;
+                case "manaPositive": return ev?.Type == "manaRestored" && ((int?)data["amount"] ?? 0) > 0;
+                case "eventSourceIsOwner": return data != null && owner != null && (string)data["sourceId"] == owner.Id;
+                case "eventTargetIsOwner": return data != null && owner != null && (string)data["targetId"] == owner.Id;
+                case "eventStatusIs": return data != null && (string)data["status"] == (string)pred["status"];
+                case "everyNthCardThisCombat":
                 {
-                    var paid = (string)pred["resource"] == "mana" ? action?.ManaSpent ?? 0 : action?.EnergySpent ?? 0;
-                    return paid >= ((int?)pred["amount"] ?? 1);
+                    var ordinal = action?.OrdinalThisCombat ?? Player.CardsPlayed;
+                    return ordinal > 0 && ordinal % (int)pred["n"] == 0;
+                }
+                case "random": return Rng.Float("misc") * 100 < (double)pred["pct"];
+                case "skillLevelAtLeast":
+                {
+                    // JS ledgerFor: the skill ledger the combat was handed (a copy of run.skills); no ledger reads level 0.
+                    var level = Setup.SkillLevels != null && Setup.SkillLevels.TryGetValue((string)pred["skill"], out var l) ? l : 0;
+                    return level >= (int)pred["level"];
+                }
+                case "classLevelAtLeast":
+                {
+                    if ((owner ?? Player)?.ClassUnequipped == true) return false;
+                    var classId = owner?.ClassId ?? Player?.ClassId;
+                    var level = classId != null && Setup.SkillLevels != null && Setup.SkillLevels.TryGetValue("class:" + classId, out var l) ? l : 0;
+                    return level >= (int)pred["level"];
                 }
             }
-            throw new NotSupportedException("Predicate '" + (string)pred["p"] + "' is not ported");
+            throw new InvalidOperationException("Unknown predicate '" + (string)pred["p"] + "'");
+        }
+
+        /// <summary>JS statusStacksWithStance: the Core Staggered stance counts as one `staggered` stack.</summary>
+        private int StacksWithStance(Core2Combatant entity, string status)
+        {
+            var stacks = entity.StatusStacks(status);
+            return stacks > 0 || status != "staggered" || !ActiveCombatStances(entity).Any(s => s.Maneuver == "staggered") ? stacks : 1;
+        }
+
+        /// <summary>JS cardKind for a carrier: attack, skill, power, status or curse from its classification, else its type.</summary>
+        private static string CarrierKind(Core2Carrier carrier)
+        {
+            var kinds = carrier.KindIds.Concat(carrier.Tags).ToList();
+            if (kinds.Contains("classification.attack")) return "attack";
+            if (kinds.Contains("classification.skill")) return "skill";
+            if (kinds.Contains("classification.power")) return "power";
+            if (kinds.Contains("classification.status")) return "status";
+            if (kinds.Contains("classification.curse")) return "curse";
+            return carrier.Type;
+        }
+
+        /// <summary>
+        /// JS concurrentStances.js activeCombatStances: no stance is none; capacity 1 is the stance alone; a larger capacity
+        /// (base.many-forms) keeps the remembered stances still in force, one per camp and maneuver, newest last.
+        /// </summary>
+        private List<Core2Stance> ActiveCombatStances(Core2Combatant entity)
+        {
+            if (entity?.Stance == null) return new List<Core2Stance>();
+            var capacity = StanceCapacity(entity);
+            if (capacity <= 1) return new List<Core2Stance> { entity.Stance };
+            var unique = new List<(string Key, Core2Stance Stance)>();
+            foreach (var stance in entity.ConcurrentStances.Concat(new[] { entity.Stance }))
+            {
+                if (stance?.Maneuver == null || stance.ExpiresOnOwnerCycle is int expiry && expiry <= entity.OwnerCycle) continue;
+                var key = stance.Camp + ":" + stance.Maneuver;
+                var at = unique.FindIndex(u => u.Key == key);
+                if (at >= 0) unique[at] = (key, stance); else unique.Add((key, stance));
+            }
+            return unique.Skip(Math.Max(0, unique.Count - capacity)).Select(u => u.Stance).ToList();
         }
 
         /// <summary>
@@ -543,6 +704,7 @@ namespace AshenSpire.Domain.Core2
                 _queue.RemoveAt(0);
                 StartQueuedEnemy(action);
                 ExecuteAction(action);
+                if (HasCardChoice) return;
                 EndCheck();
                 if (Result != null) { _queue.Clear(); return; }
             }
@@ -574,14 +736,16 @@ namespace AshenSpire.Domain.Core2
         private void StartPlayerTurn()
         {
             Ctx.Turn += 1;
+            ReturnHiddenCards();
             EnemyReactionRolls.Clear();
             Phase = "player";
             var p = Player;
             DecayAtTurnStart(p);
+            BeginAbilityTurn(p);
             _commands = 0;
             p.CardsPlayedThisTurn = 0;
-            // (2) Block is lost (no Core 2 relic keeps any).
-            p.Block = 0;
+            // (2) Block is lost but for what a retain rule keeps (no Core 2 relic carries retainBlockUpTo).
+            p.Block = Math.Min(p.Block, ProposalRetained(p));
             p.Barrier = 0;
             StartTacticalTurn(p);
             p.Stamina = Rules.Includes("sp") ? Math.Max(0, p.MaxStamina - p.PendingStaminaLoss) : 0;
@@ -589,6 +753,7 @@ namespace AshenSpire.Domain.Core2
             p.PendingStaminaLoss = 0;
             DrawCards(Math.Max(1, HandMax));
             Emit("playerTurnStart", new JObject { ["turn"] = Turn });
+            ProposalTurn(p, "start");
             FireOwnerHooks(p, "ownerTurnStart");
             DrainQueue();
             if (Result == null)
@@ -617,6 +782,7 @@ namespace AshenSpire.Domain.Core2
         {
             if (Result != null) throw new InvalidOperationException("Combat is over");
             RequireNoPendingReaction();
+            RequireNoCardChoice();
             if (Phase != "player") throw new InvalidOperationException("Not the player turn");
             EndPlayerTurn();
             if (Result != null) return;
@@ -636,6 +802,7 @@ namespace AshenSpire.Domain.Core2
             var p = Player;
             _preserveLockedHand = ControlRestrictions(p).Locked;
             Emit("playerTurnEnd", new JObject { ["turn"] = Turn });
+            ProposalTurn(p, "end");
             FireOwnerHooks(p, "ownerTurnEnd");
             DrainQueue();
             if (Result != null) return;
@@ -672,7 +839,7 @@ namespace AshenSpire.Domain.Core2
             var keep = new List<Core2CardInstance>();
             foreach (var card in Hand)
             {
-                if (_preserveLockedHand) keep.Add(card);
+                if (_preserveLockedHand || RetainedCard(card)) keep.Add(card);
                 else if (Core2Json.Strings(Content.Card(card.CardId).Raw["keywords"]).Contains("ethereal")) toExhaust.Add(card);
                 else toDiscard.Add(card);
             }

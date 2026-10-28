@@ -28,7 +28,7 @@ namespace AshenSpire.Domain.Core2
     public sealed class Core2DamageTypes
     {
         private sealed class TypeRow { public bool Physical; public double? MagicShare; }
-        private sealed class SchoolRow { public double? MagicShare; public string PhysicalType; }
+        private sealed class SchoolRow { public double? MagicShare; public string PhysicalType; public string MagicType; }
 
         private readonly Dictionary<string, TypeRow> _types;
         private readonly Dictionary<string, SchoolRow> _schools;
@@ -53,7 +53,7 @@ namespace AshenSpire.Domain.Core2
             }, StringComparer.Ordinal);
             _schools = ((table["schools"] as JObject) ?? new JObject()).Properties().ToDictionary(p => p.Name, p => new SchoolRow
             {
-                MagicShare = Finite(p.Value["magicShare"]), PhysicalType = (string)p.Value["physicalType"],
+                MagicShare = Finite(p.Value["magicShare"]), PhysicalType = (string)p.Value["physicalType"], MagicType = (string)p.Value["magicType"],
             }, StringComparer.Ordinal);
             var split = table["magicSplit"] as JObject ?? throw new InvalidDataException("damageTypes.magicSplit is required");
             MeleeSpellShare = Finite(split["meleeSpell"]) ?? throw new InvalidDataException("magicSplit.meleeSpell must be a number");
@@ -142,6 +142,15 @@ namespace AshenSpire.Domain.Core2
             if (school != null) return SchoolMagicShare(school);
             if (DamageTypeMagicShare(type) is double typed) return typed;
             return spell ? 1 : 0;
+        }
+
+        /// <summary>JS magicDamageTypeOf: the school's magic type, else the profile's type when it is a magic one.</summary>
+        public string MagicDamageTypeOf(Core2CombatProfile profile, IEnumerable<string> tags = null)
+        {
+            var school = SchoolOf(profile, tags);
+            if (school != null && _schools.TryGetValue(school, out var row) && row.MagicType != null) return row.MagicType;
+            var type = Canonical(profile?.DamageType);
+            return IsMagicDamageType(type) ? type : null;
         }
 
         /// <summary>JS isForceHit: the force school, or any Arcane (force) type or component.</summary>

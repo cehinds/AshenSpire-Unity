@@ -64,11 +64,15 @@ const {CORE2_ACTION_RULES_VERSION} = await js.load('src/model/core2ActionPolicy.
 const {combatRules} = await js.load('src/content/combatRules.js');
 const {combatExpansionMatchups} = await js.load('src/content/combatMatchups.js');
 const damageTypes = {damageTypes: combatRules.damageTypes, schools: combatRules.schools, magicSplit: combatRules.magicSplit};
-const counterRules = {defaultCoverage: combatExpansionMatchups.counter.defaultCoverage, maxReturnsPerCycle: combatExpansionMatchups.counter.maxReturnsPerCycle};
+const counterRules = {defaultCoverage: combatExpansionMatchups.counter.defaultCoverage, maxReturnsPerCycle: combatExpansionMatchups.counter.maxReturnsPerCycle,
+  // combatMatchups.js matchupPoiseMultiplier: a physical Attack's Poise into a Smash or Casting stance (content coverage).
+  preparedPoiseMultiplier: combatExpansionMatchups.attack.preparedPoiseMultiplier};
 // The enemy move price table and SP row an enemy plan reads (src/content/actionCosts.js; phase 5c): a move without
 // its own `sp` costs its stance's table price (model/actionCosts.js enemyMoveSpOf, stanceCost/actionStance).
-const {ACTION_COST_TABLE, ENEMY_SP_ROW} = await js.load('src/content/actionCosts.js');
-const actionCosts = {table: ACTION_COST_TABLE, enemySpRow: ENEMY_SP_ROW};
+// The blight shift is the attribute change a `blighted` enemy's SP pool reads (model/actionCosts.js enemyAttributesOf; the
+// burden budget, content coverage).
+const {ACTION_COST_TABLE, ENEMY_SP_ROW, ENEMY_BLIGHT_SHIFT} = await js.load('src/content/actionCosts.js');
+const actionCosts = {table: ACTION_COST_TABLE, enemySpRow: ENEMY_SP_ROW, enemyBlightShift: ENEMY_BLIGHT_SHIFT};
 // The expansion status-control rules a Core 2 fight snapshots (combatExpansionRules.statuses = content/combatStatusRules.js):
 // active-status caps, pressure gauges, chance recovery and its attribute profiles (phase 5c fight loop).
 const {combatStatusRules} = await js.load('src/content/combatStatusRules.js');

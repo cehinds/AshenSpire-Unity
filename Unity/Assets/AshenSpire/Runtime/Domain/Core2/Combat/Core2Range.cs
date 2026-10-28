@@ -156,7 +156,7 @@ namespace AshenSpire.Domain.Core2
     }
 
     /// <summary>JS rangeActionPlan result: the route, whether it reaches every target, the Advance SP, and each contact's receipt.</summary>
-    public sealed class Core2RangePlan
+    public sealed partial class Core2RangePlan
     {
         public string SourceKey { get; set; }
         /// <summary>advance or throw.</summary>

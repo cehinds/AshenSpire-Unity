@@ -8,9 +8,11 @@
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
 //    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
 //    families (matchups, Counter returns), 5c families (enemy SP planning, whole scripted fights) and
-//    phase 7 families (fights with reactions on, their combat log, Auto and pacing) and fuzz-fights (every enemy, reactions off and on) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
+//    phase 7 families (fights with reactions on, their combat log, Auto and pacing), fuzz-fights (every enemy, reactions off and on) and content-coverage (relics and base cards) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
 //    no replay yet would be reported PENDING with its reason. The phase 8 run families are checked
 //    for form here and replayed by UnityTests/Core2Run.
+// 2b. Static content coverage (ContentCoverage.cs): every op, target, predicate, formula, metric, trigger event, status-rule
+//    behaviour and field the Core 2 content uses is one the domain handles (or is refused by name with a reason).
 using System.Text;
 using System.Text.RegularExpressions;
 using AshenSpire.Domain.Core2;
@@ -146,6 +148,18 @@ try
     Check(!Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).Any(f => File.ReadAllText(f).Contains("using UnityEngine")), "no Core 2 loader, combat or run file uses UnityEngine");
     Check(Directory.GetFiles(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2"), "*.cs", SearchOption.AllDirectories).All(f => File.Exists(f + ".meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Combat.meta")) && File.Exists(Full("Unity/Assets/AshenSpire/Runtime/Domain/Core2/Run.meta")), "every Core 2 source file and folder has a Unity .meta");
 
+    // ---- 2b. Static content coverage (ContentCoverage.cs) --------------------------------
+    var coverage = ContentCoverage.Scan(content, root);
+    foreach (var error in coverage.SourceErrors) Console.Error.WriteLine("FAIL: coverage source: " + error);
+    foreach (var line in coverage.Unhandled) Console.Error.WriteLine("FAIL: coverage: unhandled " + line);
+    foreach (var line in coverage.Stale) Console.Error.WriteLine("FAIL: coverage: stale refusal " + line);
+    foreach (var line in coverage.GuardFailures) Console.Error.WriteLine("FAIL: coverage: " + line);
+    foreach (var line in coverage.RefusedLines) Console.WriteLine("REFUSED: " + line);
+    Check(coverage.SourceErrors.Count == 0, "content coverage reads the C# dispatch methods (opcodes, targets, predicates, formulas, metrics, status rules, run opcodes)");
+    Check(coverage.GuardFailures.Count == 0, "content coverage: every refusal's and guard's reason still holds on the content");
+    Check(coverage.Unhandled.Count == 0 && coverage.Stale.Count == 0, "content coverage: " + coverage.Used.Count + " ops, targets, predicates, formulas, metrics, trigger events, status-rule behaviours and fields used by Core 2 content; "
+        + coverage.Handled + " handled, " + coverage.Unhandled.Count + " unhandled, " + (coverage.Used.Count - coverage.Handled - coverage.Unhandled.Count) + " refused with a reason");
+
     // ---- 3. JS oracle fixtures -------------------------------------------------------------
     var expectedFamilies = new Dictionary<string, string>
     {
@@ -162,6 +176,7 @@ try
         ["fuzz-fights"] = null,
         ["combat-log"] = null,
         ["combat-automation"] = null,
+        ["content-coverage"] = null,
     };
     // Phase 8, 9 and 10 run-layer families: checked for form here, replayed case by case by UnityTests/Core2Run.
     var runFamilies = new[] { "run-creation", "run-maps", "card-faces", "reward-offers", "shop-stock", "rest-outcomes", "level-up", "scripted-runs", "scripted-runs-auto",
@@ -184,6 +199,7 @@ try
         ["fuzz-fights"] = OracleReplay.FuzzFights,
         ["combat-log"] = OracleReplay.CombatLog,
         ["combat-automation"] = Cases(OracleReplay.CombatAutomation),
+        ["content-coverage"] = OracleReplay.ContentCoverage,
     };
     OracleReplay.OraclesFolder = Full(Oracles);
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));

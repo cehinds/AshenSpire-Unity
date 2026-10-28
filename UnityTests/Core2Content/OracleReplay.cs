@@ -644,7 +644,45 @@ static class OracleReplay
     /// A whole fight with reactions on, driven as tools/oracle-js-core2.mjs reactive() drives the JS one: hold trait:reaction
     /// cards on the player turn, play the first affordable other card, End Turn; answer each offer by the policy.
     /// </summary>
-    public static (JObject Expected, Core2Fight Fight) ReactionFight(Core2Content content, JObject input, int maxTurns = 30)
+    /// <summary>
+    /// content-coverage: short fights carrying the relics or playing the cards the content-coverage port added, driven as
+    /// ReactionFight drives a fight plus the coverage policy (a maneuver choice plays input.choice; a chosen-card selection
+    /// takes the first candidates), compared as the fuzz digest plus the choices made and the piles, cinders and statuses at
+    /// the end.
+    /// </summary>
+    public static Result ContentCoverage(Core2Content content, JObject data)
+    {
+        var result = new Result();
+        foreach (var row in (JArray)data["cases"])
+        {
+            var input = (JObject)row["input"];
+            var expected = (JObject)row["expected"];
+            var label = "content coverage " + input["classId"] + " seed " + input["seed"] + " vs " + string.Join("+", input["enemyIds"].Select(t => (string)t))
+                + " relics [" + string.Join(",", (input["relics"] ?? new JArray()).Select(t => (string)t)) + "]";
+            JObject got;
+            try
+            {
+                var choices = new JArray();
+                var run = ReactionFight(content, input, 12, choices);
+                got = FuzzDigest(run.Expected);
+                got["choices"] = choices;
+                var f = run.Fight;
+                // A parity trace for one case (CORE2_TRACE=<seed>): every event's type and data, one per line.
+                if (Environment.GetEnvironmentVariable("CORE2_TRACE") == (string)input["seed"])
+                    File.WriteAllLines(Environment.GetEnvironmentVariable("CORE2_TRACE_FILE") ?? "core2-trace.txt", f.Events.Select(e => e.Type + " " + e.Data.ToString(Newtonsoft.Json.Formatting.None)));
+                string Statuses(Core2Combatant e) { var s = string.Join(",", e.Statuses.Where(p => p.Value.Stacks > 0).Select(p => p.Key + ":" + p.Value.Stacks).OrderBy(x => x, StringComparer.Ordinal)); return s.Length == 0 ? "-" : s; }
+                var end = new JArray("piles " + f.Draw.Count + "/" + f.Hand.Count + "/" + f.Discard.Count + "/" + f.Exhaust.Count, "cinders " + f.RewardCinders, "player " + Statuses(f.Player));
+                foreach (var e in f.Enemies) end.Add(e.Id + " " + Statuses(e));
+                got["end"] = end;
+                got = (JObject)Nulls(got);
+            }
+            catch (Exception error) { got = new JObject { ["error"] = error.GetType().Name + ": " + error.Message + " " + error.StackTrace?.Split('\n').FirstOrDefault()?.Trim() }; }
+            result.Compare(JToken.DeepEquals(got, expected), () => label + ": " + FirstDifference(got, expected));
+        }
+        return result;
+    }
+
+    public static (JObject Expected, Core2Fight Fight) ReactionFight(Core2Content content, JObject input, int maxTurns = 30, JArray choices = null)
     {
         var fight = Core2Fight.Create(content, Core2FightSetup.FromJson((JObject)input["start"]), ((JArray)input["enemyIds"]).Select(t => (string)t).ToList(), (uint)(int)input["seed"]);
         var policy = (string)input["policy"];
@@ -654,8 +692,17 @@ static class OracleReplay
         var turn = 0;
         void Settle()
         {
-            for (var i = 0; fight.PendingReaction != null && i < 50; i++)
+            for (var i = 0; (fight.PendingReaction != null || fight.PendingCardChoice != null) && i < 50; i++)
             {
+                if (fight.PendingCardChoice != null)
+                {
+                    // content-coverage: a chosen-card selection takes the first candidates in pile order.
+                    var choice = fight.PendingCardChoice;
+                    var ids = choice.CandidateIds.Take(choice.Count).ToList();
+                    choices?.Add(turn + " " + choice.CardId + " " + choice.Effect["op"] + " " + choice.Effect["from"] + ">" + ((string)choice.Effect["to"] ?? "-") + " " + string.Join(",", ids));
+                    fight.ChooseCards(ids);
+                    continue;
+                }
                 var pending = fight.PendingReaction;
                 var options = new JArray(pending.Options.Select(o =>
                 {
@@ -700,9 +747,10 @@ static class OracleReplay
                     Core2Costs costs;
                     try { costs = fight.CardCosts(card.InstanceId); } catch (InvalidOperationException) { continue; }
                     if (costs.Sp > fight.Player.Stamina || costs.Mp > fight.Player.Mana) continue;
+                    var choice = input["choice"] != null && fight.CardChoiceOptions(card.InstanceId) != null ? (string)input["choice"] : null;
                     foreach (var targetId in new[] { target?.Id, null })
                     {
-                        try { fight.PlayCard(card.InstanceId, targetId); played = card.CardId; break; }
+                        try { fight.PlayCard(card.InstanceId, targetId, choice); played = card.CardId; break; }
                         catch (InvalidOperationException) { }
                     }
                     if (played != null) break;
