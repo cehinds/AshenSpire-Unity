@@ -56,12 +56,18 @@ namespace AshenSpire.Domain.Core2
             return session;
         }
 
-        /// <summary>A loaded run. A fight that was in progress restarts from its entry checkpoint (JS: the encounter receipt).</summary>
+        /// <summary>
+        /// A loaded run. A fight that was in progress restarts from its entry checkpoint (JS: the encounter receipt), with
+        /// the flasks it held at entry. A fight an event chose but has not yet entered (the event still open) waits for
+        /// ContinueEvent.
+        /// </summary>
         public static Core2RunSession Resume(Core2RunData data, Core2Run run)
         {
             var session = new Core2RunSession(data, run, new Core2Rng(run.Seed, run.StreamCounters));
-            if (run.CombatEntered != null && run.Finish == null)
+            if (run.CombatEntered != null && run.Finish == null && run.OpenEvent == null)
             {
+                if (run.CombatEntered.FlaskCharges != null) run.FlaskCharges = run.CombatEntered.FlaskCharges.Clone();
+                if (run.CombatEntered.Flasks != null) run.Flasks = new List<string>(run.CombatEntered.Flasks);
                 session.Rng = new Core2Rng(run.Seed, run.CombatEntered.Counters ?? run.StreamCounters);
                 session.OpenFight(run.CombatEntered.NodeId, run.CombatEntered.EncounterId);
             }
@@ -171,7 +177,11 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS enterCombat: the entry checkpoint, then the fight on a copy of the run's RNG.</summary>
         private void EnterCombat(string nodeId, string encounterId)
         {
-            Run.CombatEntered = new Core2CombatEntry { NodeId = nodeId, EncounterId = encounterId, Counters = Rng.Counters().ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal) };
+            Run.CombatEntered = new Core2CombatEntry
+            {
+                NodeId = nodeId, EncounterId = encounterId, Counters = Rng.Counters().ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
+                FlaskCharges = Run.FlaskCharges?.Clone(), Flasks = new List<string>(Run.Flasks),
+            };
             OpenFight(nodeId, encounterId);
         }
 
