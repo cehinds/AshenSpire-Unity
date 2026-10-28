@@ -5,7 +5,7 @@ The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
 ## 0.0.43.0 · build 46 · 2026-10-28
 
-- Core 2 combat screen: the JS combat layout, reactions, Auto, combat log and pacing
+- Core 2 run screens: new runs start as Core 2 runs (map, spoils, shop, rest, event, Armoury, deck editor, finished run)
 
 ## 0.0.42.0 · build 45 · 2026-10-28
 

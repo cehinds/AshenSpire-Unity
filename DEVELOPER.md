@@ -37,6 +37,9 @@ node tools/oracle-js-core2.mjs ../AshenSpire           # writes UnityTests/Core2
 node tools/oracle-js-core2.mjs ../AshenSpire --check
 dotnet run --project UnityTests/Core2Content          # loads the export, checks it and the fixtures
 dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 run-layer oracles + focused checks
+node tools/unity-core2-text.mjs ../AshenSpire          # writes the run screens' UI text table (Presentation/Core2/Generated)
+node tools/unity-core2-text.mjs ../AshenSpire --check
+dotnet run --project UnityTests/Core2RunView          # plays whole seeded runs through the run screens' view models
 ```
 
 - **`GameContent/Unity/Core2/`** (generated; never edit): `profile.json` (the resolved profile
@@ -176,6 +179,8 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8-10 r
   the suite in the presentation shard). `node tools/core2-combat-art.mjs ../AshenSpire [--check]` writes
   `Resources/Core2Ui/card-art.json` and checks the reused `Art/js1815` files against the pinned build's art cache
   (it needs `.art-cache/ashenspire-hd-assets-v24`, so it is a local check).
+  shard. `Core2Run` runs in the rules shard, `Core2RunView` in the presentation shard, and the same JS checkout
+  checks `tools/unity-core2-text.mjs --check`. After a pin bump (SPEC §0.2 step 5), regenerate all three and commit them in the same PR.
 
 ## The CI door: a tool's silence is not its success (#12)
 
