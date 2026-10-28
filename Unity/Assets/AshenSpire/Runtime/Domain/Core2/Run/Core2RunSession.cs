@@ -112,9 +112,12 @@ namespace AshenSpire.Domain.Core2
             }
         }
 
+        /// <summary>Every screen command: the run must stand at the screen, and no deck edit may be open (Cancel restores the
+        /// run's piles, so a command that changed them in between would be undone with it).</summary>
         private void Require(Core2Screen screen)
         {
             if (Screen != screen) throw new InvalidOperationException("The run is at " + Screen + ", not " + screen);
+            RequireNoOpenDeckEdit();
         }
 
         // ---- map ---------------------------------------------------------------------------------------------------
@@ -127,7 +130,6 @@ namespace AshenSpire.Domain.Core2
         public Core2Screen Travel(string nodeId)
         {
             Require(Core2Screen.Map);
-            RequireNoOpenDeckEdit();
             if (!TravelOptions().Contains(nodeId)) throw new InvalidOperationException("Node '" + nodeId + "' cannot be reached from here");
             var node = Run.MapGraph.Node(nodeId);
             Run.MapNodeId = nodeId;
@@ -476,6 +478,7 @@ namespace AshenSpire.Domain.Core2
         public Core2ArmouryRefusal Equip(string slotId, int setIndex, string itemId)
         {
             if (Run.Finish != null) throw new InvalidOperationException("The run has finished");
+            RequireNoOpenDeckEdit();
             var refusal = Core2RunArmoury.Equip(Data, Run, slotId, setIndex, itemId, Fight);
             if (refusal == null) Checkpoint();
             return refusal;
@@ -484,7 +487,7 @@ namespace AshenSpire.Domain.Core2
         /// <summary>Armoury Unequip: the piece leaves the cell (an armament to storage). Null on success, else why.</summary>
         public Core2ArmouryRefusal Unequip(string slotId, int setIndex) => Equip(slotId, setIndex, null);
 
-        /// <summary>The deck editor is a modal outside combat: travel and an event's fight wait until it is confirmed or cancelled.</summary>
+        /// <summary>The deck editor is a modal: the run's other commands wait until it is confirmed or cancelled.</summary>
         private void RequireNoOpenDeckEdit()
         {
             if (_deckEdit != null && !_deckEdit.Closed) throw new InvalidOperationException("Confirm or cancel the open deck edit first");
@@ -549,7 +552,6 @@ namespace AshenSpire.Domain.Core2
         {
             Require(Core2Screen.Event);
             if (!Run.OpenEventChosen) throw new InvalidOperationException("Choose a response first");
-            if (Run.CombatEntered != null) RequireNoOpenDeckEdit();
             Run.OpenEvent = null; Run.OpenEventChosen = false;
             if (Run.CombatEntered != null)
             {

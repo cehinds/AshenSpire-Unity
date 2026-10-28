@@ -59,6 +59,9 @@ static class Core2ProgressChecks
         // ---- deck editor ----------------------------------------------------------------------------------------------
         var edit = session.OpenDeckEdit();
         check(throws(() => session.OpenDeckEdit()), "deck: one editor session at a time");
+        check(throws(() => session.TakeRewardToDeck(0)) && throws(() => session.TakeReward(0)) && throws(() => session.ContinueReward()),
+            "deck: the spoils wait while a deck edit is open (Cancel would erase a claimed reward)");
+        check(throws(() => session.Equip("rightHand", 0, null)), "deck: the Armoury waits while a deck edit is open");
         var deckBefore = string.Join(",", session.Run.Deck.Select(c => c.InstanceId));
         edit.Add("basic:core.strike");
         edit.Remove(session.Run.Deck[0].InstanceId);
