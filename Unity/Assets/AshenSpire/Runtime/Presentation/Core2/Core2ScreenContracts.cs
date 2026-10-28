@@ -21,5 +21,9 @@ namespace AshenSpire.Presentation.Core2
     public static class Core2Screens
     {
         public static Func<ICore2FightScreen> FightScreenFactory { get; set; }
+        /// <summary>True while the interruption cover is up (backgrounded, paused, hidden tab) until the player returns:
+        /// timed play (Auto, paced beats) must hold still, so nothing resolves behind the cover.</summary>
+        public static Func<bool> Interrupted { get; set; }
+        public static bool IsInterrupted => Interrupted?.Invoke() == true;
     }
 }
