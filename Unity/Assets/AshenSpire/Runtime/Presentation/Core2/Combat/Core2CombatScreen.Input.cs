@@ -79,6 +79,20 @@ namespace AshenSpire.Presentation.Core2
             }
         }
 
+        /// <summary>
+        /// A focusable tile that is not a Button (hand card, enemy, reaction option) activates on NavigationSubmit and on
+        /// Return/Enter/Space: the GamepadNavigator sends a focused element Return, and its Submit fallback only reaches Buttons.
+        /// </summary>
+        private static void Activatable(VisualElement node, Action activate)
+        {
+            node.RegisterCallback<NavigationSubmitEvent>(e => { activate(); e.StopPropagation(); });
+            node.RegisterCallback<KeyDownEvent>(e =>
+            {
+                if (e.keyCode != KeyCode.Return && e.keyCode != KeyCode.KeypadEnter && e.keyCode != KeyCode.Space) return;
+                activate(); e.StopPropagation();
+            });
+        }
+
         private void OnKeyDown(KeyDownEvent e)
         {
             // The handler sits on the panel root, outside the subtree the interruption cover disables: no command behind it.
@@ -95,8 +109,8 @@ namespace AshenSpire.Presentation.Core2
                 e.StopPropagation();
                 return;
             }
-            // While an offer is pending only the reaction window takes input (its buttons and tiles handle Enter).
-            if (fight.PendingReaction != null) return;
+            // While a door is open (an offer, the full log, the inspector) only its own controls take input; Escape above closes it.
+            if (fight.PendingReaction != null || _controller.Log.FullOpen || _controller.Inspecting != null) return;
             if (key == "e")
             {
                 e.StopPropagation();

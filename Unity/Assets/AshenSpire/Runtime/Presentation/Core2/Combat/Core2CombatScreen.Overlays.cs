@@ -30,6 +30,32 @@ namespace AshenSpire.Presentation.Core2
             }
             else if (_trayOpen) _overlay.Add(PotionTray());
             _overlay.pickingMode = modal ? PickingMode.Position : PickingMode.Ignore;
+            FocusBehindDoor(!modal);
+        }
+
+        // Behind a door nothing is reachable by Tab, the arrow keys or the GamepadNavigator: the bands' focusable elements are
+        // made unfocusable while the door is open and restored when it closes. Focusability, not SetEnabled, so the board
+        // keeps its look behind the scrim as in JS.
+        private readonly List<VisualElement> _unfocused = new List<VisualElement>();
+        private void FocusBehindDoor(bool reachable)
+        {
+            if (reachable)
+            {
+                foreach (var element in _unfocused) element.focusable = true;
+                _unfocused.Clear();
+                return;
+            }
+            foreach (var band in _root.Children())
+            {
+                if (band == _overlay) continue;
+                band.Query<VisualElement>().ForEach(element =>
+                {
+                    if (!element.focusable) return;
+                    element.focusable = false;
+                    _unfocused.Add(element);
+                    if (element.focusController?.focusedElement == element) element.Blur();
+                });
+            }
         }
 
         private VisualElement Scrim(Action onTap)
@@ -102,14 +128,7 @@ namespace AshenSpire.Presentation.Core2
                 tile.Add(costs);
                 var id = option.Id;
                 tile.RegisterCallback<ClickEvent>(e => { _controller.SelectReactionOption(id); e.StopPropagation(); });
-                tile.RegisterCallback<NavigationSubmitEvent>(e => { _controller.SelectReactionOption(id); e.StopPropagation(); });
-                // The GamepadNavigator activates a focused element by sending it Return (Submit only reaches Buttons and
-                // other controls), and the keyboard does the same: either selects this option.
-                tile.RegisterCallback<KeyDownEvent>(e =>
-                {
-                    if (e.keyCode != KeyCode.Return && e.keyCode != KeyCode.KeypadEnter && e.keyCode != KeyCode.Space) return;
-                    _controller.SelectReactionOption(id); e.StopPropagation();
-                });
+                Activatable(tile, () => _controller.SelectReactionOption(id));
                 options.Add(tile);
                 first ??= tile;
             }

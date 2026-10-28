@@ -273,7 +273,7 @@ namespace AshenSpire.Presentation.Core2
                 if (!m.IsPlayer)
                 {
                     node.RegisterCallback<ClickEvent>(e => { _controller.TapEnemy(id); e.StopPropagation(); });
-                    node.RegisterCallback<NavigationSubmitEvent>(e => { _controller.TapEnemy(id); e.StopPropagation(); });
+                    Activatable(node, () => _controller.TapEnemy(id));
                 }
                 _field.Add(node);
                 _fighters[m.Id] = node;
@@ -445,7 +445,7 @@ namespace AshenSpire.Presentation.Core2
             node.Add(Box("c2c-card-glow"));
             var id = card.InstanceId;
             node.RegisterCallback<ClickEvent>(e => { _controller.TapCard(id); e.StopPropagation(); });
-            node.RegisterCallback<NavigationSubmitEvent>(e => { _controller.TapCard(id); e.StopPropagation(); });
+            Activatable(node, () => _controller.TapCard(id));
             return node;
         }
 
