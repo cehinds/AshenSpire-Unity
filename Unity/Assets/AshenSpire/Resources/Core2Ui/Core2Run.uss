@@ -1,0 +1,291 @@
+/* Core2Run.uss — the Core 2 run screens outside combat (Runtime/Presentation/Core2/Core2RunHost*.cs).
+   JS reference: styles/ui.css and styles/player-polish.css at the pin (map, spoils door, merchant, rest, event,
+   Armoury, Reading Desk, game over). Every value is a --js-* token (Generated/JsTokens.uss) or 0, 1 or a percentage:
+   tools/unity-ui-tokens.mjs --check gives a new sheet a raw-value budget of zero. Art (backgrounds, nine-slice frames,
+   button surfaces) is set from C#, where Core2Ui reads Resources/Art/js1815. */
+
+/* ---- the screen ------------------------------------------------------------------------------------------------ */
+.c2-screen { flex-grow: 1; flex-direction: column; background-color: var(--js-bg); color: var(--js-parchment); font-size: var(--js-type-body); -unity-font: resource("Fonts/Inter-Regular"); }
+.c2-fill { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.c2-row { flex-direction: row; align-items: center; }
+.c2-col { flex-direction: column; }
+.c2-wrap { flex-wrap: wrap; }
+.c2-gap > * { margin-right: var(--js-touch-min-gap); }
+.c2-serif { -unity-font: resource("Fonts/LiberationSerif-Bold"); }
+.c2-strong { -unity-font: resource("Fonts/Inter-SemiBold"); }
+.c2-gold { color: var(--js-gold); }
+.c2-ember { color: var(--js-ember); }
+.c2-muted { color: var(--js-muted); }
+.c2-caption { font-size: var(--js-type-caption); color: var(--js-muted); }
+.c2-micro { font-size: var(--js-type-micro); color: var(--js-muted); letter-spacing: 1; }
+.c2-title-l { font-size: var(--js-type-title-l); color: var(--js-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); }
+.c2-title-m { font-size: var(--js-type-title-m); color: var(--js-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); }
+.c2-title-s { font-size: var(--js-type-title-s); color: var(--js-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); }
+.c2-lead { font-size: var(--js-type-lead); white-space: normal; }
+.c2-text { white-space: normal; }
+.c2-status { color: var(--js-ember); font-size: var(--js-type-caption); white-space: normal; }
+.c2-backdrop { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
+
+/* ---- buttons (JS .btn: neutral bronze frame, primary green surface; art set by Core2Ui) ------------------------------ */
+.c2-btn {
+    min-height: var(--js-tap-target);
+    padding-left: var(--js-component-card-sizing-shelf-gap-px);
+    padding-right: var(--js-component-card-sizing-shelf-gap-px);
+    margin: 0;
+    border-width: 1;
+    border-color: var(--js-line-soft);
+    border-radius: var(--js-r-2);
+    background-color: var(--js-bg-raise);
+    color: var(--js-parchment);
+    font-size: var(--js-type-body);
+    -unity-font: resource("Fonts/Inter-SemiBold");
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+.c2-btn:hover, .c2-btn:focus { border-color: var(--js-gold); }
+.c2-btn:disabled { color: var(--js-muted); border-color: var(--js-line); }
+.c2-btn-primary { border-color: var(--js-accent-verdant); color: var(--js-parchment); }
+.c2-btn-danger { border-color: var(--js-accent-crimson); color: var(--js-ember); }
+.c2-btn-small { min-height: var(--js-scene-w4a-combat-sizing-compact-combat-spent-width-px); font-size: var(--js-type-caption); }
+.c2-chip {
+    padding-left: var(--js-balance-hud-quick-settings-edge-gap-px);
+    padding-right: var(--js-balance-hud-quick-settings-edge-gap-px);
+    border-width: 1;
+    border-color: var(--js-gold);
+    border-radius: var(--js-r-1);
+    color: var(--js-gold);
+    font-size: var(--js-type-micro);
+}
+.c2-glow { border-color: var(--js-grace); }
+
+/* ---- the HUD band (JS runHud: HP rule, relics, Armoury, menu, cinders) ------------------------------------------- */
+.c2-hud {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px);
+    background-color: var(--js-environment-backdrop);
+    border-bottom-width: 1;
+    border-color: var(--js-line);
+}
+.c2-hud-left { flex-grow: 1; flex-shrink: 1; margin-right: var(--js-component-card-sizing-shelf-gap-px); }
+.c2-hud-hp { flex-direction: row; align-items: center; }
+.c2-hud-hp-text { font-size: var(--js-type-lead); -unity-font: resource("Fonts/Inter-SemiBold"); margin-left: var(--js-touch-min-gap); margin-right: var(--js-touch-min-gap); }
+.c2-hud-rule { flex-grow: 1; height: var(--js-balance-hud-presentation-mobile-row-gap-px); background-color: var(--js-line); }
+.c2-hud-rule-fill { height: 100%; background-color: var(--js-res-hp); }
+.c2-hud-relics { flex-direction: row; margin-top: var(--js-balance-hud-presentation-mobile-outer-pad-px); }
+.c2-relic {
+    width: var(--js-balance-hud-quick-settings-glyph-size-px);
+    height: var(--js-balance-hud-quick-settings-glyph-size-px);
+    margin-right: var(--js-balance-hud-quick-settings-edge-gap-px);
+    border-radius: var(--js-r-round);
+    border-width: 1;
+    border-color: var(--js-line-soft);
+    background-color: var(--js-panel);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.c2-hud-right { align-items: flex-end; }
+.c2-hud-tools { flex-direction: row; }
+.c2-icon-btn {
+    width: var(--js-tap-target);
+    height: var(--js-tap-target);
+    min-height: var(--js-tap-target);
+    margin-left: var(--js-balance-hud-quick-settings-edge-gap-px);
+    padding: var(--js-balance-hud-quick-settings-edge-gap-px);
+    border-width: 1;
+    border-color: var(--js-line-soft);
+    border-radius: var(--js-r-1);
+    background-color: var(--js-bg-raise);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.c2-icon-btn.c2-glow { border-color: var(--js-grace); border-width: var(--js-scene-w4a-combat-sizing-target-layer-outline-px); }
+.c2-hud-cinders { flex-direction: row; margin-top: var(--js-balance-hud-presentation-mobile-row-gap-px); }
+.c2-hud-cinders-label { font-size: var(--js-type-caption); margin-right: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.c2-hud-cinders-value { font-size: var(--js-type-caption); -unity-font: resource("Fonts/Inter-SemiBold"); }
+
+/* ---- the act route strip (JS actRouteStrip) ----------------------------------------------------------------------- */
+.c2-route {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px);
+    background-color: var(--js-bg);
+    border-bottom-width: 1;
+    border-color: var(--js-line);
+}
+.layout-narrow .c2-route { flex-direction: column; align-items: stretch; }
+.c2-route-title { font-size: var(--js-type-caption); color: var(--js-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); letter-spacing: 1; margin-right: var(--js-component-card-sizing-shelf-gap-px); }
+.c2-route-rail { flex-direction: row; align-items: center; flex-grow: 1; }
+.c2-route-line { flex-grow: 1; height: 1; background-color: var(--js-map-structure); }
+.c2-route-node {
+    width: var(--js-balance-hud-presentation-metadata-font-px);
+    height: var(--js-balance-hud-presentation-metadata-font-px);
+    padding: var(--js-balance-hud-presentation-mobile-row-gap-px);
+    border-radius: var(--js-r-round);
+    border-width: 1;
+    border-color: var(--js-map-structure);
+}
+.c2-route-node.is-visited { background-color: var(--js-gold); border-color: var(--js-gold); }
+.c2-route-node.is-current { border-color: var(--js-parchment); }
+.c2-route-end { font-size: var(--js-type-micro); color: var(--js-muted); letter-spacing: 1; margin-left: var(--js-touch-min-gap); margin-right: var(--js-touch-min-gap); }
+.c2-route-boss { color: var(--js-ember); }
+
+/* ---- the map (JS mapboard: parchment, fogged board, ringed nodes, the tray) ----------------------------------------- */
+.c2-map { flex-grow: 1; flex-shrink: 1; min-height: 0; background-color: var(--js-map-structure); }
+.c2-map-scroll { flex-grow: 1; }
+.c2-map-board { position: relative; }
+.c2-map-island { position: absolute; -unity-background-scale-mode: stretch-to-fill; }
+.c2-map-edge { position: absolute; height: var(--js-balance-hud-presentation-belt-item-gap-px); background-color: var(--js-environment-backdrop); transform-origin: left; }
+.c2-map-edge.is-travelled { background-color: var(--js-gold); }
+.c2-map-node {
+    position: absolute;
+    border-radius: var(--js-r-round);
+    border-width: var(--js-balance-hud-quick-settings-edge-gap-px);
+    border-color: var(--js-map-structure);
+    background-color: var(--js-environment-backdrop);
+    padding: var(--js-touch-min-gap);
+    margin: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.c2-map-node.is-reachable { border-color: var(--js-gold); }
+.c2-map-node.is-visited { border-color: var(--js-line-soft); }
+.c2-map-node.is-current { border-color: var(--js-parchment); }
+.c2-map-node.is-selected { border-color: var(--js-parchment); background-color: var(--js-panel); }
+.c2-map-node-glyph { flex-grow: 1; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--js-parchment); }
+.c2-map-node.elite .c2-map-node-glyph, .c2-map-node.boss .c2-map-node-glyph { -unity-background-image-tint-color: var(--js-ember); }
+.c2-map-node.shrine .c2-map-node-glyph, .c2-map-node.treasure .c2-map-node-glyph { -unity-background-image-tint-color: var(--js-gold); }
+.c2-map-node.merchant .c2-map-node-glyph { -unity-background-image-tint-color: var(--js-grace); }
+.c2-map-tray {
+    padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px);
+    background-color: var(--js-environment-backdrop);
+    border-top-width: 1;
+    border-color: var(--js-line);
+}
+.c2-map-tray-pair { flex-direction: row; justify-content: center; margin-top: var(--js-touch-min-gap); }
+.c2-map-tray-pair > .c2-btn { width: 30%; margin-left: var(--js-balance-hud-quick-settings-edge-gap-px); margin-right: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.layout-narrow .c2-map-tray-pair > .c2-btn { width: 48%; }
+.c2-footbar {
+    flex-direction: row;
+    justify-content: center;
+    padding: var(--js-balance-hud-presentation-mobile-outer-pad-px);
+    background-color: var(--js-bg);
+    border-top-width: 1;
+    border-color: var(--js-line);
+}
+.c2-footbar > .c2-btn { width: 20%; margin-left: var(--js-balance-hud-quick-settings-edge-gap-px); margin-right: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.layout-narrow .c2-footbar > .c2-btn { width: 24%; font-size: var(--js-type-caption); }
+
+/* ---- doors and overlays (JS modal door: eyebrow, title, status, body, foot) ---------------------------------------- */
+.c2-scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: var(--js-hud-text-plate-bg); align-items: center; justify-content: center; }
+.c2-door {
+    width: 44%;
+    max-height: 96%;
+    background-color: var(--js-bg-raise);
+    border-width: 1;
+    border-color: var(--js-gold);
+    border-radius: var(--js-r-1);
+}
+.c2-door.c2-door-wide { width: 88%; }
+.layout-narrow .c2-door { width: 96%; }
+.c2-door-head {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--js-component-card-sizing-shelf-gap-px);
+    border-bottom-width: 1;
+    border-color: var(--js-line);
+}
+.c2-door-body { flex-grow: 1; flex-shrink: 1; padding: var(--js-component-card-sizing-shelf-gap-px); }
+.c2-door-foot {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px);
+    border-top-width: 1;
+    border-color: var(--js-line);
+}
+.c2-door-foot > .c2-btn { margin-left: var(--js-touch-min-gap); margin-top: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.c2-door-foot > .c2-btn-fill { flex-grow: 1; }
+.c2-door-note { flex-grow: 1; color: var(--js-muted); font-size: var(--js-type-caption); white-space: normal; -unity-text-align: middle-left; }
+
+/* rows: a .class-pick tile (JS reward rows, rest options, merchant offers, Armoury positions) */
+.c2-tile {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--js-touch-min-gap);
+    padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px);
+    border-width: 1;
+    border-color: var(--js-line-soft);
+    border-radius: var(--js-r-2);
+    background-color: var(--js-panel);
+}
+.c2-tile.is-selected { border-color: var(--js-gold); }
+.c2-tile.is-locked { border-color: var(--js-line); }
+.c2-tile.is-locked Label { color: var(--js-muted); }
+.c2-tile-glyph { width: var(--js-touch-comfortable); height: var(--js-touch-comfortable); margin-right: var(--js-component-card-sizing-shelf-gap-px); -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--js-gold); }
+.c2-tile-body { flex-grow: 1; flex-shrink: 1; }
+.c2-tile-title { font-size: var(--js-type-lead); color: var(--js-gold); -unity-font: resource("Fonts/LiberationSerif-Bold"); white-space: normal; }
+.c2-tile-line { white-space: normal; color: var(--js-parchment); }
+.c2-tile-actions { align-items: center; margin-left: var(--js-touch-min-gap); }
+
+/* the spoils' Progression panel */
+.c2-progress-row { margin-bottom: var(--js-touch-min-gap); }
+.c2-progress-bar { width: 30%; height: var(--js-balance-hud-quick-settings-glyph-size-px); max-height: var(--js-type-lead); margin-left: var(--js-touch-min-gap); margin-right: var(--js-touch-min-gap); border-radius: var(--js-r-pill); background-color: var(--js-bg); border-width: 1; border-color: var(--js-line-soft); justify-content: center; }
+.c2-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: var(--js-gold); border-radius: var(--js-r-pill); }
+.c2-progress-text { font-size: var(--js-type-micro); -unity-text-align: middle-center; color: var(--js-parchment); }
+.c2-split { flex-direction: row; flex-grow: 1; }
+.layout-narrow .c2-split { flex-direction: column; }
+.c2-split > .c2-pane { flex-grow: 1; flex-basis: 0; flex-shrink: 1; margin-right: var(--js-component-card-sizing-shelf-gap-px); }
+
+/* ---- rooms: merchant, rest, event (a scene beside or above the door) --------------------------------------------- */
+.c2-room { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.layout-narrow .c2-room { flex-direction: column; }
+.c2-room-scene { flex-grow: 1; flex-basis: 0; -unity-background-scale-mode: scale-and-crop; }
+.c2-room-panel {
+    width: 50%;
+    margin: var(--js-component-card-sizing-shelf-gap-px);
+    background-color: var(--js-bg-raise);
+    border-width: 1;
+    border-color: var(--js-gold);
+    border-radius: var(--js-r-1);
+}
+.layout-narrow .c2-room-panel { width: auto; flex-grow: 1; flex-basis: 0; margin: var(--js-touch-min-gap); }
+.c2-shop-dock { flex-direction: row; flex-wrap: wrap; padding: var(--js-touch-min-gap); border-top-width: 1; border-color: var(--js-line); }
+.c2-shop-dock > .c2-btn { width: 32%; margin: var(--js-balance-hud-presentation-mobile-row-gap-px); font-size: var(--js-type-caption); }
+.c2-shop-dock > .c2-btn.is-on { border-color: var(--js-gold); color: var(--js-gold); }
+.c2-pane-head { font-size: var(--js-type-body); color: var(--js-gold); padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px); }
+.c2-offer-price { font-size: var(--js-type-caption); color: var(--js-gold); margin-top: var(--js-balance-hud-quick-settings-edge-gap-px); -unity-text-align: middle-center; }
+.c2-thumb { width: var(--js-scene-w4a-combat-sizing-compact-combat-spent-width-px); height: var(--js-scene-w4a-combat-sizing-compact-combat-spent-width-px); margin-right: var(--js-component-card-sizing-shelf-gap-px); border-width: 1; border-color: var(--js-line-soft); border-radius: var(--js-r-1); background-color: var(--js-bg); justify-content: flex-end; }
+.c2-thumb-label { font-size: var(--js-type-micro); color: var(--js-parchment); -unity-text-align: middle-center; }
+
+.c2-event-stage { height: 50%; flex-direction: row; justify-content: space-between; align-items: flex-end; -unity-background-scale-mode: scale-and-crop; }
+.layout-narrow .c2-event-stage { height: 36%; }
+.c2-event-portrait { width: 34%; height: 100%; -unity-background-scale-mode: scale-to-fit; justify-content: flex-end; }
+.c2-event-speaker { font-size: var(--js-type-body); color: var(--js-parchment); -unity-text-align: lower-center; margin-bottom: var(--js-touch-min-gap); }
+.c2-event-door { flex-grow: 1; flex-shrink: 1; margin: var(--js-component-card-sizing-shelf-gap-px); padding: var(--js-touch-min-gap); border-width: 1; border-color: var(--js-gold); border-radius: var(--js-r-1); background-color: var(--js-bg-raise); }
+.c2-event-choice { -unity-text-align: middle-left; margin-top: var(--js-touch-min-gap); }
+.c2-event-foot { flex-direction: row; padding: var(--js-touch-min-gap) var(--js-component-card-sizing-shelf-gap-px); }
+.c2-event-foot > .c2-btn { flex-grow: 1; flex-basis: 0; margin-left: var(--js-touch-min-gap); margin-right: var(--js-touch-min-gap); }
+
+/* ---- the Armoury and the Reading Desk (wide overlays with tabs) ---------------------------------------------------- */
+.c2-tabs { flex-direction: row; border-bottom-width: 1; border-color: var(--js-line); }
+.c2-tab { color: var(--js-parchment); background-color: var(--js-bg-raise); border-width: 0; border-radius: 0; padding: var(--js-component-card-sizing-shelf-gap-px) var(--js-component-card-sizing-shelf-gap-px); }
+.c2-tab.is-on { color: var(--js-green); border-bottom-width: var(--js-scene-w4a-combat-sizing-target-layer-outline-px); border-color: var(--js-green); }
+.c2-deck-row { flex-direction: row; align-items: center; margin-bottom: var(--js-balance-hud-quick-settings-edge-gap-px); padding: var(--js-balance-hud-quick-settings-edge-gap-px) var(--js-touch-min-gap); border-width: 1; border-color: var(--js-line-soft); border-radius: var(--js-r-2); background-color: var(--js-panel); }
+.c2-stepper { flex-direction: row; align-items: center; }
+.c2-stepper > .c2-btn { width: var(--js-tap-target); padding: 0; }
+.c2-stepper-count { width: var(--js-touch-comfortable); -unity-text-align: middle-center; -unity-font: resource("Fonts/Inter-SemiBold"); }
+.c2-kv { flex-direction: row; justify-content: space-between; }
+.c2-sheet { padding: var(--js-touch-min-gap); border-width: 1; border-color: var(--js-gold); border-radius: var(--js-r-2); background-color: var(--js-panel); margin-bottom: var(--js-touch-min-gap); }
+
+/* ---- the fallback fight (only while no combat screen is registered) ------------------------------------------------ */
+.c2-fight-enemies { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: var(--js-component-card-sizing-shelf-gap-px); }
+.c2-fight-enemy { width: 30%; margin: var(--js-balance-hud-quick-settings-edge-gap-px); padding: var(--js-touch-min-gap); border-width: 1; border-color: var(--js-ember); border-radius: var(--js-r-2); background-color: var(--js-panel); }
+.c2-fight-hand { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: var(--js-touch-min-gap); }
+.c2-fight-card { width: 18%; min-height: var(--js-scene-w4a-combat-sizing-desktop-footer-end-art-width-px); margin: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.layout-narrow .c2-fight-card { width: 46%; min-height: var(--js-touch-primary-row); }
+
+/* ---- creation and the finished run ---------------------------------------------------------------------------------- */
+.c2-class-card { flex-direction: row; align-items: center; }
+.c2-stat-key { font-size: var(--js-type-micro); color: var(--js-muted); margin-right: var(--js-balance-hud-quick-settings-edge-gap-px); }
+.c2-stat-value { font-size: var(--js-type-body); -unity-font: resource("Fonts/Inter-SemiBold"); margin-right: var(--js-component-card-sizing-shelf-gap-px); }
+.c2-seed-field { min-width: 40%; }
+.c2-seed-field > TextInput, .c2-seed-field .unity-text-field__input { background-color: var(--js-bg); color: var(--js-parchment); border-color: var(--js-gold); border-width: 1; font-size: var(--js-type-body); }
