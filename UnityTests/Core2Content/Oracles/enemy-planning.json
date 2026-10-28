@@ -48,6 +48,10 @@
      "forsakenMedallion",
      "ashenGrip"
     ],
+    "poiseMeter": {
+     "value": 0,
+     "max": 10
+    },
     "ratingSources": [
      {
       "name": "Attributes",
@@ -335,6 +339,10 @@
      "forsakenMedallion",
      "ashenGrip"
     ],
+    "poiseMeter": {
+     "value": 0,
+     "max": 10
+    },
     "ratingSources": [
      {
       "name": "Attributes",

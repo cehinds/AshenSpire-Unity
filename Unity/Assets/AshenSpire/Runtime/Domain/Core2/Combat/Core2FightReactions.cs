@@ -222,8 +222,8 @@ namespace AshenSpire.Domain.Core2
 
         private bool SeatPresent(string seat) => Player != null && Player.Alive;
         private bool SeatGone(string seat) => Player == null || !Player.Alive || Player.Hp <= 0;
-        private static bool HaltedSource(Core2Combatant source) => source.SkipNextTurn;
-        private static string HaltReason(Core2Combatant source) => source.SkipNextTurn ? "attackerStaggered" : null;
+        /// <summary>JS haltReason: a staggered attacker (attackerStaggered) or one a control status locks (attackerControlled) offers no reaction.</summary>
+        private string HaltReason(Core2Combatant source) => source.SkipNextTurn ? "attackerStaggered" : ControlRestrictions(source).Locked ? "attackerControlled" : null;
 
         /// <summary>JS playerRootSeat: the acting seat of a player-card root ("player"), else null.</summary>
         private string PlayerRootSeat(Core2ActionGroup group) =>

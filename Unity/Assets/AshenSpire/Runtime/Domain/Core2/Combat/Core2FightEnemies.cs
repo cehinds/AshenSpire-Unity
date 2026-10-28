@@ -135,7 +135,8 @@ namespace AshenSpire.Domain.Core2
                 if (_cursorStage == "payload")
                 {
                     _cursorStage = "drain";
-                    if (enemy.SkipNextTurn)
+                    // JS: staggered, locked by a control status, or denied by a Frozen stack — the move does not happen.
+                    if (enemy.SkipNextTurn || ControlRestrictions(enemy).Locked || ConsumeControlActionLoss(enemy) > 0)
                     {
                         if (enemy.PendingMove == null) Core2Knowledge.Cancel(enemy);
                         enemy.SkipNextTurn = false;
@@ -160,7 +161,7 @@ namespace AshenSpire.Domain.Core2
                             enemy.PlannedMoves = new List<Core2PlannedMove>();
                             StartDelayedMove(enemy, enemy.Intent.MoveId);
                         }
-                        else ExecuteMovePayload(enemy, enemy.Intent.MoveId, null);
+                        else ExecuteMovePayload(enemy, enemy.Intent.MoveId, null, expanded: true);
                     }
                 }
                 DrainQueue();
@@ -170,7 +171,7 @@ namespace AshenSpire.Domain.Core2
                 // reaction pause resumes at the next one. A stagger during the turn ends it.
                 while (enemy.Alive && enemy.PlanDue && enemy.PendingMove == null && enemy.PlannedMoves?.Count > 0)
                 {
-                    if (enemy.SkipNextTurn) { enemy.PlanDue = false; break; }
+                    if (enemy.SkipNextTurn || ControlRestrictions(enemy).Locked) { enemy.PlanDue = false; break; }
                     var next = enemy.PlannedMoves[0];
                     enemy.PlannedMoves.RemoveAt(0);
                     PresentIntent(enemy, next.MoveId);
@@ -184,7 +185,7 @@ namespace AshenSpire.Domain.Core2
                         traced.Outcome = "charging";
                         StartDelayedMove(enemy, next.MoveId);
                     }
-                    else traced.Outcome = ExecuteMovePayload(enemy, next.MoveId, null) ?? "played";
+                    else traced.Outcome = ExecuteMovePayload(enemy, next.MoveId, null, expanded: true) ?? "played";
                     DrainQueue();
                     if (ReactionPaused) return;
                     if (Result != null) return;
@@ -196,6 +197,7 @@ namespace AshenSpire.Domain.Core2
                     DrainQueue();
                     if (Result != null) return;
                     if (enemy.Alive) DecayAtTurnEnd(enemy);
+                    EndControlTurn(enemy);
                 }
             }
             Emit("enemyTurnEnd", new JObject { ["turn"] = Turn });
@@ -218,6 +220,7 @@ namespace AshenSpire.Domain.Core2
             DrainQueue();
             if (Result != null || !enemy.Alive) return;
             RecoverStatusesAtOwnerStart(enemy);
+            SleepRestoration(enemy);
         }
 
         /// <summary>JS enemyMoveActions: the damage packet (none for a Counter), its Block and Barrier, then its effects.</summary>
@@ -248,11 +251,17 @@ namespace AshenSpire.Domain.Core2
         /// it when the pool cannot pay (enemyMoveUnavailable), else pay its SP now (the Advance when the range plan is
         /// accepted) and queue its actions as one group whose first action announces enemyMoveStarted. A charge that already
         /// paid resolves on its prepaid SP, paying only a newly required Advance.
+        /// <paramref name="expanded"/>: JS enemyPhase hands the head move and each follow-up over already expanded
+        /// (combat.js enemyPhase: executeMovePayload(combat, enemy, expandedEnemyMove(...))), and executeMovePayload prices
+        /// the move it is handed (Rounds.enemyMoveSp(move) before it expands it again). An expanded maneuver-less move
+        /// carries stanceTrigger:false and so earns no same-stance discount: a Spell move without a maneuver (graveWisp
+        /// drain, eclipseCantor lunarRay) pays its full table price here although the plan budgeted the discounted one.
+        /// The range closer is handed over raw (def.moves[closingId]), as is a resolving charge (it is prepaid).
         /// </summary>
-        private string ExecuteMovePayload(Core2Combatant enemy, string moveId, Core2PendingMove prepaid)
+        private string ExecuteMovePayload(Core2Combatant enemy, string moveId, Core2PendingMove prepaid, bool expanded = false)
         {
             var raw = EnemyDef(enemy).Move(moveId).Raw;
-            var spCost = prepaid?.PaidSp ?? Core2EnemyMoves.MoveSp(Ctx, enemy, raw, moveId);
+            var spCost = prepaid?.PaidSp ?? Core2EnemyMoves.MoveSp(Ctx, enemy, expanded ? Core2EnemyMoves.Expanded(Rules, raw, moveId) : raw, moveId);
             var move = Core2EnemyMoves.Expanded(Rules, raw, moveId);
             var carrier = Core2EnemyMoves.Carrier(Rules, raw, moveId);
             var actions = EnemyMoveActions(enemy, move, moveId, carrier);
@@ -290,12 +299,14 @@ namespace AshenSpire.Domain.Core2
 
         /// <summary>
         /// JS startDelayedMove: a charging move pays its SP when it starts (commitEnemySp), does its whileCharging part now
-        /// (its Block), and resolves on a later enemy turn; the telegraph stays, marked pending.
+        /// (its Block), and resolves on a later enemy turn; the telegraph stays, marked pending. JS quotes the expanded move
+        /// enemyPhase hands it (combat.js startDelayedMove: Rounds.enemyMoveQuote(move) on expandedEnemyMove), so a
+        /// maneuver-less charge (furnaceSaint openFurnace) pays its full price, with no same-stance discount.
         /// </summary>
         private string StartDelayedMove(Core2Combatant enemy, string moveId)
         {
             var raw = EnemyDef(enemy).Move(moveId).Raw;
-            var quote = Core2EnemyMoves.Quote(Ctx, Range, enemy, Player, raw, moveId);
+            var quote = Core2EnemyMoves.Quote(Ctx, Range, enemy, Player, Core2EnemyMoves.Expanded(Rules, raw, moveId), moveId);
             var available = Math.Max(0, enemy.Stamina);
             if (quote.TotalSp > available)
             {

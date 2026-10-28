@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.40.0 · build 43 · 2026-10-28
+
+- Core 2 enemy gaps: enemy status buildup with gauges, recovery and control locks, conditional enemy phases, expanded-move SP pricing, boss damage scale, held-card turn end and relic-trigger Advance; fuzz-fights oracle covers every enemy with reactions off and on
+
 ## 0.0.39.0 · build 42 · 2026-10-28
 
 - Core 2 run layer: run creation, branched map with fog, fights from encounters, rewards, shops, rest (Smith, Level Up), events with quest gates, gear, levels and XP, class unlocks and the Core 2 save format, engine-free under Runtime/Domain/Core2/Run

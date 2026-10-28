@@ -72,8 +72,12 @@ const actionCosts = {table: ACTION_COST_TABLE, enemySpRow: ENEMY_SP_ROW};
 // The expansion status-control rules a Core 2 fight snapshots (combatExpansionRules.statuses = content/combatStatusRules.js):
 // active-status caps, pressure gauges, chance recovery and its attribute profiles (phase 5c fight loop).
 const {combatStatusRules} = await js.load('src/content/combatStatusRules.js');
+// The legacy Poise meter a physical status-pressure fill strains (combatStatusControl.js applyStatusPressure): its growth
+// after a fill (actions.js growPoiseMeter: balance.poise.growthMult) and what the player's fill costs (actions.js
+// staggerPlayer: balance.stagger.player actionLoss and statuses), read off the profile-bound registries.
+const poiseMeter = {growthMult: registries.balance.poise.growthMult, playerStagger: registries.balance.stagger.player};
 put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION, fixCoreMechanics, stanceRules, damageTypes, counterRules, actionCosts,
-  statusControl: combatStatusRules}, 'mechanics'),
+  statusControl: combatStatusRules, poiseMeter}, 'mechanics'),
   {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules), damageTypes: count(damageTypes.damageTypes), counterCoverage: count(counterRules.defaultCoverage),
     actionCostTable: count(actionCosts.table), statusControl: count(combatStatusRules.statuses)});
 

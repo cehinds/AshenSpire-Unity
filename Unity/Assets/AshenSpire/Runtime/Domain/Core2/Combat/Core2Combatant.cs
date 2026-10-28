@@ -79,6 +79,20 @@ namespace AshenSpire.Domain.Core2
         /// <summary>Base ratings (ar, dr, pr, ward, poise) before stance and status modifiers (JS entity.ratings).</summary>
         public Dictionary<string, int> Ratings { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
         public Dictionary<string, Core2StatusInstance> Statuses { get; set; } = new Dictionary<string, Core2StatusInstance>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// JS delete entity.statuses[id]: the status goes and the rest keep their order. A JS object adds a re-applied key at
+        /// the end; a .NET Dictionary would reuse the freed slot, so the turn-start decay would walk statuses in another
+        /// order. Always remove a status through here.
+        /// </summary>
+        public void RemoveStatusEntry(string id)
+        {
+            if (!Statuses.ContainsKey(id)) return;
+            var kept = new Dictionary<string, Core2StatusInstance>(StringComparer.Ordinal);
+            foreach (var pair in Statuses) if (pair.Key != id) kept.Add(pair.Key, pair.Value);
+            Statuses = kept;
+        }
+
         public Core2Stance Stance { get; set; }
         /// <summary>Stances held alongside the main one (JS concurrentStances); a match with any counts as the same stance.</summary>
         public List<Core2Stance> ConcurrentStances { get; set; } = new List<Core2Stance>();

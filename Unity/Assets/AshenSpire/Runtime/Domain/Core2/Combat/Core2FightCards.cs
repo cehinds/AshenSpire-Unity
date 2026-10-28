@@ -102,6 +102,8 @@ namespace AshenSpire.Domain.Core2
             if (index < 0) throw new InvalidOperationException("Card '" + instanceId + "' is not in hand");
             var instance = Hand[index];
             var card = Content.Card(instance.CardId);
+            // JS doPlayCard: Control.controlGate before anything else is checked (a lock refuses as 'controlled').
+            if (!ControlGate(p, card)) throw new Core2PlayRefusedException("Recover from the active control statuses before playing cards", null, 0, 0, "controlled");
             if (Core2Json.Strings(card.Raw["keywords"]).Contains("unplayable")) throw new Core2PlayRefusedException("'" + card.Name + "' is unplayable", null, 0, 0, "unplayable");
             var carrier = CardCarrier(instance);
             carrier.InstanceId = instance.InstanceId;

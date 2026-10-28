@@ -14,6 +14,8 @@ static class OracleReplay
         public int Cases;
         public int Passed;
         public readonly List<string> Failures = new();
+        /// <summary>Cases left out on purpose, each with its reason (counted apart from Cases).</summary>
+        public readonly List<string> Excluded = new();
         public void Compare(bool ok, Func<string> describe)
         {
             Cases++;
@@ -470,6 +472,60 @@ static class OracleReplay
                 + (got["eventTypes"] != null && !JToken.DeepEquals(got["eventTypes"], expected["eventTypes"]) ? FirstDifference(got["eventTypes"], expected["eventTypes"], "$.eventTypes") : FirstDifference(got, expected)));
         }
         return result;
+    }
+
+    /// <summary>
+    /// fuzz-fights: every Core 2 enemy fought with reactions off and on, driven exactly as reaction-fights (ReactionFight),
+    /// each compared as the digest tools/oracle-js-core2.mjs fuzzDigest writes. The player start is shared by class:seed.
+    /// Excluded cases (none at the pin) would be listed in <see cref="FuzzExclusions"/> with their reason.
+    /// </summary>
+    public static Result FuzzFights(Core2Content content, JObject data)
+    {
+        var result = new Result();
+        foreach (var row in (JArray)data["cases"])
+        {
+            var input = (JObject)row["input"].DeepClone();
+            var expected = (JObject)row["expected"];
+            var label = "fuzz fight " + input["enemyIds"]?[0] + " " + input["classId"] + " seed " + input["seed"] + " " + input["policy"];
+            if (FuzzExclusions.TryGetValue(label, out var reason)) { result.Excluded.Add(label + ": " + reason); continue; }
+            JObject got;
+            try
+            {
+                input["start"] = data["starts"][(string)input["start"]].DeepClone();
+                got = FuzzDigest(ReactionFight(content, input).Expected);
+            }
+            catch (Exception error) { got = new JObject { ["error"] = error.GetType().Name + ": " + error.Message + " " + error.StackTrace?.Split('\n').FirstOrDefault()?.Trim() }; }
+            result.Compare(JToken.DeepEquals(got, expected), () => label + ": " + FirstDifference(got, expected));
+        }
+        return result;
+    }
+
+    /// <summary>fuzz-fights cases left out on purpose ("fuzz fight &lt;enemy&gt; &lt;class&gt; seed &lt;n&gt; &lt;policy&gt;" → why). None at the pin.</summary>
+    public static readonly Dictionary<string, string> FuzzExclusions = new();
+
+    /// <summary>tools/oracle-js-core2.mjs fuzzDigest over a ReactionFight result.</summary>
+    static JObject FuzzDigest(JObject e)
+    {
+        static string S(JToken t) => t == null || t.Type == JTokenType.Null ? "-" : t.Type == JTokenType.Boolean ? ((bool)t ? "true" : "false")
+            : t.Type == JTokenType.Float ? ((double)t).ToString("R", CultureInfo.InvariantCulture) : t.Type == JTokenType.Integer ? ((long)t).ToString(CultureInfo.InvariantCulture) : (string)t ?? "-";
+        static string Join(IEnumerable<string> parts, string empty = "-") { var text = string.Join(",", parts); return text.Length == 0 ? empty : text; }
+        var turns = (JArray)e["turns"];
+        var sha = System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes((string)e["eventTypes"]));
+        return new JObject
+        {
+            ["result"] = e["result"]?.DeepClone(), ["turns"] = turns.Count,
+            ["log"] = new JArray(turns.Select(t =>
+            {
+                var p = t["player"]; var after = t["after"];
+                return S(t["turn"]) + " " + Join(t["plays"].Select(S)) + " | " + S(p["hp"]) + "/" + S(p["block"]) + "/" + S(p["stamina"]) + "/" + S(p["mana"]) + "/" + S(p["stance"]) + " | "
+                    + string.Join(";", t["enemies"].Select(x => S(x["hp"]) + "/" + S(x["block"]) + "/" + S(x["poise"]) + "/" + S(x["stamina"]) + "/" + S(x["intent"]) + "/" + ((bool)x["alive"] ? "1" : "0"))) + " | "
+                    + S(after["playerHp"]) + "/" + string.Join(",", after["enemyHp"].Select(S)) + " | " + Join((after["hand"] ?? new JArray()).Select(S));
+            })),
+            ["offers"] = new JArray(e["offers"].Select(o => S(o["turn"]) + " " + S(o["sourceId"]) + " "
+                + Join(o["options"].Select(x => S(x["cardId"]) + ":" + S(x["staminaCost"]) + "/" + S(x["manaCost"]))) + " > " + S(o["answer"]))),
+            ["damage"] = string.Join(" ", e["damageDealt"].Select(d => S(d["source"]) + ">" + S(d["target"]) + " " + S(d["amount"]) + "/" + S(d["blocked"]))),
+            ["eventCounts"] = e["eventCounts"].DeepClone(), ["eventOrder"] = Convert.ToHexString(sha).ToLowerInvariant().Substring(0, 24), ["rngCounters"] = e["rngCounters"].DeepClone(),
+        };
     }
 
     /// <summary>

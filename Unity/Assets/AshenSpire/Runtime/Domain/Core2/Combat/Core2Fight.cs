@@ -74,6 +74,13 @@ namespace AshenSpire.Domain.Core2
         public int BaseEvasionBonus { get; set; }
         public int BasePrecisionBonus { get; set; }
         public int PoiseMax { get; set; }
+        /// <summary>
+        /// The player's legacy Poise vessel (JS player.poiseMeter, stamped by createPlayerCombatEntity from
+        /// playerPoiseThresholdReceipt): a physical status-pressure fill strains it (combatStatusControl.js
+        /// applyStatusPressure). 0 means no vessel (every physical fill is admitted). Building it from a run is the run layer's.
+        /// </summary>
+        public int PoiseMeterMax { get; set; }
+        public int PoiseMeterValue { get; set; }
         public List<string> RelicIds { get; set; } = new List<string>();
         public List<Core2CardInstance> Deck { get; set; } = new List<Core2CardInstance>();
         public Dictionary<string, Core2CardFace> Cards { get; set; } = new Dictionary<string, Core2CardFace>(StringComparer.Ordinal);
@@ -81,6 +88,11 @@ namespace AshenSpire.Domain.Core2
         public string PrimaryWeaponRange { get; set; } = "melee";
         /// <summary>JS createCombat hpMult (main.js combatMods: the seat tier ratio, or a boss's tier scale): rolled HP × it, rounded.</summary>
         public double EnemyHpMult { get; set; } = 1;
+        /// <summary>
+        /// JS createCombat enemyDamageMult (main.js combatMods: a boss's tier damage scale, else 1), stamped on each enemy as
+        /// damageMult: every authored move damage is round(damage × it), at least 1 (state.js enemyMoveDamage).
+        /// </summary>
+        public double EnemyDamageMult { get; set; } = 1;
         /// <summary>JS createCombat playerStatuses (runMods startStatuses of worn gear): applied to the player after combatStart.</summary>
         public List<KeyValuePair<string, int>> StartStatuses { get; set; } = new List<KeyValuePair<string, int>>();
         /// <summary>Where the player's ratings come from (JS ratingSources), for the damage receipt; built by the run layer (phase 8).</summary>
@@ -99,6 +111,7 @@ namespace AshenSpire.Domain.Core2
                 Level = (int?)player["level"] ?? 1, Attributes = Ints(player["attributes"]), Ratings = Ints(player["ratings"]),
                 BaseEvasionBonus = (int?)player["baseEvasionBonus"] ?? 0, BasePrecisionBonus = (int?)player["basePrecisionBonus"] ?? 0,
                 PoiseMax = (int?)player["poise"]?["max"] ?? (int?)player["ratings"]?["poise"] ?? 0,
+                PoiseMeterMax = (int?)player["poiseMeter"]?["max"] ?? 0, PoiseMeterValue = (int?)player["poiseMeter"]?["value"] ?? 0,
                 RelicIds = Core2Json.Strings(player["relicIds"]).ToList(),
                 PrimaryWeaponRange = (string)start["primaryWeaponRange"] ?? "melee",
                 Deck = ((JArray)start["deck"]).OfType<JObject>().Select(c => new Core2CardInstance { InstanceId = (string)c["instanceId"], CardId = (string)c["cardId"] }).ToList(),
@@ -244,6 +257,7 @@ namespace AshenSpire.Domain.Core2
                 Id = "player", Side = Core2Side.Player, ClassId = setup.ClassId, ClassUnequipped = setup.ClassUnequipped,
                 Hp = setup.Hp, MaxHp = setup.MaxHp, MaxStamina = setup.MaxStamina, Stamina = setup.MaxStamina, Mana = setup.Mana, MaxMana = setup.MaxMana,
                 Level = setup.Level, RelicIds = new List<string>(setup.RelicIds), RangeKey = "player:player",
+                PoiseMeter = setup.PoiseMeterMax > 0 ? new Core2Pool(Math.Min(setup.PoiseMeterValue, setup.PoiseMeterMax), setup.PoiseMeterMax) : null,
             };
             for (var i = 0; i < enemyIds.Count; i++)
             {
@@ -252,7 +266,7 @@ namespace AshenSpire.Domain.Core2
                 if (setup.EnemyHpMult != 1) hp = Math.Max(1, (int)Math.Floor(hp * setup.EnemyHpMult + 0.5));
                 fight.Enemies.Add(new Core2Combatant
                 {
-                    Id = "e" + (i + 1), Side = Core2Side.Enemy, EnemyId = def.Id, Hp = hp, MaxHp = hp, MaxHpRolled = hp,
+                    Id = "e" + (i + 1), Side = Core2Side.Enemy, EnemyId = def.Id, Hp = hp, MaxHp = hp, MaxHpRolled = hp, DamageMult = setup.EnemyDamageMult,
                     HasLevelProfile = def.Raw["levelProfile"] is JObject, RangeKey = "enemy:e" + (i + 1),
                 });
                 fight.Emit("enemySpawned", new JObject { ["targetId"] = "e" + (i + 1), ["enemyId"] = def.Id });
@@ -404,8 +418,14 @@ namespace AshenSpire.Domain.Core2
             if (trigger["if"] is JObject predicate && !Predicate(predicate, owner, target, ev, null)) { _triggerState[key] = st; return false; }
             st.Fires += 1; st.TurnFires += 1;
             _triggerState[key] = st;
-            foreach (var effect in (trigger["do"] as JArray ?? new JArray()).OfType<JObject>())
-                Enqueue(new Core2FightAction { Effect = effect, Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } });
+            var actions = (trigger["do"] as JArray ?? new JArray()).OfType<JObject>()
+                .Select(effect => new Core2FightAction { Effect = effect, Source = owner, Owner = owner, Target = target, Event = ev, TriggeredBy = new JObject { ["kind"] = origin["kind"], ["id"] = origin["id"], ["ownerId"] = owner?.Id } })
+                .ToList();
+            // JS inheritedRangeAction: an event raised by the owner's own range-planned action (its card's committed lineage)
+            // carries a rangeOrigin, and the trigger rides that plan; any other trigger is quoted on its own.
+            var parent = _currentAction;
+            var inherited = parent != null && owner != null && parent.Source == owner && parent.Group?.RangePlan != null;
+            foreach (var action in inherited ? actions : AcceptIndependentTrigger(owner, actions, key)) Enqueue(action);
             return true;
         }
 
@@ -460,14 +480,18 @@ namespace AshenSpire.Domain.Core2
             throw new NotSupportedException("Predicate '" + (string)pred["p"] + "' is not ported");
         }
 
-        /// <summary>JS firePhase: an enemy phase fires once by default, queues its effects and unlocks its moves.</summary>
+        /// <summary>
+        /// JS firePhase: an enemy phase fires once by default; a conditional phase (`if`) fires only when its predicate holds
+        /// for the enemy as owner, the player as target and the event (evalPredicate(ctx, phase.if, { owner: enemy, target:
+        /// ctx.player, event })) — a refused one does not count as fired. It queues its effects and unlocks its moves.
+        /// </summary>
         private readonly HashSet<string> _phasesFired = new HashSet<string>(StringComparer.Ordinal);
         private void FirePhase(Core2Combatant enemy, JObject phase, int index, Core2FightEvent ev)
         {
             var key = "phase:" + enemy.Id + ":" + index;
             var once = (bool?)phase["once"] != false;
             if (once && _phasesFired.Contains(key)) return;
-            if (phase["if"] is JObject) throw new NotSupportedException("A conditional enemy phase is not ported");
+            if (phase["if"] is JObject predicate && !Predicate(predicate, enemy, Player, ev, null)) return;
             _phasesFired.Add(key);
             foreach (var effect in (phase["do"] as JArray ?? new JArray()).OfType<JObject>())
                 Enqueue(new Core2FightAction { Effect = effect, Source = enemy, Owner = enemy, Target = Player, Event = ev });
@@ -559,7 +583,13 @@ namespace AshenSpire.Domain.Core2
             Emit("playerTurnStart", new JObject { ["turn"] = Turn });
             FireOwnerHooks(p, "ownerTurnStart");
             DrainQueue();
-            if (Result == null) RecoverStatusesAtOwnerStart(p);
+            if (Result == null)
+            {
+                // JS: recoverStatusesAtOwnerStart, sleepRestoration, then Frozen's action loss off this turn's SP.
+                RecoverStatusesAtOwnerStart(p);
+                SleepRestoration(p);
+                p.Stamina = Math.Max(0, p.Stamina - ConsumeControlActionLoss(p));
+            }
         }
 
         /// <summary>JS startTacticalTurn: the owner cycle advances, the Counter lapses, an expiring stance (Staggered) ends.</summary>
@@ -588,32 +618,58 @@ namespace AshenSpire.Domain.Core2
             FinishReactionPhase();
         }
 
-        /// <summary>JS endPlayerTurn: the end event and owner hooks, then temporary Precision expires (FixCore turn-end decay).</summary>
+        /// <summary>
+        /// JS endPlayerTurn: whether a control lock holds the hand is read first (preserveLockedHand); the end event and owner
+        /// hooks, then temporary Precision expires (FixCore turn-end decay); with reactions in use the hand cleanup waits for
+        /// the enemy phase (reactionHandCleanup) and the control turn ends now (endControlTurn: a lock waits out one stack).
+        /// </summary>
         private void EndPlayerTurn()
         {
             var p = Player;
+            _preserveLockedHand = ControlRestrictions(p).Locked;
             Emit("playerTurnEnd", new JObject { ["turn"] = Turn });
             FireOwnerHooks(p, "ownerTurnEnd");
             DrainQueue();
             if (Result != null) return;
+            // JS: each card still in hand fires its authored onTurnEndInHand effects (Guilt: lose 1 HP) before the hand goes.
+            var inHandFired = false;
+            foreach (var card in Hand.ToList())
+            {
+                if (!(Content.Card(card.CardId).Raw["onTurnEndInHand"] is JArray hook) || hook.Count == 0) continue;
+                foreach (var effect in hook.OfType<JObject>()) Enqueue(new Core2FightAction { Effect = effect, Source = p, Owner = p, Target = p });
+                inHandFired = true;
+            }
+            if (inHandFired)
+            {
+                DrainQueue();
+                if (Result != null) return;
+            }
             DecayAtTurnEnd(p);
             p.StaminaSpentThisTurn = 0;
+            EndControlTurn(p);
         }
+
+        /// <summary>JS reactionHandCleanup.preserveLockedHand: the player ended the turn locked, so the hand is kept.</summary>
+        private bool _preserveLockedHand;
 
         /// <summary>
         /// JS finishPlayerHand with Core 2's whole-deck round refresh: Ethereal cards exhaust, every other card in hand returns
-        /// to the deck with the discard pile, and the deck is shuffled once (refreshProfileRound); unspent SP is lost.
+        /// to the deck with the discard pile, and the deck is shuffled once (refreshProfileRound); unspent SP is lost. A hand
+        /// a control lock held at the turn end is kept whole (the refresh still shuffles the discard back).
         /// </summary>
         private void FinishPlayerHand()
         {
             var toDiscard = new List<Core2CardInstance>();
             var toExhaust = new List<Core2CardInstance>();
+            var keep = new List<Core2CardInstance>();
             foreach (var card in Hand)
             {
-                if (Core2Json.Strings(Content.Card(card.CardId).Raw["keywords"]).Contains("ethereal")) toExhaust.Add(card);
+                if (_preserveLockedHand) keep.Add(card);
+                else if (Core2Json.Strings(Content.Card(card.CardId).Raw["keywords"]).Contains("ethereal")) toExhaust.Add(card);
                 else toDiscard.Add(card);
             }
-            Hand = new List<Core2CardInstance>();
+            _preserveLockedHand = false;
+            Hand = keep;
             foreach (var card in toExhaust)
             {
                 Exhaust.Add(card);
