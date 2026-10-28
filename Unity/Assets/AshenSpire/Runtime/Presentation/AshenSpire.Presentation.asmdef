@@ -1,6 +1,6 @@
 {
   "name": "AshenSpire.Presentation",
   "rootNamespace": "AshenSpire.Presentation",
-  "references": ["AshenSpire.Domain", "AshenSpire.Original"],
+  "references": ["AshenSpire.Domain", "AshenSpire.Original", "AshenSpire.Core2"],
   "autoReferenced": true
 }
