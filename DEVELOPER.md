@@ -36,6 +36,7 @@ node tools/export-js-core2.mjs ../AshenSpire --check   # exit 1 if the committed
 node tools/oracle-js-core2.mjs ../AshenSpire           # writes UnityTests/Core2Content/Oracles/*.json
 node tools/oracle-js-core2.mjs ../AshenSpire --check
 dotnet run --project UnityTests/Core2Content          # loads the export, checks it and the fixtures
+dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-layer oracles + focused checks
 ```
 
 - **`GameContent/Unity/Core2/`** (generated; never edit): `profile.json` (the resolved profile
@@ -117,13 +118,30 @@ dotnet run --project UnityTests/Core2Content          # loads the export, checks
   `src/content/actionCosts.js`: the action cost table and the enemy SP row) and `statusControl`
   (`src/content/combatStatusRules.js`); `adapter/cards.json` adds the legacy cards enemy moves put
   into the player's piles (`addCard`, e.g. Dazed).
+- **Run layer (phase 8):** `Runtime/Domain/Core2/Run` (same engine-free assembly) ports the JS
+  Core 2 run: creation and the seat draw (`Core2RunCreation`), derived stats ruleset 7
+  (`Core2DerivedStats`), gear resolution, ratings, run mods, pool reconciliation and granted cards
+  (`Core2RunGear`), the branched act map with fog and quest-gated events (`Core2ActMap`), card faces
+  and the fight setup a run hands `Core2Fight` (`Core2RunFights`), rewards and shops
+  (`Core2RunRewards`), rest with Smith and Level Up (`Core2RunRest`), events (`Core2RunEvents`; a
+  Core 2 class stays fixed, so `swapClass` throws as in the JS build), XP, levels and the class
+  unlock ledger (`Core2RunProgression`), flasks with a hand port of `wondrousDraught`
+  (`Core2RunFlasks`, `Core2FightRunHooks`), the save format `ashen.core2.run` v1 pinned to the
+  profile hash (`Core2RunSave`; old saves and co-op are not read) and the screen flow map → fight →
+  reward → map / shop / rest / event (`Core2RunSession`). `adapter/run.json` (export) carries the
+  per-class birth snapshots, the balance subset, property rules, boss labels, run mod fields, the
+  face sources and the Smith ladder; `adapter/events.json` adds the per-choice history gates.
+  `UnityTests/Core2Run` replays the nine run families (`tools/js-core2-run.mjs`) and checks
+  unlocks, save refusals, rest once-per-visit, screens, event gates, flasks and map shape. A
+  scripted run that reaches a combat rule phase 5 has not ported (status `buildup`) is reported
+  PENDING with every step before it matched, as is the one known combat discrepancy it lists.
 - **Export additions (7):** `ui/combat.json` carries the combat presentation data: JS
   `actionPacing.json` (step pause, animation step, Auto speed, mobile-fast preset and bounds), the
   animation speed table, the Combat settings rows and Accessibility's `oneTapPlay` with their
   defaults, the combat log's sizes, palette and UI copy.
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
-  shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
+  shard. `Core2Run` runs in the rules shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.
 
 ## The CI door: a tool's silence is not its success (#12)
 

@@ -86,6 +86,10 @@ namespace AshenSpire.Domain.Core2
         public Dictionary<string, Core2CardFace> Cards { get; set; } = new Dictionary<string, Core2CardFace>(StringComparer.Ordinal);
         public List<Core2PropertyCarrier> PropertyRules { get; set; } = new List<Core2PropertyCarrier>();
         public string PrimaryWeaponRange { get; set; } = "melee";
+        /// <summary>JS createCombat hpMult (main.js combatMods: the seat tier ratio, or a boss's tier scale): rolled HP × it, rounded.</summary>
+        public double EnemyHpMult { get; set; } = 1;
+        /// <summary>JS createCombat playerStatuses (runMods startStatuses of worn gear): applied to the player after combatStart.</summary>
+        public List<KeyValuePair<string, int>> StartStatuses { get; set; } = new List<KeyValuePair<string, int>>();
         /// <summary>Where the player's ratings come from (JS ratingSources), for the damage receipt; built by the run layer (phase 8).</summary>
         public List<Core2RatingSource> RatingSources { get; set; } = new List<Core2RatingSource>();
 
@@ -217,9 +221,9 @@ namespace AshenSpire.Domain.Core2
         private int _commands;
         private int _generatedCards; // JS combat._idCounter (nextInstanceId: gen1, gen2, ...)
 
-        private Core2Fight(Core2Content content, Core2CombatContext ctx, uint seed, Core2Rng rng = null)
+        private Core2Fight(Core2Content content, Core2CombatContext ctx, uint seed, Core2Rng rng = null, IReadOnlyDictionary<string, int> rngCounters = null)
         {
-            Content = content; Ctx = ctx; Seed = seed; Rng = rng ?? new Core2Rng(seed);
+            Content = content; Ctx = ctx; Seed = seed; Rng = rng ?? new Core2Rng(seed, rngCounters);
         }
 
         public Core2Enemy EnemyDef(Core2Combatant enemy) => Content.Enemy(enemy.EnemyId);
@@ -234,9 +238,10 @@ namespace AshenSpire.Domain.Core2
         /// plans draw on the fight's own seeded streams.
         /// </summary>
         public static Core2Fight Create(Core2Content content, Core2FightSetup setup, IReadOnlyList<string> enemyIds, uint seed, string combatKey = null,
-            Action<string, double, uint> rngTrace = null)
+            Action<string, double, uint> rngTrace = null, IReadOnlyDictionary<string, int> rngCounters = null)
         {
-            var fight = new Core2Fight(content, Core2CombatContext.NewFight(content), seed);
+            // rngCounters: a run's fight draws on a copy of the run's RNG (JS main.js enterCombat createRng(seed, counters)).
+            var fight = new Core2Fight(content, Core2CombatContext.NewFight(content), seed, rngCounters: rngCounters);
             fight.Rng.OnDraw = rngTrace;
             fight.Phase = "setup";
             fight.Ctx.Turn = 0;
@@ -253,6 +258,7 @@ namespace AshenSpire.Domain.Core2
             {
                 var def = content.Enemy(enemyIds[i]);
                 var hp = fight.Rng.Int("enemyHP", def.HpMin, def.HpMax);
+                if (setup.EnemyHpMult != 1) hp = Math.Max(1, (int)Math.Floor(hp * setup.EnemyHpMult + 0.5));
                 fight.Enemies.Add(new Core2Combatant
                 {
                     Id = "e" + (i + 1), Side = Core2Side.Enemy, EnemyId = def.Id, Hp = hp, MaxHp = hp, MaxHpRolled = hp,
@@ -289,6 +295,8 @@ namespace AshenSpire.Domain.Core2
             fight.Draw = fight.OrderedDrawPile(fight.Rng.Shuffle("shuffle", setup.Deck.Select(c => new Core2CardInstance { InstanceId = c.InstanceId, CardId = c.CardId })));
             fight.HandMax = Math.Max(0, fight.Rules.HandBase + p.Attribute(fight.Rules.HandAttribute));
             fight.Emit("combatStart", new JObject());
+            foreach (var status in setup.StartStatuses)
+                fight.Enqueue(new Core2FightAction { Effect = new JObject { ["op"] = "applyStatus", ["target"] = "self", ["status"] = status.Key, ["stacks"] = status.Value }, Source = p, Owner = p, Target = p });
             fight.DrainQueue();
             fight.RollIntents(true);
             if (fight.Result == null) fight.StartPlayerTurn();
@@ -436,6 +444,13 @@ namespace AshenSpire.Domain.Core2
                     var of = (string)pred["of"];
                     var entity = of == "owner" || of == "self" || of == null ? owner : of == "target" ? target : of == "player" ? Player : owner;
                     return (entity?.StatusStacks((string)pred["status"]) ?? 0) > 0;
+                }
+                case "hasBlock":
+                {
+                    // JS triggers.js hasBlock (the relics Goldbough Sapling and Radiant Aegis a run can win): the entity holds Block.
+                    var of = (string)pred["of"];
+                    var entity = of == "owner" || of == "self" || of == null ? owner : of == "target" ? target : of == "player" ? Player : owner;
+                    return entity != null && entity.Block > 0;
                 }
                 case "skillLevelAtLeast": return false;
                 case "cardTagIs":

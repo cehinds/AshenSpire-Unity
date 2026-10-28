@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The engine-free Core 2 run layer (SPEC.md §0.9 phase 8): run creation, the branched act map, card faces, rewards,
+       shops, rests, character XP, events, saves and whole scripted runs, replayed against the JS run-layer oracles
+       (UnityTests/Core2Content/Oracles, tools/oracle-js-core2.mjs) plus focused checks the oracles do not reach. -->
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="RunReplay.cs" />
+    <Compile Include="Checks.cs" />
+    <Compile Include="../../Unity/Assets/AshenSpire/Runtime/Domain/Core2/**/*.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+</Project>
