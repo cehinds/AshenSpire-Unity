@@ -178,7 +178,7 @@ namespace AshenSpire.Domain.Core2
                 PoiseMax = ratings.Totals.TryGetValue("poise", out var poise) ? poise : 0, RelicIds = new List<string>(run.Relics),
                 Deck = run.Deck.Select(c => new Core2CardInstance { InstanceId = c.InstanceId, CardId = c.CardId }).ToList(),
                 PropertyRules = Core2RunGear.PropertyCarriers(data, run), PrimaryWeaponRange = PrimaryWeaponRange(data, run),
-                EnemyHpMult = enemyHpMult,
+                EnemyHpMult = enemyHpMult, RatingSources = ratings.Sources,
             };
             foreach (var cardId in run.Deck.Select(c => c.CardId).Distinct())
             {
@@ -227,6 +227,8 @@ namespace AshenSpire.Domain.Core2
                 ["attributes"] = Ints(setup.Attributes), ["ratings"] = Ints(setup.Ratings), ["level"] = setup.Level, ["baseEvasionBonus"] = setup.BaseEvasionBonus,
                 ["basePrecisionBonus"] = setup.BasePrecisionBonus, ["poise"] = new JObject { ["max"] = setup.PoiseMax, ["value"] = setup.PoiseMax },
                 ["handSize"] = Math.Max(0, 4 + (setup.Attributes.TryGetValue("intelligence", out var intelligence) ? intelligence : 0)), ["relicIds"] = new JArray(setup.RelicIds),
+                ["ratingSources"] = new JArray(setup.RatingSources.Select(row => new JObject
+                    { ["name"] = row.Name, ["kind"] = row.Kind, ["sourceId"] = row.SourceId, ["slot"] = row.Slot, ["ar"] = row.Ar, ["pr"] = row.Pr })),
             };
             return new JObject
             {

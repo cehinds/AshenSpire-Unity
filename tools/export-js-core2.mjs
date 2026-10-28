@@ -20,6 +20,8 @@
 //                      events, flasks, statuses, enemies (compiled moves), encounters/seats/map
 //                      configs, equipment rows the reward groups name, and the legacy cards those
 //                      tables reference
+//   ui/combat.json     combat presentation data (phase 7): pacing controls, Auto speed, mobile-fast preset, the
+//                      Combat settings rows, the combat log's sizes, palette and copy
 //   manifest.json      JS commit/build, profile hash, sha256/bytes/row counts per file, gaps
 // JS key order is preserved inside content (move, weight and category order is read by the
 // game); only objects this tool builds (manifest, file maps) are key-sorted.
@@ -74,6 +76,33 @@ put('mechanics.json', plain({core2ActionRulesVersion: CORE2_ACTION_RULES_VERSION
   statusControl: combatStatusRules}, 'mechanics'),
   {fixCoreMechanics: count(fixCoreMechanics), stanceRules: count(stanceRules), damageTypes: count(damageTypes.damageTypes), counterCoverage: count(counterRules.defaultCoverage),
     actionCostTable: count(actionCosts.table), statusControl: count(combatStatusRules.statuses)});
+
+// 2b. Combat presentation data the Unity combat screen reads (phase 7): the two pacing controls and their bounds, the Auto
+// speed and the mobile-fast preset (content/config/ui/presentation/actionPacing.json via uiConfig), the animation speed
+// table, the Combat settings rows (and Accessibility's one-tap switch) with their defaults, the combat log's sizes and
+// actor palette, and the UI copy the log draws (content/source/uiStrings.csv; {tokens} left in place).
+{
+  const {uiConfig} = await js.load('src/config/generated/ui.js');
+  const {ANIM_SPEEDS, COMBAT_TIMING} = await js.load('src/ui/animationPace.js');
+  const {settingsRows} = await js.load('src/ui/screens/settings.js');
+  const {COMBAT_LOG_SIZES, COMBAT_LOG_DEFAULT_SIZE} = await js.load('src/ui/models/CombatToolsModel.js');
+  const {COMBAT_LOG_PALETTE_DEFAULTS} = await js.load('src/ui/models/CombatLogPaletteModel.js');
+  const {t, tFull} = await js.load('src/ui/strings.js');
+  const SETTING_KEYS = ['autoCombat', 'combatSpeed', 'autoCombatSpeed', 'combatStepPause', 'animationStepDuration', 'combatPacingPreset', 'animSpeed',
+    'combatLogConsole', 'combatLogPlayerColor', 'combatLogEnemyColor', 'oneTapPlay'];
+  const rows = settingsRows().filter(row => SETTING_KEYS.includes(row.key))
+    .map(row => Object.fromEntries(['cat', 'key', 'type', 'def', 'min', 'max', 'step', 'choices', 'label', 'note'].filter(key => row[key] !== undefined).map(key => [key, row[key]])));
+  const strings = {
+    'combat.log.title': t('combat.log.title'), 'combat.log.full': t('combat.log.full'), 'combat.log.actions': t('combat.log.actions'), 'combat.log.roles': t('combat.log.roles'),
+    'combat.log.role.player': t('combat.log.role.player'), 'combat.log.role.enemy': t('combat.log.role.enemy'), 'combat.log.round': t('combat.log.round', {round: '{round}'}),
+    'combat.log.empty': tFull('combat.log.empty'), 'combat.log.size.small': t('combat.log.size.small'), 'combat.log.size.medium': t('combat.log.size.medium'), 'combat.log.size.large': t('combat.log.size.large'),
+    'combat.receipt.hitLabel': t('combat.receipt.hitLabel'), 'combat.receipt.poiseAbsorbed': t('combat.receipt.poiseAbsorbed', {n: '{n}'}), 'combat.receipt.poiseDamage': t('combat.receipt.poiseDamage', {n: '{n}'}),
+    'combat.range.actionSkippedSp': t('combat.range.actionSkippedSp', {required: '{required}', available: '{available}'}), 'combat.range.actionSkippedRange': t('combat.range.actionSkippedRange'),
+  };
+  put('ui/combat.json', plain({actionPacing: uiConfig.presentation.actionPacing, animSpeeds: ANIM_SPEEDS, combatTiming: COMBAT_TIMING, settings: rows,
+    combatLog: {sizes: COMBAT_LOG_SIZES, defaultSize: COMBAT_LOG_DEFAULT_SIZE, palette: COMBAT_LOG_PALETTE_DEFAULTS, paletteBackground: '#43403d', minimumContrast: 4.5,
+      detailToggle: {full: 'Full detail', compact: 'Compact log'}}, strings}, 'ui'), {settings: rows.length, strings: Object.keys(strings).length});
+}
 
 // 3. Core pack: every resolved profile content table.
 for (const key of contentKeys) if (!(key in scalars)) put(`pack/${key}.json`, plain(profile.content[key], `content.${key}`), {[key]: count(profile.content[key])});

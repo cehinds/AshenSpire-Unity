@@ -39,6 +39,8 @@ namespace AshenSpire.Domain.Core2
         public Dictionary<string, int> Totals { get; set; }
         public int BaseEvasionBonus { get; set; }
         public int BasePrecisionBonus { get; set; }
+        /// <summary>JS receipt.sources: the attribute row, each worn piece and the upgrade-tier row (the fight's ratingSources).</summary>
+        public List<Core2RatingSource> Sources { get; set; } = new List<Core2RatingSource>();
     }
 
     public static class Core2RunGear
@@ -118,7 +120,15 @@ namespace AshenSpire.Domain.Core2
             var attributes = EffectiveAttributes(data, run);
             var stats = (string)data.Module("stats")?["mode"] == "configured";
             if (stats) foreach (var id in RatingIds) totals[id] = Core2DerivedStats.Derive(run.DerivedStatRules, id, attributes, run.Level.Level, run.Class);
-            foreach (var source in gear.Sources) foreach (var id in RatingIds) totals[id] += source.Values.TryGetValue(id, out var v) ? v : 0;
+            int Value(IReadOnlyDictionary<string, int> values, string id) => values.TryGetValue(id, out var v) ? v : 0;
+            var sources = new List<Core2RatingSource> { new Core2RatingSource { Name = "Attributes", Kind = "attribute", Ar = totals["ar"], Pr = totals["pr"] } };
+            foreach (var source in gear.Sources)
+            {
+                foreach (var id in RatingIds) totals[id] += Value(source.Values, id);
+                var item = GearItem(data.Content, source.ItemId, source.Slot == "armor", run.Class);
+                sources.Add(new Core2RatingSource { Name = ((string)item?["name"] ?? source.ItemId).Replace('_', ' '), Kind = "equipment", SourceId = source.SourceId, Slot = source.Slot,
+                    Ar = Value(source.Values, "ar"), Pr = Value(source.Values, "pr") });
+            }
             var policy = data.Module("equipment")?["upgradeBonuses"] as JObject;
             var armorBudget = data.Module("gear")?["armorBudget"] != null;
             if (stats && policy != null && run.Loadout != null)
@@ -135,11 +145,21 @@ namespace AshenSpire.Domain.Core2
                     if ((string)piece["kind"] == "shield") { armorTier = Math.Max(armorTier, Tier("armament/" + id)); continue; }
                     var itemTier = Tier("armament/" + id);
                     weaponTier = Math.Max(weaponTier, itemTier);
-                    if (armorBudget && itemTier > 0) totals["ar"] += itemTier * (int)policy["weaponARPerTier"];
+                    if (armorBudget && itemTier > 0)
+                    {
+                        var ar = itemTier * (int)policy["weaponARPerTier"];
+                        totals["ar"] += ar;
+                        sources.Add(new Core2RatingSource { Name = (string)piece["name"] ?? id, Kind = "equipment", SourceId = "armament/" + id, Slot = pair.Key, Ar = ar });
+                    }
                 }
-                if (!armorBudget) { totals["ar"] += weaponTier * (int)policy["weaponARPerTier"]; totals["dr"] += armorTier * (int)policy["armorDRPerTier"]; }
+                if (!armorBudget)
+                {
+                    int ar = weaponTier * (int)policy["weaponARPerTier"], dr = armorTier * (int)policy["armorDRPerTier"];
+                    totals["ar"] += ar; totals["dr"] += dr;
+                    if (ar != 0 || dr != 0) sources.Add(new Core2RatingSource { Name = "Equipped upgrade tiers", Kind = "equipment", SourceId = "configured-upgrades", Ar = ar });
+                }
             }
-            return new Core2RatingReceipt { Totals = totals, BaseEvasionBonus = gear.Totals["evasion"], BasePrecisionBonus = gear.Totals["precision"] };
+            return new Core2RatingReceipt { Totals = totals, BaseEvasionBonus = gear.Totals["evasion"], BasePrecisionBonus = gear.Totals["precision"], Sources = sources };
         }
 
         /// <summary>JS runMods: run-scoped mods of worn pieces (pool mods only for pieces Core gear does not resolve) and the gear's HP/MP/SP.</summary>

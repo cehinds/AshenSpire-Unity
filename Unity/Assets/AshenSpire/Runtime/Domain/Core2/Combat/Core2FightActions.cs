@@ -75,6 +75,12 @@ namespace AshenSpire.Domain.Core2
         public Dictionary<string, Core2GroupTarget> RootTargets;
         public Dictionary<int, bool> Gates = new Dictionary<int, bool>();
         public Core2RangePlan RangePlan;
+        /// <summary>JS group.kind: an enemy reaction plan's move intent (enemyMoveStarted kind).</summary>
+        public string Kind;
+        /// <summary>JS group.enemyWindows: how many enemy reaction windows this root (contact) has opened.</summary>
+        public int? EnemyWindows;
+        /// <summary>JS group.manualCounterSerials[seat]: the serial of the Counter the player paid as a reaction to this contact.</summary>
+        public int? ManualCounterSerial;
     }
 
     public sealed partial class Core2Fight
@@ -126,11 +132,20 @@ namespace AshenSpire.Domain.Core2
         /// group's final completion.
         /// </summary>
         private Core2ActionGroup EnqueueGroup(List<Core2FightAction> actions, Core2Combatant source, Core2Combatant target, Core2Carrier carrier, JObject enemyMoveStart = null, JObject counterReturn = null,
-            bool prepaidRange = false)
+            bool prepaidRange = false, Core2RangePlan acceptedPlan = null, bool? charge = null)
         {
+            // JS: a reaction-made carrier (an enemy reaction's plan) delivers as an Attack; a Counter return keeps its stance.
+            if (carrier?.CombatReaction == true && carrier.Profile?.CounterReturnAttack != true)
+            {
+                carrier = carrier.Clone();
+                carrier.Profile ??= new Core2CombatProfile();
+                carrier.Profile.Maneuver = "attack";
+                foreach (var action in actions) action.Card = carrier;
+            }
             var group = new Core2ActionGroup { Source = source, Carrier = carrier, EnemyMoveStart = enemyMoveStart, CounterReturn = counterReturn };
             group.Key = group.RootKey = CombatKey + ":" + (++_expansionSerial);
-            group.RangePlan = AcceptRange(source, actions, carrier, !prepaidRange && counterReturn == null);
+            group.RangePlan = AcceptRange(source, actions, carrier, charge ?? (!prepaidRange && counterReturn == null), acceptedPlan);
+            if (group.RangePlan != null) group.RangePlan.RootId = group.RootKey;
             var plans = new Dictionary<Core2FightAction, List<List<(string Key, int Index)>>>();
             for (var index = 0; index < actions.Count; index++)
             {
@@ -158,6 +173,7 @@ namespace AshenSpire.Domain.Core2
                         var baseAmount = Eval(action, eff["amount"] ?? eff["stacks"], 1);
                         var amount = op == "damage" ? Core2Damage.Receipt(Rules, source, entity, (int)Math.Floor(baseAmount), action.Card ?? carrier, HitOptions(source, entity, action.Card ?? carrier, group.RangePlan, null)).Raw : 0;
                         var plan = new Core2ContactPlan { Profile = profile, Amount = amount };
+                        if (group.RangePlan != null) plan.RangeContactId = index + ":" + r + ":" + h + ":" + (source?.Side == Core2Side.Enemy ? "player:player" : "enemy:" + entity.Id);
                         if (op != "damage") { plan.Effect = op == "poiseDamage" || op == "wardDamage" ? "impact" : "status"; plan.Pressure = baseAmount; }
                         var index2 = row.Contacts.Count;
                         row.Contacts.Add(plan);
@@ -166,10 +182,13 @@ namespace AshenSpire.Domain.Core2
                     batches.Add(contacts);
                 }
                 plans[action] = batches;
+                action.ContactRefs = batches.SelectMany(batch => batch).ToList();
             }
             _pendingExpansionActions++;
             foreach (var queued in ContactActions(group, actions, plans)) Enqueue(queued);
             Enqueue(new Core2FightAction { Effect = new JObject { ["op"] = "completeCombatAction" }, Source = source, Owner = source, Target = target, Card = carrier, Group = group, GroupCompletion = true, MoveId = actions.FirstOrDefault()?.MoveId });
+            // A reaction offer check reads the planned contacts of the card it tries (enemy reactions).
+            _groupSink?.Add(group);
             return group;
         }
 
@@ -193,28 +212,36 @@ namespace AshenSpire.Domain.Core2
                 for (var index = 0; index < batches.Count; index++)
                 {
                     var targets = new Dictionary<string, Core2GroupTarget>(StringComparer.Ordinal);
+                    var refs = new List<(string, int)>();
                     foreach (var (key, contactIndex) in batches[index])
                     {
                         var original = group.Targets[key];
                         if (!targets.TryGetValue(key, out var row)) targets[key] = row = new Core2GroupTarget { Entity = original.Entity };
+                        refs.Add((key, row.Contacts.Count));
                         row.Contacts.Add(original.Contacts[contactIndex]);
                     }
                     sequence.Add(targets);
                     var effect = (JObject)action.Effect.DeepClone(); effect["hits"] = 1; effect["repeat"] = 1;
                     var unit = Clone(action); unit.Effect = effect; unit.ContactIndex = sequence.Count - 1; unit.ContactEffectIndex = effectIndex; unit.ContactEffectFirst = index == 0;
+                    unit.ContactRefs = refs;
                     var completion = Clone(unit); completion.Effect = new JObject { ["op"] = "completeCombatAction" }; completion.ContactCompletion = true;
                     queued.Add(unit); queued.Add(completion);
                 }
             }
             if (sequence.Count == 0) return actions;
             foreach (var (action, index) in ancillary)
+            {
+                var refs = new List<(string, int)>();
                 foreach (var batch in plans[action]) foreach (var (key, contactIndex) in batch)
                 {
                     var targets = sequence[index];
                     var original = group.Targets[key];
                     if (!targets.TryGetValue(key, out var row)) targets[key] = row = new Core2GroupTarget { Entity = original.Entity };
+                    refs.Add((key, row.Contacts.Count));
                     row.Contacts.Add(original.Contacts[contactIndex]);
                 }
+                action.ContactRefs = refs;
+            }
             group.Contacts = sequence;
             group.RootTargets = group.Targets;
             ActivateContact(queued.FirstOrDefault(a => a.ContactIndex == 0));
@@ -226,7 +253,7 @@ namespace AshenSpire.Domain.Core2
             Effect = a.Effect, Source = a.Source, Owner = a.Owner, Target = a.Target, Card = a.Card, MoveId = a.MoveId, Preparing = a.Preparing,
             TriggeredBy = a.TriggeredBy, Event = a.Event, Group = a.Group, ContactIndex = a.ContactIndex, ContactCompletion = a.ContactCompletion,
             GroupCompletion = a.GroupCompletion, ContactEffectFirst = a.ContactEffectFirst, ContactEffectIndex = a.ContactEffectIndex,
-            CounterReaction = a.CounterReaction, EnergySpent = a.EnergySpent, ManaSpent = a.ManaSpent,
+            CounterReaction = a.CounterReaction, EnergySpent = a.EnergySpent, ManaSpent = a.ManaSpent, ContactRefs = a.ContactRefs.ToList(),
         };
 
         /// <summary>JS activateCombatContact: entering a new contact index makes its targets the group's and resets its begin state.</summary>
@@ -242,50 +269,15 @@ namespace AshenSpire.Domain.Core2
             group.ContactTelegraphed = false;
             group.ReactionAnswered.Clear();
             group.ReactionNoticed.Clear();
+            group.ManualCounterSerial = null;
+            group.EnemyWindows = null;
         }
 
         // ---------------------------------------------------------------------------------------------------------------
-        // Reaction window (switched off) and the enemy move's start (JS beforeReactionAction, startQueuedEnemy)
+        // The enemy move's start (JS startQueuedEnemy); the reaction window itself is Core2FightReactions.cs
         // ---------------------------------------------------------------------------------------------------------------
 
         private static bool Positive(Core2ContactPlan c) => c != null && (c.Amount > 0 || c.Pressure > 0);
-
-        /// <summary>
-        /// JS beforeReactionAction with the player's reactions switched off: an enemy root's contact is telegraphed once
-        /// (combatContactPrepared), then a hand holding a reaction card reports it unavailable (combatReactionUnavailable,
-        /// reason switchOff). Nothing pauses.
-        /// </summary>
-        private void BeforeReactionAction(Core2FightAction action)
-        {
-            ActivateContact(action);
-            var group = action.Group;
-            if (group == null || action.Source?.Side != Core2Side.Enemy || group.Begun) return;
-            var halted = action.Source.SkipNextTurn;
-            var present = group.Targets.Values.Any(r => r.Contacts.Any(Positive) && r.Entity.Alive);
-            if (!group.ContactTelegraphed && action.Source.Alive && !halted && present)
-            {
-                group.ContactTelegraphed = true;
-                var data = (JObject)(group.EnemyMoveStart ?? group.CounterReturn ?? new JObject()).DeepClone();
-                data["sourceId"] = action.Source.Id; data["contactKey"] = group.Key; data["kind"] = "attack";
-                data["contactIndex"] = Math.Max(0, group.ContactIndex); data["contactCount"] = group.Contacts?.Count ?? 1;
-                Emit("combatContactPrepared", data);
-            }
-            if (!action.Source.Alive) return;
-            var row = group.Targets.Values.FirstOrDefault(r => r.Entity == Player);
-            if (row == null || !row.Contacts.Any(Positive) || group.ReactionAnswered.Contains(Core2Knowledge.Observer)) return;
-            if (halted) { ReportUnavailable(group, row, "attackerStaggered"); return; }
-            if (!ReactionsEnabled && Player.Alive) ReportUnavailable(group, row, "switchOff");
-            group.ReactionAnswered.Add(Core2Knowledge.Observer);
-        }
-
-        private void ReportUnavailable(Core2ActionGroup group, Core2GroupTarget row, string reason)
-        {
-            if (group.ReactionNoticed.Contains(Core2Knowledge.Observer)) return;
-            var cardIds = Hand.Where(c => Core2Json.Strings(Content.Card(c.CardId).Raw["tags"]).Contains("trait:reaction")).Select(c => c.CardId).Distinct().ToList();
-            if (cardIds.Count == 0) return;
-            group.ReactionNoticed.Add(Core2Knowledge.Observer);
-            Emit("combatReactionUnavailable", new JObject { ["ownerId"] = Core2Knowledge.Observer, ["sourceId"] = group.Source?.Id, ["reason"] = reason, ["cardId"] = cardIds[0], ["cardIds"] = new JArray(cardIds) });
-        }
 
         /// <summary>JS startQueuedEnemy: the first action of an enemy move (or a Counter return) announces it once per contact.</summary>
         private void StartQueuedEnemy(Core2FightAction action)
@@ -300,15 +292,21 @@ namespace AshenSpire.Domain.Core2
             group.Cancelled = !source.Alive || source.SkipNextTurn;
             if (group.Cancelled) return;
             if (group.Contacts != null && !group.Targets.Values.Any(r => r.Contacts.Any(Positive) && r.Entity.Alive)) return;
-            if (group.CounterReturn != null) { Emit("combatCounterTriggered", (JObject)group.CounterReturn.DeepClone()); return; }
+            JObject Prepared(JObject start)
+            {
+                var data = (JObject)start.DeepClone();
+                if (group.ContactTelegraphed) { data["contactPrepared"] = true; data["contactKey"] = group.Key; }
+                return data;
+            }
+            if (group.CounterReturn != null) { Emit("combatCounterTriggered", Prepared(group.CounterReturn)); return; }
             if (group.Contacts != null && group.ContactIndex > 0)
             {
-                var hit = (JObject)group.EnemyMoveStart.DeepClone(); hit["contactIndex"] = group.ContactIndex; hit["contactCount"] = group.Contacts.Count;
+                var hit = Prepared(group.EnemyMoveStart); hit["contactIndex"] = group.ContactIndex; hit["contactCount"] = group.Contacts.Count;
                 Emit("combatHitStarted", hit);
                 return;
             }
             source.PerformedMoves.Add((string)group.EnemyMoveStart["moveId"]);
-            Emit("enemyMoveStarted", (JObject)group.EnemyMoveStart.DeepClone());
+            Emit("enemyMoveStarted", Prepared(group.EnemyMoveStart));
         }
 
         // ---------------------------------------------------------------------------------------------------------------
@@ -392,7 +390,8 @@ namespace AshenSpire.Domain.Core2
                         var authored = Eval(action, eff["amount"], 0);
                         var amount = action.Card?.Profile?.CounterReturnAttack == true ? Math.Max(0, (int)Math.Floor(authored))
                             : (int)Math.Ceiling(authored * MatchupPoiseMultiplier(action.Card, t) * StancePressureMultiplier(action.Source, t, action.Card, row?.Receipt?.CounterAttack));
-                        DrainPoise(action.Source, t, amount);
+                        // JS dealPoiseDamage(ctx, t, amount): the drain names no source (its break event carries none).
+                        DrainPoise(null, t, amount);
                     }
                     break;
                 case "draw":
@@ -499,7 +498,7 @@ namespace AshenSpire.Domain.Core2
             var options = new Core2HitOptions();
             if (Range == null || source == null || target == null) return options;
             var rangeSource = RangeSourceFor(source, carrier, Core2Range.ActorKey(target));
-            options.Contact = Core2Range.HitContact(Range, Core2Range.ActorKey(source), rangeSource, plan, rangeContactId);
+            options.Contact = Core2Range.HitContact(Range, Core2Range.ActorKey(source), rangeSource, plan, rangeContactId, _rangeContext);
             return options;
         }
 
@@ -514,9 +513,10 @@ namespace AshenSpire.Domain.Core2
         }
 
         /// <summary>JS acceptRangeActions: quote the action's hostile contacts, refuse an unreachable route, pay the Advance once.</summary>
-        private Core2RangePlan AcceptRange(Core2Combatant source, List<Core2FightAction> actions, Core2Carrier carrier, bool charge = true)
+        private Core2RangePlan AcceptRange(Core2Combatant source, List<Core2FightAction> actions, Core2Carrier carrier, bool charge = true, Core2RangePlan acceptedPlan = null)
         {
             if (Range == null || source == null) return null;
+            if (acceptedPlan != null) return ChargeRange(source, acceptedPlan, charge);
             var contacts = new List<Core2RangeSource>();
             for (var index = 0; index < actions.Count; index++)
             {
@@ -536,7 +536,12 @@ namespace AshenSpire.Domain.Core2
                             contacts.Add(contact);
                         }
             }
-            var plan = Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance");
+            return ChargeRange(source, Core2Range.ActionPlan(Range, Core2Range.ActorKey(source), contacts, "advance", _rangeContext), charge);
+        }
+
+        /// <summary>JS acceptRangeActions' acceptance: refuse an unreachable route, pay the Advance once (a prepaid plan pays nothing).</summary>
+        private Core2RangePlan ChargeRange(Core2Combatant source, Core2RangePlan plan, bool charge)
+        {
             if (!plan.Available) throw new Core2PlayRefusedException("The selected range route cannot reach every target", "range", 0, 0);
             var extra = charge ? plan.AdvanceSp : 0;
             if (source.Stamina < extra) throw new Core2PlayRefusedException("Not enough Stamina to Advance", "stamina", extra, source.Stamina);
@@ -549,7 +554,7 @@ namespace AshenSpire.Domain.Core2
                     Emit("energySpent", new JObject { ["amount"] = extra }); Emit("staminaSpent", new JObject { ["amount"] = extra });
                 }
             }
-            return plan;
+            return new Core2RangePlan { SourceKey = plan.SourceKey, Route = plan.Route, Available = plan.Available, AdvanceSp = plan.AdvanceSp, Targets = plan.Targets, RootId = plan.RootId };
         }
 
         /// <summary>JS beginExpandedAction → beginTacticalAction (configured, FixCore) for every present target of the current contact.</summary>
@@ -563,7 +568,7 @@ namespace AshenSpire.Domain.Core2
                 if (!target.Alive) continue;
                 var carrier = group.Carrier;
                 var receipt = new Core2TacticalReceipt { Profile = Core2Counters.ContactProfile(carrier) };
-                var counter = Core2Counters.Prepared(Ctx, target, carrier);
+                var counter = Core2Counters.Prepared(Ctx, target, carrier, target == Player ? group.ManualCounterSerial : null);
                 foreach (var contact in row.Contacts)
                 {
                     var profile = ContactProfile(carrier, contact);
@@ -584,7 +589,9 @@ namespace AshenSpire.Domain.Core2
                 if (receipt.CounterEligible && !receipt.Avoided)
                 {
                     target.Counter.Charges = 0;
-                    Emit("combatCounterConsumed", new JObject { ["sourceId"] = target.Id, ["targetId"] = source?.Id, ["serial"] = receipt.Counter.Serial, ["cardId"] = receipt.Counter.Carrier?.Id });
+                    var consumed = CounterCarrierFields(target, receipt.Counter.Carrier);
+                    consumed["sourceId"] = target.Id; consumed["targetId"] = source?.Id; consumed["serial"] = receipt.Counter.Serial;
+                    Emit("combatCounterConsumed", consumed);
                 }
                 row.Receipt = receipt;
             }
@@ -621,11 +628,20 @@ namespace AshenSpire.Domain.Core2
                 Label = hit ? (preview.EvadeAttempted && !preview.Bypass ? "Hit — Evade Failed" : "Hit") : "Missed",
             };
             if (!hit && preview.InRange && !preview.Bypass && preview.EvadeStacks > 0) RemoveStatus(target, "evade", 1, "consumed");
-            Emit(hit ? "attackHit" : "attackMissed", new JObject
+            // JS resolveAttackHit's receipt: the preview, the dice, the totals a fixed-Evasion roll reads, and the carrier.
+            var outcome = new JObject
             {
-                ["sourceId"] = source.Id, ["targetId"] = target.Id, ["d20"] = dice.Count > 0 ? (JToken)dice[0] : JValue.CreateNull(),
-                ["accuracy"] = preview.Accuracy, ["evasion"] = preview.Evasion, ["hitChance"] = preview.HitChance, ["hit"] = hit, ["label"] = result.Label,
-            });
+                ["sourceId"] = source.Id, ["targetId"] = target.Id,
+                ["cardId"] = source.Side == Core2Side.Enemy ? Undefined : (JToken)carrier?.Id, ["moveId"] = source.Side == Core2Side.Enemy && carrier?.Id != null ? (JToken)carrier.Id : Undefined,
+                ["range"] = preview.Range, ["requiredRange"] = preview.RequiredRange, ["inRange"] = preview.InRange, ["accuracy"] = preview.Accuracy, ["evasion"] = preview.Evasion,
+                ["need"] = preview.Need, ["bypass"] = preview.Bypass, ["opposed"] = false, ["fixedDefense"] = true, ["mode"] = preview.Mode,
+                ["advantage"] = preview.Mode == "advantage", ["disadvantage"] = preview.Mode == "disadvantage", ["evadeStacks"] = preview.EvadeStacks,
+                ["evadeAttempted"] = preview.EvadeAttempted, ["hitChance"] = preview.HitChance, ["chance"] = preview.HitChance,
+                ["d20"] = dice.Count > 0 ? (JToken)dice[0] : JValue.CreateNull(), ["dice"] = new JArray(dice), ["hit"] = hit, ["label"] = result.Label,
+            };
+            if (dice.Count > 0) { outcome["attackTotal"] = result.AttackDie + preview.Accuracy; outcome["evasionTotal"] = preview.Evasion; }
+            if (!hit) outcome["missReason"] = result.MissReason;
+            Emit(hit ? "attackHit" : "attackMissed", outcome);
             return result;
         }
 
@@ -649,7 +665,8 @@ namespace AshenSpire.Domain.Core2
                 if (hit != null && !hit.Hit) return 0;
             }
             var chance = Core2Damage.Receipt(Rules, source, target, baseDamage, carrier, options);
-            if (tactical != null && (!Core2Counters.ReturnSpent(target)) && tactical.CounterEligible && !tactical.Avoided && tactical.Covered.Count > 0 && tactical.Covered[0]
+            var paidContact = target == Player && Core2Counters.PaidContact(group?.ManualCounterSerial, tactical?.Counter);
+            if (tactical != null && (!Core2Counters.ReturnSpent(target) || paidContact) && tactical.CounterEligible && !tactical.Avoided && tactical.Covered.Count > 0 && tactical.Covered[0]
                 && Core2Counters.Beats(Rules, tactical.Profiles[0].Maneuver))
             {
                 var counterBlock = Core2Counters.Return(Rules, chance.Incoming, true).Block;
@@ -677,6 +694,7 @@ namespace AshenSpire.Domain.Core2
             {
                 ["sourceId"] = source?.Id, ["targetId"] = target.Id, ["amount"] = receipt.Amount, ["blocked"] = receipt.Blocked, ["hpLoss"] = receipt.HpLoss,
                 ["poiseAbsorbed"] = receipt.PoiseAbsorbed, ["poiseDamage"] = receipt.PoiseDamage, ["advantage"] = receipt.Advantage,
+                ["damageReceipt"] = receipt.ToJson(target.Id),
                 ["blockRemaining"] = target.Block, ["poiseRemaining"] = target.Poise?.Value, ["isAttack"] = true,
             });
             if (blockBefore > 0 && target.Block == 0) Emit("blockBroken", new JObject { ["sourceId"] = source?.Id, ["targetId"] = target.Id });
@@ -692,7 +710,7 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS fixCorePoiseBreak: report the break, then stagger (an enemy's break uses the round's stagger claim).</summary>
         private void PoiseBreak(Core2Combatant source, Core2Combatant target)
         {
-            Emit("poiseBroken", new JObject { ["targetId"] = target.Id, ["targetKind"] = target.Side == Core2Side.Enemy ? "enemy" : "player", ["sourceId"] = source?.Id, ["poiseBreak"] = true });
+            Emit("poiseBroken", new JObject { ["targetId"] = target.Id, ["targetKind"] = target.Side == Core2Side.Enemy ? "enemy" : "player", ["sourceId"] = source?.Id ?? Undefined, ["poiseBreak"] = true });
             if (target.Side == Core2Side.Enemy) { Ctx.ClaimStagger(target, Rules.StaggerLimitPerTargetPerRound); StaggerEnemy(target, "poiseBreak"); }
             else FixCoreStagger(target, "poiseBreak");
         }
@@ -851,6 +869,7 @@ namespace AshenSpire.Domain.Core2
                 if (row.Receipt == null || !row.Entity.Alive) continue;
                 if (group.Contacts == null) CompleteTactical(action.Source, row.Entity, group, row.Receipt);
             }
+            foreach (var row in group.Targets.Values) DiscardReservation(group, row);
             _pendingExpansionActions = Math.Max(0, _pendingExpansionActions - 1);
             FinishGroup(group);
         }
@@ -861,12 +880,25 @@ namespace AshenSpire.Domain.Core2
             var start = _queue.Count;
             foreach (var row in group.Targets.Values)
             {
-                if (row.Receipt == null || !row.Entity.Alive) continue;
-                CompleteTactical(action.Source, row.Entity, group, row.Receipt);
+                if (row.Receipt == null || !row.Entity.Alive) { DiscardReservation(group, row); continue; }
+                CompleteTactical(action.Source, row.Entity, group, row.Receipt, row);
+                DiscardReservation(group, row);
             }
             var generated = _queue.Skip(start).ToList();
             _queue.RemoveRange(start, generated.Count);
             _queue.InsertRange(0, generated);
+        }
+
+        /// <summary>JS discardCounterRangeReservation: a reservation made for this contact is spent once the contact completes.</summary>
+        private void DiscardReservation(Core2ActionGroup group, Core2GroupTarget row)
+        {
+            var rootId = group.RangePlan?.RootId;
+            var ids = new HashSet<string>(row.Contacts.Select(contact => contact.RangeContactId).Where(id => id != null), StringComparer.Ordinal);
+            foreach (var carrier in new[] { row.Entity?.Counter?.Carrier, row.Receipt?.Counter?.Carrier })
+            {
+                var reservation = carrier?.RangeCounterReservation;
+                if (reservation != null && reservation.IncomingRootId == rootId && ids.Contains(reservation.ContactId)) carrier.RangeCounterReservation = null;
+            }
         }
 
         /// <summary>
@@ -874,38 +906,81 @@ namespace AshenSpire.Domain.Core2
         /// prepared Counter (a Poise break on that hit keeps it), once per owner cycle; the return is a fraction of the
         /// incoming damage, priced for its Advance by the defender, and runs as its own one-roll action.
         /// </summary>
-        private void CompleteTactical(Core2Combatant source, Core2Combatant target, Core2ActionGroup group, Core2TacticalReceipt receipt)
+        private void CompleteTactical(Core2Combatant source, Core2Combatant target, Core2ActionGroup group, Core2TacticalReceipt receipt, Core2GroupTarget row = null)
         {
             if (receipt == null || receipt.Completed) return;
             receipt.Completed = true;
             var counter = receipt.Counter;
             var stillPrepared = counter != null && (target.Counter?.Serial == counter.Serial || target.CounterStaggeredSerial == counter.Serial);
             target.CounterStaggeredSerial = null;
+            // A Counter the player paid as a reaction to this contact answers it even after this cycle's automatic return.
+            var paid = target == Player && Core2Counters.PaidContact(group.ManualCounterSerial, counter);
             if (!stillPrepared || receipt.Avoided || receipt.Profiles.Any(p => p.Traits.Contains("unreflectable")) || !target.Alive || source == null || !source.Alive
-                || Core2Counters.ReturnSpent(target)) return;
+                || Core2Counters.ReturnSpent(target) && !paid) return;
             var payload = Core2Counters.ReturnFor(Rules, receipt.Covered.Select((covered, i) =>
                 (covered, i < receipt.Incomings.Count ? receipt.Incomings[i] : (i < receipt.Amounts.Count ? receipt.Amounts[i] : 0), receipt.Profiles[i].Maneuver)));
-            var ev = new JObject { ["sourceId"] = target.Id, ["targetId"] = source.Id, ["amount"] = payload.Hp, ["poiseDamage"] = payload.Poise, ["wardDamage"] = 0, ["cardId"] = counter.Carrier?.Id };
+            var ev = CounterCarrierFields(target, counter.Carrier);
+            ev["sourceId"] = target.Id; ev["targetId"] = source.Id; ev["amount"] = payload.Hp; ev["poiseDamage"] = payload.Poise; ev["wardDamage"] = 0;
             if (!(payload.Hp > 0 || payload.Poise > 0)) { Emit("combatCounterTriggered", ev); return; }
             // The return's own Advance, quoted in the incoming contact's frozen engagement; unaffordable → no return.
             var returnCarrier = counter.Carrier.Clone();
             returnCarrier.CombatReaction = true; returnCarrier.SkipRatingBonus = true; returnCarrier.Profile.CounterReturnAttack = true;
+            returnCarrier.ReactionDepth = Math.Max(counter.Carrier.ReactionDepth, group.Carrier?.ReactionDepth ?? 0);
             returnCarrier.CounterRequiredRange = receipt.Profiles.Where((p, i) => receipt.Covered[i]).Select(p => p.Range ?? "melee")
                 .Aggregate(receipt.Profile?.Range ?? "melee", (range, next) => Core2Stances.RangeIndex(next) > Core2Stances.RangeIndex(range) ? next : range);
+            Core2RangePlan returnPlan = null;
+            var prepaid = false;
             if (Range != null)
             {
-                var plan = Core2Contacts.AuthorizeCounterRange(Range, target, source, returnCarrier, new Core2ActionOptions { Range = Range, Plan = group.RangePlan, ReturnSource = RangeSourceFor(target, returnCarrier, Core2Range.ActorKey(source)) });
-                if (plan == null)
+                // JS authorizeCounterRange: a Counter paid as a reaction to this very contact reserved (and paid) its return's
+                // plan; any other return is quoted in the incoming contact's frozen engagement, and refused when its owner
+                // cannot pay the Advance (the defense stands).
+                var defenderKey = Core2Range.ActorKey(target); var attackerKey = Core2Range.ActorKey(source);
+                var incomingPlan = group.RangePlan;
+                var contactId = row?.Contacts.FirstOrDefault()?.RangeContactId;
+                var contact = incomingPlan?.Targets.FirstOrDefault(t => t.ContactId == contactId) ?? incomingPlan?.Targets.FirstOrDefault(t => t.TargetKey == defenderKey);
+                var reservation = counter.Carrier.RangeCounterReservation;
+                if (reservation != null && !reservation.Consumed && reservation.IncomingRootId == incomingPlan?.RootId && reservation.ContactId == contact?.ContactId
+                    && reservation.SourceKey == defenderKey && reservation.TargetKey == attackerKey)
                 {
-                    Emit("combatRangeReturnUnavailable", new JObject { ["sourceId"] = target.Id, ["targetId"] = source.Id, ["reason"] = "stamina", ["defenseKept"] = true });
-                    return;
+                    returnPlan = reservation.RangePlan;
+                    prepaid = true;
+                    counter.Carrier.RangeCounterReservation = null;
+                    returnCarrier.RangeCounterReservation = null;
+                }
+                else
+                {
+                    var context = contact == null ? null : new Core2RangePlan { SourceKey = incomingPlan.SourceKey, Targets = new List<Core2RangeTarget> { contact } };
+                    var returnSource = RangeSourceFor(target, returnCarrier, attackerKey);
+                    returnSource.TargetKey ??= attackerKey;
+                    returnPlan = Core2Range.ActionPlan(Range, defenderKey, new[] { returnSource }, "advance", context);
+                    var available = Math.Max(0, target.Stamina);
+                    if (available < returnPlan.AdvanceSp)
+                    {
+                        Emit("combatRangeReturnUnavailable", new JObject
+                        {
+                            ["sourceId"] = target.Id, ["targetId"] = source.Id, ["ownerId"] = Seat, ["required"] = returnPlan.AdvanceSp, ["available"] = available,
+                            ["advanceSp"] = returnPlan.AdvanceSp, ["reason"] = "stamina", ["defenseKept"] = true,
+                        });
+                        return;
+                    }
                 }
             }
             target.CounterReturnedCycle = target.OwnerCycle;
             var actions = new List<Core2FightAction>();
             if (payload.Hp > 0) actions.Add(new Core2FightAction { Effect = new JObject { ["op"] = "damage", ["amount"] = payload.Hp }, Source = target, Owner = target, Target = source, Card = returnCarrier, CounterReaction = true });
             if (payload.Poise > 0) actions.Add(new Core2FightAction { Effect = new JObject { ["op"] = "poiseDamage", ["amount"] = payload.Poise }, Source = target, Owner = target, Target = source, Card = returnCarrier, CounterReaction = true });
-            EnqueueGroup(actions, target, source, returnCarrier, counterReturn: ev);
+            EnqueueGroup(actions, target, source, returnCarrier, counterReturn: ev, acceptedPlan: returnPlan, charge: !prepaid);
+        }
+
+        /// <summary>JS eventCarrier: a Counter event names the player's card (cardId) or the enemy's move (moveId) it came from.</summary>
+        private static JObject CounterCarrierFields(Core2Combatant owner, Core2Carrier carrier)
+        {
+            var fields = new JObject { ["sourceKind"] = owner.Side == Core2Side.Enemy ? "enemy" : "player" };
+            // An enemy's move carrier has no card: JS spreads cardId: undefined over the acting card's label.
+            if (owner.Side == Core2Side.Enemy) { fields["enemyId"] = owner.EnemyId; if (carrier?.Id != null) fields["moveId"] = carrier.Id; fields["cardId"] = Undefined; fields["cardInstanceId"] = Undefined; }
+            else { if (carrier?.Id != null) fields["cardId"] = carrier.Id; if (carrier?.InstanceId != null) fields["cardInstanceId"] = carrier.InstanceId; }
+            return fields;
         }
 
         /// <summary>A finished card group resolves its play (JS finishAbilityPlay after the root drains).</summary>

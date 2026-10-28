@@ -1,0 +1,211 @@
+{
+ "actionPacing": {
+  "motion": {
+   "spritePlaybackRate": 0.5,
+   "stageGapMs": 500,
+   "animationStepDurationMs": 390
+  },
+  "behavior": {
+   "autoCombat": false,
+   "combatSpeed": 1,
+   "combatPreference": "offense",
+   "speedMinimum": 0.25,
+   "speedMaximum": 8,
+   "delayMaximumMs": 5000,
+   "maxActionsPerTurn": 64,
+   "autoCombatSpeed": 1.5,
+   "autoSpeedMinimum": 1,
+   "autoSpeedMaximum": 3,
+   "stageGapMinimumMs": 0,
+   "stageGapMaximumMs": 2000,
+   "animationStepMinimumMs": 50,
+   "animationStepMaximumMs": 3000,
+   "mobileFastPreset": {
+    "combatStepPause": 250,
+    "animationStepDuration": 195
+   }
+  }
+ },
+ "animSpeeds": {
+  "slow": {
+   "beatMs": 420,
+   "stepMs": 105,
+   "lungeMs": 255,
+   "impactCapMs": 317,
+   "reactionMs": 315,
+   "stanceLeadMs": 175
+  },
+  "normal": {
+   "beatMs": 240,
+   "stepMs": 68,
+   "lungeMs": 195,
+   "impactCapMs": 186,
+   "reactionMs": 180,
+   "stanceLeadMs": 100
+  },
+  "fast": {
+   "beatMs": 108,
+   "stepMs": 34,
+   "lungeMs": 121,
+   "impactCapMs": 108,
+   "reactionMs": 81,
+   "stanceLeadMs": 45
+  },
+  "instant": null
+ },
+ "combatTiming": {
+  "instantStepMs": 80,
+  "turnBannerFloorMs": 156,
+  "windupFraction": 0.55,
+  "castGlyphMs": 450,
+  "watchdogBaseMs": 2000,
+  "fightEndDelayMs": 210
+ },
+ "settings": [
+  {
+   "cat": "Combat",
+   "key": "combatLogConsole",
+   "type": "toggle",
+   "def": false,
+   "label": "Console button in combat log",
+   "note": "Show Console in the full combat log to read, copy or export console output and errors from this session. No saved game or profile is attached."
+  },
+  {
+   "cat": "Combat",
+   "key": "combatLogPlayerColor",
+   "type": "color",
+   "def": "#7fc4ff",
+   "label": "Player name color",
+   "note": "Choose the color used for player names in the combat log. Colors with low contrast use the readable default."
+  },
+  {
+   "cat": "Combat",
+   "key": "combatLogEnemyColor",
+   "type": "color",
+   "def": "#ff8d83",
+   "label": "Enemy name color",
+   "note": "Choose the color used for enemy names in the combat log. Colors with low contrast use the readable default."
+  },
+  {
+   "cat": "Combat",
+   "key": "autoCombat",
+   "def": false,
+   "label": "Auto combat",
+   "note": "Answers your reaction prompts for you, countering the attack you can read. It never plays cards or ends your turn."
+  },
+  {
+   "cat": "Combat",
+   "key": "combatSpeed",
+   "type": "number",
+   "def": 1,
+   "min": 0.25,
+   "max": 8,
+   "step": 0.25,
+   "label": "Combat speed ×",
+   "note": "Scales action waits and sprite playback together. Does not change combat results."
+  },
+  {
+   "cat": "Combat",
+   "key": "autoCombatSpeed",
+   "type": "number",
+   "def": 1.5,
+   "min": 1,
+   "max": 3,
+   "step": 0.25,
+   "label": "Auto combat speed ×",
+   "note": "Speed while auto combat is on, in place of Combat speed. Default ×1.5. Does not change combat results."
+  },
+  {
+   "cat": "Combat",
+   "key": "combatStepPause",
+   "type": "number",
+   "def": 500,
+   "min": 0,
+   "max": 2000,
+   "step": 250,
+   "label": "Pause between steps (ms)",
+   "note": "The pause between each step of an action: the action, its animation, hit or miss, the target reaction, the final result, then the reset. 0 to 2000 ms (0 turns pauses off), default 500 ms, before the speed multiplier. Does not change combat results."
+  },
+  {
+   "cat": "Combat",
+   "key": "animationStepDuration",
+   "type": "number",
+   "def": 390,
+   "min": 50,
+   "max": 3000,
+   "step": 25,
+   "label": "Animation step duration (ms)",
+   "note": "Sprite animation duration at normal speed. Independent of the pause between combat steps."
+  },
+  {
+   "cat": "Combat",
+   "key": "combatPacingPreset",
+   "type": "choice",
+   "def": "custom",
+   "choices": [
+    "custom",
+    "mobile-fast"
+   ],
+   "label": "Combat pacing preset",
+   "note": "Mobile fast sets the pause to 250 ms and animation duration to 195 ms. Edit either value to customize."
+  },
+  {
+   "cat": "Combat",
+   "key": "animSpeed",
+   "type": "choice",
+   "def": "auto",
+   "choices": [
+    "auto",
+    "slow",
+    "normal",
+    "fast",
+    "instant"
+   ],
+   "label": "Combat pacing",
+   "note": "Auto uses Fast with Lite rendering and Normal with Full. Choose a pace to override it."
+  },
+  {
+   "cat": "Accessibility",
+   "key": "oneTapPlay",
+   "def": false,
+   "label": "Tap a card to play it",
+   "note": "Off (the default): a tap selects the card, and the next tap on it, or picking a target, plays it. This holds in solo and in co-op. On: one tap plays a card when there is only one possible target: a self card, an all-enemy card, or one living enemy. With several enemies a tap still selects. Holding a card selects it without playing, which shows its details and Upcast."
+  }
+ ],
+ "combatLog": {
+  "sizes": [
+   "Small",
+   "Medium",
+   "Large"
+  ],
+  "defaultSize": "Medium",
+  "palette": {
+   "player": "#7fc4ff",
+   "enemy": "#ff8d83"
+  },
+  "paletteBackground": "#43403d",
+  "minimumContrast": 4.5,
+  "detailToggle": {
+   "full": "Full detail",
+   "compact": "Compact log"
+  }
+ },
+ "strings": {
+  "combat.log.title": "Combat log",
+  "combat.log.full": "Full log",
+  "combat.log.actions": "Actions by round",
+  "combat.log.roles": "Combat roles",
+  "combat.log.role.player": "Player",
+  "combat.log.role.enemy": "Enemy",
+  "combat.log.round": "Round {round}",
+  "combat.log.empty": "Actions will appear here as the round unfolds.",
+  "combat.log.size.small": "Small",
+  "combat.log.size.medium": "Medium",
+  "combat.log.size.large": "Large",
+  "combat.receipt.hitLabel": "Hit",
+  "combat.receipt.poiseAbsorbed": "Poise absorbed {n}",
+  "combat.receipt.poiseDamage": "Poise damage {n}",
+  "combat.range.actionSkippedSp": "Automatic action skipped: not enough SP to Advance (need {required}, have {available}).",
+  "combat.range.actionSkippedRange": "Automatic action skipped: out of range."
+ }
+}

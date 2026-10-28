@@ -141,6 +141,11 @@ namespace AshenSpire.Domain.Core2
         public string RoundShuffle { get; }
         /// <summary>cards.freeCommandLimit: card plays a turn may accept before only End Turn remains.</summary>
         public int FreeCommandLimit { get; }
+        /// <summary>
+        /// reactions.chainLimit (else reaction rules stack.maxDepth, 4): the enemy entries one reaction stack may hold (JS
+        /// openEnemyWindow cap). The player's own per-contact cap is 1 under the perHit contact policy.
+        /// </summary>
+        public int ReactionStackMaxDepth { get; }
 
         public Core2Rules(JObject fixCore, JObject stanceRules, JObject modules, IEnumerable<Core2Row> statuses, JObject damageTypes = null, JObject counterRules = null,
             JObject actionCosts = null)
@@ -217,6 +222,7 @@ namespace AshenSpire.Domain.Core2
             HandAttribute = (string)modules["cards"]?["handAttribute"] ?? "intelligence";
             RoundShuffle = (string)modules["cards"]?["roundShuffle"];
             FreeCommandLimit = (int?)modules["cards"]?["freeCommandLimit"] ?? 32;
+            ReactionStackMaxDepth = (int?)modules["reactions"]?["chainLimit"] ?? 4;
             ActionCostTable = ((actionCosts?["table"] as JObject) ?? new JObject()).Properties().ToDictionary(p => p.Name, p => (int)p.Value, StringComparer.Ordinal);
             EnemyHealBlockCost = (int?)fixCore["enemyHealBlockCost"] ?? 3;
             PerceptionBaseDC = (int?)fixCore["perception"]?["baseDC"] ?? 5;

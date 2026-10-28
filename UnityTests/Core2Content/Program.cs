@@ -7,8 +7,8 @@
 // 3. The JS oracle fixtures (Oracles/*.json, tools/oracle-js-core2.mjs) come from the same commit
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
 //    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
-//    families (matchups, Counter returns) and 5c families (enemy SP planning, whole scripted fights)
-//    are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
+//    families (matchups, Counter returns), 5c families (enemy SP planning, whole scripted fights) and
+//    phase 7 families (fights with reactions on, their combat log, Auto and pacing) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
 //    no replay yet would be reported PENDING with its reason. The phase 8 run families are checked
 //    for form here and replayed by UnityTests/Core2Run.
 using System.Text;
@@ -158,6 +158,9 @@ try
         ["counter-return"] = null,
         ["enemy-planning"] = null,
         ["scripted-fights"] = null,
+        ["reaction-fights"] = null,
+        ["combat-log"] = null,
+        ["combat-automation"] = null,
     };
     // Phase 8 run-layer families: checked for form here, replayed case by case by UnityTests/Core2Run.
     var runFamilies = new[] { "run-creation", "run-maps", "card-faces", "reward-offers", "shop-stock", "rest-outcomes", "level-up", "scripted-runs", "scripted-runs-auto" };
@@ -175,7 +178,11 @@ try
         ["counter-return"] = Cases(OracleReplay.CounterReturn),
         ["enemy-planning"] = OracleReplay.EnemyPlanning,
         ["scripted-fights"] = OracleReplay.ScriptedFights,
+        ["reaction-fights"] = OracleReplay.ReactionFights,
+        ["combat-log"] = OracleReplay.CombatLog,
+        ["combat-automation"] = Cases(OracleReplay.CombatAutomation),
     };
+    OracleReplay.OraclesFolder = Full(Oracles);
     var enemyIds = new HashSet<string>(content.Enemies.Select(e => e.Id));
     var classIds = new HashSet<string>(content.Classes.Select(c => c.Id));
     foreach (var name in fixtures)

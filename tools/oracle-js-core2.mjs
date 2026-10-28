@@ -19,6 +19,9 @@
 //   enemy-planning  enemyPlanActions, enemyMoveQuote, maxStamina per enemy           (phase 5c)
 //   damage-ranges   projectCombatIntent(...).projectedDamage, with its inputs        (phase 5a)
 //   scripted-fights whole fights under a fixed play policy and seed                  (phase 5 complete)
+//   reaction-fights whole fights with reactions on: offers, answers (first, Back, Auto), enemy reactions (phase 7)
+//   combat-log      combatLogEntries and the drawn view (legend, Round N, full-detail receipt lines)  (phase 7)
+//   combat-automation chooseReaction, resolveCombatAutomation, combatPacingChanges, actionPacing, log sizes (phase 7)
 //   run-creation, run-maps, card-faces, reward-offers, shop-stock, rest-outcomes, level-up, scripted-runs,
 //   scripted-runs-auto: the phase 8 run layer (tools/js-core2-run.mjs names their JS functions; replayed by
 //   UnityTests/Core2Run)
@@ -304,6 +307,9 @@ function fightStart(combat, runOverride = null) {
     player: {classId: p.classId, hp: run.hp, maxHp: run.maxHp, maxStamina: p.energyMax, mana: run.mana, maxMana: run.maxMana,
       attributes: p.attributes, ratings: p.ratings, level: combat.characterLevel ?? 1, baseEvasionBonus: p.baseEvasionBonus || 0,
       basePrecisionBonus: p.basePrecisionBonus || 0, poise: p.persistentPoise, handSize: combat.handMax, relicIds: p.relicIds,
+      // Where the ratings come from (attributes, each worn piece): the damage receipt's per-source rating lines (phase 7 log).
+      ratingSources: (p.ratingSources || []).map(row => ({name: row.name ?? null, kind: row.kind ?? null, sourceId: row.sourceId ?? null, slot: row.slot ?? null,
+        ar: row.ar || 0, pr: row.pr || 0})),
       ...(p.classUnequipped ? {classUnequipped: true} : {})},
     deck: run.deck.map(card => ({instanceId: card.instanceId, cardId: card.cardId})),
     primaryWeaponRange: primary?.range || 'melee',
@@ -365,6 +371,228 @@ const fights = [
   return {input: {...input, policy: 'reactions off; each turn play the first affordable card in hand order at the first living enemy, then End Turn', start}, expected}; });
 family('scripted-fights', 'phase 5 (all three PRs)', 'Whole Core 2 fights with fixed seeds and a fixed play policy: per-turn plays and pools, every damage event, event counts and final RNG counters.',
   ['src/engine/runCombat.js createRunCombat', 'src/engine/combat.js dispatch/cardPlayCosts'], fights);
+
+// ── reaction fights (phase 7) ──────────────────────────────────────────────────────────────────
+// Reactions ON (the default). On its own turn the player plays the first affordable card in hand order that is not a
+// trait:reaction card (reaction cards are held for the enemy turn), at the first living enemy, then ends the turn. Every
+// offer (combat.pendingReaction) is answered by a fixed policy: 'first' takes the first option, 'decline' answers Back
+// (optionId null), 'auto' asks the Auto chooser (autoCombatPolicy.js chooseReaction) with the inputs the combat screen
+// gives it (src/ui/screens/combat.js autoReactionChoice): the perceived intent of the offer's source
+// (ReactionIncomingModel stackedEnemyReactionIntent, else projectCombatIntent), the maneuver of the player's last
+// confirmed card (alternativeStance.js createStanceLedger(kindForCard) over the event log) and no manual picks.
+const {chooseReaction, perceivedManeuver, resolveCombatAutomation, combatPacingChanges, ACTION_PACING, AUTOMATION_DEFAULTS} = await load('src/model/autoCombatPolicy.js');
+const {stackedEnemyReactionIntent} = await load('src/ui/models/ReactionIncomingModel.js');
+const {createStanceLedger, kindForCard} = await load('src/model/alternativeStance.js');
+const {combatProfileFor} = await load('src/model/combatCardProfile.js');
+const reactionTrait = cardId => { const def = registries.cards.get(cardId); return (def.cardTags || def.tags || []).includes('trait:reaction'); };
+// The combat screen's reactionKind: the resolved card's combat-profile maneuver, else its at-rest glyph maneuver.
+function reactionKind(combat, option) {
+  const inst = combat.piles.hand.find(card => card.instanceId === option.play?.cardInstanceId);
+  if (!inst) return null;
+  const card = resolveCombatCard(combat, inst);
+  return combatProfileFor(card)?.maneuver ?? kindForCard(card)?.maneuver ?? null;
+}
+function autoInputs(combat, pending) {
+  const enemy = combat.enemies.find(row => row.id === pending.sourceId);
+  let intent = stackedEnemyReactionIntent(combat, pending, 'player');
+  if (!intent && enemy?.alive) intent = projectCombatIntent(combat, enemy.id);
+  const ledger = createStanceLedger(kindForCard);
+  ledger.replay(combat.eventLog, receipt => receipt.cardInstance ? resolveCombatCard(combat, receipt.cardInstance) : undefined);
+  return {intent: intent ? {hidden: !!intent.hidden, revealed: intent.revealed !== false, maneuver: intent.profile?.maneuver ?? null, stance: intent.stance ?? null} : null,
+    perceived: perceivedManeuver(intent), lastStance: ledger.get('player')?.maneuver ?? null};
+}
+function answerOffer(combat, policy, offers, turn) {
+  const pending = combat.pendingReaction;
+  const options = pending.options.map(option => ({id: option.id, cardId: option.cardId, staminaCost: option.staminaCost, manaCost: option.manaCost, play: option.play,
+    ...(option.sourceId ? {sourceId: option.sourceId} : {})}));
+  let optionId = null, auto = null;
+  if (policy === 'first') optionId = pending.options[0]?.id ?? null;
+  else if (policy === 'auto') {
+    const inputs = autoInputs(combat, pending);
+    const kinds = pending.options.map(option => ({id: option.id, kind: reactionKind(combat, option)}));
+    const picked = chooseReaction({matchups: profile.modules.stances?.matchups, seats: {player: {intent: inputs.intent && {hidden: inputs.intent.hidden,
+      revealed: inputs.intent.revealed, profile: {maneuver: inputs.intent.maneuver}, stance: inputs.intent.stance}, lastStance: inputs.lastStance, picks: {}}}}, 'player', kinds);
+    optionId = picked?.id ?? null;
+    auto = {...inputs, kinds: kinds.map(row => row.kind)};
+  }
+  offers.push({turn, offerId: pending.id, sourceId: pending.sourceId, options, answer: optionId, ...(auto ? {auto} : {})});
+  dispatch(combat, {type: 'chooseReaction', offerId: pending.id, optionId});
+}
+function reactive({classId, seed, enemyIds, policy, maxTurns = 30}) {
+  const combat = fight({classId, seed, enemyIds});
+  const start = fightStart(combat);
+  if (policy === 'off') dispatch(combat, {type: 'setReactions', enabled: false});
+  const offers = [];
+  const turns = [];
+  let turn = 0;
+  const settle = () => { for (let i = 0; combat.pendingReaction && i < 50; i++) answerOffer(combat, policy, offers, turn); };
+  for (turn = 1; turn <= maxTurns && !combat.result; turn++) {
+    settle();
+    const plays = [];
+    for (let guard = 0; guard < 20 && !combat.result; guard++) {
+      const target = combat.enemies.find(e => e.alive);
+      let played = null;
+      for (const card of combat.piles.hand) {
+        if (reactionTrait(card.cardId)) continue;
+        let costs; try { costs = cardPlayCosts(combat, card.instanceId); } catch { continue; }
+        if ((costs.stamina || 0) > (combat.player.stamina || 0) || (costs.mana || 0) > (combat.player.mana || 0)) continue;
+        for (const targetId of [target?.id, undefined]) {
+          try { dispatch(combat, {type: 'playCard', cardInstanceId: card.instanceId, ...(targetId ? {targetId} : {})}); played = card.cardId; break; } catch { /* not playable this way */ }
+        }
+        if (played) break;
+      }
+      if (!played) break;
+      plays.push(played); settle();
+    }
+    const snapshot = {turn, plays, player: {hp: combat.player.hp, block: combat.player.block || 0, stamina: combat.player.stamina, mana: combat.player.mana, stance: combat.player.combatStance?.maneuver ?? null},
+      enemies: combat.enemies.map(e => ({enemyId: e.enemyId, hp: e.hp, block: e.block || 0, poise: e.persistentPoise?.value ?? null, stamina: e.stamina ?? null, intent: e.intent?.moveId ?? null, alive: e.alive}))};
+    if (!combat.result) { dispatch(combat, {type: 'endTurn'}); settle(); }
+    snapshot.after = {playerHp: combat.player.hp, enemyHp: combat.enemies.map(e => e.hp), hand: combat.piles.hand.map(card => card.cardId)};
+    turns.push(snapshot);
+  }
+  const types = {};
+  for (const event of combat.eventLog) types[event.type] = (types[event.type] || 0) + 1;
+  const pick = (event, keys) => Object.fromEntries(keys.filter(key => event[key] !== undefined).map(key => [key, event[key]]));
+  const REACTION_KEYS = {
+    combatReactionOffered: ['offerId', 'ownerId', 'sourceId'], combatReactionChosen: ['offerId', 'ownerId', 'cardInstanceId'],
+    combatReactionStacked: ['offerId', 'ownerId', 'cardInstanceId', 'depth'], combatReactionFizzled: ['ownerId', 'cardInstanceId', 'reason', 'side', 'moveId'],
+    combatReactionUnavailable: ['ownerId', 'sourceId', 'reason', 'cardId', 'cardIds', 'attackKind', 'resource', 'need', 'have'],
+    combatEnemyReactionStacked: ['sourceId', 'enemyId', 'moveId', 'targetPlayerId', 'groupKey', 'depth'], enemyMoveStarted: ['sourceId', 'moveId', 'kind', 'reaction', 'spCost', 'totalSp'],
+    combatCounterArmed: ['sourceKind', 'sourceId', 'cardId', 'moveId', 'mode'], combatCounterConsumed: ['sourceId', 'targetId', 'serial', 'cardId'],
+    combatCounterTriggered: ['sourceId', 'targetId', 'amount', 'poiseDamage', 'cardId'], combatContactPrepared: ['sourceId', 'contactKey', 'contactIndex', 'contactCount'],
+    combatRangeReturnUnavailable: ['sourceId', 'targetId', 'reason'], cardPlayed: ['cardInstanceId', 'cardId', 'targetId', 'energySpent', 'manaSpent', 'staminaSpent'],
+    enemyMoveUnavailable: ['sourceId', 'moveId', 'required', 'available'],
+  };
+  return {start, result: combat.result ?? null, turns, offers, eventTypes: combat.eventLog.map(event => event.type).join(' '),
+    eventCounts: Object.fromEntries(Object.entries(types).sort()),
+    reactionEvents: combat.eventLog.filter(event => REACTION_KEYS[event.type]).map(event => ({type: event.type, ...pick(event, REACTION_KEYS[event.type])})),
+    damageDealt: combat.eventLog.filter(e => e.type === 'damageDealt').map(e => ({source: e.sourceId, target: e.targetId, amount: e.amount, blocked: e.blocked ?? 0})),
+    rngCounters: Object.fromEntries(Object.entries(combat.rng.getCounters()).sort()), combat};
+}
+const reactionPolicy = {
+  first: 'reactions on; hold trait:reaction cards, play the first affordable other card at the first living enemy, End Turn; answer every offer with its first option',
+  decline: 'reactions on; hold trait:reaction cards, play the first affordable other card at the first living enemy, End Turn; answer every offer Back',
+  auto: 'reactions on; hold trait:reaction cards, play the first affordable other card at the first living enemy, End Turn; Auto answers every offer (chooseReaction)',
+};
+const reactionFightInputs = [
+  {classId: 'reaver', seed: 42, enemyIds: ['fellWarden'], policy: 'first'},
+  {classId: 'reaver', seed: 42, enemyIds: ['gildedKnight'], policy: 'first'},
+  {classId: 'reaver', seed: 42, enemyIds: ['courtDuelist'], policy: 'first'},
+  {classId: 'rogue', seed: 42, enemyIds: ['fellWarden'], policy: 'auto'},
+  {classId: 'reaver', seed: 42, enemyIds: ['courtDuelist'], policy: 'auto'},
+  {classId: 'rogue', seed: 7, enemyIds: ['gildedKnight'], policy: 'auto'},
+  {classId: 'rogue', seed: 42, enemyIds: ['cinderMantis'], policy: 'first'},
+  {classId: 'reaver', seed: 42, enemyIds: ['bellKeeper'], policy: 'auto'},
+  {classId: 'reaver', seed: 1854, enemyIds: ['stitchedKing'], policy: 'first'},
+  {classId: 'rogue', seed: 511, enemyIds: ['courtDuelist'], policy: 'decline'},
+];
+const reactionFights = reactionFightInputs.map(input => reactive(input));
+family('reaction-fights', 'phase 7', 'Whole Core 2 fights with reactions on: every offer between contacts with its options and prices, the answer a fixed policy (first, Back, Auto) gave, enemy reactions and their SP, the full event order, damage and RNG counters.',
+  ['src/engine/combatReactions.js beforeReactionAction/offerSeats/optionsFor/answerReaction/resolveReactionStack', 'src/engine/enemyReactions.js openEnemyWindow/decideEnemyReaction/pushEnemyReaction/runEnemyPlan',
+    'src/engine/combat.js dispatch chooseReaction/resumeEnemyTurn/enemyPhase cursor', 'src/model/autoCombatPolicy.js chooseReaction'],
+  reactionFightInputs.map((input, index) => { const {start, combat: _combat, ...expected} = reactionFights[index];
+    return {input: {...input, policy: input.policy, policyText: reactionPolicy[input.policy], start}, expected}; }));
+
+// ── combat log (phase 7) ───────────────────────────────────────────────────────────────────────
+// combatLogEntries over each reaction fight's event log (and two of the reactions-off scripted fights), with the view the
+// log draws (combatLogModal.js renderCombatLogEntries: the role legend, a "Round N" heading per round, one item per entry,
+// and in full detail the damage receipt's lines from damageReceipt.js damageReceiptLines).
+const {combatLogEntries} = await load('src/model/combatLog.js');
+const {damageReceiptLines} = await load('src/ui/components/damageReceipt.js');
+const {t, tFull} = await load('src/ui/strings.js');
+function logView(entries) {
+  const lines = [`legend ${t('combat.log.role.player')} | ${t('combat.log.role.enemy')}`];
+  let round;
+  entries.forEach(entry => {
+    if (entry.round !== round) { round = entry.round; lines.push(`heading ${t('combat.log.round', {round})}`); }
+    lines.push(`entry ${entry.text}`);
+    for (const line of damageReceiptLines(entry.damageReceipt)) lines.push(`detail ${line}`);
+  });
+  if (!entries.length) lines.push(`empty ${tFull('combat.log.empty')}`);
+  return lines;
+}
+function logCase(combat) {
+  const entries = combatLogEntries(combat.eventLog, {registries, players: [{id: 'player', name: 'Forsaken'}], enemies: combat.enemies});
+  return {entries: entries.map(entry => ({event: entry.id, round: entry.round, text: entry.text,
+    sides: entry.segments.filter(segment => segment.side).map(segment => `${segment.side}:${segment.id}`)})), view: logView(entries)};
+}
+function scriptedCombat({classId, seed, enemyIds}) {
+  const combat = fight({classId, seed, enemyIds});
+  dispatch(combat, {type: 'setReactions', enabled: false});
+  for (let turn = 1; turn <= 30 && !combat.result; turn++) {
+    settle(combat);
+    for (let guard = 0; guard < 20 && !combat.result; guard++) {
+      const target = combat.enemies.find(e => e.alive);
+      let played = null;
+      for (const card of combat.piles.hand) {
+        let costs; try { costs = cardPlayCosts(combat, card.instanceId); } catch { continue; }
+        if ((costs.stamina || 0) > (combat.player.stamina || 0) || (costs.mana || 0) > (combat.player.mana || 0)) continue;
+        for (const targetId of [target?.id, undefined]) {
+          try { dispatch(combat, {type: 'playCard', cardInstanceId: card.instanceId, ...(targetId ? {targetId} : {})}); played = card.cardId; break; } catch { /* not playable this way */ }
+        }
+        if (played) break;
+      }
+      if (!played) break;
+      settle(combat);
+    }
+    if (!combat.result) { dispatch(combat, {type: 'endTurn'}); settle(combat); }
+  }
+  return combat;
+}
+const logCases = [
+  ...reactionFightInputs.map((input, index) => ({input: {fight: 'reaction-fights', index, classId: input.classId, seed: input.seed, enemyIds: input.enemyIds, policy: input.policy},
+    expected: logCase(reactionFights[index].combat)})),
+  ...[0, 2].map(index => ({input: {fight: 'scripted-fights', index, classId: fights[index].input.classId, seed: fights[index].input.seed, enemyIds: fights[index].input.enemyIds},
+    expected: logCase(scriptedCombat(fights[index].input))})),
+];
+family('combat-log', 'phase 7', 'The public combat log of whole fights: each entry\'s round, text and named actors (combatLogEntries), and the drawn view (role legend, Round N headings, entries, full-detail damage receipt lines).',
+  ['src/model/combatLog.js combatLogEntries', 'src/ui/components/combatLogModal.js renderCombatLogEntries', 'src/ui/components/damageReceipt.js damageReceiptLines'], logCases);
+
+// ── combat automation and pacing (phase 7) ─────────────────────────────────────────────────────
+const {combatLogHeight, combatLogSnapSize, combatLogDragScale, COMBAT_LOG_SIZES, COMBAT_LOG_DEFAULT_SIZE} = await load('src/ui/models/CombatToolsModel.js');
+const {combatLogPalette} = await load('src/ui/models/CombatLogPaletteModel.js');
+const {actionPacing, setAnimSpeed, setCombatPacing} = await load('src/ui/animationPace.js');
+const automation = [];
+{
+  const maneuvers = [null, 'attack', 'smash', 'sweep', 'defend', 'counter', 'prepared', 'evade', 'casting', 'ranged'];
+  const matchups = profile.modules.stances.matchups;
+  const kindsSets = [['defend'], ['counter'], ['defend', 'counter'], ['counter', 'defend'], ['defend', 'evade'], ['sweep', 'counter', 'defend'], [null, 'defend']];
+  for (const incoming of maneuvers) for (const last of [null, 'defend', 'counter', 'attack']) for (const kinds of kindsSets) for (const picks of [{}, {defend: 2}]) for (const hidden of [false, true]) {
+    if (hidden && incoming === null) continue;
+    const options = kinds.map((kind, index) => ({id: `o${index}`, kind}));
+    const intent = incoming === null ? null : {hidden, revealed: !hidden, profile: {maneuver: incoming}};
+    const picked = chooseReaction({matchups, seats: {player: {intent, lastStance: last, picks}}}, 'player', options);
+    automation.push({input: {kind: 'choose', intent, lastStance: last, picks, options}, expected: {pick: picked?.id ?? null}});
+  }
+  for (const intent of [null, {hidden: true}, {revealed: false, profile: {maneuver: 'attack'}}, {profile: {maneuver: 'casting'}}, {stance: 'smashing'}, {stance: 'countering'}, {profile: {maneuver: 'ranged'}}, {profile: {}, stance: 'block'}])
+    automation.push({input: {kind: 'perceived', intent}, expected: {maneuver: perceivedManeuver(intent)}});
+  const settingsRows = [{}, {autoCombat: true}, {autoCombat: true, autoCombatSpeed: 9}, {combatSpeed: 0.1}, {combatSpeed: '2'}, {combatStepPause: 2500, animationStepDuration: 10},
+    {combatStepPause: 250, animationStepDuration: 195, combatPreference: 'defense'}, {combatStepPause: '', animationStepDuration: null, autoCombatSpeed: 2}];
+  for (const settings of settingsRows) {
+    automation.push({input: {kind: 'resolve', settings}, expected: resolveCombatAutomation(settings)});
+    for (const animSpeed of ['slow', 'normal', 'fast', 'instant']) for (const reduced of [false, true]) {
+      setAnimSpeed(animSpeed); setCombatPacing(settings);
+      const pace = actionPacing({reduced});
+      automation.push({input: {kind: 'pace', settings, animSpeed, reduced}, expected: {gapMs: pace.gapMs, stepMs: pace.stepMs, bannerMs: pace.bannerMs, scale: pace.scale,
+        lungeMs: pace.spriteSpeed.lungeMs, beatMs: pace.spriteSpeed.beatMs}});
+    }
+  }
+  setAnimSpeed('normal'); setCombatPacing({});
+  for (const [key, value] of [['combatPacingPreset', 'mobile-fast'], ['combatPacingPreset', 'custom'], ['combatStepPause', 750], ['animationStepDuration', 300], ['autoCombat', true]])
+    automation.push({input: {kind: 'change', key, value}, expected: combatPacingChanges(key, value)});
+  for (const space of [{cardHeight: 220, viewportHeight: 800, dockTop: 560, menuBottom: 60}, {cardHeight: 180, viewportHeight: 844, dockTop: 600, menuBottom: 90},
+    {cardHeight: 300, viewportHeight: 390, dockTop: 250, menuBottom: 50}, {cardHeight: 100, viewportHeight: 300, dockTop: 40, menuBottom: 50}, {cardHeight: 200, viewportHeight: 700, dockTop: 500, menuBottom: 40, gap: 0}]) {
+    const heights = Object.fromEntries(COMBAT_LOG_SIZES.map(size => [size, combatLogHeight({...space, size})]));
+    const snaps = [0, heights.Small, (heights.Small + heights.Medium) / 2 + 1, heights.Medium, heights.Large + 50].map(h => combatLogSnapSize(h, heights));
+    automation.push({input: {kind: 'logHeights', space}, expected: {heights, snaps, dragScale: combatLogDragScale({heights, viewportHeight: space.viewportHeight, handleBottom: space.dockTop})}});
+  }
+  for (const settings of [{}, {combatLogPlayerColor: '#ffffff', combatLogEnemyColor: '#000000'}, {combatLogPlayerColor: '#ffd700', combatLogEnemyColor: 'red'}, {player: '#7fc4ff', enemy: '#ff8d83'}])
+    automation.push({input: {kind: 'palette', settings}, expected: {...combatLogPalette(settings)}});
+}
+family('combat-automation', 'phase 7', 'Auto (reactions only): the chooser\'s pick for perceived intents, last stances and manual picks; the pacing settings (step pause, animation step, Auto speed, mobile-fast preset) and the pace they give; the combat log\'s Small/Medium/Large heights and palette.',
+  ['src/model/autoCombatPolicy.js chooseReaction/perceivedManeuver/resolveCombatAutomation/combatPacingChanges', 'src/ui/animationPace.js actionPacing',
+    'src/ui/models/CombatToolsModel.js combatLogHeight/combatLogSnapSize/combatLogDragScale', 'src/ui/models/CombatLogPaletteModel.js combatLogPalette'], automation,
+  {defaults: {actionPacing: {motion: ACTION_PACING, behavior: AUTOMATION_DEFAULTS}, logSizes: COMBAT_LOG_SIZES, logDefaultSize: COMBAT_LOG_DEFAULT_SIZE}});
 
 // ── run layer (phase 8) ──────────────────────────────────────────────────────────────────────
 await runFamilies({js, family, plain, fightStart, settle, ALL_UNLOCKED, CLASSES});

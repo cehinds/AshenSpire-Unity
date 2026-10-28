@@ -59,6 +59,25 @@ namespace AshenSpire.Domain.Core2
         public string DefenseStance { get; set; }
         /// <summary>JS interrupted: an advantaged Smash under staggerOnAdvantage (enemy targets only stagger from it).</summary>
         public bool Interrupted { get; set; }
+        /// <summary>
+        /// The chain's named stages (JS damageReceipt hits[0].sources: the card's damage, each rating source, stance and
+        /// status multipliers, Block, Poise protection), as the combat log's full detail lists them.
+        /// </summary>
+        public List<Newtonsoft.Json.Linq.JObject> Sources { get; set; } = new List<Newtonsoft.Json.Linq.JObject>();
+
+        /// <summary>JS damageReceipt(targetId, [hit]): the one-hit receipt a damageDealt event carries.</summary>
+        public Newtonsoft.Json.Linq.JObject ToJson(string targetId)
+        {
+            var hit = new Newtonsoft.Json.Linq.JObject
+            {
+                ["incoming"] = Incoming, ["physical"] = Physical, ["magical"] = Magical, ["blocked"] = Blocked, ["barrierReduced"] = BarrierMitigated,
+                ["wardReduced"] = WardMitigated, ["poiseReduced"] = PoiseAbsorbed,
+            };
+            if (PoiseDamage > 0) hit["poiseDamage"] = PoiseDamage;
+            hit["hpLoss"] = HpLoss;
+            hit["sources"] = new Newtonsoft.Json.Linq.JArray(Sources.Select(s => s.DeepClone()));
+            return new Newtonsoft.Json.Linq.JObject { ["version"] = 1, ["targetId"] = targetId, ["hits"] = new Newtonsoft.Json.Linq.JArray(hit), ["totalDamage"] = HpLoss };
+        }
     }
 
     /// <summary>What one live hit did (JS damageDealt event fields plus the outcome of the Accuracy roll).</summary>
@@ -133,18 +152,48 @@ namespace AshenSpire.Domain.Core2
             var ratingId = source != null && source.Side != Core2Side.Enemy && (carrier.Profile?.Camp == "spell" || share > 0 || IsMagicalAttack(carrier)) ? "pr" : "ar";
             var rating = source == null ? 0 : Core2Statuses.RatingValue(rules, source, ratingId);
             double ratingBonus = carrier.SkipRatingBonus ? 0 : rating * rules.AttackRatingWeight;
+            // The chain keeps full precision and is floored once; each named stage shows the running floor (JS transition).
+            var sources = new List<Newtonsoft.Json.Linq.JObject> { new Newtonsoft.Json.Linq.JObject { ["id"] = "base", ["label"] = "Card damage (including enhancements)", ["amount"] = baseDamage, ["stage"] = "offense", ["operation"] = "set" } };
+            int Whole(double value) => Math.Max(0, (int)Math.Floor(value));
+            double Transition(string id, string label, double before, double after, string stage = "offense", double? multiplier = null)
+            {
+                if (before != after)
+                {
+                    var row = new Newtonsoft.Json.Linq.JObject { ["id"] = id, ["label"] = label, ["amount"] = Whole(after) - Whole(before), ["requested"] = Whole(before), ["effective"] = Whole(after), ["stage"] = stage,
+                        ["operation"] = multiplier.HasValue ? "multiply" : "add" };
+                    if (multiplier.HasValue) row["multiplier"] = multiplier.Value;
+                    sources.Add(row);
+                }
+                return after;
+            }
             double raw = baseDamage;
-            raw = raw + ratingBonus;
+            var ratingLabel = ratingId.ToUpperInvariant();
+            var applicable = source?.RatingSources ?? new List<Core2RatingSource>();
+            var sourceRating = applicable.Sum(row => ratingId == "pr" ? row.Pr : row.Ar);
+            if (sourceRating > 0 && ratingBonus > 0)
+            {
+                for (var index = 0; index < applicable.Count; index++)
+                {
+                    var row = applicable[index];
+                    var contribution = (ratingId == "pr" ? row.Pr : row.Ar) * rules.AttackRatingWeight;
+                    raw = Transition(ratingId + ":" + (row.SourceId ?? index.ToString(System.Globalization.CultureInfo.InvariantCulture)), (row.Name ?? row.Kind) + ": " + ratingLabel, raw, raw + contribution);
+                }
+                raw = Transition("ar:adjustments", ratingLabel + " stance/status modifiers (including Weak)", raw, baseDamage + ratingBonus);
+            }
+            else raw = Transition("ar", "Attack rating", raw, raw + ratingBonus);
             // A Core 2 Counter return is final pre-protection damage (SPEC §17): no matching-stance or defensive-stance stage.
             var stanceMultiplier = flatReturn ? 1 : Core2Stances.StanceEffectiveness(rules, source, carrier);
-            raw = raw * stanceMultiplier;
-            if (!flatReturn && target != null && target.StatusStacks("vulnerable") > 0) raw = raw * rules.VulnerabilityMultiplier;
+            raw = Transition("matching-stance", "Matching stance effectiveness", raw, raw * stanceMultiplier, "offense", stanceMultiplier);
+            if (!flatReturn && target != null && target.StatusStacks("vulnerable") > 0)
+                raw = Transition("vulnerable", "Vulnerable", raw, raw * rules.VulnerabilityMultiplier, "offense", rules.VulnerabilityMultiplier);
             var defenseMultiplier = Core2Stances.StanceMitigationMultiplier(rules, attacking, defending, out var defenseAdvantage);
             var smashRule = advantage && attacking == "smash";
             // Core 2 Counter returns carry their advantage in the return itself (SPEC §17), so the chain does not multiply it again.
             var advantageMultiplier = smashRule ? rules.SmashDamageMultiplier : advantage && !flatReturn ? rules.StanceAdvantageMultiplier : 1;
-            var exact = raw * advantageMultiplier;
-            exact = exact * (flatReturn ? 1 : defenseMultiplier);
+            var exact = smashRule ? Transition("smash-vs-defensive", "Smash vs defensive stance", raw, raw * advantageMultiplier, "stance", advantageMultiplier)
+                : Transition("stance-advantage", "Offensive stance advantage", raw, raw * advantageMultiplier, "stance", advantageMultiplier);
+            var defenseApplied = flatReturn ? 1 : defenseMultiplier;
+            exact = Transition("stance-defense", "Defensive stance advantage", exact, exact * defenseApplied, "stance", defenseApplied);
             var amount = Math.Max(0, (int)Math.Floor(exact));
             var preview = target == null ? null : Core2Accuracy.Preview(rules, source, target, carrier, options);
             var hitChance = (preview?.HitChance ?? 100) / 100.0;
@@ -155,6 +204,9 @@ namespace AshenSpire.Domain.Core2
             {
                 // Read from the Block held before this hit's own absorption.
                 smashBlockBonus = (int)Math.Floor(rules.SmashBlockFraction * Math.Max(0, target.Block));
+                if (smashBlockBonus > 0)
+                    sources.Add(new Newtonsoft.Json.Linq.JObject { ["id"] = "smash-block-bonus", ["label"] = "Smash vs defensive stance: bonus from target Block", ["amount"] = smashBlockBonus,
+                        ["requested"] = amount, ["effective"] = amount + smashBlockBonus, ["stage"] = "stance", ["operation"] = "add" });
                 amount += smashBlockBonus;
             }
             var incoming = amount;
@@ -164,8 +216,19 @@ namespace AshenSpire.Domain.Core2
             // Ward off: the magic Barrier left meets Poise with the physical residual.
             var poiseMeetsMagic = !rules.WardEnabled;
             var poiseIn = physical - blocked + (poiseMeetsMagic ? magical - barrierMitigated : 0);
+            Transition("block", "Block", physical, physical - blocked, "mitigation");
+            Transition("barrier", "Barrier", magical, magical - barrierMitigated, "mitigation");
             int poiseAbsorbed = 0, wardAbsorbed = 0;
             var poiseThrough = smashRule ? poiseIn : Protect(target?.Poise, rules.PoiseProtectionMultiplier, poiseIn, true, out poiseAbsorbed);
+            if (!smashRule && poiseIn > 0 && target?.Poise != null && target.Poise.Value > 0)
+            {
+                // JS protectionReceipt: the Poise protection modifier, then the cap when Poise holds less than it would absorb.
+                var protectedAmount = Math.Max(0, (int)Math.Floor(poiseIn * rules.PoiseProtectionMultiplier));
+                sources.Add(new Newtonsoft.Json.Linq.JObject { ["id"] = "defense.poiseProtection", ["label"] = "Poise protection", ["stage"] = "damage.mitigation", ["operation"] = "multiply",
+                    ["multiplier"] = rules.PoiseProtectionMultiplier, ["requested"] = poiseIn, ["effective"] = protectedAmount, ["amount"] = protectedAmount - poiseIn });
+                if (poiseIn - protectedAmount > target.Poise.Value)
+                    sources.Add(new Newtonsoft.Json.Linq.JObject { ["id"] = "poise-cap", ["label"] = "Poise cannot absorb more than it holds", ["stage"] = "mitigation", ["operation"] = "add", ["amount"] = poiseIn - protectedAmount - target.Poise.Value });
+            }
             var wardIn = poiseMeetsMagic ? 0 : magical - barrierMitigated;
             var wardThrough = rules.WardEnabled ? Protect(target?.Ward, WardProtectionMultiplier, wardIn, false, out wardAbsorbed) : wardIn;
             var poiseDamage = smashRule && !evaded ? Math.Min(Math.Max(0, target?.Poise?.Value ?? 0), (int)Math.Floor(rules.SmashPoiseFraction * incoming)) : 0;
@@ -176,7 +239,7 @@ namespace AshenSpire.Domain.Core2
                 WardMitigated = wardAbsorbed, PoiseAbsorbed = poiseAbsorbed, PoiseDamage = poiseDamage, HpLoss = hpLoss,
                 BlockRemaining = Math.Max(0, (target?.Block ?? 0) - blocked), HitChance = hitChance, Evaded = evaded, Advantage = advantage,
                 SmashVsDefensive = smashRule, SmashBlockBonus = smashBlockBonus, DefenseAdvantage = defenseAdvantage,
-                AttackStance = attacking, DefenseStance = defending,
+                AttackStance = attacking, DefenseStance = defending, Sources = sources,
                 Interrupted = advantage && rules.StaggerOnAdvantage && ((IList<string>)rules.StaggerManeuvers).Contains(attacking),
             };
         }

@@ -74,7 +74,18 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-
   Perception and follow-up concealment (`Core2Knowledge`), the enemy inspector's data
   (`Core2EnemyInspector`) and a minimal fight loop (`Core2Fight`: create, play a card, End Turn,
   enemy phase, statuses, relic triggers) sufficient to replay the scripted fights with reactions
-  switched off. Nothing in the running game calls it until phase 8 switches new runs to Core 2.
+  switched off. Phase 7 adds the reaction window and stack (`Core2FightReactions`: an incoming
+  contact pauses the queue with `PendingReaction`; `ChooseReaction(offerId, optionId)` answers it —
+  an option is pushed and paid when the stack resolves, last pushed first; null is Back —
+  and the enemy phase resumes at its cursor; options are checked on a detached copy, and a Counter
+  played as a reaction reserves its return's Advance), enemy reactions on the same stack
+  (`Core2FightEnemyReactions`: playerAction/playerReaction windows, the SP paid at push, the
+  `enemyReaction` stream), the Reaction switch (`SetReactions`), Auto (`Core2AutoCombat`: reactions
+  only; it answers offers and never plays or ends a turn), the combat log model (`Core2CombatLog`:
+  JS `combatLogEntries` lines, the drawn view with legend, Round headings and full-detail receipt
+  lines, the Small/Medium/Large heights and palette; damage events now carry `damageReceipt`) and
+  the pacing settings (`Core2CombatPacing`: 500 ms / 390 ms, mobile-fast 250 / 195, Auto ×1.5,
+  one-tap play off). Nothing in the running game calls it until phase 8 switches new runs to Core 2.
 - **Oracles:** each family is `{input, expected}` cases from the JS functions named in the file
   header: starter decks, card pricing (Adept, successive Spell, X cost, floors), hit chance (d20 +
   Precision against fixed Evasion, natural 1 and 20), Block then Poise absorption, stance matchups
@@ -90,8 +101,16 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-
   the damage-type table, entry grants, live stance entry, Counter exchanges against single and
   multi-hit moves, Spell Counters, reactive Sweep, range plans and a return that must Advance;
   and for 5c the seeded streams, Perception DCs, the multi-hit floor, a plan stopping at its
-  charging move, concealment and the inspector), with expected values read from the JS game at the
-  pin.
+  charging move, concealment and the inspector; and for 7 the offer's pause and refusals, a paid
+  reaction played once before the contact, Back, the switch, an enemy reaction paying its SP, the
+  Auto chooser, the log view and the pacing values), with expected values read from the JS game at
+  the pin.
+- **Oracles (7):** `reaction-fights` runs whole fights with reactions on under fixed policies
+  (first option, Back, Auto) and records every offer with its options and prices, the answers,
+  the full event order, damage and RNG counters; `combat-log` is the log of those fights (and two
+  scripted ones) entry by entry with the drawn view in full detail; `combat-automation` covers the
+  Auto chooser, the pacing settings and pace, and the log heights and palette. A start's player
+  also carries `ratingSources` (the damage receipt's per-source rating lines).
 - **Export additions (5b):** `mechanics.json` also carries `damageTypes` (JS
   `src/content/combatRules.js`: types, schools, magic split) and `counterRules` (the Counter
   coverage defaults a Core 2 fight reads).
@@ -116,6 +135,10 @@ dotnet run --project UnityTests/Core2Run              # replays the phase 8 run-
   unlocks, save refusals, rest once-per-visit, screens, event gates, flasks and map shape. A
   scripted run that reaches a combat rule phase 5 has not ported (status `buildup`) is reported
   PENDING with every step before it matched, as is the one known combat discrepancy it lists.
+- **Export additions (7):** `ui/combat.json` carries the combat presentation data: JS
+  `actionPacing.json` (step pause, animation step, Auto speed, mobile-fast preset and bounds), the
+  animation speed table, the Combat settings rows and Accessibility's `oneTapPlay` with their
+  defaults, the combat log's sizes, palette and UI copy.
 - **CI:** the Unity fast gate checks out the JS repository at the SPEC pin (sources only) and runs
   both `--check`s, runs `Core2Content` in the map-and-data shard and `Core2Combat` in the rules
   shard. `Core2Run` runs in the rules shard. After a pin bump (SPEC §0.2 step 5), regenerate both and commit them in the same PR.

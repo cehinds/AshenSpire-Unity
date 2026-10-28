@@ -21,6 +21,17 @@ namespace AshenSpire.Domain.Core2
         public Core2Pool Clone() => new Core2Pool(Value, Max);
     }
 
+    /// <summary>One source of a combatant's ratings (JS ratingSources row): its name, kind, id and slot, and the AR and PR it gives.</summary>
+    public sealed class Core2RatingSource
+    {
+        public string Name { get; set; }
+        public string Kind { get; set; }
+        public string SourceId { get; set; }
+        public string Slot { get; set; }
+        public double Ar { get; set; }
+        public double Pr { get; set; }
+    }
+
     /// <summary>One status on a combatant (JS entity.statuses[id]).</summary>
     public sealed class Core2StatusInstance
     {
@@ -96,6 +107,10 @@ namespace AshenSpire.Domain.Core2
         public int CardsPlayed { get; set; }
         /// <summary>JS rangeActorKey: "player:&lt;seat&gt;" or "enemy:&lt;id&gt;"; null derives it from Side and Id.</summary>
         public string RangeKey { get; set; }
+        /// <summary>JS combatReactionTurn: the combat turn this enemy last reacted in (one enemy reaction per turn).</summary>
+        public int? CombatReactionTurn { get; set; }
+        /// <summary>JS entity.ratingSources: where a player's AR/PR come from (attributes, each worn piece), for the damage receipt's lines.</summary>
+        public List<Core2RatingSource> RatingSources { get; set; } = new List<Core2RatingSource>();
 
         public int StatusStacks(string id) => Statuses.TryGetValue(id, out var row) ? Math.Max(0, row.Stacks) : 0;
         public int Attribute(string id) => Attributes.TryGetValue(id, out var value) ? value : 0;
@@ -136,6 +151,14 @@ namespace AshenSpire.Domain.Core2
         {
             Stamp = stamp ?? throw new ArgumentNullException(nameof(stamp));
             _characterTags = characterTags ?? new Dictionary<string, IReadOnlyList<string>>();
+        }
+
+        /// <summary>A detached copy (JS candidateState): the same stamp, phase, turn and the round's stagger claims.</summary>
+        public Core2CombatContext Clone()
+        {
+            var copy = new Core2CombatContext(Stamp, _characterTags) { Phase = Phase, Turn = Turn };
+            foreach (var pair in _staggers) copy._staggers[pair.Key] = pair.Value;
+            return copy;
         }
 
         /// <summary>A context over the export: the rules, a new-fight stamp and every character's tags.</summary>

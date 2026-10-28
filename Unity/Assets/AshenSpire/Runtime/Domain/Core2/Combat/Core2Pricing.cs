@@ -26,13 +26,27 @@ namespace AshenSpire.Domain.Core2
         public override string ToString() => Sp + " SP, " + Mp + " MP";
     }
 
-    /// <summary>A play the pools cannot pay (JS F.playRefusal(..., 'cost', { resource, need, have })).</summary>
+    /// <summary>
+    /// A refused play (JS F.playRefusal(message, reason, extra)): a price the pools cannot pay (reason cost, with the
+    /// resource, need and have), a route that cannot reach (range) or a card that cannot be played (unplayable).
+    /// </summary>
     public sealed class Core2PlayRefusedException : InvalidOperationException
     {
         public string Resource { get; }
         public int Need { get; }
         public int Have { get; }
-        public Core2PlayRefusedException(string message, string resource, int need, int have) : base(message) { Resource = resource; Need = need; Have = have; }
+        /// <summary>JS playRefusal reason: cost (stamina, mana or hp), range, unplayable, controlled.</summary>
+        public string Reason { get; }
+        public Core2PlayRefusedException(string message, string resource, int need, int have, string reason = null) : base(message)
+        {
+            Resource = resource; Need = need; Have = have;
+            Reason = reason ?? (resource == "stamina" || resource == "mana" || resource == "hp" ? "cost" : resource);
+        }
+
+        /// <summary>The refusal's extra fields (JS { resource, need, have } for a cost), as the reaction log reads them.</summary>
+        public Newtonsoft.Json.Linq.JObject Extra() => Reason == "cost"
+            ? new Newtonsoft.Json.Linq.JObject { ["resource"] = Resource, ["need"] = Need, ["have"] = Have }
+            : new Newtonsoft.Json.Linq.JObject();
     }
 
     public static class Core2Pricing

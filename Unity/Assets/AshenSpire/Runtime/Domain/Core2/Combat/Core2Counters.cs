@@ -16,8 +16,9 @@
 //                                  0.25, advantagePoiseFraction 0.5, advantageBlockFraction 0.25
 //   combatExpansionMatchups.counter.defaultCoverage (mechanics.json counterRules)
 // The legacy payload numbers (authored hp, Counterstrike, Impact, Flux, school edges) do not reach a Core 2 return
-// (completeTacticalAction's coreFixed branch) and are not ported. Paid per-contact hand Counters are reactions (phase 7):
-// the predicates take the paid serial as an input.
+// (completeTacticalAction's coreFixed branch) and are not ported. A Counter paid from the hand as a reaction to one contact
+// (Core2FightReactions.cs) carries its serial into these predicates: it answers that contact even after this cycle's
+// automatic return.
 using System;
 using System.Collections.Generic;
 using System.Linq;
