@@ -303,6 +303,8 @@ function fightStart(combat) {
     player: {classId: p.classId, hp: run.hp, maxHp: run.maxHp, maxStamina: p.energyMax, mana: run.mana, maxMana: run.maxMana,
       attributes: p.attributes, ratings: p.ratings, level: combat.characterLevel ?? 1, baseEvasionBonus: p.baseEvasionBonus || 0,
       basePrecisionBonus: p.basePrecisionBonus || 0, poise: p.persistentPoise, handSize: combat.handMax, relicIds: p.relicIds,
+      // The legacy Poise vessel a physical status-pressure fill strains (combatStatusControl.js applyStatusPressure).
+      poiseMeter: p.poiseMeter ? {value: p.poiseMeter.value, max: p.poiseMeter.max} : null,
       // Where the ratings come from (attributes, each worn piece): the damage receipt's per-source rating lines (phase 7 log).
       ratingSources: (p.ratingSources || []).map(row => ({name: row.name ?? null, kind: row.kind ?? null, sourceId: row.sourceId ?? null, slot: row.slot ?? null,
         ar: row.ar || 0, pr: row.pr || 0})),
@@ -488,6 +490,45 @@ family('reaction-fights', 'phase 7', 'Whole Core 2 fights with reactions on: eve
     'src/engine/combat.js dispatch chooseReaction/resumeEnemyTurn/enemyPhase cursor', 'src/model/autoCombatPolicy.js chooseReaction'],
   reactionFightInputs.map((input, index) => { const {start, combat: _combat, ...expected} = reactionFights[index];
     return {input: {...input, policy: input.policy, policyText: reactionPolicy[input.policy], start}, expected}; }));
+
+// ── fuzz fights (enemy coverage) ───────────────────────────────────────────────────────────────
+// Every Core 2 enemy fought twice by the reactive() driver: once with reactions off and once on (the answer policy
+// rotating first, Auto, Back), the class and seed rotating over a fixed table so every class meets reactions and every
+// enemy meets two classes. Kept small: each fight is a digest (a line per turn, damage, offers, event counts, RNG
+// counters and a sha256 of the full event order) and the player starts are shared by class:seed in `starts`.
+const {createHash} = await import('node:crypto');
+const FUZZ_SEEDS = [11, 23, 37, 58];
+const FUZZ_POLICIES = ['first', 'auto', 'decline'];
+const show = value => value === null || value === undefined ? '-' : String(value);
+function fuzzDigest(e) {
+  return {
+    result: e.result, turns: e.turns.length,
+    log: e.turns.map(t => `${t.turn} ${t.plays.join(',') || '-'} | ${show(t.player.hp)}/${show(t.player.block)}/${show(t.player.stamina)}/${show(t.player.mana)}/${show(t.player.stance)} | `
+      + `${t.enemies.map(x => `${show(x.hp)}/${show(x.block)}/${show(x.poise)}/${show(x.stamina)}/${show(x.intent)}/${x.alive ? 1 : 0}`).join(';')} | `
+      + `${show(t.after.playerHp)}/${t.after.enemyHp.map(show).join(',')} | ${(t.after.hand || []).join(',') || '-'}`),
+    offers: e.offers.map(o => `${o.turn} ${o.sourceId} ${o.options.map(x => `${x.cardId}:${x.staminaCost}/${x.manaCost}`).join(',') || '-'} > ${show(o.answer)}`),
+    damage: e.damageDealt.map(d => `${d.source}>${d.target} ${d.amount}/${d.blocked}`).join(' '),
+    eventCounts: e.eventCounts, eventOrder: createHash('sha256').update(e.eventTypes).digest('hex').slice(0, 24), rngCounters: e.rngCounters,
+  };
+}
+const fuzzStarts = {};
+const fuzzInputs = [];
+registries.enemies.all().forEach((enemy, index) => {
+  fuzzInputs.push({classId: CLASSES[index % 4], seed: FUZZ_SEEDS[Math.floor(index / 4) % 4], enemyIds: [enemy.id], policy: 'off'});
+  fuzzInputs.push({classId: CLASSES[(index + 1) % 4], seed: FUZZ_SEEDS[(index + 2) % 4], enemyIds: [enemy.id], policy: FUZZ_POLICIES[index % 3]});
+});
+const fuzzCases = fuzzInputs.map(input => {
+  const {start, combat: _combat, ...expected} = reactive(input);
+  const key = `${input.classId}:${input.seed}`;
+  const startText = JSON.stringify(plain(start));
+  if (fuzzStarts[key] && JSON.stringify(plain(fuzzStarts[key])) !== startText) throw new Error(`fuzz-fights: the ${key} start differs between enemies`);
+  fuzzStarts[key] ??= start;
+  return {input: {...input, start: key}, expected: fuzzDigest(expected)};
+});
+family('fuzz-fights', 'enemy gaps', 'Every Core 2 enemy, reactions off and on (first, Auto, Back answers), classes and seeds rotating: a digest of each whole fight (a line per turn with pools and intents, offers, damage, event counts, RNG counters, a sha256 of the event order).',
+  ['src/engine/runCombat.js createRunCombat', 'src/engine/combat.js dispatch', 'src/engine/combatStatusControl.js applyStatusPressure/recoverStatusesAtOwnerStart/endControlTurn',
+    'src/engine/triggers.js firePhase', 'src/engine/combat.js executeMovePayload/startDelayedMove'], fuzzCases,
+  {starts: fuzzStarts, policyText: {off: 'reactions off; play the first affordable non-reaction card at the first living enemy, End Turn', ...reactionPolicy}});
 
 // ── combat log (phase 7) ───────────────────────────────────────────────────────────────────────
 // combatLogEntries over each reaction fight's event log (and two of the reactions-off scripted fights), with the view the

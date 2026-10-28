@@ -45,7 +45,9 @@ namespace AshenSpire.Domain.Core2
         public Core2CombatProfile Profile;
         public List<int> Amounts = new List<int>();
         public List<int> Incomings = new List<int>();
-        public int Amount, HpLoss, Blocked, StatusAccepted, StatusResisted;
+        public int Amount, HpLoss, Blocked;
+        /// <summary>JS recordTacticalStatus: buildup accepted (pending plus active stacks) and resisted (or spent on Ward) by this target.</summary>
+        public double StatusAccepted, StatusResisted;
         public Core2HitResult CounterAttack;
     }
 
@@ -54,6 +56,15 @@ namespace AshenSpire.Domain.Core2
         public Core2Combatant Entity;
         public List<Core2ContactPlan> Contacts = new List<Core2ContactPlan>();
         public Core2TacticalReceipt Receipt;
+        /// <summary>JS row.interactions: what the status hooks (thaw, shatter, reveal) read off this target's contacts.</summary>
+        public Core2StatusInteractions Interactions;
+    }
+
+    /// <summary>JS row.interactions: the first contact's profile, and whether a landed contact carried Fire, Blunt or a reveal (Sweep, Sacred, Holy).</summary>
+    public sealed class Core2StatusInteractions
+    {
+        public Core2CombatProfile Profile;
+        public bool ContainsFire, ContainsBlunt, ContainsReveal;
     }
 
     /// <summary>A committed card or move (JS expansion group): its carrier, its targets and, under perHit, its contact sequence.</summary>
@@ -378,6 +389,30 @@ namespace AshenSpire.Domain.Core2
                         if (row?.Receipt != null) row.Receipt.StatusAccepted += stacks;
                     }
                     break;
+                case "buildup":
+                    // JS actions.js runOpcode 'buildup': each planned target the action did not miss takes the authored
+                    // pressure (plus the Spell-stance bonus) through applyStatusPressure, after an optional chance roll on
+                    // statusPressure; the receipt records what the target accepted and resisted.
+                    foreach (var t in StatusTargets(action, eff))
+                    {
+                        if (eff["chance"] != null && eff["chance"].Type != JTokenType.Null
+                            && !(bool)RollStatusChance((double)eff["chance"], (bool?)eff["advantage"] ?? false, (bool?)eff["disadvantage"] ?? false, "statusPressure")["success"]) continue;
+                        var authored = Eval(action, eff["amount"], 0, t);
+                        // JS ashenBlightSpellBuildup (Cinder Sight) adds 1 only for an Ashen Blight owner's Fire/Frost/Lightning
+                        // Burn/Frost/Paralysis buildup; enemies carry no Blight, and no Core 2 card builds those statuses.
+                        if (action.Source?.Side == Core2Side.Player && (action.Card?.Profile?.School == "fire" || action.Card?.Profile?.School == "frost" || action.Card?.Profile?.School == "lightning")
+                            && ((string)eff["status"] == "burn" || (string)eff["status"] == "frost" || (string)eff["status"] == "paralysis"))
+                            throw new NotSupportedException("Ashen Blight Cinder Sight buildup (ashenBlightSpellBuildup) is not ported");
+                        var pressure = ApplyStatusPressure(t, (string)eff["status"], authored + SpellAuthoredStatusBonus(action, authored), action.Source,
+                            (string)eff["camp"] ?? action.Card?.Profile?.Camp, action.Group?.Key ?? Turn + ":" + (action.Card?.InstanceId ?? "effect"), (string)eff["recoveryProfile"]);
+                        var row = action.Group?.Targets.TryGetValue(t.Id, out var r) == true ? r : null;
+                        if (row?.Receipt != null)
+                        {
+                            row.Receipt.StatusAccepted += pressure.AcceptedBuildup + pressure.ActiveAdded;
+                            row.Receipt.StatusResisted += pressure.Resisted + pressure.WardSpent;
+                        }
+                    }
+                    break;
                 case "removeStatus":
                     foreach (var t in ResolveTargets(action, (string)eff["target"]))
                         RemoveStatus(t, (string)eff["status"], eff["amount"] != null ? Math.Max(0, (int)Math.Floor(Eval(action, eff["amount"], 0))) : (int?)null, "consumed");
@@ -567,8 +602,10 @@ namespace AshenSpire.Domain.Core2
                 var target = row.Entity;
                 if (!target.Alive) continue;
                 var carrier = group.Carrier;
-                var receipt = new Core2TacticalReceipt { Profile = Core2Counters.ContactProfile(carrier) };
-                var counter = Core2Counters.Prepared(Ctx, target, carrier, target == Player ? group.ManualCounterSerial : null);
+                // JS restrictions(ctx, target).counterDisabled: a locked defender's Counter neither intercepts nor returns.
+                var counterDisabled = ControlRestrictions(target).CounterDisabled;
+                var receipt = new Core2TacticalReceipt { Profile = Core2Counters.ContactProfile(carrier), CounterDisabledAtStart = counterDisabled };
+                var counter = Core2Counters.Prepared(Ctx, target, carrier, target == Player ? group.ManualCounterSerial : null, counterDisabled);
                 foreach (var contact in row.Contacts)
                 {
                     var profile = ContactProfile(carrier, contact);
@@ -594,6 +631,9 @@ namespace AshenSpire.Domain.Core2
                     Emit("combatCounterConsumed", consumed);
                 }
                 row.Receipt = receipt;
+                // JS beginExpandedAction: the row's status interactions, then beforeStatusAction (Fire thaws) once the roll is known.
+                row.Interactions = StatusInteractions(carrier, row.Contacts);
+                BeforeStatusAction(target, row.Interactions, receipt.Connected);
             }
         }
 
@@ -863,11 +903,28 @@ namespace AshenSpire.Domain.Core2
             }
             if (group.Cancelled) { _pendingExpansionActions = Math.Max(0, _pendingExpansionActions - 1); FinishGroup(group); return; }
             BeginGroup(group, action.Source);
-            if (group.Contacts != null) group.Targets = group.RootTargets;
-            foreach (var row in group.Targets.Values)
+            var sequence = group.Contacts;
+            if (sequence != null) group.Targets = group.RootTargets;
+            foreach (var pair in group.Targets)
             {
-                if (row.Receipt == null || !row.Entity.Alive) continue;
-                if (group.Contacts == null) CompleteTactical(action.Source, row.Entity, group, row.Receipt);
+                var row = pair.Value;
+                // JS completedRootTargets: a contact sequence's root row sums its contacts' receipts (connected if any
+                // connected; the total amount) and reads its interactions off all its contacts.
+                var connected = row.Receipt?.Connected ?? false;
+                var amount = row.Receipt?.Amount ?? 0;
+                var interactions = row.Interactions;
+                var hasReceipt = row.Receipt != null;
+                if (sequence != null)
+                {
+                    var receipts = sequence.Select(targets => targets.TryGetValue(pair.Key, out var contactRow) ? contactRow.Receipt : null).Where(r => r != null).ToList();
+                    hasReceipt = true;
+                    connected = receipts.Any(r => r.Connected);
+                    amount = receipts.Sum(r => r.Amount);
+                    interactions = StatusInteractions(group.Carrier, row.Contacts);
+                }
+                if (!hasReceipt || !row.Entity.Alive) continue;
+                if (sequence == null) CompleteTactical(action.Source, row.Entity, group, row.Receipt);
+                CompleteStatusAction(row.Entity, interactions ?? StatusInteractions(group.Carrier, row.Contacts), connected, group.Key, amount > 0);
             }
             foreach (var row in group.Targets.Values) DiscardReservation(group, row);
             _pendingExpansionActions = Math.Max(0, _pendingExpansionActions - 1);
@@ -915,7 +972,9 @@ namespace AshenSpire.Domain.Core2
             target.CounterStaggeredSerial = null;
             // A Counter the player paid as a reaction to this contact answers it even after this cycle's automatic return.
             var paid = target == Player && Core2Counters.PaidContact(group.ManualCounterSerial, counter);
-            if (!stillPrepared || receipt.Avoided || receipt.Profiles.Any(p => p.Traits.Contains("unreflectable")) || !target.Alive || source == null || !source.Alive
+            // JS: `blocked` — the defender is locked by a control status now, or was when the contact began.
+            var blocked = ControlRestrictions(target).CounterDisabled || receipt.CounterDisabledAtStart;
+            if (!stillPrepared || blocked || receipt.Avoided || receipt.Profiles.Any(p => p.Traits.Contains("unreflectable")) || !target.Alive || source == null || !source.Alive
                 || Core2Counters.ReturnSpent(target) && !paid) return;
             var payload = Core2Counters.ReturnFor(Rules, receipt.Covered.Select((covered, i) =>
                 (covered, i < receipt.Incomings.Count ? receipt.Incomings[i] : (i < receipt.Amounts.Count ? receipt.Amounts[i] : 0), receipt.Profiles[i].Maneuver)));

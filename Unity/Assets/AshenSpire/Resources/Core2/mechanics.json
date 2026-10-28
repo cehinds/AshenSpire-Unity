@@ -509,5 +509,15 @@
   "restoration": {
    "alterationCombatCap": 1
   }
+ },
+ "poiseMeter": {
+  "growthMult": 1.25,
+  "playerStagger": {
+   "actionLoss": 1,
+   "statuses": {
+    "vulnerable": 2,
+    "weak": 2
+   }
+  }
  }
 }

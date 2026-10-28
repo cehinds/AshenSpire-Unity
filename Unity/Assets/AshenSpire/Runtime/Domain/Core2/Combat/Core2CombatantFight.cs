@@ -108,6 +108,21 @@ namespace AshenSpire.Domain.Core2
         /// <summary>JS statusControl.lastRecoveryCycle: the owner cycle whose status recovery already rolled.</summary>
         public int LastRecoveryCycle { get; set; } = -1;
 
+        // ---- status control (JS entity.statusControl, combatStatusControl.js) ----------------------------------------
+        /// <summary>JS statusControl.gauges: each pressure status's pending buildup, the camp that last filled it and its recovery profile.</summary>
+        public Dictionary<string, Core2StatusGauge> StatusGauges { get; set; } = new Dictionary<string, Core2StatusGauge>(StringComparer.Ordinal);
+        /// <summary>JS statusControl.resolveNextTurn: a lock was waited out at this owner's turn end; the next owner turn acts freely.</summary>
+        public bool ResolveNextTurn { get; set; }
+        /// <summary>JS statusControl.resolveActive: this owner turn ignores control locks (and Frozen's action loss).</summary>
+        public bool ResolveActive { get; set; }
+        /// <summary>JS statusControl.completedActions: the action keys completeStatusAction already finished this owner cycle.</summary>
+        public HashSet<string> CompletedStatusActions { get; set; } = new HashSet<string>(StringComparer.Ordinal);
+        /// <summary>
+        /// JS entity.poiseMeter: the legacy Poise vessel a physical status-pressure fill strains (applyStatusPressure). A
+        /// player's is stamped by the run (createPlayerCombatEntity stampPlayerPoiseMax); null when the entity has none.
+        /// </summary>
+        public Core2Pool PoiseMeter { get; set; }
+
         // ---- player (JS player.counters, abilityRiders) ---------------------------------------------------------------
         public int CardsPlayedThisTurn { get; set; }
         public int AttacksPlayedThisCombat { get; set; }
@@ -126,6 +141,41 @@ namespace AshenSpire.Domain.Core2
             copy.UnlockedMoves = new List<string>(UnlockedMoves);
             copy.KnowledgeAction = KnowledgeAction?.Clone();
             copy.RelicIds = new List<string>(RelicIds);
+            copy.StatusGauges = StatusGauges.ToDictionary(p => p.Key, p => p.Value.Clone(), StringComparer.Ordinal);
+            copy.CompletedStatusActions = new HashSet<string>(CompletedStatusActions, StringComparer.Ordinal);
+            copy.PoiseMeter = PoiseMeter?.Clone();
         }
+    }
+
+    /// <summary>One pressure gauge (JS statusControl.gauges[id]): pending buildup below the next threshold.</summary>
+    public sealed class Core2StatusGauge
+    {
+        public double Value { get; set; }
+        /// <summary>physical or spell: the camp of the application that last filled it (it picks the defense a fill meets).</summary>
+        public string Camp { get; set; }
+        /// <summary>bodily, elemental, mental or curse: which attributes its chance recovery reads.</summary>
+        public string RecoveryProfile { get; set; }
+        public Core2StatusGauge Clone() => (Core2StatusGauge)MemberwiseClone();
+    }
+
+    /// <summary>JS applyStatusPressure's receipt.</summary>
+    public sealed class Core2PressureReceipt
+    {
+        public double AcceptedBuildup { get; set; }
+        public int ActiveAdded { get; set; }
+        public double Resisted { get; set; }
+        public int WardSpent { get; set; }
+        public int PoiseStrain { get; set; }
+        public bool FullyResisted { get; set; } = true;
+    }
+
+    /// <summary>JS controlRestrictions: the active lock statuses and what they disable this owner turn.</summary>
+    public sealed class Core2ControlRestrictions
+    {
+        public bool Locked { get; set; }
+        public List<string> Locks { get; set; } = new List<string>();
+        public bool CounterDisabled { get; set; }
+        public bool EvadeDisabled { get; set; }
+        public bool ResolveActive { get; set; }
     }
 }

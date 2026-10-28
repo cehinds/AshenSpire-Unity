@@ -47,7 +47,7 @@ namespace AshenSpire.Domain.Core2
                 inst.PersistentStacks = Math.Min(inst.PersistentStacks, inst.Stacks);
                 if (inst.Stacks > 0) return;
             }
-            target.Statuses.Remove(statusId);
+            target.RemoveStatusEntry(statusId);
         }
 
         /// <summary>

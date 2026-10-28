@@ -95,9 +95,9 @@
    }
   },
   {
-   "bytes": 9530,
+   "bytes": 9675,
    "path": "mechanics.json",
-   "sha256": "0ca94fecb91ea277d37869146b4979a52e2a290c84cea48e5dcc5bc2709b61e9",
+   "sha256": "a74dd52ae3bf46141a6c526507a778290f5b0eec9ad0b6d1670f2d15b0a5032a",
    "tables": {
     "actionCostTable": 6,
     "counterCoverage": 3,

@@ -8,7 +8,7 @@
 //    and profile hash, are well formed, and name only ids the export contains. The starter decks
 //    and the phase 5a families (pricing, hit chance, Poise absorption, intent damage ranges), 5b
 //    families (matchups, Counter returns), 5c families (enemy SP planning, whole scripted fights) and
-//    phase 7 families (fights with reactions on, their combat log, Auto and pacing) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
+//    phase 7 families (fights with reactions on, their combat log, Auto and pacing) and fuzz-fights (every enemy, reactions off and on) are replayed case by case through Runtime/Domain/Core2/Combat (OracleReplay.cs). A family with
 //    no replay yet would be reported PENDING with its reason.
 using System.Text;
 using System.Text.RegularExpressions;
@@ -158,11 +158,12 @@ try
         ["enemy-planning"] = null,
         ["scripted-fights"] = null,
         ["reaction-fights"] = null,
+        ["fuzz-fights"] = null,
         ["combat-log"] = null,
         ["combat-automation"] = null,
     };
     var fixtures = FilesUnder(Oracles).Where(p => p.EndsWith(".json")).ToList();
-    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the twelve oracle families");
+    Check(fixtures.Select(p => p.Substring(0, p.Length - 5)).OrderBy(p => p, StringComparer.Ordinal).SequenceEqual(expectedFamilies.Keys.OrderBy(p => p, StringComparer.Ordinal)), "Oracles/ holds exactly the thirteen oracle families");
     Func<Core2Content, JObject, OracleReplay.Result> Cases(Func<Core2Content, JArray, OracleReplay.Result> replay) => (c, data) => replay(c, (JArray)data["cases"]);
     var replays = new Dictionary<string, Func<Core2Content, JObject, OracleReplay.Result>>
     {
@@ -175,6 +176,7 @@ try
         ["enemy-planning"] = OracleReplay.EnemyPlanning,
         ["scripted-fights"] = OracleReplay.ScriptedFights,
         ["reaction-fights"] = OracleReplay.ReactionFights,
+        ["fuzz-fights"] = OracleReplay.FuzzFights,
         ["combat-log"] = OracleReplay.CombatLog,
         ["combat-automation"] = Cases(OracleReplay.CombatAutomation),
     };
@@ -217,7 +219,9 @@ try
         {
             var outcome = replay(content, data);
             foreach (var failure in outcome.Failures) Console.Error.WriteLine("FAIL: " + failure);
-            Check(outcome.Cases == cases.Count && outcome.Passed == outcome.Cases, family + ": " + outcome.Passed + "/" + cases.Count + " JS oracle cases match the Core 2 combat domain");
+            foreach (var excluded in outcome.Excluded) Console.WriteLine("EXCLUDED: " + family + ": " + excluded);
+            Check(outcome.Cases + outcome.Excluded.Count == cases.Count && outcome.Passed == outcome.Cases, family + ": " + outcome.Passed + "/" + outcome.Cases
+                + " JS oracle cases match the Core 2 combat domain" + (outcome.Excluded.Count > 0 ? " (" + outcome.Excluded.Count + " excluded with a reason)" : ""));
             replayed.Add(family + " " + outcome.Passed + "/" + cases.Count);
         }
         else if (expectedFamilies.TryGetValue(family, out var reason) && reason != null)
