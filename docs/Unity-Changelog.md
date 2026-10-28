@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.46.0 · build 49 · 2026-10-28
+
+- Core 2 card choices on the combat screen: a card that offers a maneuver asks it first (JS cardChoiceModal: Choose a stance, Cancel plays nothing), and a pending chosen-card selection opens the JS door after its beats (Choose N cards, the from/to prompt, ordered picks, Confirm selection at exactly N, Choose later); every other command reopens it and Auto waits. The fallback fight asks both choices too and its Auto answers them (the first maneuver that plays, the first N candidates)
+
 ## 0.0.45.0 · build 48 · 2026-10-28
 
 - Core 2 content coverage: every op, predicate, formula, metric, status rule and trigger event a Core 2 run's cards, relics, flasks, statuses, enemies and events use now runs in the engine-free fight (gainEnergy, card zones and chosen cards, enterStance, burdens, Read Intent, linked spells, card charges and turn metrics, the base-card status rules, the causal range envelope), held by a static content scan and the content-coverage JS oracle
