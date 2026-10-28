@@ -3,6 +3,10 @@
 One entry per Unity version bump, newest first. Written by `node tools/unity-version.mjs bump`.
 The root CHANGELOG.md belongs to the HTML game and is not updated here.
 
+## 0.0.45.0 · build 48 · 2026-10-28
+
+- Core 2 content coverage: every op, predicate, formula, metric, status rule and trigger event a Core 2 run's cards, relics, flasks, statuses, enemies and events use now runs in the engine-free fight (gainEnergy, card zones and chosen cards, enterStance, burdens, Read Intent, linked spells, card charges and turn metrics, the base-card status rules, the causal range envelope), held by a static content scan and the content-coverage JS oracle
+
 ## 0.0.44.0 · build 47 · 2026-10-28
 
 - Core 2 combat screen: the JS combat layout (HUD, battlefield, intents with ranges and hit chances, hand, SP/MP footer, hold End Turn), beats and floaters, reactions, Auto, combat log and pacing; mounted by the Core 2 run host
