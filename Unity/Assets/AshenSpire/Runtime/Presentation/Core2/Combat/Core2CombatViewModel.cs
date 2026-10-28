@@ -48,6 +48,8 @@ namespace AshenSpire.Presentation.Core2
         public IReadOnlyList<string> CardChoiceSelected { get; set; }
         /// <summary>The hand card whose maneuver choice is open, or null.</summary>
         public string ManeuverPick { get; set; }
+        /// <summary>A card choice put off with Choose later: End Turn stays live to reopen its door.</summary>
+        public bool CardChoiceDeferred { get; set; }
     }
 
     public static class Core2CombatViewModel
@@ -515,7 +517,7 @@ namespace AshenSpire.Presentation.Core2
                 DrawLabel = Core2CombatText.T("js.actionRow.draw"),
                 DiscardLabel = Core2CombatText.T("combat.discard") + " " + display.Discard, ExhaustLabel = Core2CombatText.T("combat.exhaust") + " " + display.Exhaust,
                 EndTurnLabel = Core2CombatText.T("combat.endTurn"), EndTurnKey = Core2CombatText.T("js.actionRow.endTurnKey"),
-                EndTurnNeedsHold = playable, EndTurnHint = Core2CombatText.T("js.actionRow.hold"), EndTurnEnabled = canAct,
+                EndTurnNeedsHold = playable, EndTurnHint = Core2CombatText.T("js.actionRow.hold"), EndTurnEnabled = canAct || i.CardChoiceDeferred,
                 ReactionsEnabled = fight.ReactionsEnabled, Auto = i.Auto, ReactionSwitchEnabled = canAct,
             };
             footer.ReactionState = Core2CombatText.T(fight.ReactionsEnabled ? "combat.reactions.enabled" : "combat.reactions.disabled");

@@ -165,7 +165,7 @@ namespace AshenSpire.Presentation.Core2
         {
             button.RegisterCallback<PointerDownEvent>(e =>
             {
-                if (e.button != 0 || !_controller.CanAct || !_controller.EndTurnNeedsHold) return;
+                if (e.button != 0 || _controller.CardChoiceDeferred || !_controller.CanAct || !_controller.EndTurnNeedsHold) return;
                 _hold.Begin(NowMs);
                 PaintEndTurnState();
             }, TrickleDown.TrickleDown);
@@ -179,7 +179,10 @@ namespace AshenSpire.Presentation.Core2
             button.clicked += () =>
             {
                 var now = NowMs;
-                if (now < _suppressClickUntil || !_controller.CanAct) return;
+                if (now < _suppressClickUntil) return;
+                // A put-off card choice: End Turn reopens its door (the controller turns the command into that).
+                if (_controller.CardChoiceDeferred) { _controller.EndTurn(); return; }
+                if (!_controller.CanAct) return;
                 if (!_controller.EndTurnNeedsHold) { CommitEndTurn(); return; }
                 if (_hold.Tap(now)) CommitEndTurn();
                 else PaintEndTurnState();

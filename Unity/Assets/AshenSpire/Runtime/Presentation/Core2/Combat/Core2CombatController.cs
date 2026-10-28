@@ -106,7 +106,7 @@ namespace AshenSpire.Presentation.Core2
         {
             Session = Session, Fight = Fight, Display = Display, Selected = Selected, Busy = Busy, Auto = Settings.Auto,
             ReactionSelected = ReactionSelected, CardArt = CardArt, FlaskArmed = ArmedFlask != null,
-            CardChoiceOpen = CardChoiceOpen, CardChoiceSelected = CardChoiceSelected, ManeuverPick = ManeuverPick,
+            CardChoiceOpen = CardChoiceOpen, CardChoiceSelected = CardChoiceSelected, ManeuverPick = ManeuverPick, CardChoiceDeferred = CardChoiceDeferred,
         });
 
         public Core2ActionPace Pace() => Pacing.Pace(Settings.AnimSpeed, Settings.Values, Settings.ReducedMotion);
@@ -142,6 +142,9 @@ namespace AshenSpire.Presentation.Core2
 
         /// <summary>The chosen-card door is up: a choice is pending, its beats have played, and Choose later has not put it off.</summary>
         public bool CardChoiceOpen => Fight.HasCardChoice && !Busy && Fight.Result == null && !_cardChoiceDeferred;
+        /// <summary>A pending choice put off with Choose later: End Turn (pointer, key or pad) reopens its door, so a player with no
+        /// hand card left to tap always has a way back.</summary>
+        public bool CardChoiceDeferred => Fight.HasCardChoice && _cardChoiceDeferred && !Busy && Fight.Result == null;
         /// <summary>The door's picks in pick order (JS selected Set).</summary>
         public IReadOnlyList<string> CardChoiceSelected => _cardChoiceSelected;
         /// <summary>The hand card whose maneuver choice is open (JS openCardChoiceModal), or null.</summary>

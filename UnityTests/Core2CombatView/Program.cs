@@ -202,6 +202,7 @@ try
                 Miss(!controller.ConfirmCardChoice() && fight.HasCardChoice, where, "Confirm is refused before the count is picked");
                 Miss(!controller.EndTurn() && !controller.PlayCard(fight.Hand.FirstOrDefault()?.InstanceId ?? "x") && !controller.CanAct && controller.Model().InputLocked, where, "End Turn and plays are refused while the choice is pending");
                 Miss(controller.Key("Escape") && !controller.CardChoiceOpen && controller.Model().CardChoice == null && fight.HasCardChoice, where, "Escape is Choose later: the door closes, the choice stays pending");
+                Miss(controller.CardChoiceDeferred && controller.Model().Footer.EndTurnEnabled, where, "a put-off choice keeps End Turn live (the pointer's way back to the door)");
                 Miss(!controller.EndTurn() && controller.CardChoiceOpen && controller.LastRefusal == "pendingCardChoice", where, "End Turn reopens the put-off door instead of acting");
                 settings.Values["autoCombat"] = true;
                 now += 100000; controller.Tick(now);
