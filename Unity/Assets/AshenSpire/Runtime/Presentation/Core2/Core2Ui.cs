@@ -104,6 +104,22 @@ namespace AshenSpire.Presentation.Core2
             return (scrim, door, head, body.contentContainer, foot);
         }
 
+        /// <summary>
+        /// Make everything outside the topmost door inert (JS openModal's inert background): the last .c2-scrim under root
+        /// keeps its own path enabled and every other branch is disabled, so neither Tab, the arrow keys nor the
+        /// GamepadNavigator (which skips disabled elements) can reach a control the scrim covers.
+        /// </summary>
+        public static void InertBehindTopDoor(VisualElement root)
+        {
+            VisualElement top = null;
+            root?.Query<VisualElement>(className: "c2-scrim").ForEach(s => top = s);
+            if (top == null) return;
+            for (var e = top; e != null && e != root; e = e.parent)
+                if (e.parent != null)
+                    foreach (var sibling in e.parent.Children())
+                        if (sibling != e) sibling.SetEnabled(false);
+        }
+
         /// <summary>A .class-pick tile: glyph, title, lines, and an optional actions column.</summary>
         public static VisualElement Tile(string glyphArt, string title, IEnumerable<string> lines, bool locked = false, bool selected = false)
         {

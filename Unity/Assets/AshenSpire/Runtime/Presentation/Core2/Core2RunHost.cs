@@ -141,6 +141,7 @@ namespace AshenSpire.Presentation.Core2
                 case Core2Screen.Finished: BuildFinish(_screen); break;
             }
             BuildOverlay(_screen);
+            Core2Ui.InertBehindTopDoor(_screen);
             _screen.schedule.Execute(() => { if (_screen.focusController?.focusedElement == null) Core2Ui.FocusFirst(_screen); });
         }
 
@@ -219,6 +220,8 @@ namespace AshenSpire.Presentation.Core2
 
         private void Open(Overlay overlay)
         {
+            // Leaving the Reading Desk for another door cancels its edit, as Close does: no invisible edit stays open.
+            if (_overlay == Overlay.Deck && overlay != Overlay.Deck && _flow.DeckEdit != null) _flow.CancelDeckEdit();
             if (overlay == Overlay.Deck)
             {
                 var error = _flow.DeckEdit == null ? _flow.OpenDeckEdit() : null;
