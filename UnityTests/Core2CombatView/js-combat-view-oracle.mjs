@@ -15,6 +15,10 @@
 // plus pure tables: cardHotkeyAction, dmgClass, combatHealthModel badge order, the callout words, actionPacing for the
 // default, mobile-fast and Auto settings, and runActionTimeline's stage times over recorded beats (a virtual clock; the
 // sprite stage lasts the pace's lunge with the impact at its windup fraction; no hit-stop).
+// choiceFights: three content-coverage fights whose decks play the chosen-card and maneuver cards; per command the beats,
+// the maneuver picker playCard opens first (cardChoiceModal over cardChoicePlan: eyebrow, title, close and Cancel labels,
+// options) and the chosen-card door showPendingDiscard opens (discardChoiceModal: eyebrow, title, prompt, Confirm, Choose
+// later, count, ordered, candidate names), answered with the first enabled maneuver and the first N candidates.
 import {createHash} from 'node:crypto';
 import {existsSync, readFileSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
@@ -135,6 +139,74 @@ function fightCase({classId, seed, enemyIds, policy, maxTurns = 30}) {
 }
 const fights = FIGHTS.map(fightCase);
 
+// ---- the card choices (content-coverage inputs that play them; tools/oracle-js-core2.mjs coverageFight's setup) ---------------
+// The same driver, except that a card offering a choice records what screens/combat.js playCard opens first
+// (cardChoiceModal.js over cardChoicePlan) and plays with the first enabled option, and a pendingCardChoice records what
+// showPendingDiscard opens (discardChoiceModal.js) and is answered with its first N zoneCandidates.
+const {cardChoicePlan} = await load('src/engine/combat.js');
+const {hasCardChoice, zoneCandidates} = await load('src/engine/cardZones.js');
+const {resolveCard} = await load('src/model/registries.js');
+const cardName = card => resolveCard(registries, card).name;
+const CHOICE_FIGHTS = [
+  {classId: 'reaver', seed: 41, enemyIds: ['briarHermit'], deck: ['base.shuffle-hand', 'base.scout', 'base.shuffle-deck', 'core.strike', 'base.recall-choose', 'core.strike', 'base.exhaust-choose', 'core.defend', 'base.transmute', 'core.strike']},
+  {classId: 'starseer', seed: 42, enemyIds: ['wyrmAspirant'], deck: ['base.transform', 'base.recover-exile', 'base.hide-cards', 'core.strike', 'base.modify-card-stance', 'base.modify-card-range', 'core.strike', 'core.defend', 'base.exhaust', 'core.strike']},
+  {classId: 'reaver', seed: 43, enemyIds: ['briarHermit'], deck: ['base.force-stance', 'base.attack-then-defend', 'base.immediate-stance-transition', 'base.conditional-damage-bonus', 'core.strike', 'base.current-stance-variant', 'base.multi-stance', 'core.smash', 'core.strike']},
+];
+function pickerOf(plan, card) {
+  const name = cardName(card);
+  return {instanceId: card.instanceId, eyebrow: name, title: plan.kind === 'stance' ? t('cardChoice.stanceTitle') : t('common.choose'), closeLabel: `${t('common.cancel')} ${name}`,
+    cancel: t('common.cancel'), options: plan.options.map(o => ({id: o.id, name: `${o.name}${o.active ? ' (active)' : ''}`, text: o.tooltip || '', disabled: !!o.active}))};
+}
+function doorOf(combat) {
+  if (!hasCardChoice(combat)) return null;
+  const pending = combat.pendingCardChoice;
+  return {eyebrow: registries.cards.get(pending.cardId).name, title: t('combat.cards.choose.title', {count: pending.count}),
+    prompt: t('combat.cards.choose.prompt', {from: pending.effect.from, to: pending.effect.to}), confirm: t('combat.cards.choose.confirm'), close: t('combat.discard.later'),
+    count: pending.count, ordered: pending.effect.from === pending.effect.to, candidates: zoneCandidates(combat, pending.effect).map(card => ({instanceId: card.instanceId, name: cardName(card)}))};
+}
+function choiceFightCase({classId, seed, enemyIds, deck, maxTurns = 6}) {
+  const run = createRunState({registries, classId, seed, profileMeta: ALL_UNLOCKED});
+  run.relics = [];
+  run.deck = deck.map((cardId, index) => ({instanceId: `c${index + 1}`, cardId, upgraded: false}));
+  const combat = createRunCombat({registries, run, rng: createRng(seed), enemyIds});
+  dispatch(combat, {type: 'setReactions', enabled: false});
+  const steps = [];
+  const record = (command, out, picker = null) => steps.push({command, picker, beats: beatsOf(out?.events ?? []), door: doorOf(combat), result: combat.result ?? null});
+  const settle = () => {
+    for (let i = 0; i < 50 && hasCardChoice(combat); i++) {
+      const pending = combat.pendingCardChoice;
+      const ids = zoneCandidates(combat, pending.effect).slice(0, pending.count).map(card => card.instanceId);
+      record(`choose ${ids.join(',')}`, dispatch(combat, {type: 'chooseCards', cardInstanceIds: ids}));
+    }
+  };
+  for (let turn = 1; turn <= maxTurns && !combat.result; turn++) {
+    for (let guard = 0; guard < 20 && !combat.result; guard++) {
+      const target = combat.enemies.find(e => e.alive);
+      let played = false;
+      for (const card of combat.piles.hand) {
+        if (reactionTrait(card.cardId)) continue;
+        let costs; try { costs = cardPlayCosts(combat, card.instanceId); } catch { continue; }
+        if ((costs.stamina || 0) > (combat.player.stamina || 0) || (costs.mana || 0) > (combat.player.mana || 0)) continue;
+        const plan = cardChoicePlan(combat, card.instanceId);
+        const picker = plan ? pickerOf(plan, card) : null;
+        const choice = plan ? plan.options.find(o => !o.active)?.id : undefined;
+        for (const targetId of [target?.id, undefined]) {
+          try {
+            const out = dispatch(combat, {type: 'playCard', cardInstanceId: card.instanceId, ...(targetId ? {targetId} : {}), ...(choice ? {choice} : {})});
+            record(`play ${card.instanceId} ${targetId ?? '-'} ${choice ?? '-'}`, out, picker); played = true; break;
+          } catch { /* not playable this way */ }
+        }
+        if (played) break;
+      }
+      if (!played) break;
+      settle();
+    }
+    if (!combat.result) { record('endTurn', dispatch(combat, {type: 'endTurn'})); settle(); }
+  }
+  return {input: {classId, seed, enemyIds}, steps};
+}
+const choiceFights = CHOICE_FIGHTS.map(choiceFightCase);
+
 // ---- pure tables ---------------------------------------------------------------------------------------------------------
 const hotkeys = [];
 for (const key of ['1', '5', '9', 'q', 'Q', '0', 'e', 'x']) for (const targeting of [false, true]) for (const handSize of [0, 3, 10]) for (const livingEnemies of [1, 3])
@@ -202,12 +274,12 @@ const timelineCases = [0, 1, endTurnIndex].filter((i, k, all) => i >= 0 && all.i
 const oracle = plain({
   _: 'Generated by UnityTests/Core2CombatView/js-combat-view-oracle.mjs at the SPEC pin; do not edit.',
   js: {commit: identity.commit, build: identity.build}, profileHash: profile.hash,
-  fights, hotkeys, damageClasses, health, callouts, strings, paces, timelines: timelineCases,
+  fights, choiceFights, hotkeys, damageClasses, health, callouts, strings, paces, timelines: timelineCases,
 });
 const text = jsonText(oracle);
 if (args.check) {
   if (!existsSync(OUT) || readFileSync(OUT, 'utf8') !== text) { console.error('js-combat-view-oracle.json is stale; rerun the generator'); console.log('js-combat-view-oracle: 0 passed, 1 failed'); process.exit(1); }
-  console.log(`js-combat-view-oracle: OK — ${Object.keys(oracle).length + fights.length} checks passed`);
+  console.log(`js-combat-view-oracle: OK — ${Object.keys(oracle).length + fights.length + choiceFights.length} checks passed`);
 } else {
   writeFileSync(OUT, text);
   console.log(`js-combat-view-oracle: wrote ${fights.length} fights (${fights.reduce((n, f) => n + f.steps.length, 0)} steps), ${hotkeys.length} hotkeys, ${health.length} health rows`);

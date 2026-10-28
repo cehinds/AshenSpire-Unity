@@ -699,11 +699,15 @@ static class OracleReplay
     }
     private static void ProbePreviews(Core2Fight fight, Core2Combatant target)
     {
-        if (fight.PendingReaction != null || fight.PendingCardChoice != null) return;
+        if (fight.PendingReaction != null) return;
         var before = FightSignature(fight);
         foreach (var card in fight.Hand.ToList())
         {
-            foreach (var targetId in new[] { target?.Id, null }) fight.CheckPlay(card.InstanceId, targetId);
+            // A card that offers a maneuver choice is checked as the screen checks it: with no choice (its first option)
+            // and with each option; a pending chosen-card selection refuses every check without touching the fight.
+            var options = fight.CardChoiceOptions(card.InstanceId) ?? new string[0];
+            foreach (var targetId in new[] { target?.Id, null })
+                foreach (var choice in new string[] { null }.Concat(options)) fight.CheckPlay(card.InstanceId, targetId, choice);
             if (target != null) fight.PreviewCardHit(card.InstanceId, target.Id);
         }
         foreach (var enemy in fight.Enemies.Where(e => e.Alive)) { fight.ProjectIntent(enemy); fight.IntentHitDamages(enemy); }
@@ -735,6 +739,7 @@ static class OracleReplay
                 {
                     // content-coverage: a chosen-card selection takes the first candidates in pile order.
                     var choice = fight.PendingCardChoice;
+                    if (fight.PendingReaction == null) ProbePreviews(fight, fight.Enemies.FirstOrDefault(e => e.Alive)); // the screen's checks while the choice waits
                     var ids = choice.CandidateIds.Take(choice.Count).ToList();
                     choices?.Add(turn + " " + choice.CardId + " " + choice.Effect["op"] + " " + choice.Effect["from"] + ">" + ((string)choice.Effect["to"] ?? "-") + " " + string.Join(",", ids));
                     fight.ChooseCards(ids);

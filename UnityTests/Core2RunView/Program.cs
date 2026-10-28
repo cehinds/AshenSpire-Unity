@@ -122,10 +122,8 @@ try
     var screensSeen = new HashSet<string>();
     var stagesSeen = new HashSet<string>();
     var resumes = 0;
-    bool UnportedRelic(string relicId) => data.HasRelic(relicId) && Core2Json2.Strings(data.Relic(relicId)["propertyTags"])
-        .Any(tag => data.PropertyRule(tag).ToString().Contains("\"gainEnergy\""));
-    Console.WriteLine("PENDING: relics the Core 2 fight cannot run yet (opcode gainEnergy): "
-        + string.Join(", ", content.Relics.Where(r => UnportedRelic(r.Id)).Select(r => r.Id)));
+    var autoCardChoices = 0;
+    var autoManeuvers = 0;
 
     Core2RunFlow PlayRun(Core2RunFlow f, string classId, string seed, int slot, bool settleFights, int resumeEvery)
     {
@@ -174,7 +172,7 @@ try
                     Check(fight.Hand().Count > 0, "the fallback fight shows a hand");
                     Dump("fight", new { title = fight.Title, player = fight.PlayerLine, enemies = fight.Enemies(), hand = fight.Hand() });
                     if (settleFights) session.Fight.SettleAsWon();
-                    else fight.Auto();
+                    else { fight.Auto(); autoCardChoices += fight.AutoCardChoices; autoManeuvers += fight.AutoManeuvers; }
                     Check(fight.Over, "the fight ends (Auto, or settled as won)");
                     var e = f.FightOver();
                     Check(e == null, "the fight settles" + (e == null ? "" : ": " + e));
@@ -202,10 +200,7 @@ try
                     {
                         Check(spoils.Title == "Victory rewards" || spoils.Title == "Level reward", "the offer's title");
                         Check(spoils.Note.StartsWith("Choose " + session.CurrentOffer.TakeCount + "."), "the offer's note names how many to choose");
-                        // Relics whose rules use an opcode the Core 2 fight has not ported (gainEnergy: Cracked Lantern, Azure
-                        // Sigil…) would stop the next fight with NotSupportedException — a combat-domain gap, listed as PENDING
-                        // below; the scripted runs take the other options so they can reach the end.
-                        var index = spoils.Options.FindIndex(o => !o.Unavailable && !(o.Kind == "relics" && UnportedRelic(o.Id)));
+                        var index = spoils.Options.FindIndex(o => !o.Unavailable);
                         if (index < 0 || steps % 5 == 4) { Equal(spoils.SkipLabel, "Skip", "the offer's way out is Skip"); Check(spoils.Skip() == null, "Skip leaves the offer"); break; }
                         spoils.Select(index);
                         Equal(spoils.ConfirmLabel, "Confirm", "the picked option waits for Confirm");
@@ -233,7 +228,7 @@ try
                     Equal(shop.Title, "Merchant", "the shop's title");
                     Check(shop.Categories.Count > 0 && shop.Categories.All(c => c.Label.Length > 0), "every shelf has a label");
                     Check(shop.Offers.All(o => o.Price == Core2Text.T("shop.price", new { cost = session.ShopStock.Price ?? 0 })), "every offer reads the one flat price");
-                    var buy = shop.Offers.FirstOrDefault(o => o.Available && !(o.Kind == "relics" && UnportedRelic(session.ShopStock.Options[o.Index].Id)));
+                    var buy = shop.Offers.FirstOrDefault(o => o.Available);
                     if (buy != null)
                     {
                         var rv = shop.Review(buy.Index);
@@ -321,9 +316,9 @@ try
         return f;
     }
 
-    // A run that reaches a combat opcode the Core 2 fight has not ported yet (NotSupportedException: an event or a
-    // treasure can still hand over a gainEnergy relic) pends, as the Core2Run oracle replays pend on the same gaps; the
-    // run layer and these screens are not where it is fixed. Its slot keeps the save from before the failed command.
+    // A run that reaches a combat rule the Core 2 fight refuses (NotSupportedException: the content-coverage scan names
+    // the few JS never runs in a Core 2 fight) pends, as the Core2Run oracle replays pend on the same gaps; the run layer
+    // and these screens are not where it is fixed. Its slot keeps the save from before the failed command.
     var pending = new List<string>();
     Core2RunFlow TryRun(string classId, string seed, int slot, bool settle, int every)
     {
@@ -348,6 +343,43 @@ try
     Check(finishes.Any(f => f.Contains(":victory:")), "a run ends in victory (" + string.Join(" ", finishes) + ")");
     Check(resumes > 20, "the runs were saved and resumed mid-run " + resumes + " times");
     foreach (var line in pending) Console.WriteLine("PENDING: " + line);
+    Console.WriteLine("INFO: the fallback fight's Auto answered " + autoCardChoices + " card choices and chose " + autoManeuvers + " maneuvers in the Auto runs");
+
+    // ---- 2b. the fallback fight's card choices ---------------------------------------------------------------------
+    // A run fight on a deck of chosen-card cards: by hand (a maneuver card asks before it plays, Cancel plays nothing; a
+    // pending selection refuses End Turn and Confirm until exactly its count is picked), then Auto to the end.
+    {
+        var choiceSession = Core2RunSession.Start(data, "reaver", 4141, ignoreUnlocks: true);
+        choiceSession.Run.Deck = new[] { "base.attack-then-defend", "base.exhaust-choose", "base.attack-then-defend", "base.exhaust-choose", "base.attack-then-defend", "base.exhaust-choose", "base.attack-then-defend", "base.exhaust-choose" }
+            .Select((id, i) => new Core2RunCard { InstanceId = "fc" + (i + 1), CardId = id }).ToList();
+        choiceSession.Travel(choiceSession.TravelOptions().First(id => choiceSession.Run.MapGraph.Node(id).Type is "monster" or "fight"));
+        var fb = new Core2FallbackFight(choiceSession);
+        var cf = choiceSession.Fight;
+        var vow = cf.Hand.First(c => c.CardId == "base.attack-then-defend").InstanceId;
+        var handBefore = cf.Hand.Count; var spBefore = cf.Player.Stamina;
+        Check(fb.Play(vow) == null && fb.ManeuverPick == vow && cf.Hand.Count == handBefore && cf.Player.Stamina == spBefore, "fallback: a maneuver card asks its choice before it plays (nothing spent yet)");
+        Equal(string.Join(",", fb.ManeuverOptions().Select(o => o.Name)), "Attack,Smash,Defend,Sweep,Counter,Casting,Evade", "fallback: the choice offers the seven maneuvers (JS cardChoice names)");
+        Equal(fb.ManeuverCardName, "Strike and Settle", "fallback: the choice names its card");
+        fb.CancelManeuver();
+        Check(fb.ManeuverPick == null && cf.Hand.Any(c => c.InstanceId == vow) && cf.Player.Stamina == spBefore, "fallback: Cancel plays nothing and the card stays in hand");
+        fb.Play(vow);
+        Check(fb.ChooseManeuver("defend") == null && cf.Hand.All(c => c.InstanceId != vow), "fallback: the chosen maneuver plays the card");
+        Equal(cf.Player.Stance?.Maneuver, "defend", "fallback: the card entered the chosen maneuver");
+        var chooser = cf.Hand.FirstOrDefault(c => c.CardId == "base.exhaust-choose")?.InstanceId;
+        Check(chooser != null && fb.Play(chooser) == null && cf.HasCardChoice, "fallback: Chosen Exhaust opens a card choice");
+        Equal(fb.CardChoiceTitle + " · " + fb.CardChoiceCardName, "Choose 1 cards · Chosen Exhaust", "fallback: the choice reads the JS title and names its card");
+        Check(fb.EndTurn() != null && cf.HasCardChoice && cf.Phase == "player", "fallback: End Turn is refused while the choice is pending");
+        Check(fb.ConfirmCardChoice() != null && cf.HasCardChoice, "fallback: Confirm is refused before the count is picked");
+        var candidates = fb.CardChoiceOptions();
+        fb.ToggleCardChoice(candidates[0].InstanceId);
+        if (candidates.Count > 1) fb.ToggleCardChoice(candidates[1].InstanceId);
+        Check(fb.Picked.Count == 1 && fb.Picked[0] == candidates[0].InstanceId, "fallback: past the count nothing more is picked");
+        Check(fb.CardChoiceReady && fb.ConfirmCardChoice() == null && !cf.HasCardChoice, "fallback: Confirm at exactly the count resumes the fight");
+        Check(cf.Exhaust.Any(c => c.InstanceId == candidates[0].InstanceId), "fallback: the chosen card went to the exhaust pile");
+        fb.Auto();
+        Check(fb.Over, "fallback: Auto ends the fight (" + cf.Result + ")");
+        Check(fb.AutoCardChoices > 0 && fb.AutoManeuvers > 0, "fallback: Auto answered " + fb.AutoCardChoices + " card choices with the first candidates and chose " + fb.AutoManeuvers + " maneuvers");
+    }
 
     // ---- 3. the deck editor --------------------------------------------------------------------------------------
     var deckStorage = new Core2MemoryStorage();

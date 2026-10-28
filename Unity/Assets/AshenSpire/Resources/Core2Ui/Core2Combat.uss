@@ -328,6 +328,12 @@
     justify-content: space-between; align-items: flex-start;
 }
 .c2c-option-selected { border-color: var(--c2c-option-sel); border-width: var(--c2c-line); }
+/* JS combat.css .card-option:disabled and .card-option .co-order (the pick number of an ordered card choice) */
+.c2c-option-disabled { opacity: var(--c2c-card-dim); }
+.c2c-option-order {
+    position: absolute; top: var(--c2c-gap); right: var(--c2c-gap-l);
+    font-size: var(--c2c-modal-text); color: var(--js-gold); -unity-font: resource("Fonts/Inter-SemiBold");
+}
 .c2c-option-name { font-size: var(--c2c-modal-text); color: var(--c2c-ink); -unity-font: resource("Fonts/Inter-SemiBold"); white-space: normal; }
 .c2c-option-summary { font-size: var(--c2c-log-text); color: var(--c2c-ink); white-space: normal; }
 .c2c-option-costs { flex-direction: row; margin-top: var(--c2c-gap); }

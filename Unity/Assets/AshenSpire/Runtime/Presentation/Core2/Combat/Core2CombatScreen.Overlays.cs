@@ -1,4 +1,5 @@
-// Core2CombatScreen.Overlays.cs — what opens above the battlefield: the reaction window (JS reactionChoiceModal), the
+// Core2CombatScreen.Overlays.cs — what opens above the battlefield: the card choices (JS cardChoiceModal: a card's maneuver
+// choice before it plays; JS discardChoiceModal as showPendingDiscard opens it: the chosen-card door), the reaction window (JS reactionChoiceModal), the
 // combat log drawer and its Full log door (JS combatTools / combatLogModal), the enemy inspector (JS combatantInspector),
 // the potions tray (JS combatActionRow potions) and the hover tooltip that reads a damage receipt (JS damageReceipt).
 // While an offer is pending the reaction window is the only thing that takes input: the overlay covers the screen.
@@ -21,7 +22,9 @@ namespace AshenSpire.Presentation.Core2
             _overlay.Clear();
             var modal = false;
             PaintLogDrawer();
-            if (_model.Reaction != null) { _overlay.Add(ReactionModal(_model.Reaction)); modal = true; }
+            if (_model.ManeuverChoice != null) { _overlay.Add(ManeuverModal(_model.ManeuverChoice)); modal = true; }
+            else if (_model.CardChoice != null) { _overlay.Add(CardChoiceModal(_model.CardChoice)); modal = true; }
+            else if (_model.Reaction != null) { _overlay.Add(ReactionModal(_model.Reaction)); modal = true; }
             else if (_controller.Log.FullOpen) { _overlay.Add(FullLogDoor()); modal = true; }
             else if (_controller.Inspecting != null)
             {
@@ -74,7 +77,7 @@ namespace AshenSpire.Presentation.Core2
             return button;
         }
 
-        private static VisualElement ModalHead(string eyebrow, string title, Action close)
+        private static VisualElement ModalHead(string eyebrow, string title, Action close, string closeLabel = null)
         {
             var head = new VisualElement();
             head.AddToClassList("c2c-modal-head");
@@ -84,7 +87,7 @@ namespace AshenSpire.Presentation.Core2
             head.Add(titles);
             if (close != null)
             {
-                var x = new Button(close) { text = "", tooltip = Core2CombatText.T("common.close") };
+                var x = new Button(close) { text = "", tooltip = closeLabel ?? Core2CombatText.T("common.close") };
                 x.AddToClassList("c2c-modal-close");
                 head.Add(x);
             }
@@ -145,6 +148,113 @@ namespace AshenSpire.Presentation.Core2
             // JS initialFocus: the first option, so a pad or keyboard player starts on a card.
             if (first != null) layer.schedule.Execute(() => { if (m.Selected == null) first.Focus(); });
             return layer;
+        }
+
+        // ---- the card choices --------------------------------------------------------------------------------------------
+
+        /// <summary>One uniform tile (JS cardOptionGrid): name, effect line, an optional pick number; Return/Space/pad Submit pick.</summary>
+        private static VisualElement ChoiceTile(string name, string id, string title, string line, bool selected, int order, bool disabled, Action pick)
+        {
+            var tile = new VisualElement { name = name + id, focusable = !disabled };
+            tile.AddToClassList("c2c-option");
+            tile.EnableInClassList("c2c-option-selected", selected);
+            tile.EnableInClassList("c2c-option-disabled", disabled);
+            if (order > 0) tile.Add(Text(Core2CombatText.Number(order), "c2c-option-order"));
+            tile.Add(Text(title, "c2c-option-name"));
+            if (!string.IsNullOrEmpty(line)) tile.Add(Text(line, "c2c-option-summary"));
+            if (!disabled)
+            {
+                tile.RegisterCallback<ClickEvent>(e => { pick(); e.StopPropagation(); });
+                Activatable(tile, pick);
+            }
+            return tile;
+        }
+
+        /// <summary>JS cardChoiceModal.js: the card's name, "Choose a stance", a tile per maneuver; Cancel (and Escape, the veil) plays nothing.</summary>
+        private VisualElement ManeuverModal(Core2ManeuverChoiceModel m)
+        {
+            var layer = new VisualElement();
+            layer.AddToClassList("c2c-overlay");
+            layer.Add(Scrim(() => _controller.CancelManeuver()));
+            var modal = new VisualElement { name = "card-choice" };
+            modal.AddToClassList("c2c-modal");
+            modal.Add(ModalHead(m.Eyebrow, m.Title, () => _controller.CancelManeuver(), m.CloseLabel));
+            var body = new VisualElement();
+            body.AddToClassList("c2c-modal-body");
+            var options = new VisualElement();
+            options.AddToClassList("c2c-options");
+            VisualElement first = null;
+            foreach (var option in m.Options)
+            {
+                var id = option.Id;
+                var tile = ChoiceTile("card-choice-", id, option.Name, option.Text, false, 0, option.Disabled, () => _controller.ChooseManeuver(id));
+                options.Add(tile);
+                if (!option.Disabled) first ??= tile;
+            }
+            body.Add(options);
+            modal.Add(body);
+            var foot = new VisualElement();
+            foot.AddToClassList("c2c-modal-foot");
+            foot.Add(ModalButton(m.CancelLabel, () => _controller.CancelManeuver()));
+            modal.Add(foot);
+            layer.Add(modal);
+            if (first != null) layer.schedule.Execute(() => first.Focus());
+            return layer;
+        }
+
+        /// <summary>
+        /// JS discardChoiceModal.js for a pendingCardChoice: the resolving card's name, "Choose N cards", the prompt, a tile per
+        /// candidate (a second pick drops it; past N nothing more is taken; the order shows when from and to are one pile),
+        /// Confirm selection at exactly N. Closing it (×, Escape, the veil) is Choose later: the fight stays paused.
+        /// </summary>
+        private VisualElement CardChoiceModal(Core2CardChoiceModalModel m)
+        {
+            var layer = new VisualElement();
+            layer.AddToClassList("c2c-overlay");
+            layer.Add(Scrim(() => _controller.DeferCardChoice()));
+            var modal = new VisualElement { name = "discard-choice" };
+            modal.AddToClassList("c2c-modal");
+            modal.Add(ModalHead(m.Eyebrow, m.Title, () => _controller.DeferCardChoice(), m.CloseLabel));
+            var body = new ScrollView(ScrollViewMode.Vertical);
+            body.AddToClassList("c2c-modal-body");
+            body.Add(Text(m.Prompt, "c2c-modal-text"));
+            var options = new VisualElement();
+            options.AddToClassList("c2c-options");
+            VisualElement first = null;
+            foreach (var option in m.Options)
+            {
+                var id = option.Id;
+                var at = m.Selected.IndexOf(id);
+                var tile = ChoiceTile("discard-choice-", id, option.Name, option.Summary, at >= 0, m.Ordered && at >= 0 ? at + 1 : 0, false, () => ToggleChoice(id));
+                options.Add(tile);
+                first ??= tile;
+            }
+            body.Add(options);
+            modal.Add(body);
+            var foot = new VisualElement();
+            foot.AddToClassList("c2c-modal-foot");
+            var confirm = ModalButton(m.ConfirmLabel, () => _controller.ConfirmCardChoice(), primary: true);
+            confirm.name = "discard-choice-confirm";
+            confirm.SetEnabled(m.ConfirmEnabled);
+            foot.Add(confirm);
+            modal.Add(foot);
+            layer.Add(modal);
+            // Focus stays on the tile just picked across the repaint (the pad's place in the grid); else the first tile.
+            var keep = _choiceFocus;
+            layer.schedule.Execute(() =>
+            {
+                var target = keep != null ? layer.Q<VisualElement>("discard-choice-" + keep) : null;
+                (target ?? first)?.Focus();
+            });
+            return layer;
+        }
+
+        private string _choiceFocus;
+
+        private void ToggleChoice(string id)
+        {
+            _choiceFocus = id;
+            _controller.ToggleCardChoice(id);
         }
 
         // ---- the combat log drawer and the Full log door ---------------------------------------------------------------

@@ -7,7 +7,10 @@
 //   E         End Turn: a tap while nothing is playable; while a card is playable, hold E (a quick press arms it and a
 //             second press confirms — the HoldConfirm pattern's tap path, which a pad's instant press also takes)
 //   Return    play the armed card (JS combatPlay)
-//   Escape    Back on the reaction window; else close the log door / inspector; else drop the selection
+//   Escape    Cancel on the maneuver choice; Choose later on the chosen-card door; Back on the reaction window; else close
+//             the log door / inspector; else drop the selection
+//   Card doors  the maneuver tiles and the candidate tiles take Return / Space / NavigationSubmit and clicks; Confirm
+//             selection and Cancel are Buttons; while a choice is put off, E and the card keys reopen its door
 //   Log button ArrowUp / ArrowDown / Home / End resize the drawer; a drag snaps to the nearest size
 // End Turn on pointer: hold to commit while a card is playable (the fill shows progress, release early aborts), a tap
 // arms it ("Tap again to confirm") — Domain/Original HoldConfirmState, as HoldConfirmButton uses it.
@@ -102,7 +105,10 @@ namespace AshenSpire.Presentation.Core2
             var fight = _controller.Fight;
             if (key == "Escape")
             {
-                if (fight.PendingReaction != null && !_controller.Busy) _controller.AnswerReaction(null);
+                // The card-choice doors first (JS: Escape is their Cancel / Choose later), then the reaction window's Back.
+                if (_controller.ManeuverPick != null) _controller.CancelManeuver();
+                else if (_controller.CardChoiceOpen) _controller.DeferCardChoice();
+                else if (fight.PendingReaction != null && !_controller.Busy && !fight.HasCardChoice) _controller.AnswerReaction(null);
                 else if (_controller.Log.FullOpen) { _controller.Log.CloseFull(); PaintOverlay(); }
                 else if (_trayOpen) { _trayOpen = false; PaintOverlay(); }
                 else _controller.Cancel();
@@ -110,11 +116,12 @@ namespace AshenSpire.Presentation.Core2
                 return;
             }
             // While a door is open (an offer, the full log, the inspector) only its own controls take input; Escape above closes it.
-            if (fight.PendingReaction != null || _controller.Log.FullOpen || _controller.Inspecting != null) return;
+            if (fight.PendingReaction != null || _controller.ManeuverPick != null || _controller.CardChoiceOpen || _controller.Log.FullOpen || _controller.Inspecting != null) return;
             if (key == "e")
             {
                 e.StopPropagation();
                 if (_keyHolding) return; // key repeat
+                if (fight.HasCardChoice) { _controller.Key("e"); return; } // a put-off card choice reopens (JS commitEndTurn)
                 if (!_controller.CanAct) return;
                 if (!_controller.EndTurnNeedsHold) { CommitEndTurn(); return; }
                 var now = NowMs;

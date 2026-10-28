@@ -137,6 +137,121 @@ try
         Equal(reported, fight.Result != null ? 1 : 0, "oracle fight " + label + ": the fight over is reported once (after its last beat)");
     }
 
+    // ==== 1a'. the card choices, against the JS screen ===============================================================
+    // Three content-coverage fights whose decks play the chosen-card and maneuver cards, driven through the controller as
+    // the JS driver drove them. Per command: the beats; the maneuver picker playCard opens first and the chosen-card door
+    // showPendingDiscard opens (every JS string, count, order flag and candidate); the gates while each is open; that the
+    // door waits for the play's beats, Auto fires nothing while it waits, and Confirm resumes the card as new beats.
+    var coverage = JObject.Parse(Read("UnityTests/Core2Content/Oracles/content-coverage.json"));
+    var pickersSeen = 0; var doorsSeen = 0; var orderedSeen = 0;
+    foreach (var fightCase in ((JArray)oracle["choiceFights"]!).OfType<JObject>())
+    {
+        var input = (JObject)fightCase["input"]!;
+        var label = "choice fight " + (string)input["classId"] + "/" + (int)input["seed"];
+        var start = coverage["cases"]!.OfType<JObject>().First(c => (string)c["input"]!["classId"] == (string)input["classId"] && (int)c["input"]!["seed"] == (int)input["seed"])["input"]!["start"];
+        var fight = Core2Fight.Create(content, Core2FightSetup.FromJson((JObject)start!), input["enemyIds"]!.Select(t => (string)t!).ToList(), (uint)(int)input["seed"]);
+        var settings = new Core2CombatSettings();
+        var controller = new Core2CombatController(null, () => { }, settings, art, fight);
+        controller.SetReactions(false);
+        var mismatches = new List<string>();
+        var now = 0.0;
+        void Miss(bool ok, string where, string what) { if (!ok) mismatches.Add(where + ": " + what); }
+        var steps = ((JArray)fightCase["steps"]!).OfType<JObject>().ToList();
+        for (var index = 0; index < steps.Count && mismatches.Count == 0; index++)
+        {
+            var step = steps[index];
+            var command = (string)step["command"]!;
+            var where = label + " step " + index + " (" + command + ")";
+            var parts = command.Split(' ');
+            bool ok;
+            if (parts[0] == "endTurn") ok = controller.EndTurn();
+            else if (parts[0] == "play")
+            {
+                var target = parts[2] == "-" ? null : parts[2];
+                ok = controller.PlayCard(parts[1], target);
+                if (step["picker"] is JObject picker)
+                {
+                    pickersSeen++;
+                    var m = controller.Model().ManeuverChoice;
+                    Miss(ok && m != null && !controller.Busy, where, "the maneuver choice opens before anything plays");
+                    if (m == null) break;
+                    var cs = m.Eyebrow + "|" + m.Title + "|" + m.CloseLabel + "|" + m.CancelLabel + "|" + string.Join(";", m.Options.Select(o => o.Id + ":" + o.Name + ":" + o.Text + ":" + o.Disabled));
+                    var js = (string)picker["eyebrow"] + "|" + (string)picker["title"] + "|" + (string)picker["closeLabel"] + "|" + (string)picker["cancel"] + "|"
+                        + string.Join(";", picker["options"]!.Select(o => (string)o["id"] + ":" + (string)o["name"] + ":" + (string)o["text"] + ":" + (bool)o["disabled"]!));
+                    Miss(cs == js, where, "picker " + cs + " | JS " + js);
+                    // The gates: the door owns the input; Escape cancels and plays nothing; the card stays in hand.
+                    var events = fight.Events.Count;
+                    Miss(!controller.CanAct && !controller.EndTurn() && !controller.Key("1") && controller.Model().InputLocked, where, "the picker holds every other command");
+                    Miss(controller.Key("Escape") && controller.ManeuverPick == null && fight.Hand.Any(c => c.InstanceId == parts[1]) && fight.Events.Count == events, where, "Escape cancels: nothing plays");
+                    Miss(controller.CanAct, where, "after Cancel the board takes input again");
+                    controller.PlayCard(parts[1], target);
+                    Miss(controller.ManeuverPick == parts[1], where, "playing it again reopens the choice");
+                    Miss(!controller.ChooseManeuver("nonsense") && controller.ManeuverPick == parts[1], where, "an option the card does not offer is refused");
+                    ok = controller.ChooseManeuver(parts[3]);
+                }
+                else Miss(controller.Model().ManeuverChoice == null, where, "no maneuver choice for a card that offers none");
+            }
+            else
+            {
+                // choose: the door is up (its beats are over); check it, its gates, then pick in order and Confirm.
+                var ids = parts[1].Split(',');
+                var door = controller.Model().CardChoice;
+                Miss(door != null && door.Selected.Count == 0 && !door.ConfirmEnabled, where, "the door is open with nothing picked and Confirm disabled");
+                if (door == null) break;
+                var events = fight.Events.Count;
+                Miss(!controller.ConfirmCardChoice() && fight.HasCardChoice, where, "Confirm is refused before the count is picked");
+                Miss(!controller.EndTurn() && !controller.PlayCard(fight.Hand.FirstOrDefault()?.InstanceId ?? "x") && !controller.CanAct && controller.Model().InputLocked, where, "End Turn and plays are refused while the choice is pending");
+                Miss(controller.Key("Escape") && !controller.CardChoiceOpen && controller.Model().CardChoice == null && fight.HasCardChoice, where, "Escape is Choose later: the door closes, the choice stays pending");
+                Miss(!controller.EndTurn() && controller.CardChoiceOpen && controller.LastRefusal == "pendingCardChoice", where, "End Turn reopens the put-off door instead of acting");
+                settings.Values["autoCombat"] = true;
+                now += 100000; controller.Tick(now);
+                Miss(fight.Events.Count == events && fight.HasCardChoice, where, "Auto fires no command while the choice is pending");
+                settings.Values["autoCombat"] = false;
+                foreach (var id in ids) controller.ToggleCardChoice(id);
+                var extra = door.Options.Select(o => o.Id).FirstOrDefault(id => !ids.Contains(id));
+                if (extra != null) Miss(!controller.ToggleCardChoice(extra), where, "past the count no more is picked");
+                var picked = controller.Model().CardChoice;
+                Miss(picked != null && string.Join(",", picked.Selected) == parts[1] && picked.ConfirmEnabled, where, "the picks in order enable Confirm (" + string.Join(",", picked?.Selected ?? new List<string>()) + ")");
+                if (picked != null && picked.Selected.Count > 1)
+                {
+                    controller.ToggleCardChoice(ids[0]);
+                    Miss(!controller.Model().CardChoice.ConfirmEnabled && controller.Model().CardChoice.Selected.Count == ids.Length - 1, where, "a second tap drops a pick and disables Confirm");
+                    controller.ToggleCardChoice(ids[0]);
+                    var reordered = string.Join(",", ids.Skip(1).Concat(new[] { ids[0] }));
+                    Miss(string.Join(",", controller.Model().CardChoice.Selected) == reordered, where, "a re-pick goes to the end of the order");
+                    foreach (var id in ids) controller.ToggleCardChoice(id); // clear …
+                    foreach (var id in ids) controller.ToggleCardChoice(id); // … and pick in the driver's order again
+                }
+                ok = controller.ConfirmCardChoice();
+            }
+            if (!ok) { mismatches.Add(where + " was refused: " + controller.LastRefusal); break; }
+            var beats = controller.Timeline?.Beats ?? new List<Core2CombatBeat>();
+            if (controller.Busy) Miss(controller.Model().CardChoice == null, where, "the door waits for the beats");
+            now += 100000; controller.Tick(now);
+            var jsBeats = ((JArray)step["beats"]!).OfType<JObject>().ToList();
+            var csLine = string.Join(" ; ", beats.Select(c => (c.ActorId ?? "-") + "/" + (c.Kind ?? "-") + "/" + string.Join(",", c.Events.Select(e => e.Type))));
+            var jsLine = string.Join(" ; ", jsBeats.Select(j => ((string)j["actorId"] ?? "-") + "/" + ((string)j["kind"] ?? "-") + "/" + string.Join(",", j["types"]!.Select(t => (string)t))));
+            Miss(csLine == jsLine, where, "beats " + csLine + " | JS " + jsLine);
+            var jsDoor = step["door"] as JObject;
+            var csDoor = controller.Model().CardChoice;
+            Miss((jsDoor == null) == (csDoor == null) && (jsDoor != null) == fight.HasCardChoice, where, "door " + (csDoor != null) + ", JS " + (jsDoor != null));
+            if (jsDoor != null && csDoor != null)
+            {
+                doorsSeen++;
+                if ((bool)jsDoor["ordered"]!) orderedSeen++;
+                var cs = csDoor.Eyebrow + "|" + csDoor.Title + "|" + csDoor.Prompt + "|" + csDoor.ConfirmLabel + "|" + csDoor.CloseLabel + "|" + csDoor.Count + "|" + csDoor.Ordered + "|" + string.Join(";", csDoor.Options.Select(o => o.Id + ":" + o.Name));
+                var js = (string)jsDoor["eyebrow"] + "|" + (string)jsDoor["title"] + "|" + (string)jsDoor["prompt"] + "|" + (string)jsDoor["confirm"] + "|" + (string)jsDoor["close"] + "|" + (int)jsDoor["count"]! + "|" + (bool)jsDoor["ordered"]! + "|"
+                    + string.Join(";", jsDoor["candidates"]!.Select(c => (string)c["instanceId"] + ":" + (string)c["name"]));
+                Miss(cs == js, where, "door " + cs + " | JS " + js);
+                Miss(csDoor.Options.All(o => o.Costs.Count == 0), where, "candidate tiles carry no cost chips (JS summarizeCardOption of a plain card)");
+            }
+            Miss((string)step["result"] == fight.Result, where, "result " + fight.Result + ", JS " + (string)step["result"]);
+        }
+        foreach (var m in mismatches.Take(12)) Console.Error.WriteLine("  " + m);
+        Check(mismatches.Count == 0, label + ": " + steps.Count + " commands through the controller; pickers, doors, gates and beats equal the JS screen's" + (mismatches.Count > 0 ? " (" + mismatches.Count + " differences)" : ""));
+    }
+    Check(pickersSeen > 0 && doorsSeen > 5 && orderedSeen > 0, "the choice fights reached the maneuver picker (" + pickersSeen + "), the chosen-card door (" + doorsSeen + ") and an ordered door (" + orderedSeen + ")");
+
     // ==== 1b. pure tables ============================================================================================
     var hotkeyMisses = 0;
     foreach (var row in ((JArray)oracle["hotkeys"]!).OfType<JObject>())

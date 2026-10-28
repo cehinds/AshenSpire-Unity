@@ -22,6 +22,10 @@ namespace AshenSpire.Presentation.Core2
         /// <summary>No input but answering the offer (or the beats playing) is accepted.</summary>
         public bool InputLocked { get; set; }
         public Core2ReactionModalModel Reaction { get; set; }
+        /// <summary>The chosen-card door (JS openDiscardChoiceModal over pendingCardChoice), or null.</summary>
+        public Core2CardChoiceModalModel CardChoice { get; set; }
+        /// <summary>The choice a card asks before it plays (JS openCardChoiceModal over cardChoicePlan), or null.</summary>
+        public Core2ManeuverChoiceModel ManeuverChoice { get; set; }
         public string Result { get; set; }
     }
 
@@ -222,6 +226,57 @@ namespace AshenSpire.Presentation.Core2
         public List<string> Costs { get; set; } = new List<string>();
         public string CardId { get; set; }
         public string InstanceId { get; set; }
+    }
+
+    /// <summary>
+    /// The chosen-card door (JS discardChoiceModal.js openDiscardChoiceModal, as screens/combat.js showPendingDiscard opens it
+    /// for a pendingCardChoice): the resolving card's name, "Choose N cards", the from/to prompt, one tile per candidate,
+    /// Confirm selection only at exactly N picks, and "Choose later" to close it (the fight stays paused).
+    /// </summary>
+    public sealed class Core2CardChoiceModalModel
+    {
+        /// <summary>The resolving card's name (JS eyebrow: the pending choice's card name).</summary>
+        public string Eyebrow { get; set; }
+        /// <summary>combat.cards.choose.title: "Choose {count} cards".</summary>
+        public string Title { get; set; }
+        /// <summary>combat.cards.choose.prompt: "Choose cards from {from} for {to}. …".</summary>
+        public string Prompt { get; set; }
+        public string ConfirmLabel { get; set; }
+        /// <summary>The close control's name (JS closeLabel combat.discard.later: "Choose later").</summary>
+        public string CloseLabel { get; set; }
+        public int Count { get; set; }
+        /// <summary>The pick order shows on the tiles (JS ordered: effect.from === effect.to).</summary>
+        public bool Ordered { get; set; }
+        /// <summary>One tile per candidate (JS cardOptionGrid over summarizeCardOption): name and effect line, no cost chips.</summary>
+        public List<Core2ReactionOptionModel> Options { get; set; } = new List<Core2ReactionOptionModel>();
+        /// <summary>The picked candidate ids in pick order.</summary>
+        public List<string> Selected { get; set; } = new List<string>();
+        public bool ConfirmEnabled { get; set; }
+    }
+
+    /// <summary>
+    /// The choice a card offers before it plays (JS cardChoiceModal.js openCardChoiceModal over cardChoicePlan): the card's
+    /// name, "Choose a stance", one tile per maneuver (its name, its id as the tile's line), and Cancel, which plays nothing.
+    /// </summary>
+    public sealed class Core2ManeuverChoiceModel
+    {
+        public string InstanceId { get; set; }
+        public string Eyebrow { get; set; }
+        public string Title { get; set; }
+        /// <summary>The close control's name (JS closeLabel: "Cancel {card}").</summary>
+        public string CloseLabel { get; set; }
+        public string CancelLabel { get; set; }
+        public List<Core2ManeuverOptionModel> Options { get; set; } = new List<Core2ManeuverOptionModel>();
+    }
+
+    public sealed class Core2ManeuverOptionModel
+    {
+        public string Id { get; set; }
+        /// <summary>"Smash", with " (active)" for the stance already held (JS option.active).</summary>
+        public string Name { get; set; }
+        /// <summary>The tile's line (JS cardChoice: the maneuver option's tooltip, its id).</summary>
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
     }
 
     /// <summary>One section of the enemy inspector (JS combatantDetailBody).</summary>
