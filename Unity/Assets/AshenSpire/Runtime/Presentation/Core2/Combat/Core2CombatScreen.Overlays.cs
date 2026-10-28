@@ -103,6 +103,13 @@ namespace AshenSpire.Presentation.Core2
                 var id = option.Id;
                 tile.RegisterCallback<ClickEvent>(e => { _controller.SelectReactionOption(id); e.StopPropagation(); });
                 tile.RegisterCallback<NavigationSubmitEvent>(e => { _controller.SelectReactionOption(id); e.StopPropagation(); });
+                // The GamepadNavigator activates a focused element by sending it Return (Submit only reaches Buttons and
+                // other controls), and the keyboard does the same: either selects this option.
+                tile.RegisterCallback<KeyDownEvent>(e =>
+                {
+                    if (e.keyCode != KeyCode.Return && e.keyCode != KeyCode.KeypadEnter && e.keyCode != KeyCode.Space) return;
+                    _controller.SelectReactionOption(id); e.StopPropagation();
+                });
                 options.Add(tile);
                 first ??= tile;
             }

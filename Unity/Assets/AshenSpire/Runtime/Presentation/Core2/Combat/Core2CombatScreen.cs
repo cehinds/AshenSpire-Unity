@@ -133,7 +133,12 @@ namespace AshenSpire.Presentation.Core2
             var real = Time.realtimeSinceStartupAsDouble * 1000.0;
             var delta = _lastRealMs < 0 ? 0 : Math.Max(0, real - _lastRealMs);
             _lastRealMs = real;
-            if (Core2Screens.IsInterrupted) return;
+            if (Core2Screens.IsInterrupted)
+            {
+                // A hold in progress when the cover came up is dropped, so it cannot finish after the player returns.
+                if (_hold != null && _hold.Holding) { _hold.Reset(); _keyHolding = false; }
+                return;
+            }
             _clockMs += Math.Min(delta, 250);
             if (_controller == null || _root?.panel == null) return;
             _controller.Tick(NowMs);

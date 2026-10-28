@@ -81,7 +81,8 @@ namespace AshenSpire.Presentation.Core2
 
         private void OnKeyDown(KeyDownEvent e)
         {
-            if (_root?.panel == null || _controller == null) return;
+            // The handler sits on the panel root, outside the subtree the interruption cover disables: no command behind it.
+            if (_root?.panel == null || _controller == null || Core2Screens.IsInterrupted) return;
             var key = KeyName(e.keyCode);
             if (key == null) return;
             var fight = _controller.Fight;
@@ -124,6 +125,8 @@ namespace AshenSpire.Presentation.Core2
         private void OnKeyUp(KeyUpEvent e)
         {
             if (KeyName(e.keyCode) != "e" || !_keyHolding) return;
+            // A hold released behind the interruption cover ends without committing: nothing resolves behind it.
+            if (Core2Screens.IsInterrupted) { _keyHolding = false; _hold.Reset(); PaintEndTurnState(); return; }
             _keyHolding = false;
             var now = NowMs;
             if (_hold.Release(now)) { CommitEndTurn(); return; }
